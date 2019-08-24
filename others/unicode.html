@@ -6,29 +6,33 @@
 	<title>unicode converter</title>
 	<link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP&display=swap&subset=japanese" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../main.css">
-	<!--css-->
-	<style>
-		#out {
-			color: #eaf4fc;
-			background-color: #928c36cc;
 
-		}
+	<style>
+		#out {}
 	</style>
 </head>
 
 <body>
-	<p>unicode converter</p>
-	<textarea rows="10" cols="60" id="input"></textarea><br>
-	<button type="button" onclick="decode();">decode</button>
-	<button type="button" onclick="encode();">encode</button>
-	<button type="button" onclick="clipboard();" id="clip_button">copy to clipboard</button><br><br>
-	<div id="out"></div>
+	<h3>unicode converter</h3>
+	<hr>
+	<p>input<br>
+		<textarea rows="10" id="input"></textarea>
+	</p>
+	<div>
+		<button type="button" onclick="decode();">decode</button>
+		<button type="button" onclick="encode();">encode</button>
+		<button type="button" onclick="clipboard();" id="clip_button">copy to clipboard</button>
+	</div>
+	<p>result<br>
+		<textarea rows="10" id="out"></textarea>
+	</p>
 	<script type="text/javascript">
 		function decode() {
 			var str = document.getElementById("input").value;
 			str = str.replace(/\\/g, '%');
 			document.getElementById("out").innerHTML = unescape(str);
 		}
+
 		function encode() {
 			var str = escape(document.getElementById("input").value);
 			str = str.replace(/%/g, '\\');
@@ -62,10 +66,12 @@
 		function clipboard() {
 			if (execCopy(document.getElementById("out").innerHTML)) {
 				document.getElementById("clip_button").innerHTML = "copied";
-			}else{
+			} else {
 				document.getElementById("clip_button").innerHTML = "copy failed";
 			}
-			setTimeout(function(){document.getElementById("clip_button").innerHTML = "copy to clipboard";}, 1000);
+			setTimeout(function() {
+				document.getElementById("clip_button").innerHTML = "copy to clipboard";
+			}, 1000);
 		}
 	</script><br>
 </body>
