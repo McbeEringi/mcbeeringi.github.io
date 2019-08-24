@@ -3,18 +3,18 @@ body {
 	background-size: 100vw 100vh, cover;
 	font-family: 'Noto Sans JP', sans-serif;
 }
-h1,h2,h3,h4,h5,h6 {
-	color: #eaf4fc;
-	background-color: #928c3688;
-}
-p {
-	width: 140px;
-	line-height: 1;
+h1,h2,h3,h4,h5,h6,p {
 	color: #eaf4fc;
 	background-color: #928c3688;
 }
 textarea {
-	background-color: #928c3688;
+	color: #eaf4fc;
+	background-color: #928c36cc;
+	border: 1px solid #eaf4fccc;
+	//resize: vertical;
+	width: 90%;
+	max-width: 100%;
+	min-width: 50%;
 }
 button {
 	cursor: pointer;
