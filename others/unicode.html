@@ -26,24 +26,13 @@
 	<script type="text/javascript">
 		function decode() {
 			var str = document.getElementById("input").value;
-
-			var result = str.replace('\\', '%');
-			while (result !== str) {
-				str = str.replace('\\', '%');
-				result = result.replace('\\', '%');
-			}
-			document.getElementById("out").innerHTML = unescape(result);
+			str = str.replace(/\\/g, '%');
+			document.getElementById("out").innerHTML = unescape(str);
 		}
-
 		function encode() {
 			var str = escape(document.getElementById("input").value);
-
-			var result = str.replace('%', '\\');
-			while (result !== str) {
-				str = str.replace('%', '\\');
-				result = result.replace('%', '\\');
-			}
-			document.getElementById("out").innerHTML = result;
+			str = str.replace(/%/g, '\\');
+			document.getElementById("out").innerHTML = str;
 		}
 		//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
 		function execCopy(string) {
