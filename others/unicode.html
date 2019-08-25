@@ -62,7 +62,7 @@
 		}
 
 		function clipboard() {
-			if (execCopy(document.getElementById("out").innerHTML)) {
+			if (execCopy(document.getElementById("out").value)) {
 				document.getElementById("clip_button").innerHTML = "copied";
 			} else {
 				document.getElementById("clip_button").innerHTML = "copy failed";
