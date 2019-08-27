@@ -9,8 +9,8 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 .title {
-	padding: 3em;
-	font-size: 2em;
+	padding: 2.5em;
+	font-size: 3em;
 	background-image: linear-gradient(0deg, #aacf53bb, #928c3688),url("tateshina.jpg");
 	background-size: cover;
 	background-position: center;
