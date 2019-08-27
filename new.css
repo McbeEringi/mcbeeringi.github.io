@@ -54,6 +54,9 @@ header {
 	height: 50px;
 	position: fixed;
 	background-color: #444;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 a:link, a:visited {
@@ -66,6 +69,14 @@ a:hover, a:active {
 
 header a {
 	text-decoration: none;
+}
+
+.twitter {
+	flex-grow: 1;
+	height: 300px;
+	margin: 1%;
+	border: solid;
+	border-color: #eaf4fc88;
 }
 
 textarea {
