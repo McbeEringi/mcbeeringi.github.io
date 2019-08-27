@@ -26,6 +26,7 @@ h1, h2, p {
 .flex {
 	display: flex;
 	justify-content: space-between;
+	flex-wrap: wrap;
 	align-items: center;
 }
 
@@ -53,9 +54,6 @@ header {
 	height: 50px;
 	position: fixed;
 	background-color: #444;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
 }
 
 header a:link, header a:visited {
