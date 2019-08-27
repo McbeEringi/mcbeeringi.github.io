@@ -73,9 +73,9 @@ header a {
 
 textarea {
 	color: #eaf4fc;
-	background-color: #928c36cc;
+	background-color: #0000;
+	background-image: linear-gradient(0deg, #aacf53bb, #928c3688);
 	border: 1px solid #eaf4fccc;
-	//resize: vertical;
 	width: 90%;
 	max-width: 100%;
 	min-width: 50%;
