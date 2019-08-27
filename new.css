@@ -71,14 +71,6 @@ header a {
 	text-decoration: none;
 }
 
-.twitter {
-	flex-grow: 1;
-	height: 300px;
-	margin: 1%;
-	border: solid;
-	border-color: #eaf4fc88;
-}
-
 textarea {
 	color: #eaf4fc;
 	background-color: #928c36cc;
