@@ -25,14 +25,14 @@ h1, h2, p {
 
 .col1 {
 	background-color: #444;
-	margin: 0 -2% 0 -2%;
-	padding: 0 2% 0 2%;
+	margin: 0 -2%;
+	padding: 0 2%;
 }
 
 .col2 {
 	background-color: #333;
-	margin: 0 -2% 0 -2%;
-	padding: 0 2% 0 2%;
+	margin: 0 -2%;
+	padding: 0 2%;
 }
 
 header {
