@@ -23,6 +23,12 @@ h1, h2, p {
 	align-items: center;
 }
 
+.flex {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
 .col1 {
 	background-color: #444;
 	margin: 0 -2%;
@@ -42,9 +48,6 @@ header {
 	height: 50px;
 	position: fixed;
 	background-color: #444;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
 }
 
 header a:link, header a:visited {
