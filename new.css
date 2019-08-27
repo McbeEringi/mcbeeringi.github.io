@@ -4,7 +4,7 @@ body {
 	word-wrap: break-word;
 }
 
-h1, h2, p {
+h1, h2, p, li {
 	color: #eaf4fc;
 }
 
@@ -56,14 +56,16 @@ header {
 	background-color: #444;
 }
 
-header a:link, header a:visited {
-	text-decoration: none;
+a:link, a:visited {
 	color: #ccc;
 }
 
-header a:hover, header a:active {
-	text-decoration: none;
+a:hover, a:active {
 	color: #fff;
+}
+
+header a {
+	text-decoration: none;
 }
 
 textarea {
