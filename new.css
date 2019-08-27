@@ -12,7 +12,7 @@ h1, h2, p {
 	margin: 0 -2% 0 -2%;
 	padding: 2em;
 	font-size: 3em;
-	background-image: linear-gradient(0deg, #aacf53bb, #928c3688), url("tateshina.jpg");
+	background-image: linear-gradient(0deg, #aacf53bb, #928c3688), url("img/tateshina.jpg");
 	background-size: cover;
 	background-position: center;
 	text-align: center;
@@ -25,7 +25,7 @@ h1, h2, p {
 
 .flex {
 	display: flex;
-	justify-content: space-between;
+	justify-content: space-around;
 	align-items: center;
 }
 
@@ -41,6 +41,11 @@ h1, h2, p {
 	padding: 0 2%;
 }
 
+.text {
+	margin: 0.5ex;
+	text-align: center;
+}
+
 header {
 	top: 0;
 	left: 0;
@@ -48,6 +53,9 @@ header {
 	height: 50px;
 	position: fixed;
 	background-color: #444;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 header a:link, header a:visited {
