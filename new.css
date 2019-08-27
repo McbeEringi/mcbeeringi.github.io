@@ -1,6 +1,6 @@
 body {
 	background-color: rgb(84, 121, 128);
-	font-family: 'Noto Sans JP', sans-serif;
+	font-family: 'Quicksand','Noto Sans JP', sans-serif;
 }
 
 h1, h2, p {
@@ -32,7 +32,6 @@ header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	font-family: 'Quicksand', sans-serif;
 }
 
 header a:link,header a:visited {
