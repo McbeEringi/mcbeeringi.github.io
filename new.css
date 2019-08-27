@@ -1,6 +1,7 @@
 body {
 	background-color: rgb(84, 121, 128);
-	font-family: 'Quicksand','Noto Sans JP', sans-serif;
+	font-family: 'Quicksand', 'Noto Sans JP', sans-serif;
+	image-rendering: crisp-edges;
 }
 
 h1, h2, p {
@@ -22,6 +23,18 @@ h1, h2, p {
 	align-items: center;
 }
 
+.col1 {
+	background-color: #888;
+	margin: 0 -2% 0 -2%;
+	padding: 0 2% 0 2%;
+}
+
+.col1 {
+	background-color: #666;
+	margin: 0 -2% 0 -2%;
+	padding: 0 2% 0 2%;
+}
+
 header {
 	top: 0;
 	left: 0;
@@ -34,15 +47,14 @@ header {
 	align-items: center;
 }
 
-header a:link,header a:visited {
-	text-decoration:none;
+header a:link, header a:visited {
+	text-decoration: none;
 	color: #666;
-
 }
-header a:hover,header a:active {
-	text-decoration:none;
-	color: #222;
 
+header a:hover, header a:active {
+	text-decoration: none;
+	color: #222;
 }
 
 textarea {
