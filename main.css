@@ -23,6 +23,13 @@ h1, h2, p, li {
 	align-items: center;
 }
 
+.right {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+}
+
 .flex {
 	display: flex;
 	justify-content: space-between;
@@ -69,6 +76,7 @@ a:hover, a:active {
 
 header a {
 	text-decoration: none;
+	margin:0 1%;
 }
 
 textarea {
