@@ -8,7 +8,12 @@
 	<link href="https://fonts.googleapis.com/css?family=Quicksand:300|Noto+Sans+JP&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="main.css">
 	<style>
-	iframe{max-height: 300px;}
+		#twitter {
+			flex-grow: 2;
+			margin: 1%;
+			width: 50%;
+			height: 100%;
+		}
 	</style>
 </head>
 
@@ -69,8 +74,8 @@
 					<li><a href="worlds">worlds</a></li>
 				</ul>
 			</div>
-			<div style="flex-grow: 2;	margin: 1%;">
-				<a class=" twitter-timeline" data-height=300px data-width=100% data-theme="dark" data-chrome="nofooter" href="https://twitter.com/McbeEringi?ref_src=twsrc%5Etfw">Tweets by McbeEringi</a>
+			<div id="twitter">
+				<a class=" twitter-timeline" data-height=300px data-theme="dark" data-chrome="nofooter" href="https://twitter.com/McbeEringi?ref_src=twsrc%5Etfw">Tweets by McbeEringi</a>
 				<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 			</div>
 		</div>
