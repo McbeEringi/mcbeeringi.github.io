@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>McbeEringi unicode_converter</title>
+	<link href="https://fonts.googleapis.com/css?family=Quicksand:300|Noto+Sans+JP&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../main.css">
+</head>
+
+<body>
+	<header>
+		<a href="https://mcbeeringi.github.io" class="left">
+			<img src="../img/6x6.png" width="32" height="32" alt="logo">
+			<h3>McbeEringi</h3>
+		</a>
+		<nav class="right" style="margin-right:1%;flex-grow: 1;">
+			<a href="https://mcbeeringi.github.io/esbe-2g">ESBE 2G</a>
+			<a href="esbe-1g">ESBE(1G)</a>
+			<a href="others">Others</a>
+			<a href="worlds">Worlds</a>
+		</nav>
+	</header>
+	<p class="title">🥛Calpis Calc🥛</p>
+
+	<p align=center>カルピス原液を適量入れた時に、コップの底が見えなくなる角度を計算します<br>
+		美味しく作る目安程度に使ってください</p>
+	<div class="col1">
+		<h2>input</h2>
+		<p>
+			希釈後液面高さ：<input type="text" id="H"><br>
+			コップ底面直径：<input type="text" id="D">
+		</p>
+		<br>
+	</div>
+	<div class="col2" style="padding:2% 2%;">
+		<button type="button" onclick="calpis();">calculate</button>
+	</div>
+	<div class="col1">
+		<h2>result</h2>
+		<p id="out"></p><br>
+	</div>
+	<footer class="text">
+		<p>© 2018~ <a href="https://twitter.com/mcbeeringi">@McbeEringi<a>.｡:+*</p>
+		<p>
+			<a href="https://www.youtube.com/channel/UC7KFkUaWgpmdHViToV1wCAA">YouTube</a>
+			<a href="https://sites.google.com/view/mcbeeringi">google site</a>
+		</p>
+	</footer>
+	<script>
+		function calpis(){
+			var h = document.getElementById("H").value;
+			var d = document.getElementById("D").value;
+			h *= 2/5;
+			var diffuse = Math.asin(h/Math.sqrt(h*h+d*d))*180/Math.PI;
+			if(diffuse){
+				diffuse += "°";
+			}else{
+				diffuse = "??";
+			}
+			document.getElementById("out").innerHTML = diffuse;
+		}
+	</script>
+</body>
+
+</html>
