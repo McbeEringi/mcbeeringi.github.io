@@ -87,6 +87,11 @@ header a {
 
 div *:first-child {
 	margin-top: 0;
+	padding-top: 0.5ex;
+}
+div *:last-child {
+	margin-bottom: 0;
+	padding-bottom: 1ex;
 }
 
 textarea, input[type="text"] {
