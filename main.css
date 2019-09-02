@@ -80,7 +80,9 @@ header a {
 	text-decoration: none;
 	margin:0 1%;
 }
-
+div *:first-child{
+	margin-top:0;
+}
 textarea {
 	color: #eaf4fc;
 	background-color: #0000;
