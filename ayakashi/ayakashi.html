@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<title>ayakashi</title>
+	<link href="https://fonts.googleapis.com/css?family=Quicksand:300|M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
+	<style media="screen">
+		body {
+			background-image: linear-gradient(#aaa4, #aaa4), url("ayakasi.jpg");
+			font-family: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
+			word-wrap: break-word;
+			background-size: cover;
+			background-position: center;
+		}
+
+		table {
+			border-collapse: collapse;
+		}
+
+		td,
+		th {
+			border: solid 2px #888;
+			padding: 0.5em;
+			text-align: center;
+			height: 3ex;
+
+		}
+
+		th {
+			background: #98fb98aa
+		}
+
+		td {
+			background-color: #fffa;
+
+			padding: 0;
+			font-size: 5ex;
+		}
+
+		p {
+			color: #000;
+			margin: 0;
+		}
+
+		h1 {
+			color: #f44;
+		}
+
+		.num {
+			font-size: 4ex;
+		}
+
+		.a1 {
+			animation: test 5s ease-in-out 0s infinite;// alternate;
+		}
+
+		.a2 {
+			animation: test 5s ease-in-out 0.1s infinite;
+		}
+
+		.a3 {
+			animation: test 5s ease-in-out 0.2s infinite;
+		}
+
+		.a4 {
+			animation: test 5s ease-in-out 0.3s infinite;
+		}
+		.a5 {
+			animation: test 5s ease-in-out 0.4s infinite;
+		}
+		@keyframes test {
+			40%{transform: rotateX(0deg);}
+			50%{transform: rotateX(360deg);}
+			60%{transform: rotateX(0deg);}
+		}
+	</style>
+</head>
+
+<body>
+	<h1 style="animation: test 5s ease-in-out 2.5s infinite;">ランキング</h1>
+	<table align=center>
+		<tr>
+			<td style="width:10vw; font-size:2ex">1-4<br>ayakashi</td>
+			<th style="width:50vw;">名前</th>
+			<th style="width:20vw;">得点</th>
+		</tr>
+		<tr class="a1">
+			<th class="num">1st</th>
+			<td>
+				<p>かぶのは</p>
+			</td>
+			<td>
+				<p>7<p>
+			</td>
+		</tr>
+		<tr class="a2">
+			<th class="num">2nd</th>
+			<td>
+				<p>たらこ</p>
+			</td>
+			<td>
+				<p>6</p>
+			</td>
+		</tr>
+		<tr class="a3">
+			<th class="num">3rd</th>
+			<td>
+				<p>すずき/りん</p>
+			</td>
+			<td>
+				<p>5</p>
+			</td>
+		</tr>
+		<tr class="a4">
+			<th class="num">4th</th>
+			<td>
+				<p>みゆ/やまざわ/しろうず</p>
+			</td>
+			<td>
+				<p>4</p>
+			</td>
+		</tr>
+		<tr class="a5">
+			<th class="num">5th</th>
+			<td>
+				<p>null</p>
+			</td>
+			<td>
+				<p>3</p>
+			</td>
+		</tr>
+	</table>
+</body>
+
+</html>
