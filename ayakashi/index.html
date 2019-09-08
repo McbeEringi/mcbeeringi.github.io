@@ -79,7 +79,10 @@
 </head>
 
 <body>
+	<div style="display:flex; align-items:center; 	justify-content:space-between;">
 	<h1 style="animation: test 1s ease-in-out 2.5s;">ランキング</h1>
+	<p>↑ここにアクセスすればいつでも確認できます!</p>
+</div>
 	<table align=center>
 		<tr>
 			<td style="width:10vw; font-size:2ex">1-4<br>ayakashi</td>
@@ -134,11 +137,12 @@
 	</table>
 	<script>
 		//名前
-		document.getElementById("1").innerHTML="かぶのは"
-		document.getElementById("2").innerHTML="たらこ"
-		document.getElementById("3").innerHTML="すずき/りん"
-		document.getElementById("4").innerHTML="みゆ/やまざわ/しろうず"
-		document.getElementById("5").innerHTML="null"
+		var _name = ["かぶのは","たらこ","すずき/りん","みゆ/やまざわ/しろうず","null"]
+		document.getElementById("1").innerHTML=_name[0];
+		document.getElementById("2").innerHTML=_name[1];
+		document.getElementById("3").innerHTML=_name[2];
+		document.getElementById("4").innerHTML=_name[3];
+		document.getElementById("5").innerHTML=_name[4];
 
 		//得点
 		document.getElementById("1s").innerHTML="7"
