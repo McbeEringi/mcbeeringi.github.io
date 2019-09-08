@@ -142,10 +142,11 @@
 
 		//得点
 		document.getElementById("1s").innerHTML="7"
-		document.getElementById("2s").innerHTML="6"
-		document.getElementById("3s").innerHTML="5"
-		document.getElementById("4s").innerHTML="4"
-		document.getElementById("5s").innerHTML="-"
+
+		document.getElementById("2s").innerHTML=document.getElementById("1s").innerHTML-1
+		document.getElementById("3s").innerHTML=document.getElementById("2s").innerHTML-1
+		document.getElementById("4s").innerHTML=document.getElementById("3s").innerHTML-1
+		document.getElementById("5s").innerHTML="-";//document.getElementById("4s").innerHTML-1
 	</script>
 </body>
 
