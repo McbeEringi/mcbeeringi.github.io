@@ -6,6 +6,7 @@
 	<title>ayakashi</title>
 	<link href="https://fonts.googleapis.com/css?family=Quicksand:300|M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
 	<meta http-equiv="refresh" content="20; URL=">
+	<script src="ayakashi.js"></script>
 	<style media="screen">
 		body {
 			background-image: linear-gradient(#aaa4, #aaa4), url("ayakasi.jpg");
@@ -136,21 +137,17 @@
 		</tr>
 	</table>
 	<script>
-		//名前
-		var _name = ["かぶのは","たらこ","すずき/りん","みゆ/やまざわ/しろうず","null"]
 		document.getElementById("1").innerHTML=_name[0];
 		document.getElementById("2").innerHTML=_name[1];
 		document.getElementById("3").innerHTML=_name[2];
 		document.getElementById("4").innerHTML=_name[3];
 		document.getElementById("5").innerHTML=_name[4];
 
-		//得点
-		document.getElementById("1s").innerHTML="7"
-
-		document.getElementById("2s").innerHTML=document.getElementById("1s").innerHTML-1
-		document.getElementById("3s").innerHTML=document.getElementById("2s").innerHTML-1
-		document.getElementById("4s").innerHTML=document.getElementById("3s").innerHTML-1
-		document.getElementById("5s").innerHTML="-";//document.getElementById("4s").innerHTML-1
+		document.getElementById("1s").innerHTML=_score;
+		document.getElementById("2s").innerHTML=document.getElementById("1s").innerHTML-1;
+		document.getElementById("3s").innerHTML=document.getElementById("2s").innerHTML-1;
+		document.getElementById("4s").innerHTML=document.getElementById("3s").innerHTML-1;
+		document.getElementById("5s").innerHTML=document.getElementById("4s").innerHTML-1
 	</script>
 </body>
 
