@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<title>ayakashi</title>
 	<link href="https://fonts.googleapis.com/css?family=Quicksand:300|M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
-	<meta http-equiv="refresh" content="10; URL=">
+	<meta http-equiv="refresh" content="20; URL=">
 	<style media="screen">
 		body {
 			background-image: linear-gradient(#aaa4, #aaa4), url("ayakasi.jpg");
@@ -89,49 +89,64 @@
 		<tr class="a1">
 			<th class="num">1st</th>
 			<td>
-				<p>かぶのは</p>
+				<p id="1">loading…</p>
 			</td>
 			<td>
-				<p>7<p>
+				<p id="1s">-<p>
 			</td>
 		</tr>
 		<tr class="a2">
 			<th class="num">2nd</th>
 			<td>
-				<p>たらこ</p>
+				<p id="2">loading…</p>
 			</td>
 			<td>
-				<p>6</p>
+				<p id="2s">-</p>
 			</td>
 		</tr>
 		<tr class="a3">
 			<th class="num">3rd</th>
 			<td>
-				<p>すずき/りん</p>
+				<p id="3">loading…</p>
 			</td>
 			<td>
-				<p>5</p>
+				<p id="3s">-</p>
 			</td>
 		</tr>
 		<tr class="a4">
 			<th class="num">4th</th>
 			<td>
-				<p>みゆ/やまざわ/しろうず</p>
+				<p id="4">loading…</p>
 			</td>
 			<td>
-				<p>4</p>
+				<p id="4s">-</p>
 			</td>
 		</tr>
 		<tr class="a5">
 			<th class="num">5th</th>
 			<td>
-				<p>null</p>
+				<p id="5">loading…</p>
 			</td>
 			<td>
-				<p>3</p>
+				<p id="5s">-</p>
 			</td>
 		</tr>
 	</table>
+	<script>
+		//名前
+		document.getElementById("1").innerHTML="かぶのは"
+		document.getElementById("2").innerHTML="たらこ"
+		document.getElementById("3").innerHTML="すずき/りん"
+		document.getElementById("4").innerHTML="みゆ/やまざわ/しろうず"
+		document.getElementById("5").innerHTML="null"
+
+		//得点
+		document.getElementById("1s").innerHTML="7"
+		document.getElementById("2s").innerHTML="6"
+		document.getElementById("3s").innerHTML="5"
+		document.getElementById("4s").innerHTML="4"
+		document.getElementById("5s").innerHTML="-"
+	</script>
 </body>
 
 </html>
