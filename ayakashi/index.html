@@ -52,9 +52,12 @@
 		.num {
 			font-size: 3ex;
 		}
+		.text{
+			background: #fffa
+		}
 
 		.a1 {
-			animation: test 1s ease-in-out 0s;// 5s infinite alternate;
+			animation: test 1s ease-in-out 0s; // 5s infinite alternate;
 		}
 
 		.a2 {
@@ -68,91 +71,161 @@
 		.a4 {
 			animation: test 1s ease-in-out 0.3s, scr 5s linear 1.5s infinite;
 		}
+
 		.a5 {
 			animation: test 1s ease-in-out 0.4s;
 		}
+
 		@keyframes test {
-			0%{transform: rotateX(0deg);}
-			50%{transform: rotateX(360deg);}
-			100%{transform: rotateX(0deg);}
+			0% {
+				transform: rotateX(0deg);
+			}
+
+			50% {
+				transform: rotateX(360deg);
+			}
+
+			100% {
+				transform: rotateX(0deg);
+			}
 		}
+
 		@keyframes scr {
-			0%{}
-			100%{}
+			0% {}
+
+			100% {}
 		}
 	</style>
 </head>
 
-<body>
-	<div style="display:flex; align-items:center; 	justify-content:space-between;">
-	<h1 style="animation: test 1s ease-in-out 2.5s;">ランキング</h1>
-	<img src="qr.png" height="70">
-	<p>←ここにアクセスすればいつでも確認できます!</p>
-</div>
-	<table align=center>
-		<tr>
-			<td style="width:10vw; font-size:2ex">1-4<br>ayakashi</td>
-			<th style="width:50vw;">名前</th>
-			<th style="width:20vw;">得点</th>
-		</tr>
-		<tr class="a1">
-			<th class="num">1st</th>
-			<td>
-				<p id="1">loading…</p>
-			</td>
-			<td>
-				<p id="1s">-<p>
-			</td>
-		</tr>
-		<tr class="a2">
-			<th class="num">2nd</th>
-			<td>
-				<p id="2">loading…</p>
-			</td>
-			<td>
-				<p id="2s">-</p>
-			</td>
-		</tr>
-		<tr class="a3">
-			<th class="num">3rd</th>
-			<td>
-				<p id="3">loading…</p>
-			</td>
-			<td>
-				<p id="3s">-</p>
-			</td>
-		</tr>
-		<tr class="a4">
-			<th class="num">4th</th>
-			<td>
-				<p id="4">loading…</p>
-			</td>
-			<td>
-				<p id="4s">-</p>
-			</td>
-		</tr>
-		<tr class="a5">
-			<th class="num">5th</th>
-			<td>
-				<p id="5">loading…</p>
-			</td>
-			<td>
-				<p id="5s">-</p>
-			</td>
-		</tr>
-	</table>
+<body style="display:flex;">
+	<div>
+		<h1 style="animation: test 1s ease-in-out 2.5s;">ランキング</h1>
+		<img src="qr.png">
+		<p class="text">↑ここ↑にアクセスすればいつでも確認できます!</p>
+	</div>
+	<div>
+		<p class="text" style="fontsize">過去最高得点…"かぶのは"さん 7点</p>
+		<table align=center>
+			<tr>
+				<td style="width:10vw; font-size:2ex">1-4<br>ayakashi</td>
+				<th style="width:50vw;">名前(本日分)</th>
+				<th style="width:20vw;">得点</th>
+			</tr>
+			<tr class="a1">
+				<th class="num">1st</th>
+				<td>
+					<p id="1">loading…</p>
+				</td>
+				<td>
+					<p id="1s">-<p>
+				</td>
+			</tr>
+			<tr class="a2">
+				<th class="num">2nd</th>
+				<td>
+					<p id="2">loading…</p>
+				</td>
+				<td>
+					<p id="2s">-</p>
+				</td>
+			</tr>
+			<tr class="a3">
+				<th class="num">3rd</th>
+				<td>
+					<p id="3">loading…</p>
+				</td>
+				<td>
+					<p id="3s">-</p>
+				</td>
+			</tr>
+			<tr class="a4">
+				<th class="num">4th</th>
+				<td>
+					<p id="4">loading…</p>
+				</td>
+				<td>
+					<p id="4s">-</p>
+				</td>
+			</tr>
+			<tr class="a5">
+				<th class="num">5th</th>
+				<td>
+					<p id="5">loading…</p>
+				</td>
+				<td>
+					<p id="5s">-</p>
+				</td>
+			</tr>
+			<tr class="a6">
+				<th class="num">6th</th>
+				<td>
+					<p id="6">loading…</p>
+				</td>
+				<td>
+					<p id="6s">-</p>
+				</td>
+			</tr>
+			<tr class="a7">
+				<th class="num">7th</th>
+				<td>
+					<p id="7">loading…</p>
+				</td>
+				<td>
+					<p id="7s">-</p>
+				</td>
+			</tr>
+			<tr class="a8">
+				<th class="num">8th</th>
+				<td>
+					<p id="8">loading…</p>
+				</td>
+				<td>
+					<p id="8s">-</p>
+				</td>
+			</tr>
+			<tr class="a9">
+				<th class="num">9th</th>
+				<td>
+					<p id="9">loading…</p>
+				</td>
+				<td>
+					<p id="9s">-</p>
+				</td>
+			</tr>
+			<tr class="a10">
+				<th class="num">10th</th>
+				<td>
+					<p id="10">loading…</p>
+				</td>
+				<td>
+					<p id="10s">-</p>
+				</td>
+			</tr>
+		</table>
+	</div>
 	<script>
-		document.getElementById("1").innerHTML=_name[0];
-		document.getElementById("2").innerHTML=_name[1];
-		document.getElementById("3").innerHTML=_name[2];
-		document.getElementById("4").innerHTML=_name[3];
-		document.getElementById("5").innerHTML=_name[4];
+		document.getElementById("1").innerHTML = l1[0];
+		document.getElementById("2").innerHTML = l2[0];
+		document.getElementById("3").innerHTML = l3[0];
+		document.getElementById("4").innerHTML = l4[0];
+		document.getElementById("5").innerHTML = l5[0];
+		document.getElementById("6").innerHTML = l6[0];
+		document.getElementById("7").innerHTML = l7[0];
+		document.getElementById("8").innerHTML = l8[0];
+		document.getElementById("9").innerHTML = l9[0];
+		document.getElementById("10").innerHTML = l10[0];
 
-		document.getElementById("1s").innerHTML=_score;
-		document.getElementById("2s").innerHTML=_score-1;
-		document.getElementById("3s").innerHTML=_score-2;
-		document.getElementById("4s").innerHTML=_score-3;
-		document.getElementById("5s").innerHTML=_score-4;
+		document.getElementById("1s").innerHTML = l1[1];
+		document.getElementById("2s").innerHTML = l2[1];
+		document.getElementById("3s").innerHTML = l3[1];
+		document.getElementById("4s").innerHTML = l4[1];
+		document.getElementById("5s").innerHTML = l5[1];
+		document.getElementById("6s").innerHTML = l6[1];
+		document.getElementById("7s").innerHTML = l7[1];
+		document.getElementById("8s").innerHTML = l8[1];
+		document.getElementById("9s").innerHTML = l9[1];
+		document.getElementById("10s").innerHTML = l10[1];
 	</script>
 </body>
 
