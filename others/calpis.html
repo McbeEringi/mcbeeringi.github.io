@@ -41,7 +41,7 @@
 	<div class="col1" style="padding:2% 2%;">
 		<button type="button" onclick="calpis();">calculate</button>
 	</div>
-	<div class="col2">
+	<div class="col2" id="r">
 		<h2>result</h2>
 		<p id="out"></p><br>
 	</div>
@@ -59,6 +59,7 @@
 			h *= 2 / 5;
 			var diffuse = Math.asin(h / Math.sqrt(h * h + d * d)) * 180 / Math.PI;
 			if (diffuse) {
+				document.getElementById("r").style.transform = "rotate("+-diffuse+"deg)";
 				diffuse += "°";
 			} else {
 				diffuse = "??";
