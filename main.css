@@ -2,9 +2,7 @@ body {
 	background-color: rgb(84, 121, 128);
 	font-family: 'Quicksand', 'Noto Sans JP', sans-serif;
 	word-wrap: break-word;
-	box-sizing: border-box;
 	margin: 0;
-	overflow : hidden;
 }
 
 h1, h2, p, li {
@@ -12,7 +10,7 @@ h1, h2, p, li {
 }
 
 .title {
-	margin: 0 -2% 0 -2%;
+	margin: 0;
 	padding: 2em 2%;
 	font-size: 3em;
 	background-image: linear-gradient(0deg, #aacf53bb, #928c3688), url("img/tateshina.jpg");
@@ -48,14 +46,12 @@ h1, h2, p, li {
 
 .col1 {
 	background-color: #444;
-	margin: 0 -2%;
-	padding: 0 2%;
+	margin: 0;
 }
 
 .col2 {
 	background-color: #333;
-	margin: 0 -2%;
-	padding: 0 2%;
+	margin: 0;
 }
 
 .text {
