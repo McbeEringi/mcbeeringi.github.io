@@ -44,7 +44,7 @@ h4{text-align: center;}
 	display: flex;
 	justify-content: space-between;
 	flex-wrap: wrap;
-	align-items: center;
+	align-items: flex-start;
 }
 
 .col1 {
