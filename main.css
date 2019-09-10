@@ -2,6 +2,9 @@ body {
 	background-color: rgb(84, 121, 128);
 	font-family: 'Quicksand', 'Noto Sans JP', sans-serif;
 	word-wrap: break-word;
+	box-sizing: border-box;
+	margin: 0;
+	overflow : hidden;
 }
 
 h1, h2, p, li {
