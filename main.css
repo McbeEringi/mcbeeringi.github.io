@@ -42,7 +42,7 @@ h4{text-align: center;}
 
 .flex {
 	display: flex;
-	justify-content: space-between;
+	justify-content: space-around;
 	flex-wrap: wrap;
 	align-items: flex-start;
 }
@@ -69,6 +69,17 @@ h4{text-align: center;}
 }
 
 .img4 {
+	width: 20vw;
+	min-width: 120px;
+}
+.pad4{
+
+}
+.pad4 > *{
+	width: 25vw;
+	min-width: 150px
+}
+.pad4 img{
 	width: 20vw;
 	min-width: 120px;
 }
