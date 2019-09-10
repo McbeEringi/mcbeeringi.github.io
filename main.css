@@ -42,7 +42,7 @@ h4{text-align: center;}
 
 .flex {
 	display: flex;
-	justify-content: space-around;
+	justify-content: space-between;
 	flex-wrap: wrap;
 	align-items: flex-start;
 }
