@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="jp">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<title>McbeEringi ESBE_1G</title>
+		<link href="https://fonts.googleapis.com/css?family=Quicksand:300|Noto+Sans+JP&display=swap" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="../main.css">
+	</head>
+	<body>
+		<header>
+			<a href="https://mcbeeringi.github.io" class="left">
+				<img src="../img/6x6.png" width="32" height="32" alt="logo">
+				<h3>McbeEringi</h3>
+			</a>
+			<nav class="right" style="margin-right:1%;flex-grow: 1;">
+				<a href="https://mcbeeringi.github.io/esbe-2g">ESBE 2G</a>
+				<a href="https://mcbeeringi.github.io/esbe-1g">ESBE(1G)</a>
+				<a href="https://mcbeeringi.github.io/others">Others</a>
+				<a href="https://mcbeeringi.github.io/worlds">Worlds</a>
+			</nav>
+		</header>
+		<p class="title">toko info</p>
+		<div class="col1">
+			<p style="margin-left: 10px">
+				追加説明(B)<br>
+				(読みにくいなんて言っちゃ)だめです<br>
+				<br>
+				entities/toko.jsonを複製するなりしてビヘイビア本体を用意(ファイル名は適当なものに)<br>
+				identifierを任意のものに変更(ここではx:yする(大文字使用不可))<br>
+				items/toko.jsonを複(中略)意(フ(中略)に)<br>
+				identifierを任(中略)更(ここではx:y_itemする(大文字使用可だがオヌヌメはしない))<br>
+				recipes/toko_recipeを複(ry)意<br>
+				resultのitemをx:y_itemに変更(必要に応じてレシピも変更(詳しくは公式ビヘイビア付属のリファレンスへ))<br>
+				entities/snowgolem.jsonの コンポネートグループのtoko:summon_toko、eventのtoko:summon_toko コンポネートのinteractの中
+を複製&適切にいじる(((
+			</p>
+		</div>
+		<div class="col2">
+			<p style="margin-left: 10px">
+				追加説明(R)<br>
+				(雑なんて言っちゃ)だめです<br>
+				先にビヘイビア側読んでね<br>
+				<br>
+				textures/skinにスキンを入れる(ここではxy.pngとする)<br>
+				entity/toko.jsonを複製するなりしてリソース本体を用意(ファイル名は適当なものに)<br>
+				descriptionのidentifierをx:yに変更<br>
+				textureを"textures/skin/xy"に変更<br>
+				spawn_egg(一番下)のtexture_indexを既存のものの次の番号にする(現在0,1が存在するので1体目は2を使用する2体目は3…)<br>
+				items/toko.jsonを(ry)意<br>
+				descriptionのidentifierをx:y_itemに変更<br>
+				componentsのiconに任意の名前を入れる(item_textures.jsonで使う)<br>
+				textures/itemsに卵とアイテムのテクスチャ入れる<br>
+				textures/item_texture.jsonに上に倣って書き込む()<br>
+				texts/en_USに上(ry
+			</p>
+		</div>
+		<footer class="text">
+			<p>© 2018~ <a href="https://twitter.com/mcbeeringi">@McbeEringi<a>.｡:+*</p>
+			<p>
+				<a href="https://www.youtube.com/channel/UC7KFkUaWgpmdHViToV1wCAA">YouTube</a>
+				<a href="https://sites.google.com/view/mcbeeringi">google site</a>
+			</p>
+		</footer>
+	</body>
+</html>
