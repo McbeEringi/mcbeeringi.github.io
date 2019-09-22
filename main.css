@@ -73,7 +73,8 @@ h4{text-align: center;}
 }
 .pad4 > *{
 	width: 25vw;
-	min-width: 150px
+	min-width: 150px;
+	flex-grow: 1;
 }
 .pad4 img{
 	width: 20vw;
