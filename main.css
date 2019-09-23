@@ -8,9 +8,12 @@ body {
 
 h1, h2, h3, h4, h5, h6, p, li {
 	color: #eaf4fc;
-	margin:10px 0;
+	margin: 10px 0;
 }
-h4{text-align: center;}
+
+h4 {
+	text-align: center;
+}
 
 .title {
 	margin: 0;
@@ -41,14 +44,21 @@ h4{text-align: center;}
 	align-items: flex-start;
 }
 
+.col1, .col2 {
+	margin: 0;
+	overflow: hidden;
+}
+
+.col1:not(.flex), .col2:not(.flex) {
+	padding-left: 10px;
+}
+
 .col1 {
 	background-color: #444;
-	margin: 0;
 }
 
 .col2 {
 	background-color: #333;
-	margin: 0;
 }
 
 .text {
@@ -62,15 +72,15 @@ h4{text-align: center;}
 	text-align: center;
 }
 
-.pad4{
+.pad4 {}
 
-}
-.pad4 > *{
+.pad4>* {
 	width: 25vw;
 	min-width: 150px;
 	flex-grow: 1;
 }
-.pad4 img{
+
+.pad4 img {
 	width: 20vw;
 	min-width: 120px;
 }
@@ -100,20 +110,9 @@ header a {
 	margin: 0 1%;
 }
 
-div *:first-child {
-	margin-top: 0;
-	padding-top: 0.5ex;
-}
-
-div *:last-child {
-	margin-bottom: 0;
-	padding-bottom: 1ex;
-}
-
 textarea, input[type="text"] {
 	color: #eaf4fc;
-	background-color: #0000;
-	background-image: linear-gradient(0deg, #aacf53bb, #928c3688);
+	background-color: rgba(84, 121, 128, .5);
 	border: 1px solid #eaf4fccc;
 }
 
