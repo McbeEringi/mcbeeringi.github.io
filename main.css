@@ -127,4 +127,6 @@ button {
 	background: rgba(84, 121, 128, .8);
 	color: #fff;
 	border: 1px solid #eaf4fc;
+	font-size: 3ex;
+	font-family: 'Quicksand', 'Noto Sans JP', sans-serif;
 }
