@@ -6,6 +6,17 @@
 		<title>McbeEringi ESBE_1G</title>
 		<link href="https://fonts.googleapis.com/css?family=Quicksand:300|Noto+Sans+JP&display=swap" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="../main.css">
+		  <!-- Link Swiper's CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
+  <style>
+    .swiper-container {
+      width: 70vw;
+      height: auto;
+    }
+    .swiper-slide{background: #eee;}
+    img{width: 100%;}
+    p{font-family: sans-serif;color: #024;}
+  </style>
 	</head>
 	<body>
 		<header>
@@ -21,7 +32,57 @@
 			</nav>
 		</header>
 		<p class="title">ESBE (1G)</p>
+  <!-- Swiper -->
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+	      <img src="1.jpg"></img>
+	      <p>slide1</p>
+      </div>
+      <div class="swiper-slide">
+	      <img src="2.jpg"></img>
+	      <p>slide2</p>
+      </div>
+      <div class="swiper-slide">
+	      <img src="3.jpg"></img>
+	      <p>slide3</p>
+      </div>
+      <div class="swiper-slide">
+	      <img src="2.jpg"></img>
+	      <p>slide4</p>
+      </div>
+    </div>
+    <!-- Add Pagination -->
+    <div class="swiper-pagination"></div>
+    <!-- Add Arrows -->
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+  </div>
 
+  <!-- Swiper JS -->
+  <script src="https://unpkg.com/swiper/js/swiper.min.js"></script>
+
+  <!-- Initialize Swiper -->
+  <script>
+    var swiper = new Swiper('.swiper-container', {
+      spaceBetween: 30,
+      centeredSlides: true,
+      slidesPerView: 2,
+      autoplay: {
+        delay: 1700,
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      loop: true,
+    });
+  </script>
 		<a href="https://sites.google.com/view/mcbeeringi/esbe-1g">ESBE_1G HP</a>
 	</body>
 </html>
