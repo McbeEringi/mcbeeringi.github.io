@@ -15,7 +15,7 @@ h4{text-align: center;}
 .title {
 	margin: 0;
 	padding: 2em 2%;
-	font-size: calc(7vw + 10px);
+	font-size: calc(5vw + 20px);
 	background-image: linear-gradient(0deg, #aacf53bb, #928c3688), url("img/tateshina.jpg");
 	background-size: cover;
 	background-position: center;
