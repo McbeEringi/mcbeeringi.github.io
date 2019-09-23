@@ -124,7 +124,7 @@ textarea {
 
 button {
 	cursor: pointer;
-	background: #928c3688;
+	background: rgba(84, 121, 128, .8);
 	color: #fff;
 	border: 1px solid #eaf4fc;
 }
