@@ -42,6 +42,7 @@ h4 {
 	justify-content: space-between;
 	flex-wrap: wrap;
 	align-items: flex-start;
+	padding-top: 10px;
 }
 
 .col1, .col2 {
@@ -75,7 +76,7 @@ h4 {
 .pad4 {}
 
 .pad4>* {
-	width: 25vw;
+	width: 24vw;
 	min-width: 150px;
 	flex-grow: 1;
 }
