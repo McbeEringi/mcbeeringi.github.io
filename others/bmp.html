@@ -5,6 +5,9 @@
 	<meta charset="utf-8">
 	<title></title>
 	<style>
+		*{
+			color: #fff;
+		}
 		.flex {
 			display: flex;
 		}
@@ -21,6 +24,9 @@
 			border: 1px solid;
 			width: 800px;
 			height: 800px;
+		}
+		input{
+			background: #0000;
 		}
 	</style>
 </head>
@@ -339,6 +345,7 @@
 		window.onload = render();
 
 		document.body.style.fontFamily = "sans-serif";
+		document.body.style.background = "rgb(84, 121, 128)";
 
 		function fontsize() {
 			document.getElementsByTagName("p").style.fontSize = document.getElementById("fonts").value;
@@ -351,7 +358,9 @@
 			for (var i = 0; i < 256; i++) {
 				p[i].innerHTML = unescape("%u" + men + p[i].id);
 			}
+			document.body.style.background = "#0000";
 			render();
+			document.body.style.background = "rgb(84, 121, 128)";
 		}
 
 		function render() {
