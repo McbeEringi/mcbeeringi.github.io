@@ -37,7 +37,7 @@
 <body>
 	<!--画像サイズ<input id="imgs" value="800" onchange="ims()">px<br>-->
 	フォントサイズ<input id="fontsSl" type="range" value="40" min="1" max="100" step="0.5" oninput="document.getElementById('fonts').value=this.value;fos();">
-		<input id="fonts" value="40" oninput="document.getElementById('fontsSl').value=this.value;fos()"><br>
+		<input id="fonts" type=number" value="40" oninput="document.getElementById('fontsSl').value=this.value;fos()"><br>
 	フォント名<input id="fontf" value="sans-serif" oninput="document.body.style.fontFamily=this.value"><br>
 	区番号(2桁)<input id="men" value="00" onchange="bmp();"><br>
 	<!--<button type="button" onclick="bmp();">apply</button><br>-->
