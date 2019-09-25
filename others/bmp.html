@@ -339,7 +339,8 @@
 			</div>
 		</div>
 	</div>
-	<a href="" id="glyph" download="welcome.png">save as glyph_xx.png</a>
+	↓img↓ or <a href="" id="glyph" download="welcome.png">save as glyph_xx.png</a>
+	<img id="img">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
 	<script>
 		window.onload = render();
@@ -368,6 +369,7 @@
 				onrendered: function(canvas) {
 					var imgData = canvas.toDataURL();
 					document.getElementById("glyph").href = imgData;
+					document.getElementById("img").src = imgData;
 				}
 			});
 		}
