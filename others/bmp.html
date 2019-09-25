@@ -20,12 +20,31 @@
 			margin: 0;
 			position: relative;
 			bottom: 0px;
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<title>bmp</title>
+	<style>
+		*{
+			color: #fff;
+		}
+
+		.flex {
+			display: flex;
+			overflow: hidden;
+		}
+
+		p {
+			font-size: 40px;
+			margin: 0;
+			position: relative;
+			bottom: 0px;
 		}
 
 		#disp {
 			border: 1px solid;
-			width: 800px;
-			height: 800px;
 		}
 
 		input {
@@ -35,16 +54,19 @@
 </head>
 
 <body>
-	<!--画像サイズ<input id="imgs" value="800" onchange="ims()">px<br>-->
+	画像サイズ<input id="imgs" type="number" value="800" onchange="ims();document.getElementById('imgs2').value=this.value/16;">px^2<br>
+	(1文字あたりのスペース:<output id="imgs2">50</output>px^2)<br>
 	フォントサイズ<input id="fontsSl" type="range" value="40" min="1" max="100" step="0.5" oninput="document.getElementById('fonts').value=this.value;fos();">
-		<input id="fonts" type=number" value="40" oninput="document.getElementById('fontsSl').value=this.value;fos()"><br>
+		<input id="fonts" type="number" value="40" oninput="document.getElementById('fontsSl').value=this.value;fos()"><br>
 	フォントオフセット<input id="fontoSl" type="range" value="0" min="0" max="50" step="1" oninput="document.getElementById('fonto').value=this.value;foo();">
 		<input id="fonto" type="number" value="0" oninput="document.getElementById('fontoSl').value=this.value;foo()"><br>
 	フォント名<input id="fontf" value="sans-serif" oninput="document.body.style.fontFamily=this.value"><br>
 	区番号(2桁)<input id="men" value="00" onchange="bmp();"><br>
 	<!--<button type="button" onclick="bmp();">apply</button><br>-->
+	<br>
 	<a href="" id="glyph" download="welcome.png">save as glyph_xx.png</a><br>
-	<div id="disp">	<div id="disp">
+	<br>
+	<div id="disp">
 		<div id="diffuse">
 			<div class="flex">
 				<p id="00">g</p>
@@ -348,13 +370,21 @@
 			alert();
 			var imgs = document.getElementById("imgs").value;
 			var disp = document.getElementById("disp");
-			disp.style.width = imgs;
-			disp.style.height = imgs;
+	<script>
+		window.onload = function(){render();ims();}
+
+		document.body.style.fontFamily = "sans-serif";
+
+		function ims() {
+			var imgs = document.getElementById("imgs").value;
+			var disp = document.getElementById("disp");
+			disp.style.width = imgs+"px";
+			disp.style.height = imgs+"px";
 			var p = document.getElementsByTagName("p");
 			imgs /= 16;
 			for (var i = 0; i < 256; i++) {
-				p[i].style.width = imgs;
-				p[i].style.height = imgs;
+				p[i].style.width = imgs+"px";
+				p[i].style.height = imgs+"px";
 			}
 			render();
 		}
@@ -367,7 +397,7 @@
 			}
 			render();
 		}
-	
+
 		function foo() {
 			var p = document.getElementsByTagName("p");
 			var fonto = document.getElementById("fonto").value;
