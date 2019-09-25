@@ -43,10 +43,9 @@
 	<!--フォントサイズ<input type="range" value="40" min="1" max="100" step="1" oninput="document.getElementById('fonts').value=this.value;fontsize();">
 		<input id="fonts" value="40" oninput="fontsize()"><br>-->
 	フォント名<input id="fontf" value="sans-serif" oninput="document.body.style.fontFamily=this.value"><br>
-
-	区番号(2桁)<input id="men" value="00" onchange="bmp();">
-	<!--<button type="button" onclick="bmp();">apply</button>-->
-	<br>
+	区番号(2桁)<input id="men" value="00" onchange="bmp();"><br>
+	<!--<button type="button" onclick="bmp();">apply</button><br>-->
+	<a href="" id="glyph" download="welcome.png">save as glyph_xx.png</a><br>
 	<div id="disp">
 		<div id="diffuse">
 			<div class="flex">
@@ -339,7 +338,7 @@
 			</div>
 		</div>
 	</div>
-	↓img↓ or <a href="" id="glyph" download="welcome.png">save as glyph_xx.png</a><br>
+	↓img↓<br>
 	<img id="img">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
 	<script>
