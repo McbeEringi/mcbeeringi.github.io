@@ -35,21 +35,14 @@
 </head>
 
 <body>
-	<script>
-		function a() {
-			var men = document.getElementById("men").innerHTML;
-			alert(men);
-			var tgt = document.getElementsByTagName("td").innerHTML;
-			alert(tgt);
-		}
-	</script>
-	<!--フォントサイズ<input type="range" value="40" min="1" max="100" step="1" oninput="document.getElementById('fonts').value=this.value;fontsize();">
-		<input id="fonts" value="40" oninput="fontsize()"><br>-->
+	<!--画像サイズ<input id="imgs" value="800" onchange="ims()">px<br>-->
+	フォントサイズ<input id="fontsSl" type="range" value="40" min="1" max="100" step="0.5" oninput="document.getElementById('fonts').value=this.value;fos();">
+		<input id="fonts" value="40" oninput="document.getElementById('fontsSl').value=this.value;fos()"><br>
 	フォント名<input id="fontf" value="sans-serif" oninput="document.body.style.fontFamily=this.value"><br>
 	区番号(2桁)<input id="men" value="00" onchange="bmp();"><br>
 	<!--<button type="button" onclick="bmp();">apply</button><br>-->
 	<a href="" id="glyph" download="welcome.png">save as glyph_xx.png</a><br>
-	<div id="disp">
+	<div id="disp">	<div id="disp">
 		<div id="diffuse">
 			<div class="flex">
 				<p id="00">g</p>
@@ -348,10 +341,29 @@
 		window.onload = render();
 
 		document.body.style.fontFamily = "sans-serif";
-		document.body.style.background = "rgb(84, 121, 128)";
 
-		function fontsize() {
-			document.getElementsByTagName("p").style.fontSize = document.getElementById("fonts").value;
+		function ims() {
+			alert();
+			var imgs = document.getElementById("imgs").value;
+			var disp = document.getElementById("disp");
+			disp.style.width = imgs;
+			disp.style.height = imgs;
+			var p = document.getElementsByTagName("p");
+			imgs /= 16;
+			for (var i = 0; i < 256; i++) {
+				p[i].style.width = imgs;
+				p[i].style.height = imgs;
+			}
+			render();
+		}
+
+		function fos() {
+			var p = document.getElementsByTagName("p");
+			var fonts = document.getElementById("fonts").value;
+			for (var i = 0; i < 256; i++) {
+				p[i].style.fontSize = fonts+"px";
+			}
+			render();
 		}
 
 		function bmp() {
@@ -361,12 +373,11 @@
 			for (var i = 0; i < 256; i++) {
 				p[i].innerHTML = unescape("%u" + men + p[i].id);
 			}
-			document.body.style.background = "#0000";
 			render();
-			document.body.style.background = "rgb(84, 121, 128)";
 		}
 
 		function render() {
+			document.body.style.background = "#0000";
 			html2canvas(document.getElementById("diffuse"), {
 				onrendered: function(canvas) {
 					var imgData = canvas.toDataURL();
@@ -374,6 +385,7 @@
 					document.getElementById("img").src = imgData;
 				}
 			});
+			document.body.style.background = "rgb(84, 121, 128)";
 		}
 	</script>
 </body>
