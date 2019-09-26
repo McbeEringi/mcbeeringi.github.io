@@ -87,7 +87,7 @@ h4 {
 	min-width: 120px;
 }
 
-.pad2 > * {
+.pad2>* {
 	flex-grow:1;
 	width:49vw;
 	min-width:300px;
