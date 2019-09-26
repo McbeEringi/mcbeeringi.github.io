@@ -87,6 +87,12 @@ h4 {
 	min-width: 120px;
 }
 
+.pad2 > * {
+	flex-grow:1;
+	width:49vw;
+	min-width:300px;
+}
+
 header {
 	top: 0;
 	left: 0;
