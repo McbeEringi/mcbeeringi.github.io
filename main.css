@@ -142,3 +142,11 @@ button {
 	font-size: 3ex;
 	font-family: 'Quicksand', 'Noto Sans JP', sans-serif;
 }
+
+button:hover {
+	background: rgba(81, 214, 211, .5);
+}
+
+button:active {
+	background: rgba(133, 227, 225, .5)
+}
