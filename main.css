@@ -93,7 +93,7 @@ h4 {
 	min-width: 300px;
 }
 
-.pad2:nth-child(1) {
+.pad2>*:first-child {
 	margin-left: 10px;
 }
 
