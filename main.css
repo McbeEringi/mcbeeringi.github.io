@@ -93,7 +93,7 @@ h4 {
 	min-width: 300px;
 }
 
-.pad2:first-of-type {
+.pad2:first-child {
 	padding-left: 10px;
 }
 
