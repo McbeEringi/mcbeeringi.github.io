@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>McbeEringi ESBEinfo</title>
+	<link href="https://fonts.googleapis.com/css?family=Quicksand:300|Noto+Sans+JP&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../main.css">
+</head>
+
+<body>
+	<header style="z-index:10;">
+		<a href="https://mcbeeringi.github.io" class="left">
+			<img src="../img/6x6.png" width="32" height="32" alt="logo">
+			<h3>McbeEringi</h3>
+		</a>
+		<nav class="right" style="margin-right:1%;flex-grow: 1;">
+			<a href="https://mcbeeringi.github.io/esbe-2g">ESBE 2G</a>
+			<a href="https://mcbeeringi.github.io/esbe-1g">ESBE(1G)</a>
+			<a href="https://mcbeeringi.github.io/others">Others</a>
+			<a href="https://mcbeeringi.github.io/worlds">Worlds</a>
+		</nav>
+	</header>
+	<p class="title">ESBEinfo</p>
+	<div class="col1">
+		<h2>ESBEutilについて</h2>
+		<h3>ESBEutilとは?</h3>
+		<p style="margin-left:10px;">
+			ESBEutilファイルでは色調や特定の効果のON.OFF、効果の強さなど<br>
+			様々な設定を変更することでESBEを自分の好きなようにカスタマイズすることができます。<br>
+			なお、自分の変更したESBEutilファイルを共有したい場合、<br>
+			ESBEutilのみ抜き出して再配布することが可能です。<br>
+			mcpack化、subpacks化は出来ないようです<br>
+			このファイルを弄ったことによるトラブルは自己責任でお願いします。<br>
+			いざ動かなくなった時は再インポート(｀･ω･´)。
+		</p>
+		<h3>ESBEutilの場所</h3>
+		<p style="margin-left:10px;">
+			PEとWin10で使うファイルが異なるため2箇所にあります。<br>
+			PEのみもしくはWin10のみの描写を変えたい場合は、片方の変更だけで十分です。
+		</p>
+		<table style="margin-left:20px;text-align:left;color:#eaf4fc">
+			<tr>
+				<th>PE</th>
+				<th>ESBE>shaders>glsl>ESBEutil.h</th>
+			</tr>
+			<tr>
+				<th>Win10</th>
+				<th>ESBE>shaders>hlsl>ESBEutil.fxh</th>
+			</tr>
+		</table>
+		<p style="margin-left:10px;">
+			なお、システムの都合上ESBEutil.fxhの一部の設定項目は<br>
+			terrain.fsh.hlslに移動しています。
+		</p>
+		<br>
+		<h3>ESBEutilの編集方法</h3>
+		<p style="margin-left:10px;">
+			ESBEutilを開くと<br>
+			#define EXAMPLE//例<br>
+			みたいなやつが沢山あります。<br>
+			後ろに付いている説明書きなどを手掛かりにすればどんなやつなのか分かるはず<br>
+			無効化したいときは手前に半角スラッシュを2個入れて<br>
+			//#define EXAMPLE//例<br>
+			こんな感じにしてください<br>
+			<br>
+			#define EXAMPLE 12.3//例<br>
+			の様に数字がついているものの場合、もともと小数点がついているものには<br>
+			必ず小数点をつけてください<br>
+			(ついていなかったら絶対につけないでください。(動かなくなります。<br>
+			<br>
+			#define EXAMPLE vec3(0.7,0.5,0.3)//例<br>
+			vec3やfloat3がついているものは大抵RGBの値です。小数点を忘れずに。<br>
+			<br>
+			ESBE.hやterrain.fsh.hlslには<br>
+			float blur = 0.05;<br>
+			の様に変数を宣言しているものがあります。これらは無効化できません。
+		</p>
+	</div>
+	<footer class="text">
+		<p>© 2018~ <a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*</p>
+		<p>
+			<a href="https://www.youtube.com/channel/UC7KFkUaWgpmdHViToV1wCAA">YouTube</a>
+			<a href="https://sites.google.com/view/mcbeeringi">google site</a>
+		</p>
+	</footer>
+</body>
+
+</html>
