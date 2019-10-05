@@ -122,7 +122,7 @@ header a {
 	margin: 0 1%;
 }
 
-textarea, input[type="text"] {
+textarea, input[type="text"], input[type="number"] {
 	color: #eaf4fc;
 	background-color: rgba(84, 121, 128, .5);
 	border: 1px solid #eaf4fccc;
