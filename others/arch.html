@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>McbeEringi arch_calc</title>
+	<link href="https://fonts.googleapis.com/css?family=Quicksand:300|Noto+Sans+JP&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../main.css">
+	<style>
+		canvas{
+			background: #444;
+			color: #fff;
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<a href="https://mcbeeringi.github.io" class="left">
+			<img src="../img/6x6.png" width="32" height="32" alt="logo">
+			<h3>McbeEringi</h3>
+		</a>
+		<nav class="right" style="margin-right:1%;flex-grow: 1;">
+			<a href="https://mcbeeringi.github.io/esbe-2g">ESBE 2G</a>
+			<a href="https://mcbeeringi.github.io/esbe-1g">ESBE(1G)</a>
+			<a href="https://mcbeeringi.github.io/others">Others</a>
+			<a href="https://mcbeeringi.github.io/worlds">Worlds</a>
+		</nav>
+	</header>
+	<p class="title">Arch Calc</p>
+
+	<p align=center>アーチを描くツール 建築かなんかにどぞ</p>
+	<div class="col1">
+		<h2>input</h2>
+		<p>
+			幅　　：<input type="number" id="W" value="50" oninput="graph()"><br>
+			高さ　：<input type="number" id="H" value="6" oninput="graph()"><br>
+			解像度：<input type="range" id="R" value="10" min="1" max="100" step="1" oninput="graph()">
+		</p>
+	</div>
+	<div class="col2" style="padding:2%;">
+		<h3>円</h3>
+		<div style="overflow: scroll;-webkit-overflow-scrolling: touch;">
+			<canvas id="cir">jsがoffになっている,またはブラウザが対応していないようです…</canvas>
+		</div>
+		<h3>放物線(工事中)</h3>
+		<div style="overflow: scroll;-webkit-overflow-scrolling: touch;">
+			<canvas id="par">jsがoffになっている,またはブラウザが対応していないようです…</canvas>
+		</div>
+	</div>
+	<footer class="text">
+		<p>© 2018~ <a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*</p>
+		<p>
+			<a href="https://www.youtube.com/channel/UC7KFkUaWgpmdHViToV1wCAA">YouTube</a>
+			<a href="https://sites.google.com/view/mcbeeringi">google site</a>
+		</p>
+	</footer>
+	<script>
+		window.onload = function(){graph();}
+		function graph(){
+			var res = document.getElementById("R").value*1;
+			var cir = document.getElementById("cir");
+			var par = document.getElementById("par");
+			var w = document.getElementById("W").value*res;
+			var h = document.getElementById("H").value*res;
+			var w2 = w/2;
+			cir.width=w;cir.height=h;
+			par.width=w;par.height=h;
+			if (cir.getContext) {
+				var cir_c = cir.getContext('2d');
+				var r = (w2*w2+h*h)/(2*h);
+				cir_c.beginPath();
+				cir_c.strokeStyle = "#fff";
+				cir_c.arc(w2,r,r,0,3.14,true);
+				//罫線
+				cir_c.moveTo(res,0);for (var i = res; i < w; i+=res) {cir_c.lineTo(i,h);cir_c.moveTo(i+res,0);}
+				cir_c.moveTo(0,res/2);for (var i = res/2; i < h; i+=res/2) {cir_c.lineTo(w,i);cir_c.moveTo(0,i+res/2);}
+				//=*=*=
+				cir_c.stroke();
+
+				var par_c = par.getContext('2d');
+				par_c.beginPath();
+				par_c.strokeStyle = "#fff";
+				par_c.moveTo(0,h);
+				for (var i = 0; i < 64; i++) {
+					par_c.lineTo(w,0);
+				}
+				//罫線
+				par_c.moveTo(res,0);for (var i = res; i < w; i+=res) {par_c.lineTo(i,h);par_c.moveTo(i+res,0);}
+				par_c.moveTo(0,res/2);for (var i = res/2; i < h; i+=res/2) {par_c.lineTo(w,i);par_c.moveTo(0,i+res/2);}
+				//=*=*=
+				par_c.stroke();
+			}
+		}
+	</script>
+</body>
+
+</html>
