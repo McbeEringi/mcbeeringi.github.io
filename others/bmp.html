@@ -47,7 +47,7 @@
 	フォントオフセット<input id="fontoSl" type="range" value="0" min="0" max="50" step="1" oninput="document.getElementById('fonto').value=this.value;foo();">
 	<input id="fonto" type="number" value="0" oninput="document.getElementById('fontoSl').value=this.value;foo()"><br>
 
-	フォント名<input id="fontf" value="sans-serif" oninput="document.body.style.fontFamily=this.value"> customと入力すると同じ階層のcustom.tffが反映されます<br>
+	フォント名<input id="fontf" value="sans-serif" oninput="document.body.style.fontFamily=this.value" onchange="render();"> customと入力すると同じ階層のcustom.tffが反映されます<br>
 	<!--デフォルトのcustom.ttfは"8:51:22 pm"さんの"851tegaki_zatsu_normal_0883.ttf"を使用しています
 		https://pm85122.onamae.jp/851fontpage.html-->
 
