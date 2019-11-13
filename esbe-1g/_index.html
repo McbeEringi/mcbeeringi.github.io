@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>McbeEringi ESBE_1G</title>
+	<link href="https://fonts.googleapis.com/css?family=Quicksand:300|Noto+Sans+JP&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../main.css">
+	<link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
+	<style>
+		.swiper-container {
+			width: 90vw;
+			height: auto;
+		}
+
+		.swiper-container img {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<header id="H" style="z-index:10;"></header>
+	<p class="title">ESBE (1G)</p>
+	<div class="col1">
+		<div class="swiper-container">
+			<div class="swiper-wrapper">
+				<div class="swiper-slide">
+					<img src="1g_logo.jpg"></img>
+				</div>
+				<div class="swiper-slide">
+					<img src="1.jpg"></img>
+				</div>
+				<div class="swiper-slide">
+					<img src="2.jpg"></img>
+				</div>
+				<div class="swiper-slide">
+					<img src="3.jpg"></img>
+				</div>
+				<div class="swiper-slide">
+					<img src="4.jpg"></img>
+				</div>
+				<div class="swiper-slide">
+					<img src="5.jpg"></img>
+				</div>
+			</div>
+			<!-- Add Pagination -->
+			<div class="swiper-pagination"></div>
+			<!-- Add Arrows -->
+			<div class="swiper-button-next"></div>
+			<div class="swiper-button-prev"></div>
+		</div>
+		<p style="color:#eaf4fc88">with ESBE v14.0</p>
+	</div>
+	<div class="col2 flex pad2">
+		<h2>ESBEとは？<br></h2>
+		<p>
+			最新バージョンに対応しているシェダーが少なすぎる! と感じた私が、<br>
+			昔のシェダーの いいところを取り入れつつも<br>
+			他のものとは一味違うものを目指して作っていたシェダーです。<br>
+			使いやすいようバニラっぽく仕上げました。
+		</p>
+	</div>
+	<div class="col1 flex pad2">
+		<div>
+			<h2>ESBEv15.2</h2>
+			<h3>Features<br></h3>
+		</div>
+		<div>
+			<ul>
+				<li>明るすぎない軽量な描写 潰れないテクスチャ</li>
+				<li>RGB比7:5:3略して「七五三」の美しい光(?)</li>
+				<li>綺麗な雲,オーロラ,またたく星,夕焼け...</li>
+				<li>揺らめく葉,水面反射!!</li>
+				<li>方角によってブロックの明るさを変更</li>
+				<li>PE,Win10両対応!</li>
+				<li>容易にカスタマイズ可能>>詳しくは<a href="esbe-info.html">こちら</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="col2 flex pad2">
+		<div>
+			<h2>ESBEv15.2</h2>
+			<h3>Changes</h3>
+			<p>2019/6/8 22:45<br></p>
+		</div>
+		<div>
+			<ul>
+				<li>iPhoneXRなどの一部の端末で葉の揺れがカクつく問題を修正</li>
+			</ul>
+		</div>
+	</div>
+	<div class="col1 flex pad2">
+		<div>
+			<h2>ESBE</h2>
+			<h3>Next Update…<br></h3>
+		</div>
+		<p>
+			ESBE1G(これ)の<b><i>開発は終了</i></b>しましたが<br>
+			ESBE自体の開発終了<b><i>ということではありません!</i></b><br>
+			開発は<a href="https://mcbeeringi.github.io/esbe-2g">ESBE2G</a>に移行しました。これからもよろしくお願い申し上げます。<br>
+			(追記,2019/11/13)1.13には<span style="color:#f44">対応していません。</span>2Gをお勧めします。間も無く公開を打ち切る予定です。
+		</p>
+	</div>
+	<div class="col2 flex pad2">
+		<p style="text-align:center">
+			個人利用に限り改変を認めます<br>
+			改変の有無に拘わらず二次配布は禁止です<br>
+		</p>
+		<div align=center>
+			<button onClick="window.open('https://www.mediafire.com/file/1nkldndyccx2ip7/ESBE15.2.mcpack/file','_blank')">ESBEv15.2 Download</button><br>
+			<br>
+			<button onClick="window.open('https://www.mediafire.com/file/9daw5zic7mxw9u1/ESBE_L_15.0.mcpack/file','_blank')">ESBE Lite 15.0 Download</button>
+		</div>
+	</div>
+	<footer id="F"></footer>
+	<script src="../hf.js"></script>
+	<!-- Swiper JS -->
+	<script src="https://unpkg.com/swiper/js/swiper.min.js"></script>
+	<script>
+		var swiper = new Swiper('.swiper-container', {
+			spaceBetween: 30,
+			centeredSlides: true,
+			slidesPerView: 2,
+			autoplay: {
+				delay: 2700,
+				disableOnInteraction: false,
+			},
+			pagination: {
+				el: '.swiper-pagination',
+				clickable: true,
+			},
+			navigation: {
+				nextEl: '.swiper-button-next',
+				prevEl: '.swiper-button-prev',
+			},
+			loop: true,
+		});
+	</script>
+</body>
+
+</html>
