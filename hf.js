@@ -1,6 +1,6 @@
 document.getElementById("H").innerHTML = "\
 	<a href=\"https://mcbeeringi.github.io\" class=\"left\">\
-		<img src=\"img/6x6.png\" width=\"32\" height=\"32\" alt=\"logo\">\
+		<img src=\"https://mcbeeringi.github.io/img/6x6.png\" width=\"32\" height=\"32\" alt=\"logo\">\
 		<h3>McbeEringi</h3>\
 	</a>\
 	<nav class=\"right\" style=\"margin-right:1%;flex-grow: 1;\">\
