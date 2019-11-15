@@ -20,6 +20,8 @@ h4 {
 	padding: 2em 2%;
 	font-size: calc(5vw + 20px);
 	background-image: linear-gradient(0deg, #aacf53bb, #928c3688), url("img/tateshina.jpg");
+	background-image: linear-gradient(0deg, #83ccd2bb, #c0c6c988), url("img/winter.jpg");
+	//background-image: linear-gradient(0deg, #f2a0a1bb, #fdeff288), url("img/spring.jpg");
 	background-size: cover;
 	background-position: center;
 	text-align: center;
