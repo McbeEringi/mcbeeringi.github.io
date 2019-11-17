@@ -22,8 +22,8 @@
 	<div class="col2">
 		<h2>input</h2>
 		<p>
-			希釈後液面高さ：<input type="text" id="H"><br>
-			コップ底面直径：<input type="text" id="D">
+			希釈後液面高さ：<input type="text" id="h"><br>
+			コップ底面直径：<input type="text" id="d">
 		</p>
 		<br>
 	</div>
@@ -38,8 +38,8 @@
 	<script src="../hf.js"></script>
 	<script>
 		function calpis() {
-			var h = document.getElementById("H").value;
-			var d = document.getElementById("D").value;
+			var h = document.getElementById("h").value;
+			var d = document.getElementById("d").value;
 			h *= 2 / 5;
 			var diffuse = Math.asin(h / Math.sqrt(h * h + d * d)) * 180 / Math.PI;
 			if (diffuse) {
