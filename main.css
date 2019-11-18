@@ -6,13 +6,9 @@ body {
 	box-sizing: border-box;
 }
 
-h1, h2, h3, h4, h5, h6, p, li {
+h1, h2, h3, h4, h5, h6, p, li, table {
 	color: #eaf4fc;
 	margin: 10px 0;
-}
-
-h4 {
-	text-align: center;
 }
 
 .title {
@@ -76,8 +72,6 @@ h4 {
 	text-align: center;
 }
 
-.pad4 {}
-
 .pad4>* {
 	width: 24vw;
 	min-width: 150px;
@@ -87,6 +81,12 @@ h4 {
 .pad4 img {
 	width: 20vw;
 	min-width: 120px;
+}
+
+.pad3>* {
+	width: 33vw;
+	min-width: 80px;
+	flex-grow: 1;
 }
 
 .pad2>* {
