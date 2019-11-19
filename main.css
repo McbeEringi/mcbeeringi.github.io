@@ -174,6 +174,7 @@ ol.code li:before{
 	counter-increment: number; /* 任意の名前を付けて！ */
 	content: "　"counter(number)"　"; /* 名前を付けたカウンターを呼び出し */
 	/* 色を変えたり、背景画像を敷いたり！自由自在！ */
+	margin: 0;
 	color:rgb(84, 121, 128);
 	background-color: #4448;
 }
