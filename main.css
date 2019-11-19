@@ -145,7 +145,6 @@ button {
 	color: #fff;
 	border: 1px solid #eaf4fc;
 	font-size: 3ex;
-	font-family: 'Quicksand', 'Noto Sans JP', sans-serif;
 }
 
 button:hover {
@@ -162,13 +161,14 @@ ol.code{
 	list-style:none; /* olが数字を付けることをキャンセル */
 	margin:0 10px 0 0;
 	padding: 0;
-	background-color: #555;
+	background-color: #1115;
 }
 ol.code li{
-	font-family: "menlo", sans-serif;
+	font-family: 'menlo', 'M PLUS Rounded 1c', sans-serif;
 	margin: 0;
+	padding: 0 0 0 2px;
 }
-ol.code li:nth-child(2n){background-color: #666;}
+ol.code li:nth-child(2n){background-color: #1116;}
 ol.code li:before{
 	/* カウンタ（数字になる部分） */
 	counter-increment: number; /* 任意の名前を付けて！ */
