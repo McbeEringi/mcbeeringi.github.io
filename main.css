@@ -162,17 +162,18 @@ ol.code{
 	list-style:none; /* olが数字を付けることをキャンセル */
 	margin:0 10px 0 0;
 	padding: 0;
-	background-color: #444;
+	background-color: #555;
 }
 ol.code li{
-	font-family: "menlo";
+	font-family: "menlo", sans-serif;
 	margin: 0;
 }
+ol.code li:nth-child(2n){background-color: #666;}
 ol.code li:before{
 	/* カウンタ（数字になる部分） */
 	counter-increment: number; /* 任意の名前を付けて！ */
 	content: "　"counter(number)"　"; /* 名前を付けたカウンターを呼び出し */
 	/* 色を変えたり、背景画像を敷いたり！自由自在！ */
-	color:#888;
-	background-color: #222;
+	color:rgb(84, 121, 128);
+	background-color: #4448;
 }
