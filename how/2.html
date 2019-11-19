@@ -4,14 +4,15 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi howto-2</title>
-		<link href="https://fonts.googleapis.com/css?family=Quicksand:300|Noto+Sans+JP&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Quicksand:400|Noto+Sans+JP&display=swap" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="../main.css">
+		<style>td,th{border: 1px solid #eaf4fccc;}</style>
 	</head>
 	<body>
 		<header id="H"></header>
-		<p class="title">#2</p>
-		<p align="center">brief</p>
-		<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>
+		<p class="title">#2 色塗り</p>
+		<p align="center">"Hello World!"</p>
+		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
 		<div class="flex pad3 col1">
 			<div align="center"><a href="1.html"><< #1 準備</a></div>
 			<div align="center"><a href="index.html">トップ</a></div>
@@ -20,19 +21,94 @@
 		<div class="col2">
 			<h2>index</h2>
 			<ul>
-				<li>1</li>
-				<li>2</li>
-				<li>3</li>
+				<li>型</li>
+				<li>演算</li>
+				<li>入出力について</li>
+				<li>glslで))Hello World!</li>
 			</ul>
-			<p style="text-align:right;">20xx/xx/xx作成 <br>20xx/xx/xx更新 <br></p>
+			<p style="text-align:right;">2019/11/19作成 <br>2019/11/19更新 <br></p>
 		</div>
 		<br>
 		<div class="col1">
-			<h2>title</h2>
+			<h2>型</h2>
+			<p style="margin-left:10px;">型の指定は礼儀</p>
+		</div>
+		<div class="col2">
 			<p style="margin-left:10px;">
-				a
+				_マイクラの用いるシェーディング言語<br>
+				glsl,hlslはC言語をベースにした言語です<br>
+				float,intなどのお馴染みの型に加えて<br>
+				vec,matなどの色、座標(ベクトル)の計算がしやすいような型が用意されています
 			</p>
+			<table style="margin-left:10px;">
+				<tr>
+					<th>glsl</th><th>hlsl</th><th>説明</th>
+				</tr>
+				<tr>
+					<td>float</td>
+					<td>float</td>
+					<td>浮動小数点数<br>
+						例)float a = 1.0;<br>
+						cf. float a = 1; これはダメ
+					</td>
+				</tr>
+				<tr>
+					<td>int</td>
+					<td>int</td>
+					<td>整数。<br>
+						例)int a = 1;<br>
+						cf. int a = 1.0; これはダメ
+					</td>
+				</tr>
+				<tr>
+					<td>bool</td>
+					<td>bool</td>
+					<td>ブーレアンの略 値はtrueまたはfalseのみ<br>
+						例)bool a = true;
+					</td>
+				</tr>
+				<tr>
+					<td>vec2</td>
+					<td>float2</td>
+					<td>floatが二つ集まったもの<br>
+						例)vec2 a = vec2(1.0,1.0);<br>
+						float2 a = float2(1.0,1.0);<br>
+						cf. vec2 a = vec2(1); これはok(int→vec2への型変換) <br>
+						cf. float2 a = float2(1.0); これはダメ<br>
+						cf. float2 a = 1.0; hlslはfloatで入れる
+					</td>
+				</tr>
+				<tr>
+					<td>vec3</td>
+					<td>float3</td>
+					<td>floatが三つ集まったもの<br>
+						例)vec3 a = vec3(1.0,1.0,1.0);<br>
+						float3 a = float3(1.0,1.0,1.0);<br>
+						cf. vec3 a = vec3(1); これはok(int→vec3への型変換) <br>
+						cf. float3 a = float3(1.0); これはダメ<br>
+						cf. float3 a = 1.0; hlslはfloatで入れる
+					</td>
+				</tr>
+				<tr>
+					<td>vec4</td>
+					<td>float4</td>
+					<td>floatが(ry</td>
+				</tr>
+				<tr>
+					<td>mat2<br>mat3<br>mat4</td>
+					<td>float2x2<br>float3x3<br>float4x4</td>
+					<td>それぞれのvecに対応する行列<br>
+						例)mat2 a = mat2(vec2(1.0,1.0),vec2(1.0,1.0));<br>
+						mat3 a = mat3(vec3(1),vec3(1),vec3(1));<br>
+						float2x2 a = float2x2(float2(1.0,1.0),float2(1.0,1.0));
+					</td>
+				</tr>
+			</table>
 			<br>
+			<p style="margin-left:10px;">
+				C言語と違う点は暗黙の型変換が行われないことでしょうか<br>
+				floatは小数点付けないだけで動かない&見逃しがちなので注意
+			</p>
 		</div>
 		<br>
 		<div class="col2">
