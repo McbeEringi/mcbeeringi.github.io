@@ -47,17 +47,23 @@
 				<tr>
 					<td>float</td>
 					<td>float</td>
-					<td>浮動小数点数<br>
-						例)float a = 1.0;<br>
-						cf. float a = 1; これはダメ
+					<td>
+						浮動小数点数<br>
+						<ol class="code">
+							<li>float a = 1.0;</li>
+							<li>float a = 1; //これはダメ</li>
+						</ol>
 					</td>
 				</tr>
 				<tr>
 					<td>int</td>
 					<td>int</td>
-					<td>整数。<br>
-						例)int a = 1;<br>
-						cf. int a = 1.0; これはダメ
+					<td>
+						整数。<br>
+						<ol class="code">
+							<li>int a = 1;</li>
+							<li>int a = 1.0; //これはダメ</li>
+						</ol>
 					</td>
 				</tr>
 				<tr>
@@ -65,29 +71,36 @@
 					<td>bool</td>
 					<td>ブーレアンの略 ブーメランじゃないです <br>
 						値はtrueまたはfalseのみ<br>
-						例)bool a = true;
+						<ol class="code">
+							<li>bool a = true;</li>
+						</ol>
 					</td>
 				</tr>
 				<tr>
 					<td>vec2</td>
 					<td>float2</td>
 					<td>floatが二つ集まったもの<br>
-						例)vec2 a = vec2(1.0,1.0);<br>
-						float2 a = float2(1.0,1.0);<br>
-						cf. vec2 a = vec2(1); これはok(int→vec2への型変換) <br>
-						cf. float2 a = float2(1.0); これはダメ<br>
-						cf. float2 a = 1.0; hlslはfloatで入れる
+						<ol class="code">
+							<li>vec2 a = vec2(1.0,1.0);</li>
+							<li>float2 a = float2(1.0,1.0);</li>
+							<li>vec2 a = vec2(1); //これはok(int→vec2への型変換) </li>
+							<li>float2 a = float2(1.0); //これはダメ</li>
+							<li>float2 a = 1.0; //hlslはfloatで入れる</li>
+						</ol>
 					</td>
 				</tr>
 				<tr>
 					<td>vec3</td>
 					<td>float3</td>
 					<td>floatが三つ集まったもの<br>
-						例)vec3 a = vec3(1.0,1.0,1.0);<br>
-						float3 a = float3(1.0,1.0,1.0);<br>
-						cf. vec3 a = vec3(1); これはok(int→vec3への型変換) <br>
-						cf. float3 a = float3(1.0); これはダメ<br>
-						cf. float3 a = 1.0; hlslはfloatで入れる
+						<ol class="code">
+							<li>vec3 a = vec2(1.0,1.0,1.0);</li>
+							<li>float3 a = float3(1.0,1.0,1.0);</li>
+							<li>vec3 a = vec3(1); //これはok(int→vec3への型変換) </li>
+							<li>float3 a = float3(1.0); //これはダメ</li>
+							<li>float3 a = 1.0; //hlslはfloatで入れる</li>
+						</ol>
+
 					</td>
 				</tr>
 				<tr>
@@ -99,9 +112,11 @@
 					<td>mat2<br>mat3<br>mat4</td>
 					<td>float2x2<br>float3x3<br>float4x4</td>
 					<td>それぞれのvecに対応する行列<br>
-						例)mat2 a = mat2(vec2(1.0,1.0),vec2(1.0,1.0));<br>
-						mat3 a = mat3(vec3(1),vec3(1),vec3(1));<br>
-						float2x2 a = float2x2(float2(1.0,1.0),float2(1.0,1.0));
+						<ol class="code">
+							<li>mat2 a = mat2(vec2(1.0,1.0),vec2(1.0,1.0));</li>
+							<li>mat3 a = mat3(vec3(1),vec3(1),vec3(1));</li>
+							<li>float2x2 a = float2x2(float2(1.0,1.0),float2(1.0,1.0));</li>
+						</ol>
 					</td>
 				</tr>
 			</table>
@@ -120,18 +135,27 @@
 		</div>
 		<div class="col2">
 			<ol class="code">
-				<li>コード用の画面</li>
-				<li>日本語入れるとバグる</li>
-				<li>番号は選択範囲に入らない</li>
-				<li>列ごとに色変えようか</li>
-			</ol>
-			<br>
-			<ol class="code">
 				<li>a</li>
-				<li>b</li>
-				<li>c</li>
-				<li>d</li>
+				<li>&#009;b</li>
+				<li>&#009;&#009;c</li>
+				<li>&#009;&#009;&#009;d</li>
 			</ol>
+			<div>
+				<pre>
+// __multiversion__
+// This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.
+
+#include "fragmentVersionSimple.h"
+
+varying vec4 color;
+
+void main()
+{
+	gl_FragColor = color;
+}
+
+</pre>
+			</div>
 		</div>
 		<br>
 		<div class="col2">
