@@ -62,7 +62,8 @@ h1, h2, h3, h4, h5, h6, p, li, table {
 }
 
 .col1:not(.flex), .col2:not(.flex) {
-	padding-left: 10px;
+	padding-left: 7px;
+	padding-right: 7px;
 }
 
 .col1 {
@@ -159,7 +160,7 @@ button:active {
 ol.code{
 	counter-reset:number; /* 名前を付けたカウンターをリセット */
 	list-style:none; /* olが数字を付けることをキャンセル */
-	margin:0 10px 0 0;
+	margin: 0;
 	padding: 0;
 	background-color: #1115;
 }
