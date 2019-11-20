@@ -6,36 +6,39 @@
 		<title>McbeEringi howto-2</title>
 		<link href="https://fonts.googleapis.com/css?family=Quicksand:400|M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="../main.css">
-		<style>td,th{border: 1px solid #eaf4fccc;}</style>
+		<style>td,th{border:1px solid #eaf4fccc;}tr.center td{text-align:center;}</style>
 	</head>
 	<body>
 		<header id="H"></header>
-		<p class="title">#2 Hello World</p>
-		<p align="center">最初の一歩</p>
+		<p class="title">#2 型と演算子</p>
+		<p align="center">一歩出す前に</p>
 		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
 		<div class="flex pad3 col1">
 			<div align="center"><a href="1.html"><< #1 準備</a></div>
 			<div align="center"><a href="index.html">トップ</a></div>
-			<div align="center"><a href="3.html">#3 coming soon… >></a></div>
+			<div align="center"><a href="">#3 coming soon… >></a></div>
 		</div>
 		<div class="col2">
 			<h2>index</h2>
 			<ul>
-				<li>型</li>
-				<li>演算</li>
-				<li>入出力について</li>
-				<li>glslで))Hello World!</li>
+				<li><a href="#0">型</a></li>
+				<li><a href="#1">演算子</a></li>
+				<ul>
+					<li><a href="#11">代入演算子</a></li>
+					<li><a href="#12">スウィズル演算子</a></li>
+				</ul>
 			</ul>
-			<p style="text-align:right;">2019/11/19作成 <br>2019/11/19更新 <br></p>
+			<p style="text-align:right;">2019/11/20作成 <br>2019/11/20更新 <br></p>
 		</div>
 		<br>
 		<div class="col1">
+			<a name="0"></a>
 			<h2>型</h2>
 			<p style="margin-left:10px;">型の指定は礼儀</p>
 		</div>
 		<div class="col2">
 			<p style="margin-left:10px;">
-				_マイクラの用いるシェーディング言語<br>
+				　マイクラの用いるシェーディング言語<br>
 				glsl,hlslはC言語をベースにした言語です<br>
 				float,intなどのお馴染みの型に加えて<br>
 				vec,matなどの色、座標(ベクトル)の計算がしやすいような型が用意されています
@@ -51,7 +54,7 @@
 						浮動小数点数<br>
 						<ol class="code">
 							<li>float a = 1.0;</li>
-							<li>float a = 1; //これはダメ</li>
+							<li>float a = 1; <span style="color: #666;">//これはダメ</li>
 						</ol>
 					</td>
 				</tr>
@@ -62,7 +65,7 @@
 						整数。<br>
 						<ol class="code">
 							<li>int a = 1;</li>
-							<li>int a = 1.0; //これはダメ</li>
+							<li>int a = 1.0; <span style="color: #666;">//これはダメ</li>
 						</ol>
 					</td>
 				</tr>
@@ -83,9 +86,9 @@
 						<ol class="code">
 							<li>vec2 a = vec2(1.0,1.0);</li>
 							<li>float2 a = float2(1.0,1.0);</li>
-							<li>vec2 a = vec2(1); //これはok(int→vec2への型変換) </li>
-							<li>float2 a = float2(1.0); //これはダメ</li>
-							<li>float2 a = 1.0; //hlslはfloatで入れる</li>
+							<li>vec2 a = vec2(1); <span style="color: #666;">//これはok(int→vec2への型変換) </li>
+							<li>float2 a = float2(1.0); <span style="color: #666;">//これはダメ</li>
+							<li>float2 a = 1.0; <span style="color: #666;">//hlslはfloatで入れる</li>
 						</ol>
 					</td>
 				</tr>
@@ -96,9 +99,9 @@
 						<ol class="code">
 							<li>vec3 a = vec2(1.0,1.0,1.0);</li>
 							<li>float3 a = float3(1.0,1.0,1.0);</li>
-							<li>vec3 a = vec3(1); //これはok(int→vec3への型変換) </li>
-							<li>float3 a = float3(1.0); //これはダメ</li>
-							<li>float3 a = 1.0; //hlslはfloatで入れる</li>
+							<li>vec3 a = vec3(1); <span style="color: #666;">//これはok(int→vec3への型変換) </li>
+							<li>float3 a = float3(1.0); <span style="color: #666;">//これはダメ</li>
+							<li>float3 a = 1.0; <span style="color: #666;">//hlslはfloatで入れる</li>
 						</ol>
 
 					</td>
@@ -123,49 +126,133 @@
 			<br>
 			<p style="margin-left:10px;">
 				C言語と違う点は暗黙の型変換が行われないことでしょうか<br>
-				floatは小数点付けないだけで動かない&見逃しがちなので注意
+				floatは小数点付けないだけで動かない&見逃しがちなので注意 <br>
+				<br>
+				ここからは基本glslを使って解説していきます。
 			</p>
 		</div>
 		<br>
 		<div class="col1">
-			<h2>演算</h2>
+			<a name="1"></a>
+			<h2>演算子</h2>
 			<p style="margin-left:10px;">
-				計算しないと始まらない
+				演算しないと始まらない ((それはそう
 			</p>
 		</div>
 		<div class="col2">
-			<h3>演算子</h3>
 			<p style="margin-left:10px;">
-				ふつーに四則演算できます <br>
+				　ふつーに四則演算できます <br>
 				()をつけない限り乗算除算が優先されます <br>
-				当たり前ですね((<br>
 				<br>
-				<code>+</code> 加算 <br>
-				<code>-</code> 減算 <br>
-				<code>*</code> 乗算 <br>
-				<code>/</code> 除算 <br>
-				<code>()</code>括弧 <br>
-				<br>
-				<code>=</code>で代入です
+				<code>+</code>…加算 <code>-</code>…減算 <br>
+				<code>*</code>…乗算 <code>/</code>…除算 <br>
+				<code>()</code>…括弧 <code>=</code>で代入です <br>
+				余りを出してくれる <code>%</code>は使えないみたいです…
 			</p>
-			<ol class="code">
+			<ol class="code" style="margin-left:10px;">
 				<li>float a = 1.0;</li>
 				<li>float b = 2.0;</li>
-				<li>a = a+b; // a = 3.0;</li>
-				<li>a = a/b; // a = 1.5;</li>
+				<li></li>
+				<li>a = a+b; <span style="color: #666;">//加算 a = 3.0;</li>
+				<li>a = a/b; <span style="color: #666;">//除算 a = 1.5;</li>
+				<li>a = b-a; <span style="color: #666;">//減算 a = 0.5;</li>
+				<li>a = b*a; <span style="color: #666;">//乗算 a = 1.0;</li>
+				<li></li>
+				<li><span style="color: #666;">//もちろんvecも行ける</li>
+				<li><span style="color: #666;">//それぞれの要素ごとに計算する</li>
+				<li>vec2 c = vec2(a, b); <span style="color: #666;">//c = vec2(5.0, 2.0);</li>
+				<li>vec2 d = vec2(a/b, b/a) //d = vec2(2.5, 0.4);</li>
+				<li>c = c+d; <span style="color: #666;">//c = vec2(7.5, 2.4);</li>
+				<li>c = c/d; <span style="color: #666;">//c = vec2(3.0, 6.0);</li>
+				<li>c = d-c; <span style="color: #666;">//c = vec2(-0.5, -5.6);</li>
+				<li>c = d*c; <span style="color: #666;">//c = vec2(-1.25, -2.24);</li>
+				<li></li>
+				<li>a = ((a+b)*b+5.0-a)/2.0; //a = 5.0; 括弧は全部小かっこ</li><span style="color: #666;">
+			</ol>
+			<br>
+
+			<a name="11"></a>
+			<h3>代入演算子</h3>
+			<p style="margin-left:10px;">
+				　上の例の4~7行目のような処理の場合、いちいち同じ文字を書くのは <br>
+				面倒臭いし読みにくいですよね? <br>
+				代入演算子 <code>+=</code> <code>-=</code> <code>*=</code> <code>/=</code><br>
+				を使うとその手間を省くことができます! <br>
+				<span style="color:#666;">(後々書く関数を使うようになると使用頻度グッと下がる)</span> <br>
+				これは実際に使った方が理解早いですので <br>
+				上の例をすっきりさせてみます
+			</p>
+			<ol class="code" style="margin-left:10px;">
+				<li>float a = 1.0;</li>
+				<li>float b = 2.0;</li>
+				<li></li>
+				<li>a += b; <span style="color: #666;">//加算 a = 3.0;</li>
+				<li>a /= b; <span style="color: #666;">//除算 a = 1.5;</li>
+				<li>a = b-a; <span style="color: #666;">//減算 a = 0.5;</li>
+				<li>a *= b; <span style="color: #666;">//乗算 a = 1.0;</li>
+				<li></li>
+				<li><span style="color: #666;">//もちろんvecも行ける</li>
+				<li><span style="color: #666;">//それぞれの要素ごとに計算する</li>
+				<li>vec2 c = vec2(a, b); <span style="color: #666;">//c = vec2(5.0, 2.0);</li>
+				<li>vec2 d = vec2(a/b, b/a) <span style="color: #666;">//d = vec2(2.5, 0.4);</li>
+				<li>c += d; <span style="color: #666;">//c = vec2(7.5, 2.4);</li>
+				<li>c /= d; <span style="color: #666;">//c = vec2(3.0, 6.0);</li>
+				<li>c = d-c; <span style="color: #666;">//c = vec2(-0.5, -5.6);</li>
+				<li>c *= d; <span style="color: #666;">//c = vec2(-1.25, -2.24);</li>
+			</ol>
+			<p style="margin-left:10px;">
+				6, 15行目見れば分かると思いますが <br>
+				減算,除算の場合、元の式の順番大事です。 当たり前ですね
+			</p>
+			<br>
+
+			<a name="12"></a>
+			<h3>スウィズル(swizzle)演算子</h3>
+			<p style="margin-left:10px;">
+				　いかつい名前してますが大したことないです <br>
+				はっきり言って演算子なのかも怪しいです <br>
+				vec型のn番目の数字だけ取り出したい!って時に使うものです <br>
+				vec型の数の後にこれを書くことで機能します
+			</p>
+			<table style="margin-left:10px;">
+				<tr>
+					<th>🍄</th>
+					<th>第一要素</th>
+					<th>第二要素</th>
+					<th>第三要素</th>
+					<th>第四要素</th>
+				</tr>
+				<tr class="center"><td>座標</td><td>x</td><td>y</td><td>z</td><td>w</td></tr>
+				<tr class="center"><td>色</td><td>r</td><td>g</td><td>b</td><td>a</td></tr>
+				<tr class="center"><td>ベクトル</td><td>s</td><td>t</td><td>p</td><td>q</td></tr>
+			</table>
+			<p style="margin-left:10px;">
+				<span style="color: #666;">座標のwは拡大率を表すのだとか</span><br>
+				座標の計算の時に必ずxyzの演算子を使わなくても <br>
+				併用する演算子が同じ列の中のものなら大丈夫です <br>
+				説明しづらいので例を
+			</p>
+			<ol class="code" style="margin-left:10px;">
+				<li>vec4 a = vec4(1.0, 2.0, 3.0, 4.0);</li>
+				<li>vec2 b = a.xy; <span style="color: #666;">//b = vec2(1.0, 2.0);</li>
+				<li>b = a.ww; <span style="color: #666;">//b = vec2(4.0, 4.0); 同じ要素を複数回使うのもok</li>
+				<li>vec3 c = a.zxz; <span style="color: #666;">//b = vec3(3.0, 1.0, 3.0);</li>
+				<li>float d = b.x+c.y; <span style="color: #666;">//d = 4.0+1.0; つまり5.0</li>
+				<li>a = a.wyzx; <span style="color: #666;">//a = vec4(4.0, 2.0, 3.0, 1.0); 順番の入れ替えも可能</li>
 			</ol>
 		</div>
 		<br>
 		<div class="col2">
 			<p style="margin-left:10px;">
-				next <br>
-				お楽しみに
+				予想以上に長くなったので今回はここまで <br>
+				次回"Hello World"する予定です <br>
+				お楽しみに!
 			</p>
 		</div>
 		<div class="flex pad3 col1">
 			<div align="center"><a href="1.html"><< #1 準備</a></div>
 			<div align="center"><a href="index.html">トップ</a></div>
-			<div align="center"><a href="3.html">#3 coming soon… >></a></div>
+			<div align="center"><a href="">#3 coming soon… >></a></div>
 		</div>
 		<footer id="F"></footer>
 		<script src="../hf.js"></script>
