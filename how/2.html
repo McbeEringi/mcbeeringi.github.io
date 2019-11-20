@@ -54,7 +54,7 @@
 						浮動小数点数<br>
 						<ol class="code">
 							<li>float a = 1.0;</li>
-							<li>float a = 1; <span style="color: #666;">//これはダメ</li>
+							<li><span style="color: #666;">float a = 1; //これはダメ</li>
 						</ol>
 					</td>
 				</tr>
@@ -65,7 +65,7 @@
 						整数。<br>
 						<ol class="code">
 							<li>int a = 1;</li>
-							<li>int a = 1.0; <span style="color: #666;">//これはダメ</li>
+							<li><span style="color: #666;">int a = 1.0; //これはダメ</li>
 						</ol>
 					</td>
 				</tr>
@@ -87,7 +87,7 @@
 							<li>vec2 a = vec2(1.0,1.0);</li>
 							<li>float2 a = float2(1.0,1.0);</li>
 							<li>vec2 a = vec2(1); <span style="color: #666;">//これはok(int→vec2への型変換) </li>
-							<li>float2 a = float2(1.0); <span style="color: #666;">//これはダメ</li>
+							<li><span style="color: #666;">float2 a = float2(1.0); //これはダメ</li>
 							<li>float2 a = 1.0; <span style="color: #666;">//hlslはfloatで入れる</li>
 						</ol>
 					</td>
@@ -100,7 +100,7 @@
 							<li>vec3 a = vec2(1.0,1.0,1.0);</li>
 							<li>float3 a = float3(1.0,1.0,1.0);</li>
 							<li>vec3 a = vec3(1); <span style="color: #666;">//これはok(int→vec3への型変換) </li>
-							<li>float3 a = float3(1.0); <span style="color: #666;">//これはダメ</li>
+							<li><span style="color: #666;">float3 a = float3(1.0); //これはダメ</li>
 							<li>float3 a = 1.0; <span style="color: #666;">//hlslはfloatで入れる</li>
 						</ol>
 
