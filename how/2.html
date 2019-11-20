@@ -236,10 +236,11 @@
 			<ol class="code" style="margin-left:10px;">
 				<li>vec4 a = vec4(1.0, 2.0, 3.0, 4.0);</li>
 				<li>vec2 b = a.xy; <span style="color: #666;">//b = vec2(1.0, 2.0);</li>
-				<li>b = a.ww; <span style="color: #666;">//b = vec2(4.0, 4.0); 同じ要素を複数回使うのもok</li>
+				<li>b = a.aa; <span style="color: #666;">//b = vec2(4.0, 4.0); 同じ要素を複数回使うのもok</li>
+				<li><span style="color: #666;">b = a.xs; //異なる組のスウィズル演算子を使うことはできない</li>
 				<li>vec3 c = a.zxz; <span style="color: #666;">//b = vec3(3.0, 1.0, 3.0);</li>
-				<li>float d = b.x+c.y; <span style="color: #666;">//d = 4.0+1.0; つまり5.0</li>
-				<li>a = a.wyzx; <span style="color: #666;">//a = vec4(4.0, 2.0, 3.0, 1.0); 順番の入れ替えも可能</li>
+				<li>float d = b.s+c.p; <span style="color: #666;">//d = 4.0+1.0; つまり5.0</li>
+				<li>a = a.agbr; <span style="color: #666;">//a = vec4(4.0, 2.0, 3.0, 1.0); 順番の入れ替えも可能</li>
 			</ol>
 		</div>
 		<br>
