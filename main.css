@@ -160,12 +160,14 @@ button:active {
 
 pre{
 	font-family: 'menlo';
-  tab-size: 2;
-  padding: 0 2em;
+	tab-size: 2;
+	padding: 0 2em;
 	word-wrap: normal;
-  position: relative;
+	position: relative;
 	overflow-x: scroll;
 	overflow-y: hidden;
+	-webkit-overflow-scrolling: touch;
+	-webkit-transform: translateZ(0px);
 	background-color: #1115;
 	border-radius:
 }
