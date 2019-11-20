@@ -129,32 +129,31 @@
 		<br>
 		<div class="col1">
 			<h2>演算</h2>
-			<p  style="margin-left:10px;">
+			<p style="margin-left:10px;">
 				計算しないと始まらない
 			</p>
 		</div>
 		<div class="col2">
+			<h3>演算子</h3>
+			<p style="margin-left:10px;">
+				ふつーに四則演算できます <br>
+				()をつけない限り乗算除算が優先されます <br>
+				当たり前ですね((<br>
+				<br>
+				<code>+</code> 加算 <br>
+				<code>-</code> 減算 <br>
+				<code>*</code> 乗算 <br>
+				<code>/</code> 除算 <br>
+				<code>()</code>括弧 <br>
+				<br>
+				<code>=</code>で代入です
+			</p>
 			<ol class="code">
-				<li>a</li>
-				<li>&#009;b</li>
-				<li>&#009;&#009;c</li>
-				<li>&#009;&#009;&#009;d</li>
+				<li>float a = 1.0;</li>
+				<li>float b = 2.0;</li>
+				<li>a = a+b; // a = 3.0;</li>
+				<li>a = a/b; // a = 1.5;</li>
 			</ol>
-			<div>
-				<pre>
-// __multiversion__
-// This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.
-
-#include "fragmentVersionSimple.h"
-
-varying vec4 color;
-
-void main()
-{
-	gl_FragColor = color;
-}
-</pre>
-			</div>
 		</div>
 		<br>
 		<div class="col2">

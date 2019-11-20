@@ -10,6 +10,13 @@ h1, h2, h3, h4, h5, h6, p, li, table, pre {
 	color: #eaf4fc;
 }
 
+table {
+	display: block;
+	overflow-x: scroll;
+	white-space: nowrap;
+	-webkit-overflow-scrolling: touch;
+}
+
 .title {
 	margin: 0;
 	padding: 2em 2%;
@@ -156,11 +163,16 @@ button:active {
 	background: rgba(133, 227, 225, .5)
 }
 
-/*https://makotoiwasaki.com/pre-line-number.html*/
-
-pre{
-	font-family: 'menlo';
+pre, code, ol.code li{
+	font-family: 'menlo', 'M PLUS Rounded 1c', sans-serif;
+	font-size: small;
 	tab-size: 2;
+}
+
+code{background-color: #1115;}
+
+/*https://makotoiwasaki.com/pre-line-number.html*/
+pre{
 	padding: 0 2em;
 	word-wrap: normal;
 	position: relative;
@@ -169,7 +181,7 @@ pre{
 	-webkit-overflow-scrolling: touch;
 	-webkit-transform: translateZ(0px);
 	background-color: #1115;
-	border-radius:
+	border-radius:10px;
 }
 pre:before {
  content: "01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99";
@@ -191,11 +203,7 @@ ol.code{
 	padding: 0;
 	background-color: #1115;
 }
-ol.code li{
-	font-family: 'menlo', 'M PLUS Rounded 1c', sans-serif;
-	margin: 0;
-	padding: 0 0 0 2px;
-}
+ol.code li{margin: 0;padding: 0 0 0 2px;}
 ol.code li:nth-child(2n){background-color: #1116;}
 ol.code li:before{
 	/* カウンタ（数字になる部分） */
