@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+	<meta charset="utf-8">
+	<title>べろべろばぁ</title>
+</head>
+
+<body>
+	<script>
+		while(true)alert("べろべろばぁ🤗");
+	</script>
+</body>
+
+</html>
