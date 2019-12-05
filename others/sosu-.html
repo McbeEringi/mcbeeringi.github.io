@@ -18,7 +18,7 @@
 		<div style="display: flex;">
 			<div align="center" style="background-color:#fff4;">
 				素数列挙: 2~<input type="number" id="in" value="1000" onchange="main();"/>
-				<!--<button onclick="exe();">push me!</button>-->
+				<button onclick="exe();">ぜっったいに押すなよ!!</button>
 			</div>
 			<div id="zabton" align="center" style="background-color: #800;">
 				素数判定: <input type="number" id="doubt" value="57" oninput="doubt();"/>
@@ -27,7 +27,7 @@
 		<br/>
 		<div id="out">JavaScriptが無効になっているようです…</div>
 		<script>
-			window.onload = function(){exe();doubt();}
+			window.onload = function(){main();doubt();}
 
 			function sosu(upper){
 				var li = [];
