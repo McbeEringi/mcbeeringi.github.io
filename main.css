@@ -170,7 +170,7 @@ iframe.gl{
 	max-width:640px;
 	max-height:360px;
 	border:0 solid;
-	border-radius:5px;
+	border-radius:16px;
 	box-shadow:1px 1px 5px 1px #0008;
 }
 
