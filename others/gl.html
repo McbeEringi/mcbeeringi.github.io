@@ -31,7 +31,7 @@
 				<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
 				<input type="radio" name="model" value="2" id="r2"><label for="r2"> minecraft</label>
 			</form>
-			fps: <input type="number" id="fps" value="60" oninput="if(document.getElementById('fps').value!=0)fps = document.getElementById('fps').value;"><br>
+			fps: <input type="number" id="fps" value="60" oninput="if(this.value!=0)fps = this.value;"><br>
 			<button onclick="re();">compile</button>
 		</div>
 		<pre id="log" style="font-size:11px;color:#f00;"></pre>
