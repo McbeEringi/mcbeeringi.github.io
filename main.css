@@ -167,6 +167,8 @@ button:active {
 iframe.gl{
 	width:80vw;
 	height:calc(calc(80vw*9)/16);
+	max-width:640px;
+	max-height:360px;
 	border:0 solid;
 	border-radius:5px;
 	box-shadow:1px 1px 5px 1px #0008;
