@@ -1,0 +1,268 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<title>McbeEringi WebGL</title>
+		<!--https://wgld.org/d/webgl/w013.html-->
+		<script src="https://wgld.org/j/minMatrix.js" type="text/javascript"></script>
+		<!--https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html-->
+		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/base64.js"></script>
+		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.js"></script>
+		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.js"></script>
+		<style>
+			body,body *{margin:0;font-family:menlo,"sans-serif";word-wrap:break-word;}
+			button{margin:1vw;font-size:4vw;width:45vw;border:0px solid;border-radius: 1vw;box-shadow:0 0 1vw;}
+			button:hover,#url:hover{background-color:rgba(0,88,208,.5);}
+			button:active,#url:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 1vw 0 #aaa inset;}
+			canvas,textarea{width:100%;}
+			input[type=radio]{display:none;}
+			input[type="radio"]+label{color:#888;}
+			input[type="radio"]:hover+label{color:#aaa;}
+			input[type="radio"]:checked+label{color:#fff;}
+			#url{font-size:11px;border:1px solid;border-radius:3px;}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas"></canvas><br>
+		<div align="center">
+			<form id="model" style="background-color:#444;" onchange="radio();">
+				<span style="color:#fff;">model:</span>
+				<input type="radio" name="model" value="0" id="r0" checked><label for="r0"> blocks</label>
+				<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
+				<input type="radio" name="model" value="2" id="r2"><label for="r2"> minecraft</label>
+			</form>
+			fps: <input type="number" id="fps" value="60" oninput="if(document.getElementById('fps').value!=0)fps = document.getElementById('fps').value;"><br>
+			<button onclick="re();">compile</button>
+		</div>
+		<pre id="log" style="font-size:11px;color:#f00;"></pre>
+
+		vertex <br>
+		<textarea rows="16" id="vsh">
+attribute highp vec4 POSITION;
+attribute vec4 COLOR;
+uniform mat4 WORLDVIEWPROJ;
+varying vec4 color;
+varying highp vec3 cPos;
+
+void main(){
+	color = COLOR;
+	cPos = POSITION.xyz;
+	gl_Position = WORLDVIEWPROJ * POSITION;
+}</textarea><br>
+		fragment <br>
+		<textarea rows="16" id="fsh">
+#extension GL_OES_standard_derivatives : enable
+precision mediump float;
+
+uniform highp mat4 WORLDVIEWPROJ;
+uniform highp float TIME;
+varying vec4 color;
+varying highp vec3 cPos;
+
+void main(){
+	vec3 n = normalize(cross(dFdx(cPos),dFdy(cPos)));
+	vec3 l = normalize(vec3(2,3,1));
+	vec4 col = vec4(vec3(sin(TIME),sin(TIME+2.1),sin(TIME+4.2))*.5+.5, 1);
+	gl_FragColor = col*mix(color, vec4(vec3(max(dot(l,n),.1)),1), sin(TIME)*.5+.5);
+}</textarea>
+		<div id="url_t">url</div>
+		<div id="url" onclick="clipboard();"></div>
+		<div style="height:80vh"></div><!--キーボード用空白-->
+		<div align="center">
+			powered by WebGL1.0 <br>
+			<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+* <br>
+			　
+		</div>
+
+
+		<script>
+			url_i();
+			var url = location.href;
+			document.getElementById("url").innerHTML = url;
+			// https://wgld.org
+			var c = document.getElementById("canvas");
+			c.width = 1600;
+			c.height = 900;
+			var gl = c.getContext("webgl") || c.getContext("experimental-webgl");
+			gl.enable(gl.CULL_FACE);
+			gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
+			gl.enable(gl.DEPTH_TEST);
+			gl.depthFunc(gl.LEQUAL);
+			gl.getExtension("OES_standard_derivatives");
+
+			var prg = create_program(create_shader("vsh"), create_shader("fsh"));//シェダープログラム生成
+
+			var POSITION = gl.getAttribLocation(prg, "POSITION");//attributeLocationの取得
+			var COLOR = gl.getAttribLocation(prg, "COLOR");
+
+			var position_ = [
+				-1.,1.,-1.,1., 0.,1.,-1.,1.,
+				-1.,1.,0.,1., 0.,1.,0.,1.,
+
+				-1.,0.,-1.,1., 0.,0.,-1.,1., 1.,0.,-1.,1.,
+				-1.,0.,0.,1., 0.,0.,0.,1., 1.,0.,0.,1.,
+				-1.,0.,1.,1., 0.,0.,1.,1.,
+
+				-1.,-1.,-1.,1., 0.,-1.,-1.,1., 1.,-1.,-1.,1.,
+				-1.,-1.,0.,1., 0.,-1.,0.,1., 1.,-1.,0.,1.,
+				-1.,-1.,1.,1., 0.,-1.,1.,1.];
+			var color_ = [
+				.6,.6,.6,1., .8,.8,.8,1.,
+				.8,.8,.8,1., 1.,1.,1.,1.,
+
+				.4,.4,.4,1., .6,.6,.6,1., .8,.8,.8,1.,
+				.6,.6,.6,1., .8,.8,.8,1.,1.,1.,1.,1.,
+				.8,.8,.8,1., 1.,1.,1.,1.,
+
+				.2,.2,.2,1., .4,.4,.4,1., .6,.6,.6,1.,
+				.4,.4,.4,1., .6,.6,.6,1., .8,.8,.8,1.,
+				.6,.6,.6,1., .8,.8,.8,1.];
+			att(POSITION, position_, 4);
+			att(COLOR, color_, 4);
+
+			var index = [
+				2,1,0, 1,2,3,
+				7,3,2, 3,7,8, 8,1,3, 1,8,5, 5,0,1, 0,5,4, 4,2,0, 2,4,7,
+				10,8,7, 8,10,11, 8,6,5, 6,8,9,
+				18,11,10, 11,18,19, 19,8,11, 8,19,16, 16,9,8, 9,16,17, 17,6,9, 6,17,14,
+					14,5,6, 5,14,13, 13,4,5, 4,13,12, 12,7,4, 7,12,15, 15,10,7, 10,15,18,
+				13,15,12, 15,13,16, 14,16,13, 16,14,17, 16,18,15, 18,16,19
+			];
+			ibo(index);
+
+			//minMatrix.jsを用いた行列関連処理
+			var m = new matIV();//matIVオブジェクトを生成
+
+			//各種行列の生成と初期化
+			var WORLD = m.identity(m.create());
+			var VIEW = m.identity(m.create());
+			var PROJ = m.identity(m.create());
+			var WORLDVIEWPROJ = m.identity(m.create());
+			var FOG_COLOR = [.70,.82,.98,1.];
+
+			var TIME = 0;
+			var fps = document.getElementById("fps").value;
+			(function(){
+				TIME+=1/fps;
+				clear(FOG_COLOR);
+				m.lookAt([1.6*Math.sin(TIME*.5), 1.6, 2.4*Math.cos(TIME*.5)], [0, -0.5, 0], [0, 1, 0], VIEW);//ビュー座標変換行列
+				m.perspective(90, c.width / c.height, 0.1, 100, PROJ);//プロジェクション座標変換行列
+				m.multiply(PROJ, VIEW, WORLDVIEWPROJ);//各行列を掛け合わせ座標変換行列を完成させる
+				m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
+
+				var uniform = [//uniformLocationの取得
+					gl.getUniformLocation(prg, "WORLDVIEWPROJ"),
+					gl.getUniformLocation(prg, "TIME")];
+				gl.uniformMatrix4fv(uniform[0], false, WORLDVIEWPROJ);//uniformLocationへ座標変換行列を登録
+				gl.uniform1f(uniform[1], TIME);
+				gl.uniform4fv(gl.getUniformLocation(prg, "FOG_COLOR"),FOG_COLOR);
+
+				gl.drawElements(gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0);//モデルの描画
+				gl.flush();//コンテキストの再描画
+				setTimeout(arguments.callee, 1000/fps);
+			})();
+
+
+			function re(){
+				document.getElementById("log").innerHTML = "";
+				prg = create_program(create_shader("vsh"), create_shader("fsh"));
+				url_e();
+			}
+			function radio(){
+				alert(document.getElementById("model").model.value);
+			}
+			function url_i(){
+				// https://qiita.com/tonkatu_tanaka/items/99d167ded9330dbc4019
+				var pair=location.search.substring(1);
+				if(pair){
+					pair = pair.split('&');
+					var arg = new Object;
+					for(var i=0;pair[i];i++) {
+						var kv = pair[i].split('=');
+						arg[kv[0]]=kv[1];
+					}
+					console.log(arg);
+					if(arg.vsh)document.getElementById("vsh").innerHTML=zip_inflate(base64decode(unescape(arg.vsh)));
+					if(arg.fsh)document.getElementById("fsh").innerHTML=zip_inflate(base64decode(unescape(arg.fsh)));
+				}
+			}
+			function url_e(){
+				url = location.href.replace(/\?.*$/,"")+"?vsh="+escape(base64encode(zip_deflate(document.getElementById("vsh").value)))+"&fsh="+escape(base64encode(zip_deflate(document.getElementById("fsh").value)));
+				document.getElementById("url").innerHTML = url;
+				return url;
+			}
+			function clipboard(){
+				var disp = document.getElementById("url_t");
+				if (execCopy(url))disp.innerHTML = "copied!";
+				setTimeout(function(){disp.innerHTML = "url";}, 1000);
+			}
+			//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
+			function execCopy(string) {
+				// 空div 生成
+				var tmp = document.createElement("div");
+				// 選択用のタグ生成
+				var pre = document.createElement('pre');
+				// 親要素のCSSで user-select: none だとコピーできないので書き換える
+				pre.style.webkitUserSelect = 'auto';
+				pre.style.userSelect = 'auto';
+				tmp.appendChild(pre).textContent = string;
+				// 要素を画面外へ
+				var s = tmp.style;
+				s.position = 'fixed';
+				s.right = '200%';
+				// body に追加
+				document.body.appendChild(tmp);
+				// 要素を選択
+				document.getSelection().selectAllChildren(tmp);
+				// クリップボードにコピー
+				var result = document.execCommand("copy");
+				// 要素削除
+				document.body.removeChild(tmp);
+				return result;
+			}
+
+
+			function clear(c){
+				gl.clearColor(c[0],c[1],c[2],c[3]);
+				gl.clearDepth(1.);
+				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+			}
+			function create_shader(id){
+				if(id=="vsh")var shader = gl.createShader(gl.VERTEX_SHADER);
+				else if(id=="fsh")var shader = gl.createShader(gl.FRAGMENT_SHADER);
+
+				gl.shaderSource(shader, document.getElementById(id).value);
+				gl.compileShader(shader);
+
+				if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))return shader;
+				else document.getElementById("log").innerHTML += gl.getShaderInfoLog(shader);
+			}
+			function create_program(vsh, fsh){
+				var program = gl.createProgram();
+				gl.attachShader(program, vsh);
+				gl.attachShader(program, fsh);
+				gl.linkProgram(program);
+
+				document.getElementById("log").innerHTML += gl.getProgramInfoLog(program);
+				if(gl.getProgramParameter(program, gl.LINK_STATUS)){
+					gl.useProgram(program);
+					return program;
+				}
+			}
+			function att(loc, arr, str){
+				var vbo = gl.createBuffer();//バッファオブジェクトの生成
+				gl.bindBuffer(gl.ARRAY_BUFFER, vbo);//バッファをバインドする
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW);//バッファにデータをセット
+				//gl.bindBuffer(gl.ARRAY_BUFFER, null);//バッファのバインドを無効化
+				//gl.bindBuffer(gl.ARRAY_BUFFER, vbo);//VBOをバインド
+				gl.enableVertexAttribArray(loc);//attribute属性を有効にする
+				gl.vertexAttribPointer(loc, str, gl.FLOAT, false, 0, 0);//attribute属性を登録
+			}
+			function ibo(data){
+				var ibo = gl.createBuffer();//バッファオブジェクトの生成
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);//バッファをバインドする
+				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), gl.STATIC_DRAW);//バッファにデータをセット
+			}
+		</script>
+	</body>
+</html>
