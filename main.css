@@ -170,7 +170,6 @@ iframe.gl{
 	max-width:640px;
 	max-height:360px;
 	border:0 solid;
-	z-index:1;//safari
 	border-radius:5px;
 	box-shadow:1px 1px 5px 1px #0008;
 }
