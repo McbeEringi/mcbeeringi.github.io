@@ -24,20 +24,21 @@
 	</head>
 	<body>
 		<canvas id="canvas"></canvas><br>
-		<div align="center">
-			<form id="model" style="background-color:#444;" onchange="radio();">
-				<span style="color:#fff;">model:</span>
-				<input type="radio" name="model" value="0" id="r0" checked><label for="r0"> blocks</label>
-				<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
-				<input type="radio" name="model" value="2" id="r2"><label for="r2"> minecraft</label>
-			</form>
-			fps: <input type="number" id="fps" value="60" oninput="if(this.value!=0)fps = this.value;"><br>
-			<button onclick="re();">compile</button>
-		</div>
-		<pre id="log" style="font-size:11px;color:#f00;"></pre>
+		<div id="stuff">
+			<div align="center">
+				<form id="model" style="background-color:#444;" onchange="radio();">
+					<span style="color:#fff;">model:</span>
+					<input type="radio" name="model" value="0" id="r0" checked><label for="r0"> blocks</label>
+					<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
+					<input type="radio" name="model" value="2" id="r2"><label for="r2"> minecraft</label>
+				</form>
+				fps: <input type="number" id="fps" value="60" oninput="if(this.value!=0)fps = this.value;"><br>
+				<button onclick="re();">compile</button>
+			</div>
+			<pre id="log" style="font-size:11px;color:#f00;"></pre>
 
-		vertex <br>
-		<textarea rows="16" id="vsh">
+			vertex <br>
+			<textarea rows="16" id="vsh">
 attribute highp vec4 POSITION;
 attribute vec4 COLOR;
 uniform mat4 WORLDVIEWPROJ;
@@ -49,8 +50,8 @@ void main(){
 	cPos = POSITION.xyz;
 	gl_Position = WORLDVIEWPROJ * POSITION;
 }</textarea><br>
-		fragment <br>
-		<textarea rows="16" id="fsh">
+			fragment <br>
+			<textarea rows="16" id="fsh">
 #extension GL_OES_standard_derivatives : enable
 precision mediump float;
 
@@ -65,15 +66,14 @@ void main(){
 	vec4 col = vec4(vec3(sin(TIME),sin(TIME+2.1),sin(TIME+4.2))*.5+.5, 1);
 	gl_FragColor = col*mix(color, vec4(vec3(max(dot(l,n),.1)),1), sin(TIME)*.5+.5);
 }</textarea>
-		<div id="url_t">url</div>
-		<div id="url" onclick="clipboard();"></div>
-		<div style="height:80vh"></div><!--キーボード用空白-->
-		<div align="center">
-			powered by WebGL1.0 <br>
-			<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+* <br>
-			　
+			<div id="url_t">url</div>
+			<div id="url" onclick="clipboard();"></div>
+			<div style="height:80vh"></div><!--キーボード用空白-->
+			<div align="center">
+				powered by WebGL1.0 <br>
+				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+* <br>　
+			</div>
 		</div>
-
 
 		<script>
 			url_i();
@@ -184,10 +184,17 @@ void main(){
 					console.log(arg);
 					if(arg.vsh)document.getElementById("vsh").innerHTML=zip_inflate(base64decode(unescape(arg.vsh)));
 					if(arg.fsh)document.getElementById("fsh").innerHTML=zip_inflate(base64decode(unescape(arg.fsh)));
+					if(arg.fps)document.getElementById("fps").value=arg.fps;
+					if(arg.stuff)document.getElementById("stuff").style.display=arg.stuff;
 				}
 			}
 			function url_e(){
-				url = location.href.replace(/\?.*$/,"")+"?vsh="+escape(base64encode(zip_deflate(document.getElementById("vsh").value)))+"&fsh="+escape(base64encode(zip_deflate(document.getElementById("fsh").value)));
+				url = location.href.replace(/\?.*$/,"")
+					+"?vsh="+escape(base64encode(zip_deflate(document.getElementById("vsh").value)))
+					+"&fsh="+escape(base64encode(zip_deflate(document.getElementById("fsh").value)))
+					+"&fps="+document.getElementById("fps").value
+					+"&model="+document.getElementById("model").model.value;
+				//url += "&stuff=none";//iflame用
 				document.getElementById("url").innerHTML = url;
 				return url;
 			}
