@@ -1,0 +1,50 @@
+<html lang="jp">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<title>McbeEringi ESBE_2G</title>
+		<style>
+			html{font-family: "sans-serif";}
+			p{overflow:hidden;position:relative;margin:0;bottom:0px;}
+			.flex{display:flex;overflow:hidden;}
+		</style>
+	</head>
+	<body>
+		resolution: <input type="number" id="res" value="64" max="256">
+		<button onclick="main();">execute</button>
+		<div id="canvas"></div>
+		<script>
+			window.onload = main();
+			function clamp(x,a,b){return Math.min(Math.max(a,x),b);}
+			function saturate(x){return clamp(x,0,1);}
+			function smoothstep(a,b,x){x = saturate((x-a)/(b-a));return x*x*(3-2*x);}
+			function mix(a,b,x){return a*(1-x)+b*x;}
+			function step(a,x){return a<x?1:0;}
+			function length(x,y){return Math.sqrt(x*x+y*y);}
+			function fract(x){return x%1;}
+
+			function gl(x,y){
+				return smoothstep(-.3,.3,smoothstep(0,1,x)-y);
+			}
+			function main() {
+				var x=0; var y=1; var s=0; var out;
+				var res = document.getElementById("res").value;
+				document.getElementById("canvas").innerHTML ="";
+				var css =100/res;
+				css = "style='width:"+css+"vmin;height:"+css+"vmin;font-size:"+css+"vmin'";
+				for(; y>0; y-=1/res){
+					out=""; x=0;
+					for(; x<1; x+=1/res){
+						s=gl(x,y);
+						if(s<.25)out+="<p "+css+">░░</p>";
+						else if(s<.5) out+="<p "+css+">▒▒</p>";
+						else if(s<.75) out+="<p "+css+">▓▓</p>";
+						else out+="<p "+css+">██</p>";
+						s=0;
+					}
+					document.getElementById("canvas").innerHTML += "<div class='flex'>"+out+"</div>";
+				}
+			}
+		</script>
+	</body>
+</html>
