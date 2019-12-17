@@ -65,12 +65,11 @@ table {
 	overflow: hidden;
 	padding-top: 10px;
 	padding-bottom: 10px;
-}
-
-.col1:not(.flex), .col2:not(.flex) {
 	padding-left: 7px;
 	padding-right: 7px;
 }
+
+//.col1:not(.flex), .col2:not(.flex) {}
 
 .col1 {
 	background-color: #444;
@@ -81,7 +80,7 @@ table {
 }
 
 .pad4>* {
-	width: 24vw;
+	width: 24%;
 	min-width: 150px;
 	flex-grow: 1;
 }
@@ -92,20 +91,20 @@ table {
 }
 
 .pad3>* {
-	width: 33vw;
+	width: 33%;
 	min-width: 80px;
 	flex-grow: 1;
 }
 
 .pad2>* {
 	flex-grow: 1;
-	width: 49vw;
+	width: 49%;
 	min-width: 300px;
 }
 
-.pad2>*:first-child {
+/*.pad2>*:first-child {
 	margin-left: 10px;
-}
+}*/
 
 /*header*/
 header {
