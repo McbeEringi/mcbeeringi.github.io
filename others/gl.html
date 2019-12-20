@@ -28,9 +28,7 @@
 					<span style="color:#fff;">model:</span>
 					<input type="radio" name="model" value="0" id="r0" checked><label for="r0"> blocks</label>
 					<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
-					<!--
-					<input type="radio" name="model" value="2" id="r2"><label for="r2"> minecraft</label>
-					-->
+					<input type="radio" name="model" value="2" id="r2"><label for="r2"> coastal</label>
 				</form>
 				fps: <input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border"><br>
 				<button onclick="re();">compile</button>
@@ -122,6 +120,8 @@ void main(){
 			gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
 			gl.enable(gl.DEPTH_TEST);
 			gl.depthFunc(gl.LEQUAL);
+			gl.enable(gl.BLEND);
+			gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
 			gl.getExtension("OES_standard_derivatives");
 
 			var prg = create_program(create_shader("vsh"), create_shader("fsh"));//シェダープログラム生成
@@ -257,26 +257,18 @@ void main(){
 			}
 			//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
 			function execCopy(string) {
-				// 空div 生成
-				var tmp = document.createElement("div");
-				// 選択用のタグ生成
-				var pre = document.createElement("pre");
-				// 親要素のCSSで user-select: none だとコピーできないので書き換える
-				pre.style.webkitUserSelect = "auto";
+				var tmp = document.createElement("div");//空div 生成
+				var pre = document.createElement("pre");//選択用のタグ生成
+				pre.style.webkitUserSelect = "auto";//親要素のCSSでuser-select:noneだとコピーできないので書き換える
 				pre.style.userSelect = "auto";
 				tmp.appendChild(pre).textContent = string;
-				// 要素を画面外へ
-				var s = tmp.style;
+				var s = tmp.style;//要素を画面外へ
 				s.position = "fixed";
 				s.right = "200%";
-				// body に追加
-				document.body.appendChild(tmp);
-				// 要素を選択
-				document.getSelection().selectAllChildren(tmp);
-				// クリップボードにコピー
-				var result = document.execCommand("copy");
-				// 要素削除
-				document.body.removeChild(tmp);
+				document.body.appendChild(tmp);//bodyに追加
+				document.getSelection().selectAllChildren(tmp);//要素を選択
+				var result = document.execCommand("copy");//クリップボードにコピー
+				document.body.removeChild(tmp);//要素削除
 				return result;
 			}
 
