@@ -157,9 +157,10 @@ void main(){
 				document.getElementById("log").innerHTML = "";
 				prg = create_program(create_shader("vsh"), create_shader("fsh"));
 				url_e();
+				radio();
 			}
 			function radio(){
-				alert(document.getElementById("model").model.value);
+				//alert(document.getElementById("model").model.value);
 				pos[1]=2;
 				gl.bindBuffer(gl.ARRAY_BUFFER, pos_v);//バッファをバインドする
 				gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(pos));
