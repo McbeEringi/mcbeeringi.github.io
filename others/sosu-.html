@@ -2,30 +2,32 @@
 	<head>
 		<meta charset="utf-8">
 		<title>McbeEringi sosu-</title>
+		<link rel="stylesheet" type="text/css" href="../main.css">
+		<link href="https://fonts.googleapis.com/css?family=Quicksand:400|M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
 		<style>
 			body, input{
-				font-family: "menlo";
 				font-size: 14px;
-				background-color: #000;
 				color: #fff;
 				word-wrap: break-word;
 			}
-			div{margin:0 auto; width: 90%;}
+			div{margin:0 auto;}
 			input{border: 1px solid #444; border-radius: 5px; background-color: #0008;}
 		</style>
 	</head>
 	<body>
-		<div style="display: flex;">
-			<div align="center" style="background-color:#fff4;">
-				素数列挙: 2~<input type="number" id="in" value="1000" onchange="main();"/>
-				<button onclick="exe();">ぜっったいに押すなよ!!</button>
-			</div>
-			<div id="zabton" align="center" style="background-color: #800;">
-				素数判定: <input type="number" id="doubt" value="57" oninput="doubt();"/>
-			</div>
+		<header id="H"></header>
+		<p class="title">sosu-</p>
+		<div class="col2">
+			素数判定: <input type="number" id="doubt" value="57" oninput="doubt();"/>
+			<br>
+			素数列挙: 2~<input type="number" id="in" value="1000" onchange="main();"/>
 		</div>
-		<br/>
-		<div id="out">JavaScriptが無効になっているようです…</div>
+		<div class="col1">
+			<div id="out">JavaScriptが無効になっているようです…</div>
+			<button onclick="exe();">?</button>
+		</div>
+		<footer id="F"></footer>
+		<script src="../hf.js"></script>
 		<script>
 			window.onload = function(){main();doubt();}
 
@@ -65,9 +67,8 @@
 				return true;
 			}
 			function doubt() {
-				var rs = sosu_db(document.getElementById("doubt").value);
-				var div = document.getElementById("zabton");
-				if(rs) div.style = "background-color: #080;"
+				var div = document.getElementById("doubt");
+				if(sosu_db(div.value)) div.style = "background-color: #080;"
 				else div.style = "background-color: #800;"
 			}
 
