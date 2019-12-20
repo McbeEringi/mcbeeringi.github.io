@@ -103,7 +103,7 @@ void main(){
 				e.target.setSelectionRange(slct.left, slct.right)
 				return false
 			})
-			
+
 			// https://wgld.org
 			var c = document.getElementById("canvas");
 			c.width = 1600;
@@ -123,9 +123,8 @@ void main(){
 			var pos, col, index;
 			var pos_v = gl.createBuffer();
 			var col_v = gl.createBuffer();
-			var ibo = gl.createBuffer();
 			att([pos_v, col_v], [POSITION,COLOR], [4,4]);
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);//IBOをバインドして登録する
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());//IBOをバインドして登録する
 
 			radio();
 
@@ -283,7 +282,7 @@ void main(){
 				gl.shaderSource(shader, document.getElementById(id).value);
 				gl.compileShader(shader);
 				if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))return shader;
-				else document.getElementById("log").innerHTML += gl.getShaderInfoLog(shader);
+				else document.getElementById("log").innerHTML += id+" ERROR\n"+gl.getShaderInfoLog(shader);
 			}
 			function create_program(vsh, fsh){
 				var program = gl.createProgram();
