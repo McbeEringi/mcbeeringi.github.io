@@ -8,9 +8,9 @@
 		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.js"></script>
 		<style>
 			body,body *{background-color:#222;color:#fff;margin:0;font-family:menlo,"sans-serif";word-wrap:break-word;}
-			button{margin:1vw;font-size:4vw;width:45vw;border:0px solid;border-radius:1vw;box-shadow:0 0 1vw;}
-			button:hover,#url:hover{background-color:rgba(0,88,208,.5);}
-			button:active,#url:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 1vw 0 #aaa inset;}
+			button{margin:7px;font-size:24px;width:45vw;min-width:128px;border:0px solid;border-radius:5px;box-shadow:0 0 7px;}
+			button:hover{background-color:rgba(0,88,208,.5);}
+			button:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 7px 0 #aaa inset;}
 			canvas,textarea{width:100%;}
 			form *{background-color:#0000;}
 			input[type=radio]{display:none;}
@@ -28,9 +28,11 @@
 					<span style="color:#fff;">model:</span>
 					<input type="radio" name="model" value="0" id="r0" checked><label for="r0"> blocks</label>
 					<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
+					<!--
 					<input type="radio" name="model" value="2" id="r2"><label for="r2"> minecraft</label>
+					-->
 				</form>
-				fps: <input type="number" id="fps" value="60" oninput="if(this.value!=0)fps = this.value;" class="border"><br>
+				fps: <input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border"><br>
 				<button onclick="re();">compile</button>
 			</div>
 			<pre id="log" style="font-size:11px;color:#f00;"></pre>
@@ -62,9 +64,18 @@ void main(){
 	vec3 n = normalize(cross(dFdx(cPos),dFdy(cPos)));
 	gl_FragColor = color;//vec4(n*.5+.5,1);
 }</textarea>
-			<div id="url_t">url</div>
-			<div id="url" onclick="clipboard();" class="border" style="font-size:11px;margin-bottom:1vw;">(/ω＼)ﾐﾅｲﾃﾞ</div>
-			<div style="height:80vh"></div><!--キーボード用空白-->
+			<button id="url" onclick="clipboard();" class="border" style="font-size:18px;">copy url</button>
+			<div style="height:80vh">
+				available stuffs<br>
+				<p style="font-size:11px;margin-left:7px;">
+					#extension GL_OES_standard_derivatives : enable<br>
+					attribute highp vec4 POSITION;<br>
+					attribute highp vec4 COLOR;<br>
+					uniform highp float TIME;<br>
+					uniform highp vec4 FOG_COLOR;<br>
+					uniform highp mat4 WORLDVIEWPROJ;
+				</p>
+			</div><!--キーボード用空白-->
 			<div align="center">
 				powered by WebGL1.0 <br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+* <br>　
@@ -73,8 +84,6 @@ void main(){
 
 		<script>
 			url_i();
-			var url = location.href;
-			document.getElementById("url").innerHTML = url;
 
 			// https://qiita.com/laineus/items/12a220d2ab086931232d
 			const TAB_STR = '	'
@@ -124,8 +133,7 @@ void main(){
 			var pos_v = gl.createBuffer();
 			var col_v = gl.createBuffer();
 			att([pos_v, col_v], [POSITION,COLOR], [4,4]);
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());//IBOをバインドして登録する
-
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());//ibo
 			radio();
 
 			//minMatrix.jsを用いた行列関連処理
@@ -150,10 +158,12 @@ void main(){
 
 				var uniform = [//uniformLocationの取得
 					gl.getUniformLocation(prg, "WORLDVIEWPROJ"),
-					gl.getUniformLocation(prg, "TIME")];
+					gl.getUniformLocation(prg, "TIME"),
+					gl.getUniformLocation(prg, "FOG_COLOR")
+				];
 				gl.uniformMatrix4fv(uniform[0], false, WORLDVIEWPROJ);//uniformLocationへ座標変換行列を登録
 				gl.uniform1f(uniform[1], TIME);
-				gl.uniform4fv(gl.getUniformLocation(prg, "FOG_COLOR"),FOG_COLOR);
+				gl.uniform4fv(uniform[2], FOG_COLOR);
 				gl.drawElements(gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0);//モデルの描画
 				gl.flush();//コンテキストの再描画
 				setTimeout(arguments.callee, 1000/fps);
@@ -163,7 +173,6 @@ void main(){
 			function re(){
 				document.getElementById("log").innerHTML = "";
 				prg = create_program(create_shader("vsh"), create_shader("fsh"));
-				url_e();
 			}
 			function radio(){
 				var value = document.getElementById("model").model.value;
@@ -231,19 +240,20 @@ void main(){
 				}
 			}
 			function url_e(){
-				url = location.href.replace(/\?.*$/,"")
+				var fps = document.getElementById("fps").value;
+				var model = document.getElementById("model").model.value;
+				var url = location.href.replace(/\?.*$/,"")
 					+"?vsh="+btoa(zip_deflate(document.getElementById("vsh").value)).replace(/\+/g,"-").replace(/\//g,"_")
-					+"&fsh="+btoa(zip_deflate(document.getElementById("fsh").value)).replace(/\+/g,"-").replace(/\//g,"_")
-					+"&fps="+document.getElementById("fps").value
-					+"&model="+document.getElementById("model").model.value;
+					+"&fsh="+btoa(zip_deflate(document.getElementById("fsh").value)).replace(/\+/g,"-").replace(/\//g,"_");
+				if(fps!=60)url += "&fps="+fps;
+				if(model!=0)url += "&model="+model;
 				//url += "&stuff=none";//iflame用
-				document.getElementById("url").innerHTML = url;
 				return url;
 			}
 			function clipboard(){
-				var disp = document.getElementById("url_t");
-				if (execCopy(url))disp.innerHTML = "copied!";
-				setTimeout(function(){disp.innerHTML = "url";}, 1000);
+				var disp = document.getElementById("url");
+				if (execCopy(url_e()))disp.innerHTML = "copied!";
+				setTimeout(function(){disp.innerHTML = "copy url";}, 1000);
 			}
 			//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
 			function execCopy(string) {
