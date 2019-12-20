@@ -161,10 +161,10 @@ void main(){
 				// https://qiita.com/tonkatu_tanaka/items/99d167ded9330dbc4019
 				var pair=location.search.substring(1);
 				if(pair){
-					pair = pair.split('&');
+					pair = pair.split("&");
 					var arg = new Object;
 					for(var i=0;pair[i];i++) {
-						var kv = pair[i].split('=');
+						var kv = pair[i].split("=");
 						arg[kv[0]]=kv[1];
 					}
 					console.log(arg);
@@ -194,15 +194,15 @@ void main(){
 				// 空div 生成
 				var tmp = document.createElement("div");
 				// 選択用のタグ生成
-				var pre = document.createElement('pre');
+				var pre = document.createElement("pre");
 				// 親要素のCSSで user-select: none だとコピーできないので書き換える
-				pre.style.webkitUserSelect = 'auto';
-				pre.style.userSelect = 'auto';
+				pre.style.webkitUserSelect = "auto";
+				pre.style.userSelect = "auto";
 				tmp.appendChild(pre).textContent = string;
 				// 要素を画面外へ
 				var s = tmp.style;
-				s.position = 'fixed';
-				s.right = '200%';
+				s.position = "fixed";
+				s.right = "200%";
 				// body に追加
 				document.body.appendChild(tmp);
 				// 要素を選択
