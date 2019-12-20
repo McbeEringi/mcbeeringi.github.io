@@ -3,11 +3,8 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi WebGL</title>
-		<!--https://wgld.org/d/webgl/w013.html-->
-		<script src="https://wgld.org/j/minMatrix.js" type="text/javascript"></script>
-		<!--https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html
-		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/base64.js"></script>-->
-		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.js"></script>
+		<script src="https://wgld.org/j/minMatrix.js" type="text/javascript">// https://wgld.org/d/webgl/w013.html</script>
+		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.js">// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
 		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.js"></script>
 		<style>
 			body,body *{margin:0;font-family:menlo,"sans-serif";word-wrap:break-word;}
@@ -226,10 +223,8 @@ void main(){
 			function create_shader(id){
 				if(id=="vsh")var shader = gl.createShader(gl.VERTEX_SHADER);
 				else if(id=="fsh")var shader = gl.createShader(gl.FRAGMENT_SHADER);
-
 				gl.shaderSource(shader, document.getElementById(id).value);
 				gl.compileShader(shader);
-
 				if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))return shader;
 				else document.getElementById("log").innerHTML += gl.getShaderInfoLog(shader);
 			}
@@ -238,7 +233,6 @@ void main(){
 				gl.attachShader(program, vsh);
 				gl.attachShader(program, fsh);
 				gl.linkProgram(program);
-
 				document.getElementById("log").innerHTML += gl.getProgramInfoLog(program);
 				if(gl.getProgramParameter(program, gl.LINK_STATUS)){
 					gl.useProgram(program);
@@ -252,7 +246,6 @@ void main(){
 				gl.bindBuffer(gl.ARRAY_BUFFER, null);//バッファのバインドを無効化
 				return vbo;//生成したVBOを返して終了
 			}
-
 			function att(vbo, attL, attS){
 				for(var i in vbo){//引数として受け取った配列を処理する
 					gl.bindBuffer(gl.ARRAY_BUFFER, vbo[i]);//バッファをバインドする
