@@ -95,12 +95,12 @@ void main(){
 			var POSITION = gl.getAttribLocation(prg, "POSITION");//attributeLocationの取得
 			var COLOR = gl.getAttribLocation(prg, "COLOR");
 
-			var position_ = [
+			var pos = [
 				-1.,1.,-1.,1., 0.,1.,-1.,1.,  -1.,1.,0.,1., 0.,1.,0.,1.,
 				-1.,0.,-1.,1., 0.,0.,-1.,1., 1.,0.,-1.,1.,  -1.,0.,0.,1., 0.,0.,0.,1., 1.,0.,0.,1.,  -1.,0.,1.,1., 0.,0.,1.,1.,
 				-1.,-1.,-1.,1., 0.,-1.,-1.,1., 1.,-1.,-1.,1.,  -1.,-1.,0.,1., 0.,-1.,0.,1., 1.,-1.,0.,1.,  -1.,-1.,1.,1., 0.,-1.,1.,1.
 			];
-			var color_ = [
+			var col = [
 				.6,.6,.6,1., .8,.8,.8,1.,  .8,.8,.8,1., 1.,1.,1.,1.,
 				.4,.4,.4,1., .6,.6,.6,1., .8,.8,.8,1.,  .6,.6,.6,1., .8,.8,.8,1.,1.,1.,1.,1.,  .8,.8,.8,1., 1.,1.,1.,1.,
 				.2,.2,.2,1., .4,.4,.4,1., .6,.6,.6,1.,  .4,.4,.4,1., .6,.6,.6,1., .8,.8,.8,1.,  .6,.6,.6,1., .8,.8,.8,1.
@@ -110,9 +110,12 @@ void main(){
 				10,8,7, 8,10,11, 8,6,5, 6,8,9,  18,11,10, 11,18,19, 19,8,11, 8,19,16, 16,9,8, 9,16,17, 17,6,9, 6,17,14, 14,5,6, 5,14,13, 13,4,5, 4,13,12, 12,7,4, 7,12,15, 15,10,7, 10,15,18,
 				13,15,12, 15,13,16, 14,16,13, 16,14,17, 16,18,15, 18,16,19
 			];
-			att(POSITION, position_, 4);
-			att(COLOR, color_, 4);
-			ibo(index);
+			var pos_v = vbo(pos);
+	    var col_v = vbo(col);
+			att([pos_v, col_v], [POSITION,COLOR], [4,4]);
+
+			var ibo = ibo(index);
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);//IBOをバインドして登録する
 
 			//minMatrix.jsを用いた行列関連処理
 			var m = new matIV();//matIVオブジェクトを生成
@@ -140,7 +143,6 @@ void main(){
 				gl.uniformMatrix4fv(uniform[0], false, WORLDVIEWPROJ);//uniformLocationへ座標変換行列を登録
 				gl.uniform1f(uniform[1], TIME);
 				gl.uniform4fv(gl.getUniformLocation(prg, "FOG_COLOR"),FOG_COLOR);
-
 				gl.drawElements(gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0);//モデルの描画
 				gl.flush();//コンテキストの再描画
 				setTimeout(arguments.callee, 1000/fps);
@@ -154,6 +156,9 @@ void main(){
 			}
 			function radio(){
 				alert(document.getElementById("model").model.value);
+				pos[1]=2;
+				gl.bindBuffer(gl.ARRAY_BUFFER, pos_v);//バッファをバインドする
+				gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(pos));
 			}
 			function url_i(){
 				// https://qiita.com/tonkatu_tanaka/items/99d167ded9330dbc4019
@@ -240,21 +245,27 @@ void main(){
 					return program;
 				}
 			}
-			function att(loc, arr, str){
-				gl.bindBuffer(gl.ARRAY_BUFFER, null);
+			function vbo(data){
 				var vbo = gl.createBuffer();//バッファオブジェクトの生成
 				gl.bindBuffer(gl.ARRAY_BUFFER, vbo);//バッファをバインドする
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW);//バッファにデータをセット
-				//gl.bindBuffer(gl.ARRAY_BUFFER, null);//バッファのバインドを無効化
-				//gl.bindBuffer(gl.ARRAY_BUFFER, vbo);//VBOをバインド
-				gl.enableVertexAttribArray(loc);//attribute属性を有効にする
-				gl.vertexAttribPointer(loc, str, gl.FLOAT, false, 0, 0);//attribute属性を登録
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);//バッファにデータをセット
+				gl.bindBuffer(gl.ARRAY_BUFFER, null);//バッファのバインドを無効化
+				return vbo;//生成したVBOを返して終了
+			}
+
+			function att(vbo, attL, attS){
+				for(var i in vbo){//引数として受け取った配列を処理する
+					gl.bindBuffer(gl.ARRAY_BUFFER, vbo[i]);//バッファをバインドする
+					gl.enableVertexAttribArray(attL[i]);//attributeLocationを有効にする
+					gl.vertexAttribPointer(attL[i], attS[i], gl.FLOAT, false, 0, 0);//attributeLocationを通知し登録する
+				}
 			}
 			function ibo(data){
-				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 				var ibo = gl.createBuffer();//バッファオブジェクトの生成
 				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);//バッファをバインドする
 				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), gl.STATIC_DRAW);//バッファにデータをセット
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);//バッファのバインドを無効化
+				return ibo;//生成したIBOを返して終了
 			}
 		</script>
 	</body>
