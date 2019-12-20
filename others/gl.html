@@ -7,16 +7,22 @@
 		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.js">// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
 		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.js"></script>
 		<style>
-			body,body *{margin:0;font-family:menlo,"sans-serif";word-wrap:break-word;}
-			button{margin:1vw;font-size:4vw;width:45vw;border:0px solid;border-radius: 1vw;box-shadow:0 0 1vw;}
+			body,body *{
+				background-color:#000;
+				color:#fff;margin:0;
+				font-family:menlo,"sans-serif";
+				word-wrap:break-word;
+			}
+			button{margin:1vw;font-size:4vw;width:45vw;border:0px solid;border-radius:1vw;box-shadow:0 0 1vw;}
 			button:hover,#url:hover{background-color:rgba(0,88,208,.5);}
 			button:active,#url:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 1vw 0 #aaa inset;}
 			canvas,textarea{width:100%;}
+			form *{background-color:#0000;}
 			input[type=radio]{display:none;}
 			input[type="radio"]+label{color:#888;}
 			input[type="radio"]:hover+label{color:#aaa;}
 			input[type="radio"]:checked+label{color:#fff;}
-			#url{font-size:11px;border:1px solid;border-radius:3px;}
+			.border{border:0px solid;border-radius: 0.5vw;box-shadow:0 0 1vw;}
 		</style>
 	</head>
 	<body>
@@ -29,13 +35,13 @@
 					<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
 					<input type="radio" name="model" value="2" id="r2"><label for="r2"> minecraft</label>
 				</form>
-				fps: <input type="number" id="fps" value="60" oninput="if(this.value!=0)fps = this.value;"><br>
+				fps: <input type="number" id="fps" value="60" oninput="if(this.value!=0)fps = this.value;" class="border"><br>
 				<button onclick="re();">compile</button>
 			</div>
 			<pre id="log" style="font-size:11px;color:#f00;"></pre>
 
 			vertex <br>
-			<textarea rows="16" id="vsh">
+			<textarea rows="16" id="vsh" class="border">
 attribute highp vec4 POSITION;
 attribute vec4 COLOR;
 uniform mat4 WORLDVIEWPROJ;
@@ -48,7 +54,7 @@ void main(){
 	gl_Position = WORLDVIEWPROJ * POSITION;
 }</textarea><br>
 			fragment <br>
-			<textarea rows="16" id="fsh">
+			<textarea rows="16" id="fsh" class="border">
 #extension GL_OES_standard_derivatives : enable
 precision mediump float;
 
@@ -64,7 +70,7 @@ void main(){
 	gl_FragColor = col*mix(color, vec4(vec3(max(dot(l,n),.1)),1), sin(TIME)*.5+.5);
 }</textarea>
 			<div id="url_t">url</div>
-			<div id="url" onclick="clipboard();"></div>
+			<div id="url" onclick="clipboard();" class="border" style="font-size:11px;margin-bottom:1vw;"></div>
 			<div style="height:80vh"></div><!--キーボード用空白-->
 			<div align="center">
 				powered by WebGL1.0 <br>
