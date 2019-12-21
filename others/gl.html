@@ -83,6 +83,7 @@ void main(){
 
 		<script>
 			url_i();
+			var glpre = "#define round(x) floor(x+.5)\n";
 
 			// https://qiita.com/laineus/items/12a220d2ab086931232d
 			const TAB_STR = '	'
@@ -282,7 +283,7 @@ void main(){
 			function create_shader(id){
 				if(id=="vsh")var shader = gl.createShader(gl.VERTEX_SHADER);
 				else if(id=="fsh")var shader = gl.createShader(gl.FRAGMENT_SHADER);
-				gl.shaderSource(shader, document.getElementById(id).value);
+				gl.shaderSource(shader, glpre+document.getElementById(id).value);
 				gl.compileShader(shader);
 				if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))return shader;
 				else document.getElementById("log").innerHTML += id+" ERROR\n"+gl.getShaderInfoLog(shader);
