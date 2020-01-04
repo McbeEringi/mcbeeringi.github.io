@@ -281,7 +281,7 @@ void main(){
 				if(e_fps!=60)url += "&fps="+e_fps;
 				if(e_c_c!="1.0,1.0,1.0,1.0")url += "&c_c="+e_c_c;
 				if(e_model!=0)url += "&model="+e_model;
-				if(ifl)url += "&stuff=none";//iflame用
+				if(ifl)url = "<iframe style='width:1600;height:900' class='gl' src='"+url+"&stuff=none'>";//iflame用
 				return url;
 			}
 			function clipboard(){
