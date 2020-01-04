@@ -227,6 +227,17 @@ void main(){
 						21,15,20,15,21,16, 22,16,21,16,22,17, 23,17,22,17,23,18, 24,18,23,18,24,19
 					];
 				}
+				else if(value==2){
+					pos = [
+						0.,0.,0.,1., 1.,0.,0.,1., 0.,1.,0.,1., 0.,0.,1.,1.
+					];
+					col = [
+						0.,0.,0.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.
+					];
+					index = [
+						0,2,1, 0,3,2, 0,1,3, 1,2,3
+					];
+				}
 				gl.bindBuffer(gl.ARRAY_BUFFER, pos_v);
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
 				gl.bindBuffer(gl.ARRAY_BUFFER, col_v);
