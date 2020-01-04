@@ -273,6 +273,7 @@ void main(){
 			}
 			function url_e(){
 				var e_fps = document.getElementById("fps").value;
+				if(ifl && e_fps>30)e_fps = 30;
 				var e_c_c = document.getElementById("c_c").value.replace(/\s+/g,"");
 				var e_model = document.getElementById("model").model.value;
 				var url = location.href.replace(/\?.*$/,"")
