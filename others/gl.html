@@ -18,6 +18,8 @@
 			input[type="radio"]:hover+label{color:#aaa;}
 			input[type="radio"]:checked+label{color:#fff;}
 			.border{border:1px solid #888;border-radius: 5px;}
+			.toggle{margin:auto 1px;width:50px;height:29px;border-radius:14.5px;background-color:#ccc;box-shadow:0 0 4px 0 #0008 inset;}
+			.toggle *{margin:0 auto;position:relative;top:1px;width:27px;height:27px;border-radius:50%;background-color:#fff;box-shadow:0 0 4px 0 #0004;}
 		</style>
 	</head>
 	<body>
@@ -62,7 +64,11 @@ void main(){
 	vec3 n = normalize(cross(dFdx(cPos),dFdy(cPos)));
 	gl_FragColor = color;//vec4(n*.5+.5,1);
 }</textarea>
-			<button id="url" onclick="clipboard();" class="border" style="font-size:18px;">copy url</button>
+			<div style="display:flex;">
+				<button id="url" onclick="clipboard();" class="border" style="font-size:18px;">copy url</button>
+				<span style="margin:auto 0 auto 15px;">iflame mode:</span>
+				<div id="ifl" class="toggle" onclick="ifl=ifl?false:true;toggle(ifl, this);"><div></div></div>
+			</div>
 			<div style="height:80vh">
 				available stuffs<br>
 				<p style="font-size:11px;margin-left:7px;">
@@ -84,12 +90,14 @@ void main(){
 			</div><!--キーボード用空白-->
 			<div align="center">
 				powered by WebGL1.0 <br>
+				display: 1600px * 900px <br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+* <br>　
 			</div>
 		</div>
 
 		<script>
-			url_i();
+			var ifl = false;
+			url_i();toggle(ifl,document.getElementById("ifl"));
 			var glpre = "#define round(x) floor(x+.5)\n";
 
 			// https://qiita.com/laineus/items/12a220d2ab086931232d
@@ -273,7 +281,7 @@ void main(){
 				if(e_fps!=60)url += "&fps="+e_fps;
 				if(e_c_c!="1.0,1.0,1.0,1.0")url += "&c_c="+e_c_c;
 				if(e_model!=0)url += "&model="+e_model;
-				//url += "&stuff=none";//iflame用
+				if(ifl)url += "&stuff=none";//iflame用
 				return url;
 			}
 			function clipboard(){
@@ -296,6 +304,15 @@ void main(){
 				var result = document.execCommand("copy");//クリップボードにコピー
 				document.body.removeChild(tmp);//要素削除
 				return result;
+			}
+			function toggle(b, e){
+				if(b){
+					e.style = "background-color:#4f4;"
+					e.children[0].style = "left:10.5px;"
+				}else{
+					e.style = "background-color:#888;"
+					e.children[0].style = "left:-10.5px;"
+				}
 			}
 
 
