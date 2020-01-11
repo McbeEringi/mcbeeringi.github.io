@@ -11,16 +11,19 @@
 			button{margin:7px;font-size:24px;width:45vw;min-width:128px;border:0px solid;border-radius:5px;box-shadow:0 0 7px;}
 			button:hover{background-color:rgba(0,88,208,.5);}
 			button:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 7px 0 #aaa inset;}
-			canvas,textarea{width:100%;}
+			canvas,textarea{width:100%;}textarea{resize:none;}
 			form *{background-color:#0000;}
 			input[type=radio]{display:none;}
 			input[type="radio"]+label{color:#888;}
 			input[type="radio"]:hover+label{color:#aaa;}
 			input[type="radio"]:checked+label{color:#fff;}
-			.border{border:1px solid #888;border-radius: 5px;}
-			.toggle{margin:auto 1px;width:50px;height:29px;border-radius:14.5px;background-color:#888;box-shadow:0 0 4px 0 #0008 inset;transition:.2s;}
+			.border{border:1px solid #888;border-radius:5px;}
+
+			.toggle{margin:auto 1px;width:50px;height:29px;border-radius:14.5px;background-color:#444;box-shadow:0 0 4px 0 #0008 inset;transition:.5s;}
 			.toggle *{margin:0 auto;position:relative;top:1px;width:27px;height:27px;background-color:#fff;border-radius:50%;box-shadow:0 0 4px 0 #0004;left:-10.5px;transition:.2s;}
 			.toggle.on{background-color:#4f4;}.toggle.on *{left:10.5px;}
+
+			.pd{font-size:13px;background-color:#fff4;text-align:center;border-radius:0px 0px 5px 5px;}
 		</style>
 	</head>
 	<body>
@@ -40,7 +43,7 @@
 			<pre id="log" style="font-size:11px;color:#f00;"></pre>
 
 			vertex <br>
-			<textarea rows="16" id="vsh" class="border">
+			<textarea rows="16" id="vsh" class="border" style="border-radius:5px 5px 0px 0px;">
 attribute highp vec4 POSITION;
 attribute vec4 COLOR;
 uniform mat4 WORLDVIEWPROJ;
@@ -51,9 +54,9 @@ void main(){
 	color = COLOR;
 	cPos = POSITION.xyz;
 	gl_Position = WORLDVIEWPROJ * POSITION;
-}</textarea><br>
+}</textarea><div class="pd border">▲▼工事中</div>
 			fragment <br>
-			<textarea rows="16" id="fsh" class="border">
+			<textarea rows="16" id="fsh" class="border" style="border-radius:5px 5px 0px 0px;">
 #extension GL_OES_standard_derivatives : enable
 precision mediump float;
 
@@ -64,7 +67,7 @@ varying highp vec3 cPos;
 void main(){
 	vec3 n = normalize(cross(dFdx(cPos),dFdy(cPos)));
 	gl_FragColor = color;//vec4(n*.5+.5,1);
-}</textarea>
+}</textarea><div class="pd border">▲▼工事中</div>
 			<div style="display:flex;">
 				<button id="url" onclick="clipboard();" class="border" style="font-size:18px;">copy url</button>
 				<span style="margin:auto 0 auto 15px;">iflame mode:</span>
