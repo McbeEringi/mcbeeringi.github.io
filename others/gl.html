@@ -18,8 +18,9 @@
 			input[type="radio"]:hover+label{color:#aaa;}
 			input[type="radio"]:checked+label{color:#fff;}
 			.border{border:1px solid #888;border-radius: 5px;}
-			.toggle{margin:auto 1px;width:50px;height:29px;border-radius:14.5px;background-color:#ccc;box-shadow:0 0 4px 0 #0008 inset;}
-			.toggle *{margin:0 auto;position:relative;top:1px;width:27px;height:27px;border-radius:50%;background-color:#fff;box-shadow:0 0 4px 0 #0004;}
+			.toggle{margin:auto 1px;width:50px;height:29px;border-radius:14.5px;background-color:#888;box-shadow:0 0 4px 0 #0008 inset;transition:.2s;}
+			.toggle *{margin:0 auto;position:relative;top:1px;width:27px;height:27px;background-color:#fff;border-radius:50%;box-shadow:0 0 4px 0 #0004;left:-10.5px;transition:.2s;}
+			.toggle.on{background-color:#4f4;}.toggle.on *{left:10.5px;}
 		</style>
 	</head>
 	<body>
@@ -67,7 +68,7 @@ void main(){
 			<div style="display:flex;">
 				<button id="url" onclick="clipboard();" class="border" style="font-size:18px;">copy url</button>
 				<span style="margin:auto 0 auto 15px;">iflame mode:</span>
-				<div id="ifl" class="toggle" onclick="ifl=ifl?false:true;toggle(ifl, this);"><div></div></div>
+				<div id="ifl" class="toggle" onclick="ifl=ifl?false:true;if(ifl){this.className='toggle on';}else{this.className='toggle';}"><div></div></div>
 			</div>
 			<div style="height:80vh">
 				available stuffs<br>
@@ -97,7 +98,7 @@ void main(){
 
 		<script>
 			var ifl = false;
-			url_i();toggle(ifl,document.getElementById("ifl"));
+			url_i();
 			var glpre = "#define round(x) floor(x+.5)\n";
 
 			// https://qiita.com/laineus/items/12a220d2ab086931232d
@@ -305,15 +306,6 @@ void main(){
 				var result = document.execCommand("copy");//クリップボードにコピー
 				document.body.removeChild(tmp);//要素削除
 				return result;
-			}
-			function toggle(b, e){
-				if(b){
-					e.style = "background-color:#4f4;"
-					e.children[0].style = "left:10.5px;"
-				}else{
-					e.style = "background-color:#888;"
-					e.children[0].style = "left:-10.5px;"
-				}
 			}
 
 
