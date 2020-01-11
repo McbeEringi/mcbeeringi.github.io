@@ -1,0 +1,91 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<meta name="format-detection" content="telephone=no">
+		<title>McbeEringi brainf*ck</title>
+		<style>
+			*{background-color:#222;color:#fff;font-family:menlo,"sans-serif";}
+			body *{margin:0;}
+			tr *{text-align:center;width:20px;height:20px;font-size:22px;}
+			tr#m *{font-size:11px;border:1px solid;border-radius:2px;}
+			div{background-color:#333;}div:hover{background-color:#234;}div:active{background-color:#245;}
+			.b{overflow:hidden;padding:1 5;margin:5;border-radius:3px;box-shadow:0 0 2px;text-align:center;}
+		</style>
+	</head>
+	<body>
+		<h1>工事中…</h1><h2>ascii convのみ機能します</h2><br>
+		brainfuck interpreter<br><br>
+		<table><tr id="m">
+			<td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+			<td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+			<td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+			<td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+			<td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+			<td>0</td><td>0</td>
+		</tr><tr id="p">
+			<td>▲</td><td></td><td></td><td></td><td></td>
+			<td></td><td></td><td></td><td></td><td></td>
+			<td></td><td></td><td></td><td></td><td></td>
+			<td></td><td></td><td></td><td></td><td></td>
+			<td></td><td></td><td></td><td></td><td></td>
+			<td></td><td></td>
+		</tr></table><br>
+		<br>
+		<div style="display:flex;background-color:#0000;">
+			<p style="margin:auto 0;">output</p>
+			<div class="b" onclick="ps">⏯</div>
+			<div class="b" onclick="f">⏭</div>
+			<div class="b" onclick="r">⏹</div>
+		</div>
+		<div id="out">a</div>
+		<br>
+		<p>code ><+-[].,</p>
+		<div id="code" style="min-height:100px;" contenteditable="true">
+		aaaa
+		</div>
+		<br>
+		<br>
+		<p>ascii conv</p>
+		<div id="str" contenteditable="true">example</div>
+		<div class="b" style="width:100px;" onclick="conv();">↓convert↓</div>
+		<div id="asc">0</div>
+
+		<script>
+			//var play = false;
+			function ps() {
+				//play = play?false:true;
+				intp();
+			}
+			function intp() {
+				var code = document.getElementById("code").innerText;
+				var out = document.getElementById("out");
+				var p = document.getElementById("p");
+				var ppos = 0;
+				out.innerHTML = "";
+				for(var i=0;i<code.length;i++){
+					switch (code.charAt(i)) {
+						case ">":
+
+							ppos += 1;
+							break;
+						case "<":
+							ppos -= 1;
+							break;
+						default:
+							break;
+					}
+				}
+			}
+			function conv(){
+				document.getElementById("asc").innerHTML = "";
+				var str = document.getElementById("str").innerText;
+				var c;
+				for(var i=0;i<str.length;i++){
+					c = str.charCodeAt(i);
+					document.getElementById("asc").innerHTML += (c<256?c:str.charAt(i))+" ";
+				}
+			}
+		</script>
+	</body>
+</html>
