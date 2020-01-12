@@ -11,8 +11,9 @@
 			button{margin:7px;font-size:24px;width:45vw;min-width:128px;border:0px solid;border-radius:5px;box-shadow:0 0 7px;}
 			button:hover{background-color:rgba(0,88,208,.5);}
 			button:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 7px 0 #aaa inset;}
-			canvas,textarea{width:100%;}textarea{resize:none;}
+			canvas,textarea{width:100%;}textarea{resize:vertical;}
 			form *{background-color:#0000;}
+			input{max-width:100%;}
 			input[type=radio]{display:none;}
 			input[type="radio"]+label{color:#888;}
 			input[type="radio"]:hover+label{color:#aaa;}
@@ -26,7 +27,7 @@
 			.pd{font-size:13px;background-color:#fff4;text-align:center;border-radius:0px 0px 5px 5px;}
 		</style>
 	</head>
-	<body>
+	<body style="overflow-x:hidden;">
 		<canvas id="canvas">JavaScriptが無効になっているようです…</canvas><br>
 		<div id="stuff">
 			<div align="center">
@@ -36,8 +37,10 @@
 					<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
 					<input type="radio" name="model" value="2" id="r2"><label for="r2"> coastal</label>
 				</form>
-				fps: <input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border"><br>
-				CURRENT_COLOR: <input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"><br>
+				<label>fps:<input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;"></label>
+				<label>CURRENT_COLOR:<input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"></label><br>
+				<label>cam_pos:<input type="text" id="c_pos" value="1.6*Math.sin(TIME*.5), 1.6, 2.4*Math.cos(TIME*.5)" onchange="c_pos=this.value" class="border" style="width:32em;"></label><br>
+				<label>cam_lookat:<input type="text" id="c_la" value="0.0, -0.5, 0.0" onchange="c_la=this.value" class="border"></label><br>
 				<button onclick="re();">compile</button>
 			</div>
 			<pre id="log" style="font-size:11px;color:#f00;"></pre>
@@ -68,7 +71,7 @@ void main(){
 	vec3 n = normalize(cross(dFdx(cPos),dFdy(cPos)));
 	gl_FragColor = color;//vec4(n*.5+.5,1);
 }</textarea><div class="pd border">▲▼工事中</div>
-			<div style="display:flex;">
+			<div style="display:flex;flex-wrap:wrap;">
 				<button id="url" onclick="clipboard();" class="border" style="font-size:18px;">copy url</button>
 				<span style="margin:auto 0 auto 15px;">iflame mode:</span>
 				<div id="ifl" class="toggle" onclick="ifl=ifl?false:true;if(ifl){this.className='toggle on';}else{this.className='toggle';}"><div></div></div>
@@ -170,10 +173,12 @@ void main(){
 			var TIME = 0;
 			var fps = document.getElementById("fps").value;
 			var c_c = document.getElementById("c_c").value.split(",");
+			var c_pos = document.getElementById("c_pos").value;
+			var c_la = document.getElementById("c_la").value;
 			(function(){
 				TIME+=1/fps;
 				clear(FOG_COLOR);
-				m.lookAt([1.6*Math.sin(TIME*.5), 1.6, 2.4*Math.cos(TIME*.5)], [0, -0.5, 0], [0, 1, 0], VIEW);//ビュー座標変換行列
+				m.lookAt(eval("["+c_pos+"]"), eval("["+c_la+"]"), [0, 1, 0], VIEW);//ビュー座標変換行列
 				m.perspective(90, c.width / c.height, 0.1, 100, PROJ);//プロジェクション座標変換行列
 				m.multiply(PROJ, VIEW, WORLDVIEWPROJ);//各行列を掛け合わせ座標変換行列を完成させる
 				m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
@@ -198,6 +203,68 @@ void main(){
 				document.getElementById("log").innerHTML = "";
 				prg = create_program(create_shader("vsh"), create_shader("fsh"));
 			}
+			function url_i(){
+				// https://qiita.com/tonkatu_tanaka/items/99d167ded9330dbc4019
+				var pair=location.search.substring(1);
+				if(pair){
+					pair = pair.split("&");
+					var arg = new Object;
+					for(var i=0;pair[i];i++) {
+						var kv = pair[i].split("=");
+						arg[kv[0]]=kv[1];
+					}
+					console.log(arg);
+					if(arg.vsh)document.getElementById("vsh").innerHTML=unescape(zip_inflate(atob(arg.vsh.replace(/-/g,"+").replace(/_/g,"/"))));
+					if(arg.fsh)document.getElementById("fsh").innerHTML=unescape(zip_inflate(atob(arg.fsh.replace(/-/g,"+").replace(/_/g,"/"))));
+					if(arg.fps)document.getElementById("fps").value=arg.fps;
+					if(arg.c_c)document.getElementById("c_c").value=arg.c_c.replace(/,/g,", ");
+					if(arg.c_pos)document.getElementById("c_pos").value=atob(arg.c_pos.replace(/-/g,"+").replace(/_/g,"/")).replace(/,/g,", ");
+					if(arg.c_la)document.getElementById("c_la").value=atob(arg.c_la.replace(/-/g,"+").replace(/_/g,"/")).replace(/,/g,", ");
+					if(arg.model){var model = document.getElementById("model").model;model[0].checked=false;model[arg.model].checked=true;}
+					if(arg.stuff)document.getElementById("stuff").style.display=arg.stuff;
+				}
+			}
+			function url_e(){
+				var e_fps = document.getElementById("fps").value;
+				if(ifl && e_fps>30)e_fps = 30;
+				var e_c_c = document.getElementById("c_c").value.replace(/\s+/g,"");
+				var e_c_pos = document.getElementById("c_pos").value.replace(/\s+/g,"");
+				var e_c_la = document.getElementById("c_la").value.replace(/\s+/g,"");
+				var e_model = document.getElementById("model").model.value;
+				var url = location.href.replace(/\?.*$/,"")
+					+"?vsh="+btoa(zip_deflate(escape(document.getElementById("vsh").value))).replace(/\+/g,"-").replace(/\//g,"_")
+					+"&fsh="+btoa(zip_deflate(escape(document.getElementById("fsh").value))).replace(/\+/g,"-").replace(/\//g,"_");
+				if(e_fps!=60)url += "&fps="+e_fps;
+				if(e_c_c!="1.0,1.0,1.0,1.0")url += "&c_c="+e_c_c;
+				if(e_c_pos!="1.6*Math.sin(TIME*.5),1.6,2.4*Math.cos(TIME*.5)")url += "&c_pos="+btoa(e_c_pos).replace(/\+/g,"-").replace(/\//g,"_");
+				if(e_c_la!="0.0,-0.5,0.0")url += "&c_la="+btoa(e_c_la).replace(/\+/g,"-").replace(/\//g,"_");
+				if(e_model!=0)url += "&model="+e_model;
+				if(ifl)url = "<iframe style='width:1600;height:900' class='gl' src='"+url+"&stuff=none'>";//iflame用
+				return url;
+			}
+			function clipboard(){
+				var disp = document.getElementById("url");
+				if (execCopy(url_e()))disp.innerHTML = "copied!";
+				setTimeout(function(){disp.innerHTML = "copy url";}, 1000);
+			}
+			//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
+			function execCopy(string) {
+				var tmp = document.createElement("div");//空div 生成
+				var pre = document.createElement("pre");//選択用のタグ生成
+				pre.style.webkitUserSelect = "auto";//親要素のCSSでuser-select:noneだとコピーできないので書き換える
+				pre.style.userSelect = "auto";
+				tmp.appendChild(pre).textContent = string;
+				var s = tmp.style;//要素を画面外へ
+				s.position = "fixed";
+				s.right = "200%";
+				document.body.appendChild(tmp);//bodyに追加
+				document.getSelection().selectAllChildren(tmp);//要素を選択
+				var result = document.execCommand("copy");//クリップボードにコピー
+				document.body.removeChild(tmp);//要素削除
+				return result;
+			}
+
+
 			function radio(){
 				var value = document.getElementById("model").model.value;
 				if(value==0){
@@ -256,62 +323,6 @@ void main(){
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(col), gl.STATIC_DRAW);
 				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(index), gl.STATIC_DRAW);
 			}
-			function url_i(){
-				// https://qiita.com/tonkatu_tanaka/items/99d167ded9330dbc4019
-				var pair=location.search.substring(1);
-				if(pair){
-					pair = pair.split("&");
-					var arg = new Object;
-					for(var i=0;pair[i];i++) {
-						var kv = pair[i].split("=");
-						arg[kv[0]]=kv[1];
-					}
-					console.log(arg);
-					if(arg.vsh)document.getElementById("vsh").innerHTML=unescape(zip_inflate(atob(arg.vsh.replace(/-/g,"+").replace(/_/g,"/"))));
-					if(arg.fsh)document.getElementById("fsh").innerHTML=unescape(zip_inflate(atob(arg.fsh.replace(/-/g,"+").replace(/_/g,"/"))));
-					if(arg.fps)document.getElementById("fps").value=arg.fps;
-					if(arg.c_c)document.getElementById("c_c").value=arg.c_c.replace(/,/g,", ");
-					if(arg.model){var model = document.getElementById("model").model;model[0].checked=false;model[arg.model].checked=true;}
-					if(arg.stuff)document.getElementById("stuff").style.display=arg.stuff;
-				}
-			}
-			function url_e(){
-				var e_fps = document.getElementById("fps").value;
-				if(ifl && e_fps>30)e_fps = 30;
-				var e_c_c = document.getElementById("c_c").value.replace(/\s+/g,"");
-				var e_model = document.getElementById("model").model.value;
-				var url = location.href.replace(/\?.*$/,"")
-					+"?vsh="+btoa(zip_deflate(escape(document.getElementById("vsh").value))).replace(/\+/g,"-").replace(/\//g,"_")
-					+"&fsh="+btoa(zip_deflate(escape(document.getElementById("fsh").value))).replace(/\+/g,"-").replace(/\//g,"_");
-				if(e_fps!=60)url += "&fps="+e_fps;
-				if(e_c_c!="1.0,1.0,1.0,1.0")url += "&c_c="+e_c_c;
-				if(e_model!=0)url += "&model="+e_model;
-				if(ifl)url = "<iframe style='width:1600;height:900' class='gl' src='"+url+"&stuff=none'>";//iflame用
-				return url;
-			}
-			function clipboard(){
-				var disp = document.getElementById("url");
-				if (execCopy(url_e()))disp.innerHTML = "copied!";
-				setTimeout(function(){disp.innerHTML = "copy url";}, 1000);
-			}
-			//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
-			function execCopy(string) {
-				var tmp = document.createElement("div");//空div 生成
-				var pre = document.createElement("pre");//選択用のタグ生成
-				pre.style.webkitUserSelect = "auto";//親要素のCSSでuser-select:noneだとコピーできないので書き換える
-				pre.style.userSelect = "auto";
-				tmp.appendChild(pre).textContent = string;
-				var s = tmp.style;//要素を画面外へ
-				s.position = "fixed";
-				s.right = "200%";
-				document.body.appendChild(tmp);//bodyに追加
-				document.getSelection().selectAllChildren(tmp);//要素を選択
-				var result = document.execCommand("copy");//クリップボードにコピー
-				document.body.removeChild(tmp);//要素削除
-				return result;
-			}
-
-
 			function clear(c){
 				gl.clearColor(c[0],c[1],c[2],c[3]);
 				gl.clearDepth(1.);
