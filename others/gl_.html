@@ -39,8 +39,8 @@
 				</form>
 				<label>fps:<input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;"></label>
 				<label>CURRENT_COLOR:<input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"></label><br>
-				<label>cam_rot:<input type="text" id="c_rot" value="0.5, 0.5, 0.0" onchange="c_rot=this.value.split(',')" class="border" style="width:32em;"></label><br>
-				<label>cam_offset:<input type="text" id="c_os" value="0.0, 0.0, 0.0" onchange="c_os=this.value.split(',')" class="border"></label><br>
+				<label>cam_pos:<input type="text" id="c_pos" value="1.6*Math.sin(TIME*.5), 1.6, 2.4*Math.cos(TIME*.5)" onchange="c_pos=this.value" class="border" style="width:32em;"></label><br>
+				<label>cam_lookat:<input type="text" id="c_la" value="0.0, -0.5, 0.0" onchange="c_la=this.value" class="border"></label><br>
 				<button onclick="re();">compile</button>
 			</div>
 			<pre id="log" style="font-size:11px;color:#f00;"></pre>
@@ -74,7 +74,7 @@ void main(){
 			<div style="display:flex;flex-wrap:wrap;">
 				<button id="url" onclick="clipboard();" class="border" style="font-size:18px;">copy url</button>
 				<span style="margin:auto 0 auto 15px;">iflame mode:</span>
-				<div id="ifl" class="toggle" onclick="ifl=ifl?false:true;if(ifl)this.className='toggle on';else this.className='toggle';"><div></div></div>
+				<div id="ifl" class="toggle" onclick="ifl=ifl?false:true;if(ifl){this.className='toggle on';}else{this.className='toggle';}"><div></div></div>
 			</div>
 			<div style="height:80vh">
 				available stuffs<br>
@@ -159,7 +159,7 @@ void main(){
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());//ibo
 			radio();
 
-			//minMatrixb.jsを用いた行列関連処理
+			//minMatrix.jsを用いた行列関連処理
 			//各種行列の生成と初期化
 			var m = new matIV();
 			var WORLD = m.identity(m.create());
@@ -171,20 +171,15 @@ void main(){
 			var TIME = 0;
 			var fps = document.getElementById("fps").value;
 			var c_c = document.getElementById("c_c").value.split(",");
-			var c_rot = document.getElementById("c_rot").value.split(",");
-			var c_os = document.getElementById("c_os").value.split(",");
+			var c_pos = document.getElementById("c_pos").value;
+			var c_la = document.getElementById("c_la").value;
 			(function(){
 				TIME+=1/fps;
 				clear(FOG_COLOR);
-
-				m.lookAt([0,0,5], c_os, [0,1,0], VIEW);//ビュー座標変換行列
-				m.perspective(70, c.width / c.height, 0.1, 100, PROJ);//プロジェクション座標変換行列
+				m.lookAt(eval("["+c_pos+"]"), eval("["+c_la+"]"), [0, 1, 0], VIEW);//ビュー座標変換行列
+				m.perspective(90, c.width / c.height, 0.1, 100, PROJ);//プロジェクション座標変換行列
 				m.multiply(PROJ, VIEW, WORLDVIEWPROJ);//各行列を掛け合わせ座標変換行列を完成させる
-				m.identity(WORLD);
-				m.rotate(WORLD, c_rot[0], [1, 0, 0], WORLD);
-				m.rotate(WORLD, c_rot[1]*TIME, [0, 1, 0], WORLD);
-				m.rotate(WORLD, c_rot[2], [0, 0, 1], WORLD);
-			m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
+				m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
 
 				var uniform = [//uniformLocationの取得
 					gl.getUniformLocation(prg, "WORLDVIEWPROJ"),
@@ -221,8 +216,8 @@ void main(){
 					if(arg.fsh)document.getElementById("fsh").innerHTML=unescape(zip_inflate(atob(arg.fsh.replace(/-/g,"+").replace(/_/g,"/"))));
 					if(arg.fps)document.getElementById("fps").value=arg.fps;
 					if(arg.c_c)document.getElementById("c_c").value=arg.c_c.replace(/,/g,", ");
-					if(arg.c_rot)document.getElementById("c_rot").value=arg.c_rot.replace(/,/g,", ");
-					if(arg.c_os)document.getElementById("c_os").value=arg.c_os.replace(/,/g,", ");
+					if(arg.c_pos)document.getElementById("c_pos").value=atob(arg.c_pos.replace(/-/g,"+").replace(/_/g,"/")).replace(/,/g,", ");
+					if(arg.c_la)document.getElementById("c_la").value=atob(arg.c_la.replace(/-/g,"+").replace(/_/g,"/")).replace(/,/g,", ");
 					if(arg.model){var model = document.getElementById("model").model;model[0].checked=false;model[arg.model].checked=true;}
 					if(arg.stuff)document.getElementById("stuff").style.display=arg.stuff;
 				}
@@ -231,16 +226,16 @@ void main(){
 				var e_fps = document.getElementById("fps").value;
 				if(ifl && e_fps>30)e_fps = 30;
 				var e_c_c = document.getElementById("c_c").value.replace(/\s+/g,"");
-				var e_c_rot = document.getElementById("c_rot").value.replace(/\s+/g,"");
-				var e_c_os = document.getElementById("c_os").value.replace(/\s+/g,"");
+				var e_c_pos = document.getElementById("c_pos").value.replace(/\s+/g,"");
+				var e_c_la = document.getElementById("c_la").value.replace(/\s+/g,"");
 				var e_model = document.getElementById("model").model.value;
 				var url = location.href.replace(/\?.*$/,"")
 					+"?vsh="+btoa(zip_deflate(escape(document.getElementById("vsh").value))).replace(/\+/g,"-").replace(/\//g,"_")
 					+"&fsh="+btoa(zip_deflate(escape(document.getElementById("fsh").value))).replace(/\+/g,"-").replace(/\//g,"_");
 				if(e_fps!=60)url += "&fps="+e_fps;
 				if(e_c_c!="1.0,1.0,1.0,1.0")url += "&c_c="+e_c_c;
-				if(e_c_rot!="0.5,0.5,0.0")url += "&c_rot="+e_c_rot;
-				if(e_c_os!="0.0,0.0,0.0")url += "&c_os="+e_c_os;
+				if(e_c_pos!="1.6*Math.sin(TIME*.5),1.6,2.4*Math.cos(TIME*.5)")url += "&c_pos="+btoa(e_c_pos).replace(/\+/g,"-").replace(/\//g,"_");
+				if(e_c_la!="0.0,-0.5,0.0")url += "&c_la="+btoa(e_c_la).replace(/\+/g,"-").replace(/\//g,"_");
 				if(e_model!=0)url += "&model="+e_model;
 				if(ifl)url = "<iframe style='width:1600;height:900' class='gl' src='"+url+"&stuff=none'>";//iflame用
 				return url;
