@@ -39,7 +39,7 @@
 				</form>
 				<label>fps:<input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;"></label>
 				<label>CURRENT_COLOR:<input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"></label><br>
-				<label>cam_rot:<input type="text" id="c_rot" value="0.5, 0.5, 0.0" onchange="c_rot=this.value.split(',')" class="border" style="width:32em;"></label><br>
+				<label>cam_rot:<input type="text" id="c_rot" value="0.5, 0.5*TIME, 0.0" onchange="c_rot=this.value" class="border" style="width:32em;"></label><br>
 				<label>cam_offset:<input type="text" id="c_os" value="0.0, 0.0, 0.0" onchange="c_os=this.value.split(',')" class="border"></label><br>
 				<button onclick="re();">compile</button>
 			</div>
@@ -96,6 +96,7 @@ void main(){
 			</div><!--キーボード用空白-->
 			<div align="center">
 				powered by WebGL1.0 <br>
+				thanks to <a href="https://wgld.org">wgld.org</a> <br>
 				display: 1600px * 900px <br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+* <br>　
 			</div>
@@ -171,7 +172,8 @@ void main(){
 			var TIME = 0;
 			var fps = document.getElementById("fps").value;
 			var c_c = document.getElementById("c_c").value.split(",");
-			var c_rot = document.getElementById("c_rot").value.split(",");
+			var c_rot = document.getElementById("c_rot").value;
+			var c_rot_;
 			var c_os = document.getElementById("c_os").value.split(",");
 			(function(){
 				TIME+=1/fps;
@@ -181,10 +183,11 @@ void main(){
 				m.perspective(70, c.width / c.height, 0.1, 100, PROJ);//プロジェクション座標変換行列
 				m.multiply(PROJ, VIEW, WORLDVIEWPROJ);//各行列を掛け合わせ座標変換行列を完成させる
 				m.identity(WORLD);
-				m.rotate(WORLD, c_rot[0], [1, 0, 0], WORLD);
-				m.rotate(WORLD, c_rot[1]*TIME, [0, 1, 0], WORLD);
-				m.rotate(WORLD, c_rot[2], [0, 0, 1], WORLD);
-			m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
+				c_rot_ = eval("["+c_rot+"]");
+				m.rotate(WORLD, c_rot_[0], [1, 0, 0], WORLD);
+				m.rotate(WORLD, c_rot_[1], [0, 1, 0], WORLD);
+				m.rotate(WORLD, c_rot_[2], [0, 0, 1], WORLD);
+				m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
 
 				var uniform = [//uniformLocationの取得
 					gl.getUniformLocation(prg, "WORLDVIEWPROJ"),
@@ -239,7 +242,7 @@ void main(){
 					+"&fsh="+btoa(zip_deflate(escape(document.getElementById("fsh").value))).replace(/\+/g,"-").replace(/\//g,"_");
 				if(e_fps!=60)url += "&fps="+e_fps;
 				if(e_c_c!="1.0,1.0,1.0,1.0")url += "&c_c="+e_c_c;
-				if(e_c_rot!="0.5,0.5,0.0")url += "&c_rot="+e_c_rot;
+				if(e_c_rot!="0.5,0.5*TIME,0.0")url += "&c_rot="+e_c_rot;
 				if(e_c_os!="0.0,0.0,0.0")url += "&c_os="+e_c_os;
 				if(e_model!=0)url += "&model="+e_model;
 				if(ifl)url = "<iframe style='width:1600;height:900' class='gl' src='"+url+"&stuff=none'>";//iflame用
