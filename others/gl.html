@@ -12,6 +12,7 @@
 			button:hover{background-color:rgba(0,88,208,.5);}
 			button:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 7px 0 #aaa inset;}
 			canvas,textarea{width:100%;}textarea{resize:vertical;}
+			p{font-size:11px;margin-left:7px;background-color:rgba(0,0,0,0);}
 			form *{background-color:rgba(0,0,0,0);}
 			input{max-width:100%;}
 			input[type=radio]{display:none;}
@@ -73,12 +74,12 @@ void main(){
 }</textarea><div class="pd border">▲▼工事中</div>
 			<div style="display:flex;flex-wrap:wrap;">
 				<button id="url" onclick="clipboard();" class="border" style="font-size:18px;">copy url</button>
-				<span style="margin:auto 0 auto 15px;">iflame mode:</span>
+				<span style="margin:auto 0 auto 15px;background-color:rgba(0,0,0,0);">iflame mode:</span>
 				<div id="ifl" class="toggle" onclick="ifl=ifl?false:true;if(ifl)this.className='toggle on';else this.className='toggle';"><div></div></div>
 			</div>
 			<div style="height:80vh">
 				available stuffs<br>
-				<p style="font-size:11px;margin-left:7px;">
+				<p>
 					#extension GL_OES_standard_derivatives : enable<br>
 					attribute highp vec4 POSITION;<br>
 					attribute highp vec4 COLOR;<br>
@@ -88,7 +89,7 @@ void main(){
 					uniform highp mat4 WORLDVIEWPROJ;
 				</p><br>
 				TODO<br>
-				<p style="font-size:11px;margin-left:7px;">
+				<p>
 					toggle of FOG_COLOR, cull & blend<br>
 					more models<br>
 					model import
