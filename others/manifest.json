@@ -3,11 +3,11 @@
 	"short_name": "GLSL",
 	"description": "A simple GLSL compiler powerd by WebGL1\nauthor: @mcbeeringi",
 	"icons": [{
-			"src": "/img/gl_512.png",
+			"src": "img/gl_512.png",
 			"sizes": "512x512",
 			"type": "image/png"
 		},{
-			"src": "/img/gl_192.png",
+			"src": "img/gl_192.png",
 			"sizes": "192x192",
 			"type": "image/png"
 		}],
