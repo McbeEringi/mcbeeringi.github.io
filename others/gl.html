@@ -2,6 +2,18 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+		<!--iOS-->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+		<meta name="apple-mobile-web-app-title" content="GLSL">
+		<link rel="apple-touch-icon" href="img/gl.png">
+		<!--Android-->
+		<link rel="manifest" href="manifest.json">
+		<script>
+			if ('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then((reg) => {console.log('Service worker registered.', reg);});}
+		</script>
+
 		<title>McbeEringi WebGL</title>
 		<script src="https://wgld.org/j/minMatrix.js" type="text/javascript">// https://wgld.org/d/webgl/w013.html</script>
 		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.js">// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
