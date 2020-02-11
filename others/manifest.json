@@ -12,7 +12,7 @@
 			"type": "image/png"
 		}],
 	"start_url": "gl.html",
-	"display": "standalone",
+	"display": "fullscreen",
 	"theme_color": "#888",
 	"background_color": "#222"
 }
