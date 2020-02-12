@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<script src='https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js'></script>
+		<script src="https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js"></script>
 		<style>
 			*{
 				font-family: sans-serif;
@@ -22,10 +22,28 @@
 	</head>
 	<body>
 		<h1>OCR!</h1>
+		<div id="ready"></div>
 		<label class="file">
-			D&D又はクリックして選択<br>
-			<input type="file" name="img" accept="image/png, image/jpeg" onchange="fname.innerText=this.value.split('\\').pop();fname.innerText=fname.innerText?fname.innerText:'　'">
+			D&amp;D又はクリックして選択<br>
+			<input type="file" name="img" accept="image/png, image/jpeg" onchange="fname.textContent=this.value.split('\\').pop();fname.textContent=fname.textContent?fname.textContent:'　'">
 			<div id="fname">　</div>
 		</label>
-	</body>
+		<img id="img" src="img/test.png" width=50%>
+		<div id="msg"></div>
+		<div id="s"></div>
+
+		<script>
+			Tesseract.recognize('img/ready.jpg','jpn',{
+				logger:m => document.getElementById("ready").textContent="準備中… "+m.progress*100+"%"
+				}).then(({data:{text}})=>document.getElementById("ready").textContent=text);
+			Tesseract.recognize(document.getElementById("img"),'jpn',{
+				logger:(m) => {document.getElementById("msg").innerText=m.status+"…\n"+m.progress*100+"%";}
+				}).then(
+					({data:{text}}) => {
+						document.getElementById("msg").textContent="done!";
+						document.getElementById("s").textContent=text;
+					}
+				);
+		</script>
+		</body>
 </html>
