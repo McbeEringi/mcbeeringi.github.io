@@ -24,7 +24,7 @@
 			button{margin:7px;font-size:24px;width:45vw;min-width:128px;border:0px solid;border-radius:5px;box-shadow:0 0 7px;}
 			button:hover{background-color:rgba(0,88,208,.5);}
 			button:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 7px 0 #aaa inset;}
-			canvas,textarea{width:100%;}textarea{resize:vertical;}
+			canvas,textarea{width:100%;}textarea{resize:vertical;border-radius:5px;}
 			p{font-size:11px;margin-left:7px;background-color:rgba(0,0,0,0);user-select:text;-webkit-user-select:text;}
 			form *{background-color:rgba(0,0,0,0);}
 			input{max-width:100%;}
@@ -38,7 +38,8 @@
 			.toggle *{margin:0 auto;position:relative;top:1px;width:27px;height:27px;background-color:#fff;border-radius:50%;box-shadow:0 0 4px 0 #0004;left:-10.5px;transition:.2s;}
 			.toggle.on{background-color:#4f4;}.toggle.on *{left:10.5px;}
 
-			.pd{font-size:13px;background-color:rgba(255,255,255,.25);text-align:center;border-radius:0px 0px 5px 5px;}
+			.menu{width:50px;height:50px;margin-top:20px;border-radius:30%;background-color:#444;border:solid 1px;position:sticky;bottom:0;float:right;transition:.1s;}
+			.menu.on{background-color:#888;}
 		</style>
 	</head>
 	<body style="overflow-x:hidden;">
@@ -60,37 +61,33 @@
 			<pre id="log" style="font-size:11px;color:#f00;"></pre>
 
 			vertex <br>
-			<textarea rows="16" id="vsh" class="border" style="border-radius:5px 5px 0px 0px;">
+			<textarea rows="16" id="vsh" class="border">
 attribute highp vec4 POSITION;
 attribute vec4 COLOR;
 uniform mat4 WORLDVIEWPROJ;
 varying vec4 color;
-varying highp vec3 cPos;
 
 void main(){
 	color = COLOR;
-	cPos = POSITION.xyz;
 	gl_Position = WORLDVIEWPROJ * POSITION;
-}</textarea><div class="pd border">▲▼工事中</div>
+}</textarea>
 			fragment <br>
-			<textarea rows="16" id="fsh" class="border" style="border-radius:5px 5px 0px 0px;">
+			<textarea rows="16" id="fsh" class="border">
 #extension GL_OES_standard_derivatives : enable
 precision mediump float;
 
 uniform highp float TIME;
 varying vec4 color;
-varying highp vec3 cPos;
 
 void main(){
-	vec3 n = normalize(cross(dFdx(cPos),dFdy(cPos)));
-	gl_FragColor = color;//vec4(n*.5+.5,1);
-}</textarea><div class="pd border">▲▼工事中</div>
+	gl_FragColor = color;
+}</textarea>
 			<div style="display:flex;flex-wrap:wrap;">
 				<button id="url" onclick="clipboard();" class="border" style="font-size:18px;">copy url</button>
 				<span style="margin:auto 0 auto 15px;background-color:rgba(0,0,0,0);">iflame mode:</span>
 				<div id="ifl" class="toggle" onclick="ifl=ifl?false:true;if(ifl)this.className='toggle on';else this.className='toggle';"><div></div></div>
 			</div>
-			<div style="height:80vh">
+			<div>
 				available stuffs<br>
 				<p>
 					#extension GL_OES_standard_derivatives : enable<br>
@@ -107,7 +104,10 @@ void main(){
 					more models<br>
 					model import
 				</p>
-			</div><!--キーボード用空白-->
+			</div>
+			<!---<div class="menu" onclick="menu=menu?false:true;if(menu)this.className='menu on';else this.className='menu';">
+
+			</div>-->
 			<div align="center">
 				powered by WebGL1.0 <br>
 				thanks to <a href="https://wgld.org" target="_blank">wgld.org</a> <br>
@@ -117,7 +117,7 @@ void main(){
 		</div>
 
 		<script>
-			var ifl = false;
+			var {ifl,menu} = false;
 			url_i();
 			var glpre = "#define round(x) floor(x+.5)\n";
 
