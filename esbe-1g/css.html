@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style>
+		.tri{/*https://www.granfairs.com/blog/staff/make-triangle-with-css*/
+			content: "";
+			width: 0;
+			height: 0;
+			border-right: 15px solid transparent;
+			border-bottom: 25.9808px solid #b2ce54;
+			border-left: 15px solid transparent;
+		}
+		.box{width:100%;height:200px;border: dotted 5px #4cc;}
+
+		:root{
+			--tst: .5s;
+			--bcol: #888;
+		}
+		.menu{
+			padding-bottom: 5px;
+			position: sticky;
+			float: right;
+			float: right;
+			bottom: 0;
+			width: 50px;
+			height: 50px;
+			background-color: #fff;
+			border-radius: 50%;
+			transition: var(--tst);
+			z-index: 0;
+		}
+		.menu::before{
+			content: "";
+			width: 50px;
+			height: 25px;
+			border-radius: 50px 50px 0 0;
+			transform-origin: bottom;
+			position: absolute;
+			background-color: var(--bcol);
+			transition: var(--tst);
+			z-index: 0;
+		}
+		.menu::after{
+			content: "";
+			width: 50px;
+			height: 25px;
+			border-radius: 0 0 50px 50px;
+			transform-origin: top;
+			position: absolute;
+			top: 25px;
+			background-color: var(--bcol);
+			transition: var(--tst);
+			z-index: 0;
+		}
+		.menusub{
+			position: relative;
+			width: 40px;
+			height: 40px;
+			top:5px;
+			left:5px;
+			background-color: #fff;
+			border-radius: 50%;
+			z-index: 1;
+		}
+		.menusub::before{
+			content: "";
+			width: 0;
+			height: 0;
+			border-right: 15px solid transparent;
+			border-bottom: 25.9808px solid #b2ce54;
+			border-left: 15px solid transparent;
+			transition: var(--tst);
+			position: absolute;
+			top: 2px;
+			left: 5px;
+			z-index: 1;
+		}
+		.menusub::after{
+			content: "";
+			width: 0;
+			height: 25px;
+			background-color: #fff;
+			position: absolute;
+			top: -5px;
+			right: -10px;
+			transition: var(--tst);
+			z-index: 0;
+		}
+		.menub{
+			position: relative;
+			float: right;
+			width: 5px;
+			height: 0px;
+			top: -15px;
+			background-color: var(--bcol);
+			transition: var(--tst);
+			z-index: 1;
+		}
+		.menu.on{}
+		.menu.on::before{transform: rotateZ(-360deg);}
+		.menu.on::after{transform: rotateZ(-180deg);}
+		.menu.on .menusub{}
+		.menu.on .menusub::before{transform: rotateZ(-180deg);}
+		.menu.on .menusub::after{width: 70px;}
+		.menub.on{height: 200px;top: -215px;}/*menu length*/
+	</style>
+</head>
+
+<body>
+	<script>
+		var menu = false;
+	</script>
+	<div class="">
+		<div class="box">0</div>
+		<div class="box">1</div>
+		<div class="box">2</div>
+		<div class="box">3</div>
+		<div class="box">4</div>
+		<div class="menu" onclick="menu=menu?false:true;if(menu){this.className='menu on';menub.className='menub on';}else{this.className='menu';menub.className='menub';}">
+				<div class="menusub"></div>
+				<div class="menub" id="menub"></div>
+		</div>
+		<div class="box">example</div>
+	</div>
+</body>
+</html>
