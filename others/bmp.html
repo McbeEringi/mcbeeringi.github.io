@@ -5,39 +5,16 @@
 	<meta charset="utf-8">
 	<title>bmp</title>
 	<style>
-		* {
-			color: #fff;
-		}
-
-		.flex {
-			display: flex;
-			overflow: hidden;
-		}
-
-		p {
-			font-size: 40px;
-			margin: 0;
-			position: relative;
-			bottom: 0px;
-		}
-
-		#disp {
-			border: 1px solid;
-		}
-
-		input {
-			background: #0000;
-		}
-
-		@font-face {
-			font-family: "custom";
-			src: url(custom.ttf) format("truetype");
-		}
+		* {color: #fff;}
+		.flex {display: flex;overflow: hidden;}
+		p {font-size: 40px;margin: 0;position: relative;bottom: 0px;}
+		#disp {border: 1px solid;}
+		input {background: #0000;}
+		@font-face {font-family: "custom";src: url(custom.ttf) format("truetype");}
 	</style>
 </head>
 
 <body>
-	※ダウンロードして使うことを前提に作られています<br>
 	画像サイズ<input id="imgs" type="number" value="800" onchange="ims();document.getElementById('imgs2').value=this.value/16;">px^2<br>
 	(1文字あたりのスペース:<output id="imgs2">50</output>px^2)<br>
 
@@ -47,7 +24,7 @@
 	フォントオフセット<input id="fontoSl" type="range" value="0" min="0" max="50" step="1" oninput="document.getElementById('fonto').value=this.value;foo();">
 	<input id="fonto" type="number" value="0" oninput="document.getElementById('fontoSl').value=this.value;foo()"><br>
 
-	フォント名<input id="fontf" value="sans-serif" oninput="document.body.style.fontFamily=this.value" onchange="render();"> customと入力すると同じ階層のcustom.tffが反映されます<br>
+	フォント名<input id="fontf" value="sans-serif" oninput="document.body.style.fontFamily=this.value" onchange="render();"> customを入力すると同じ階層のcustom.ttfが反映されます<br>
 	<!--デフォルトのcustom.ttfは"8:51:22 pm"さんの"851tegaki_zatsu_normal_0883.ttf"を使用しています
 		https://pm85122.onamae.jp/851fontpage.html-->
 

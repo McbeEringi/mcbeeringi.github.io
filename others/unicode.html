@@ -7,74 +7,30 @@
 	<title>McbeEringi unicode_converter</title>
 	<link href="https://fonts.googleapis.com/css?family=Quicksand:400|M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../main.css">
+	<style>
+		h3{margin:0;}
+		.box{width:100%;min-height:100px;border:solid 1px #fff;color:#fff;user-select:all;-webkit-userselect:all;}
+	</style>
 </head>
 
 <body>
 	<header id="H"></header>
 	<p class="title">unicode converter</p>
-
-	<h3 class="col1" style="padding-bottom:2%;">input<br>
-		<textarea rows="10" id="input"></textarea>
-	</h3>
-	<div class="col2" style="padding:2%;">
-		<button type="button" onclick="decode();">decode</button>
-		<button type="button" onclick="encode();">encode</button>
-		<button type="button" onclick="clipboard();" id="clip_button">copy to clipboard</button>
+	<div class="col1">
+		<h3>String</h3>
+		<div class="box" id="s" contenteditable="true"></div>
 	</div>
-	<h3 class="col1" style="padding-bottom:2%;">result<br>
-		<textarea rows="10" id="out"></textarea>
-	</h3>
+	<div class="col2" style="text-align:center;">
+		<button type="button" onclick="u.innerText = escape(s.innerText).replace(/%/g, '\\');;
+">↓</button>
+		<button type="button" onclick="s.innerText = unescape(u.innerText.replace(/\\/g, '%'));">↑</button>
+	</div>
+	<div class="col1">
+		<h3>Unicode</h3>
+		<div class="box" id="u" contenteditable="true"></div>
+	</div>
 	<footer id="F"></footer>
 	<script src="../hf.js"></script>
-	<script>
-	function decode() {
-		var str = document.getElementById("input").value;
-		str = str.replace(/\\/g, '%');
-		document.getElementById("out").value = unescape(str);
-	}
-
-	function encode() {
-		var str = escape(document.getElementById("input").value);
-		str = str.replace(/%/g, '\\');
-		document.getElementById("out").value = str;
-	}
-	//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
-	function execCopy(string) {
-		// 空div 生成
-		var tmp = document.createElement("div");
-		// 選択用のタグ生成
-		var pre = document.createElement('pre');
-		// 親要素のCSSで user-select: none だとコピーできないので書き換える
-		pre.style.webkitUserSelect = 'auto';
-		pre.style.userSelect = 'auto';
-		tmp.appendChild(pre).textContent = string;
-		// 要素を画面外へ
-		var s = tmp.style;
-		s.position = 'fixed';
-		s.right = '200%';
-		// body に追加
-		document.body.appendChild(tmp);
-		// 要素を選択
-		document.getSelection().selectAllChildren(tmp);
-		// クリップボードにコピー
-		var result = document.execCommand("copy");
-		// 要素削除
-		document.body.removeChild(tmp);
-		return result;
-	}
-
-	function clipboard() {
-		if (execCopy(document.getElementById("out").value)) {
-			document.getElementById("clip_button").innerHTML = "copied";
-		} else {
-			document.getElementById("clip_button").innerHTML = "copy failed";
-		}
-		setTimeout(function() {
-			document.getElementById("clip_button").innerHTML = "copy to clipboard";
-		}, 1000);
-	}
-
-	</script>
 </body>
 
 </html>
