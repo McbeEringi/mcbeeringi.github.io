@@ -5,6 +5,10 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>css_tests</title>
 	<style>
+		body{font-family: sans-serif;}
+		.box{width:100%;height:200px;border: dotted 5px #4cc;}
+		.test{background-color:#888;width: 100px;height: 100px;}.test:hover{background-color:#4f4;}.test:active{background-color:#f44;}
+
 		:root{
 			--tst: .5s;
 			--brcol: #888;
@@ -81,12 +85,23 @@
 		.menub{
 			position: relative;
 			float: right;
-			width: 5px;
+			width: 200px;
 			height: 0px;
 			top: -25px;
-			background-color: var(--brcol);
+			overflow: hidden;
+			border-right: solid 5px var(--brcol);
+			border-top: solid 0 transparent;
 			transition: var(--tst);
 			z-index: 1;
+		}
+		.menub *{
+			user-select: none;
+			-webkit-user-select: none;
+			margin-right: 45px;
+			background-color: rgba(64, 64, 64, 0.5);
+			color: #fff;
+			/*text-stroke: 1px #000;
+			-webkit-text-stroke: 1px #000;*/
 		}
 		.menu.on{}
 		.menu.on::before{transform: rotateZ(-360deg);}
@@ -94,10 +109,7 @@
 		.menu.on .menusub{}
 		.menu.on .menusub::before{transform: rotateZ(-180deg);}
 		.menu.on .menusub::after{width: 70px;}
-		.menub.on{height: var(--blength);top: calc(-25px - var(--blength))}
-
-		.box{width:100%;height:200px;border: dotted 5px #4cc;}
-		.test{background-color:#888;width: 100px;height: 100px;}.test:hover{background-color:#4f4;}.test:active{background-color:#f44;}
+		.menub.on{height: var(--blength);top: calc(-25px - var(--blength));border-top: solid 5px transparent;}
 	</style>
 </head>
 
@@ -114,7 +126,14 @@
 		<div class="box">4</div>
 		<div class="menu" onclick="menu=menu?false:true;if(menu){this.className='menu on';menub.className='menub on';menut=setTimeout(()=>{this.className='menu';menub.className='menub';menu=false;},5000);}else{this.className='menu';menub.className='menub';clearTimeout(menut);}">
 				<div class="menusub"></div>
-				<div class="menub" id="menub"></div>
+				<div class="menub" id="menub">
+					<h3>CSSなメニュー</h3>
+					<p>
+						やーい <br>
+						お前の学校 <br>
+						おっばけやーしき!
+					</p>
+				</div>
 		</div>
 		<div class="box">example</div>
 	</div>
