@@ -93,7 +93,6 @@
 			border-top: solid 0 transparent;
 			user-select: none;
 			-webkit-user-select: none;
-			opacity: 0;
 			transition: var(--tst);
 			z-index: 1;
 		}
@@ -101,8 +100,10 @@
 			margin-right: 45px;
 			background-color: rgba(64, 64, 64, 0.5);
 			color: #fff;
+			opacity: 0;
 			/*text-stroke: 1px #000;
 			-webkit-text-stroke: 1px #000;*/
+			transition: var(--tst);
 		}
 		.menu.on{}
 		.menu.on::before{transform: rotateZ(-360deg);}
@@ -110,7 +111,8 @@
 		.menu.on .menusub{}
 		.menu.on .menusub::before{transform: rotateZ(-180deg);}
 		.menu.on .menusub::after{width: 70px;}
-		.menub.on{height: var(--blength);top: calc(-25px - var(--blength));border-top: solid 5px transparent;opacity: 1;}
+		.menub.on{height: var(--blength);top: calc(-25px - var(--blength));border-top: solid 5px transparent;}
+		.menub.on *{opacity: 1;}
 	</style>
 </head>
 
