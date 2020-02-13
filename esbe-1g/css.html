@@ -97,6 +97,7 @@
 			z-index: 1;
 		}
 		.menub *{
+			display: block;
 			margin-right: 45px;
 			background-color: rgba(64, 64, 64, 0.5);
 			color: #fff;
@@ -128,16 +129,16 @@
 		<div class="box">3</div>
 		<div class="box">4</div>
 		<div class="menu" onclick="menu=menu?false:true;if(menu){this.className='menu on';menub.className='menub on';menut=setTimeout(()=>{this.className='menu';menub.className='menub';menu=false;},5000);}else{this.className='menu';menub.className='menub';clearTimeout(menut);}">
-				<div class="menusub"></div>
-				<div class="menub" id="menub">
-					<h3>CSSなメニュー</h3>
-					<p>
-						やーい <br>
-						お前の学校 <br>
-						おっばけやーしき!
-					</p>
-					<a href="../index.html">ホーム</a>
-				</div>
+			<div class="menusub"></div>
+			<div class="menub" id="menub">
+				<h3>CSSなメニュー</h3>
+				<p>
+					やーい <br>
+					お前の学校 <br>
+					おっばけやーしき!
+				</p>
+				<a href="../index.html">ホーム</a>
+			</div>
 		</div>
 		<div class="box">example</div>
 	</div>
