@@ -4,131 +4,29 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>css_tests</title>
+	<link rel="stylesheet" href="../menu.css">
 	<style>
 		body{font-family: sans-serif;}
 		.box{width:100%;height:200px;border: dotted 5px #4cc;}
-		.test{background-color:#888;width: 100px;height: 100px;}.test:hover{background-color:#4f4;}.test:active{background-color:#f44;}
-
 		:root{
 			--tst: .5s;
 			--brcol: #888;
 			--btcol: #ccc;
 			--blength: 200px;
 		}
-		.menu{
-			position: sticky;
-			float: right;
-			bottom: 5px;
-			width: 50px;
-			height: 50px;
-			background-color: var(--btcol);
-			border-radius: 50%;
-			transition: var(--tst);
-			z-index: 0;
-		}
-		.menu::before{
-			content: "";
-			width: 50px;
-			height: 25px;
-			border-radius: 50px 50px 0 0;
-			transform-origin: bottom;
-			position: absolute;
-			background-color: var(--brcol);
-			transition: var(--tst);
-			z-index: 0;
-		}
-		.menu::after{
-			content: "";
-			width: 50px;
-			height: 25px;
-			border-radius: 0 0 50px 50px;
-			transform-origin: top;
-			position: absolute;
-			top: 25px;
-			background-color: var(--brcol);
-			transition: var(--tst);
-			z-index: 0;
-		}
-		.menusub{
-			position: relative;
-			width: 50px;
-			height: 50px;
-			background-image: radial-gradient(var(--btcol) 20px,transparent 20px);
-			border-radius: 50%;
-			overflow: hidden;
-			z-index: 1;
-		}
-		.menusub::before{
-			content: "";
-			width: 0;
-			height: 0;
-			border-right: 15px solid transparent;
-			border-bottom: 25.9808px solid #fff;
-			border-left: 15px solid transparent;
-			transform-origin: center 17px;
-			transition: var(--tst);
-			position: absolute;
-			top: 7px;
-			left: 10px;
-			z-index: 1;
-		}
-		.menusub::after{
-			content: "";
-			width: 0;
-			height: 25px;
-			background-color: var(--btcol);
-			position: absolute;
-			right: 0px;
-			transition: var(--tst);
-			z-index: 0;
-		}
-		.menul{
-			position: relative;
-			float: right;
-			width: 200px;
-			height: 0px;
-			top: -25px;
-			overflow: hidden;
-			border-right: solid 5px var(--brcol);
-			border-top: solid 0 transparent;
-			user-select: none;
-			-webkit-user-select: none;
-			transition: var(--tst);
-			z-index: 1;
-		}
-		.menul *{
-			display: block;
-			margin-right: 45px;
-			background-color: rgba(64, 64, 64, 0.5);
-			color: #fff;
-			opacity: 0;
-			/*text-stroke: 1px #000;
-			-webkit-text-stroke: 1px #000;*/
-			transition: var(--tst);
-		}
-		.menu.on{}
-		.menu.on::before{transform: rotateZ(-360deg);}
-		.menu.on::after{transform: rotateZ(-180deg);}
-		.menu.on .menusub{}
-		.menu.on .menusub::before{transform: rotateZ(-180deg);}
-		.menu.on .menusub::after{width: 70px;}
-		.menu.on .menul{height: var(--blength);top: calc(-25px - var(--blength));border-top: solid 5px transparent;}
-		.menu.on .menul *{opacity: 1;}
 	</style>
 </head>
 
 <body>
-	<script>
-		var menu = false;
-		var menut;
-	</script>
-	<div class="">
-		<div class="box">0<div class="test" ontouchstart="">hover:green<br>active:red</div></div>
+	<div>
+		<div class="box">0</div>
 		<div class="box">1</div>
 		<div class="box">2</div>
 		<div class="box">3</div>
 		<div class="box">4</div>
-		<div class="menu" onclick="menu=menu?false:true;if(menu){this.className='menu on';menut=setTimeout(()=>{this.className='menu';menu=false;},5000);}else{this.className='menu';menul.className='menul';clearTimeout(menut);}">
+
+		<input class="menu" type="checkbox" id="menu">
+		<label for="menu">
 			<div class="menusub"></div>
 			<div class="menul" id="menul">
 				<h3>CSSなメニュー</h3>
@@ -139,7 +37,8 @@
 				</p>
 				<a href="../index.html">ホーム</a>
 			</div>
-		</div>
+		</label>
+
 		<div class="box">example</div>
 	</div>
 </body>
