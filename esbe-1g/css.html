@@ -16,17 +16,17 @@
 
 		:root{
 			--tst: .5s;
-			--bcol: #888;
+			--brcol: #888;
+			--btcol: #ccc;
 		}
 		.menu{
-			padding-bottom: 5px;
 			position: sticky;
 			float: right;
 			float: right;
-			bottom: 0;
+			bottom: 5px;
 			width: 50px;
 			height: 50px;
-			background-color: #fff;
+			background-color: var(--btcol);
 			border-radius: 50%;
 			transition: var(--tst);
 			z-index: 0;
@@ -38,7 +38,7 @@
 			border-radius: 50px 50px 0 0;
 			transform-origin: bottom;
 			position: absolute;
-			background-color: var(--bcol);
+			background-color: var(--brcol);
 			transition: var(--tst);
 			z-index: 0;
 		}
@@ -50,18 +50,17 @@
 			transform-origin: top;
 			position: absolute;
 			top: 25px;
-			background-color: var(--bcol);
+			background-color: var(--brcol);
 			transition: var(--tst);
 			z-index: 0;
 		}
 		.menusub{
 			position: relative;
-			width: 40px;
-			height: 40px;
-			top:5px;
-			left:5px;
-			background-color: #fff;
+			width: 50px;
+			height: 50px;
+			background-image: radial-gradient(var(--btcol) 20px,transparent 20px);
 			border-radius: 50%;
+			overflow: hidden;
 			z-index: 1;
 		}
 		.menusub::before{
@@ -69,22 +68,22 @@
 			width: 0;
 			height: 0;
 			border-right: 15px solid transparent;
-			border-bottom: 25.9808px solid #b2ce54;
+			border-bottom: 25.9808px solid #fff;
 			border-left: 15px solid transparent;
+			transform-origin: center 17px;
 			transition: var(--tst);
 			position: absolute;
-			top: 2px;
-			left: 5px;
+			top: 7px;
+			left: 10px;
 			z-index: 1;
 		}
 		.menusub::after{
 			content: "";
 			width: 0;
 			height: 25px;
-			background-color: #fff;
+			background-color: var(--btcol);
 			position: absolute;
-			top: -5px;
-			right: -5px;
+			right: 0px;
 			transition: var(--tst);
 			z-index: 0;
 		}
@@ -93,8 +92,8 @@
 			float: right;
 			width: 5px;
 			height: 0px;
-			top: -15px;
-			background-color: var(--bcol);
+			top: -20px;
+			background-color: var(--brcol);
 			transition: var(--tst);
 			z-index: 1;
 		}
@@ -104,7 +103,7 @@
 		.menu.on .menusub{}
 		.menu.on .menusub::before{transform: rotateZ(-180deg);}
 		.menu.on .menusub::after{width: 70px;}
-		.menub.on{height: 200px;top: -215px;}/*menu length*/
+		.menub.on{height: 200px;top: -220px;}/*menu length*/
 	</style>
 </head>
 
