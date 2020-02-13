@@ -4,8 +4,6 @@
 	<meta charset="utf-8">
 	<title></title>
 	<style>
-		.box{width:100%;height:200px;border: dotted 5px #4cc;}
-
 		:root{
 			--tst: .5s;
 			--brcol: #888;
@@ -97,6 +95,8 @@
 		.menu.on .menusub::before{transform: rotateZ(-180deg);}
 		.menu.on .menusub::after{width: 70px;}
 		.menub.on{height: var(--blength);top: calc(-25px - var(--blength))}
+
+		.box{width:100%;height:200px;border: dotted 5px #4cc;}
 		.test{background-color:#888;width: 100px;height: 100px;}.test:hover{background-color:#4f4;}.test:active{background-color:#f44;}
 	</style>
 </head>
@@ -106,7 +106,7 @@
 		var menu = false;
 	</script>
 	<div class="">
-		<div class="box">0<div class="test"></div></div>
+		<div class="box">0<div class="test" ontouchstart="">hover:green<br>active:red</div></div>
 		<div class="box">1</div>
 		<div class="box">2</div>
 		<div class="box">3</div>
