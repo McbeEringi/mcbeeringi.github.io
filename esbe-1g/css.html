@@ -4,20 +4,13 @@
 	<meta charset="utf-8">
 	<title></title>
 	<style>
-		.tri{/*https://www.granfairs.com/blog/staff/make-triangle-with-css*/
-			content: "";
-			width: 0;
-			height: 0;
-			border-right: 15px solid transparent;
-			border-bottom: 25.9808px solid #b2ce54;
-			border-left: 15px solid transparent;
-		}
 		.box{width:100%;height:200px;border: dotted 5px #4cc;}
 
 		:root{
 			--tst: .5s;
 			--brcol: #888;
 			--btcol: #ccc;
+			--blength: 200px;
 		}
 		.menu{
 			position: sticky;
@@ -103,7 +96,8 @@
 		.menu.on .menusub{}
 		.menu.on .menusub::before{transform: rotateZ(-180deg);}
 		.menu.on .menusub::after{width: 70px;}
-		.menub.on{height: 200px;top: -225px;}/*menu length*/
+		.menub.on{height: var(--blength);top: calc(-25px - var(--blength))}
+		.test{background-color:#888;width: 100px;height: 100px;}.test:hover{background-color:#4f4;}.test:active{background-color:#f44;}
 	</style>
 </head>
 
@@ -112,7 +106,7 @@
 		var menu = false;
 	</script>
 	<div class="">
-		<div class="box">0</div>
+		<div class="box">0<div class="test"></div></div>
 		<div class="box">1</div>
 		<div class="box">2</div>
 		<div class="box">3</div>
