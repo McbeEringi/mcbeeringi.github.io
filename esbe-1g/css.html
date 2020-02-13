@@ -82,7 +82,7 @@
 			transition: var(--tst);
 			z-index: 0;
 		}
-		.menub{
+		.menul{
 			position: relative;
 			float: right;
 			width: 200px;
@@ -96,7 +96,7 @@
 			transition: var(--tst);
 			z-index: 1;
 		}
-		.menub *{
+		.menul *{
 			display: block;
 			margin-right: 45px;
 			background-color: rgba(64, 64, 64, 0.5);
@@ -112,8 +112,8 @@
 		.menu.on .menusub{}
 		.menu.on .menusub::before{transform: rotateZ(-180deg);}
 		.menu.on .menusub::after{width: 70px;}
-		.menub.on{height: var(--blength);top: calc(-25px - var(--blength));border-top: solid 5px transparent;}
-		.menub.on *{opacity: 1;}
+		.menu.on .menul{height: var(--blength);top: calc(-25px - var(--blength));border-top: solid 5px transparent;}
+		.menu.on .menul *{opacity: 1;}
 	</style>
 </head>
 
@@ -128,9 +128,9 @@
 		<div class="box">2</div>
 		<div class="box">3</div>
 		<div class="box">4</div>
-		<div class="menu" onclick="menu=menu?false:true;if(menu){this.className='menu on';menub.className='menub on';menut=setTimeout(()=>{this.className='menu';menub.className='menub';menu=false;},5000);}else{this.className='menu';menub.className='menub';clearTimeout(menut);}">
+		<div class="menu" onclick="menu=menu?false:true;if(menu){this.className='menu on';menut=setTimeout(()=>{this.className='menu';menu=false;},5000);}else{this.className='menu';menul.className='menul';clearTimeout(menut);}">
 			<div class="menusub"></div>
-			<div class="menub" id="menub">
+			<div class="menul" id="menul">
 				<h3>CSSなメニュー</h3>
 				<p>
 					やーい <br>
