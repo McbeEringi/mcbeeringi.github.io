@@ -5,10 +5,12 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi unicode_converter</title>
+	<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.js">// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
+	<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.js"></script>
 	<link href="https://fonts.googleapis.com/css?family=Quicksand:400|M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../main.css">
 	<style>
-		h3{margin:0;}
+		h3,p{margin:0;}
 		.box{width:100%;min-height:100px;border:solid 1px #fff;color:#fff;user-select:all;-webkit-userselect:all;}
 	</style>
 </head>
@@ -21,13 +23,31 @@
 		<div class="box" id="s" contenteditable="true"></div>
 	</div>
 	<div class="col2" style="text-align:center;">
-		<button type="button" onclick="u.innerText = escape(s.innerText).replace(/%/g, '\\');;
-">↓</button>
-		<button type="button" onclick="s.innerText = unescape(u.innerText.replace(/\\/g, '%'));">↑</button>
+		<button type="button" onclick="
+			u.innerText = escape(s.innerText).replace(/%/g, '\\');
+			b.innerText = btoa(u.innerText);
+			z.innerText = btoa(zip_deflate(u.innerText));
+		">↓</button>
+		<button type="button" onclick="
+			if(b.innerText)u.innerText = atob(b.innerText);
+			if(z.innerText)u.innerText = zip_inflate(atob(z.innerText));
+			s.innerText = unescape(u.innerText.replace(/\\/g, '%'));
+		">↑</button>
 	</div>
 	<div class="col1">
 		<h3>Unicode</h3>
-		<div class="box" id="u" contenteditable="true"></div>
+		<div class="box" id="u" contenteditable="true"></div><br>
+		<p>おまけ</p>
+		<div class="flex">
+			<div style="width:49%;">
+				<h3>Base64</h3>
+				<div class="box" id="b" contenteditable="true"></div>
+			</div>
+			<div style="width:49%;">
+				<h3>ZIP(Base64 encoded)</h3>
+				<div class="box" id="z" contenteditable="true"></div>
+			</div>
+		</div>
 	</div>
 	<footer id="F"></footer>
 	<script src="../hf.js"></script>
