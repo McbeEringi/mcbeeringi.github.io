@@ -22,28 +22,31 @@
 	</head>
 	<body>
 		<h1>OCR!</h1>
-		<div id="ready"></div>
 		<label class="file">
 			D&amp;D又はクリックして選択<br>
 			<input type="file" name="img" accept="image/png, image/jpeg" onchange="fname.textContent=this.value.split('\\').pop();fname.textContent=fname.textContent?fname.textContent:'　'">
 			<div id="fname">　</div>
 		</label>
-		<img id="img" src="img/test.png" width=50%>
-		<div id="msg"></div>
-		<div id="s"></div>
-
-		<script>
-			Tesseract.recognize('img/ready.jpg','jpn',{
-				logger:m => document.getElementById("ready").textContent="準備中… "+m.progress*100+"%"
-				}).then(({data:{text}})=>document.getElementById("ready").textContent=text);
-			Tesseract.recognize(document.getElementById("img"),'jpn',{
-				logger:(m) => {document.getElementById("msg").innerText=m.status+"…\n"+m.progress*100+"%";}
-				}).then(
+		<img id="img" src="img/test.png" width=50% onclick='
+			Tesseract.recognize(this,"jpn",{
+				logger:(m) => {
+					console.log(m);
+					document.getElementById("msg").innerText=m.status+"…";
+					document.getElementById("bar").style.width = m.progress*300;
+				}}).then(
 					({data:{text}}) => {
 						document.getElementById("msg").textContent="done!";
 						document.getElementById("s").textContent=text;
 					}
 				);
+		'>
+		<div id="msg">　</div>
+		<div style="width:300px;height:10px;background-color:#888;">
+			<div id="bar" style="width:0px;height:10px;background-color:#4f4;"></div>
+		</div>
+		<div id="s"></div>
+
+		<script>
 		</script>
 		</body>
 </html>
