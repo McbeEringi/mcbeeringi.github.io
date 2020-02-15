@@ -14,16 +14,17 @@
 
 		<script src="https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js"></script>
 		<script>
-		Tesseract.recognize("../img/6x6.png","jpn+eng",{
-			logger:(m) => {
-				console.log(m);
-				document.getElementById("load").innerText += m.status+": "+m.progress*100+"%\n";
-			}}).then(
-				({data:{text}}) => {
-					document.getElementById("stuff").style.display="block";
-					document.getElementById("load").style.display="none";
-				}
-			);
+			Tesseract.recognize("../img/6x6.png","jpn+eng",{
+				logger:(m) => {
+					console.log(m);
+					document.getElementById("load").innerText += m.status+": "+m.progress*100+"%\n";
+				}}).then(
+					({data:{text}}) => {
+						document.getElementById("stuff").style.display="block";
+						document.getElementById("load").style.display="none";
+					}
+				);
+			var reader = new FileReader();
 		</script>
 		<style>
 			*{font-family:sans-serif;}
@@ -46,10 +47,16 @@
 		<div id="load">
 			Please wait… <br><br>
 		</div>
-		<div id="stuff" style="display:none;">
+		<div id="stuff" sstyle="display:none;">
 			<label class="file">
 				D&amp;D又はクリックして選択<br>
-				<input type="file" name="img" accept="image/png, image/jpeg" onchange="fname.textContent=this.value.split('\\').pop();fname.textContent=fname.textContent?fname.textContent:'　'">
+				<input type="file" name="img" accept="image/png, image/jpeg" onchange="
+					fname.textContent=this.value.split('\\').pop();
+					fname.textContent=fname.textContent?fname.textContent:'　';
+					reader.readAsDataURL(this.files[0]);
+					console.log(reader);
+					document.getElementById('img').src = reader.result;
+				">
 				<div id="fname">　</div>
 			</label>
 			<img id="img" src="img/test.png" width=50% onclick='
