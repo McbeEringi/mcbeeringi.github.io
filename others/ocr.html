@@ -2,10 +2,20 @@
 	<head>
 		<meta charset="utf-8">
 		<script src="https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js"></script>
+		<script>
+		Tesseract.recognize("img/none.png","jpn+eng",{
+			logger:(m) => {
+				console.log(m);
+				document.getElementById("load").textContent = m.progress*100;
+			}}).then(
+				({data:{text}}) => {
+					document.getElementById("stuff").classList.remove("none");
+				}
+			);
+
+		</script>
 		<style>
-			*{
-				font-family: sans-serif;
-			}
+			*{font-family:sans-serif;}
 			label.file{
 				display: block;
 				width: 60%;
@@ -15,38 +25,39 @@
 				border: solid 2px #888;
 				border-radius: 7px;
 			}
-			input[type=file]{
-				display: none;
-			}
+			input[type=file]{display:none;}
+			.bar{width:50%;height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
+			.bar *{width:0;height:10px;background-color:#38f;}
+			.none{transition:1s;opacity:0;display:none;}
 		</style>
 	</head>
 	<body>
 		<h1>OCR!</h1>
-		<label class="file">
-			D&amp;D又はクリックして選択<br>
-			<input type="file" name="img" accept="image/png, image/jpeg" onchange="fname.textContent=this.value.split('\\').pop();fname.textContent=fname.textContent?fname.textContent:'　'">
-			<div id="fname">　</div>
-		</label>
-		<img id="img" src="img/test.png" width=50% onclick='
-			Tesseract.recognize(this,"jpn",{
-				logger:(m) => {
-					console.log(m);
-					document.getElementById("msg").innerText=m.status+"…";
-					document.getElementById("bar").style.width = m.progress*100+"%";
-				}}).then(
-					({data:{text}}) => {
-						document.getElementById("msg").textContent="done!";
-						document.getElementById("s").textContent=text;
-					}
-				);
-		'>
-		<div id="msg">　</div>
-		<div style="width:50%;height:10px;background-color:#888;">
-			<div id="bar" style="width:0;height:10px;background-color:#4f4;"></div>
+		<div id="load"></div>
+		<div id="stuff" class="none">
+			<label class="file">
+				D&amp;D又はクリックして選択<br>
+				<input type="file" name="img" accept="image/png, image/jpeg" onchange="fname.textContent=this.value.split('\\').pop();fname.textContent=fname.textContent?fname.textContent:'　'">
+				<div id="fname">　</div>
+			</label>
+			<img id="img" src="img/test.png" width=50% onclick='
+				Tesseract.recognize(this,"jpn+eng",{
+					logger:(m) => {
+						console.log(m);
+						document.getElementById("msg").innerText=m.status+"…";
+						document.getElementById("bar").style.width = m.progress*100+"%";
+					}}).then(
+						({data:{text}}) => {
+							document.getElementById("msg").textContent="done!";
+							document.getElementById("s").textContent=text;
+						}
+					);
+			'>
+			<div id="msg">　</div>
+			<div class="bar">
+				<div id="bar" style=""></div>
+			</div>
+			<div id="s"></div>
 		</div>
-		<div id="s"></div>
-
-		<script>
-		</script>
 		</body>
 </html>
