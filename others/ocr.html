@@ -47,15 +47,15 @@
 		<div id="load">
 			Please wait… <br><br>
 		</div>
-		<div id="stuff" sstyle="display:none;">
+		<div id="stuff" style="display:none;">
 			<label class="file">
 				D&amp;D又はクリックして選択<br>
 				<input type="file" name="img" accept="image/png, image/jpeg" onchange="
 					fname.textContent=this.value.split('\\').pop();
 					fname.textContent=fname.textContent?fname.textContent:'　';
+					reader.addEventListener('load', ()=>img.src = reader.result, false);
 					reader.readAsDataURL(this.files[0]);
 					console.log(reader);
-					img.src = reader.result;
 				">
 				<div id="fname">　</div>
 			</label>
