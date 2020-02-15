@@ -47,7 +47,7 @@
 		<div id="load">
 			Please wait… <br><br>
 		</div>
-		<div id="stuff" style="display:none;">
+		<div id="stuff" sstyle="display:none;">
 			<label class="file">
 				D&amp;D又はクリックして選択<br>
 				<input type="file" name="img" accept="image/png, image/jpeg" onchange="
@@ -55,7 +55,7 @@
 					fname.textContent=fname.textContent?fname.textContent:'　';
 					reader.readAsDataURL(this.files[0]);
 					console.log(reader);
-					document.getElementById('img').src = reader.result;
+					img.src = reader.result;
 				">
 				<div id="fname">　</div>
 			</label>
@@ -63,12 +63,12 @@
 				Tesseract.recognize(this,"jpn+eng",{
 					logger:(m) => {
 						console.log(m);
-						document.getElementById("msg").innerText=m.status+"…";
-						document.getElementById("bar").style.width = m.progress*100+"%";
+						msg.innerText=m.status+"…";
+						bar.style.width = m.progress*100+"%";
 					}}).then(
 						({data:{text}}) => {
-							document.getElementById("msg").textContent="done!";
-							document.getElementById("s").textContent=text;
+							msg.textContent="done!";
+							s.textContent=text;
 						}
 					);
 			'>
