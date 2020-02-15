@@ -6,11 +6,11 @@
 		Tesseract.recognize("../img/6x6.png","jpn+eng",{
 			logger:(m) => {
 				console.log(m);
-				document.getElementById("load").textContent = m.progress*100;
+				document.getElementById("load").innerText = "Please wait…\n"+m.status;
 			}}).then(
 				({data:{text}}) => {
-					document.getElementById("stuff").classList.remove("none");
-					document.getElementById("load").classList.add("none");
+					document.getElementById("stuff").style.display="block";
+					document.getElementById("load").style.display="none";
 				}
 			);
 
@@ -29,13 +29,12 @@
 			input[type=file]{display:none;}
 			.bar{width:50%;height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
 			.bar *{width:0;height:10px;background-color:#38f;}
-			.none{transition:1s;opacity:0;display:none;}
 		</style>
 	</head>
 	<body>
 		<h1>OCR!</h1>
 		<div id="load"></div>
-		<div id="stuff" class="none">
+		<div id="stuff" style="display:none;">
 			<label class="file">
 				D&amp;D又はクリックして選択<br>
 				<input type="file" name="img" accept="image/png, image/jpeg" onchange="fname.textContent=this.value.split('\\').pop();fname.textContent=fname.textContent?fname.textContent:'　'">
