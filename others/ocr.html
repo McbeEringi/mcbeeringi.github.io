@@ -6,7 +6,7 @@
 		Tesseract.recognize("../img/6x6.png","jpn+eng",{
 			logger:(m) => {
 				console.log(m);
-				document.getElementById("load").innerText = "Please wait…\n"+m.status;
+				document.getElementById("load").innerText += m.status+"\n";
 			}}).then(
 				({data:{text}}) => {
 					document.getElementById("stuff").style.display="block";
@@ -33,7 +33,9 @@
 	</head>
 	<body>
 		<h1>OCR!</h1>
-		<div id="load"></div>
+		<div id="load">
+			Please wait… <br><br>
+		</div>
 		<div id="stuff" style="display:none;">
 			<label class="file">
 				D&amp;D又はクリックして選択<br>
