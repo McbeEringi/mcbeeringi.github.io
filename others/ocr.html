@@ -17,7 +17,7 @@
 			Tesseract.recognize("../img/6x6.png","jpn+eng",{
 				logger:(m) => {
 					console.log(m);
-					document.getElementById("load").innerText += m.status+": "+m.progress*100+"%\n";
+					document.getElementById("llog").innerText += m.status+": "+m.progress*100+"%\n";
 				}}).then(
 					({data:{text}}) => {
 						document.getElementById("stuff").style.display="block";
@@ -27,11 +27,15 @@
 			var reader = new FileReader();
 		</script>
 		<style>
-			*{font-family:sans-serif;}
+			:root{
+				background-color: #222;
+				color: #fff;
+				font-family:sans-serif;
+			}
 			label.file{
 				display: block;
 				width: 60%;
-				background-color: #eee;
+				background-color: #444;
 				text-align: center;
 				padding: 20%;
 				border: solid 2px #888;
@@ -43,9 +47,14 @@
 		</style>
 	</head>
 	<body>
-		<h1>OCR!</h1>
-		<div id="load">
-			Please wait… <br><br>
+		<div id="load" style="text-align:center;padding-top:40vh;">
+			<img src="pwa/corn_192.png" style="width:100px;">
+			<h1>OCR!</h1>
+			<h2>Powered by Tesserext.js</h2>
+			Please wait…
+			<div id="llog" style="font-size:11px;color:#888;">
+
+			</div>
 		</div>
 		<div id="stuff" style="display:none;">
 			<label class="file">
