@@ -14,6 +14,8 @@
 
 		<script src="https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js"></script>
 		<script>
+			var reader = new FileReader();
+			var r = true;
 			Tesseract.recognize("../img/6x6.png","jpn+eng",{
 				logger:(m) => {
 					console.log(m);
@@ -24,24 +26,37 @@
 						document.getElementById("load").style.display="none";
 					}
 				);
-			var reader = new FileReader();
 		</script>
 		<style>
 			:root{
+				user-select:none;
+				-webkit-user-select:none;
 				background-color: #222;
 				color: #fff;
 				font-family:sans-serif;
 			}
-			label.file{
-				display: block;
-				width: 60%;
+			.file{
+				position: relative;
 				background-color: #444;
-				text-align: center;
-				padding: 20%;
+				width: 320px;
+				height: 180px;
 				border: solid 2px #888;
 				border-radius: 7px;
 			}
-			input[type=file]{display:none;}
+			.file div{
+				position: absolute;
+				font-size: 14px;
+				top: 83px;
+				width: 100%;
+				text-align: center;
+				pointer-events: none;
+			}
+			.file input[type=file]{
+				width: 100%;
+				height: 100%;
+				opacity: 0;
+				border: solid 1px #fff;
+			}
 			.bar{width:50%;height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
 			.bar *{width:0;height:10px;background-color:#38f;}
 		</style>
@@ -52,40 +67,42 @@
 			<h1>OCR!</h1>
 			<h2>Powered by Tesserect.js</h2>
 			<p>Please wait…</p>
-			<div id="llog" style="font-size:11px;color:#888;">
-
-			</div>
+			<div id="llog" style="font-size:11px;color:#888;"></div>
 		</div>
+
 		<div id="stuff" style="display:none;">
-			<label class="file">
-				D&amp;D又はクリックして選択<br>
+			<div class="file">
 				<input type="file" name="img" accept="image/png, image/jpeg" onchange="
 					fname.textContent=this.value.split('\\').pop();
-					fname.textContent=fname.textContent?fname.textContent:'　';
+					fname.textContent=fname.textContent?'選択された画像: '+fname.textContent:'D&D又はクリックして選択';
 					reader.addEventListener('load', ()=>img.src = reader.result, false);
 					reader.readAsDataURL(this.files[0]);
 					console.log(reader);
 				">
-				<div id="fname">　</div>
-			</label>
-			<img id="img" src="img/test.png" width=50% onclick='
-				Tesseract.recognize(this,"jpn+eng",{
-					logger:(m) => {
-						console.log(m);
-						msg.innerText=m.status+"…";
-						bar.style.width = m.progress*100+"%";
-					}}).then(
-						({data:{text}}) => {
-							msg.textContent="done!";
-							s.textContent=text;
-						}
-					);
+				<div id="fname">D&D又はクリックして選択</div>
+			</div>
+			<img id="img" src="img/test.png" width="320px" onclick='
+				if(r){
+					r = false;
+					Tesseract.recognize(this,"jpn+eng",{
+						logger:(m) => {
+							console.log(m);
+							msg.innerText=m.status+"…";
+							bar.style.width = m.progress*100+"%";
+						}}).then(
+							({data:{text}}) => {
+								msg.textContent="done!";
+								s.textContent=text;
+								r = true;
+							}
+						);
+				}
 			'>
-			<div id="msg">　</div>
+			<div id="msg">画像をクリックしてスタート</div>
 			<div class="bar">
 				<div id="bar" style=""></div>
 			</div>
-			<div id="s"></div>
+			<div id="s" style="user-select:auto;-webkit-user-select:auto;"></div>
 		</div>
 		</body>
 </html>
