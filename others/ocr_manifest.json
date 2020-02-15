@@ -11,8 +11,8 @@
 			"sizes": "192x192",
 			"type": "image/png"
 		}],
-	"start_url": "gl.html",
+	"start_url": "ocr.html",
 	"display": "fullscreen",
 	"theme_color": "#888",
-	"background_color": "#222"
+	"background_color": "#fff"
 }
