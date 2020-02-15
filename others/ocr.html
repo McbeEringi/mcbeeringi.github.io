@@ -3,13 +3,14 @@
 		<meta charset="utf-8">
 		<script src="https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js"></script>
 		<script>
-		Tesseract.recognize("img/none.png","jpn+eng",{
+		Tesseract.recognize("../img/6x6.png","jpn+eng",{
 			logger:(m) => {
 				console.log(m);
 				document.getElementById("load").textContent = m.progress*100;
 			}}).then(
 				({data:{text}}) => {
 					document.getElementById("stuff").classList.remove("none");
+					document.getElementById("load").classList.add("none");
 				}
 			);
 
