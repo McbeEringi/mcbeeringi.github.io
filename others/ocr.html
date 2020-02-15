@@ -1,19 +1,29 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<!--iOS-->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+		<meta name="apple-mobile-web-app-title" content="OCR">
+		<link rel="apple-touch-icon" href="img/gl.png">
+		<!--sw-->
+		<link rel="manifest" href="ocr_manifest.json">
+		<script>
+			if ('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then((reg) => {console.log('Service worker registered.', reg);});}
+		</script>
+
 		<script src="https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js"></script>
 		<script>
 		Tesseract.recognize("../img/6x6.png","jpn+eng",{
 			logger:(m) => {
 				console.log(m);
-				document.getElementById("load").innerText += m.status+"\n";
+				document.getElementById("load").innerText += m.status+": "+m.progress*100+"%\n";
 			}}).then(
 				({data:{text}}) => {
 					document.getElementById("stuff").style.display="block";
 					document.getElementById("load").style.display="none";
 				}
 			);
-
 		</script>
 		<style>
 			*{font-family:sans-serif;}
