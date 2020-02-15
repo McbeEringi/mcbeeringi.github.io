@@ -3,11 +3,11 @@
 	"short_name": "OCR",
 	"description": "A simple OCR app powerd by Tesseract.js\nauthor: @McbeEringi",
 	"icons": [{
-			"src": "img/gl_512.png",
+			"src": "corn_512.png",
 			"sizes": "512x512",
 			"type": "image/png"
 		},{
-			"src": "img/gl_192.png",
+			"src": "corn_192.png",
 			"sizes": "192x192",
 			"type": "image/png"
 		}],
