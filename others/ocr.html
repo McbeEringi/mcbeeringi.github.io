@@ -32,7 +32,7 @@
 				logger:(m) => {
 					console.log(m);
 					document.getElementById("msg").innerText=m.status+"…";
-					document.getElementById("bar").style.width = m.progress*300;
+					document.getElementById("bar").style.width = m.progress*100+"%";
 				}}).then(
 					({data:{text}}) => {
 						document.getElementById("msg").textContent="done!";
@@ -41,8 +41,8 @@
 				);
 		'>
 		<div id="msg">　</div>
-		<div style="width:300px;height:10px;background-color:#888;">
-			<div id="bar" style="width:0px;height:10px;background-color:#4f4;"></div>
+		<div style="width:50%;height:10px;background-color:#888;">
+			<div id="bar" style="width:0;height:10px;background-color:#4f4;"></div>
 		</div>
 		<div id="s"></div>
 
