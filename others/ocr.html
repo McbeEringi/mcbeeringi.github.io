@@ -89,30 +89,45 @@
 					">
 					<div id="fname">D&D又はクリックして選択</div>
 				</div>
-				<img id="img" src="img/test.png" onclick='
-					if(r){
-						r = false;
-						msg.innerText = "Please wait…"
-						Tesseract.recognize(this,"jpn+eng",{
-							logger:(m) => {
-								console.log(m);
-								msg.innerText=m.status+"…";
-								bar.style.width = m.progress*100+"%";
-							}}).then(
-								({data:{text}}) => {
-									msg.textContent="Done!";
-									s.textContent=text;
-									r = true;
-								}
-							);
-					}
-				'>
+				<video id="photo" width="400" height="300"></video>
 			</div>
+			<img id="img" src="img/test.png" onclick='
+				if(r){
+					r = false;
+					msg.innerText = "Please wait…"
+					Tesseract.recognize(this,"jpn+eng",{
+						logger:(m) => {
+							console.log(m);
+							msg.innerText=m.status+"…";
+							bar.style.width = m.progress*100+"%";
+						}}).then(
+							({data:{text}}) => {
+								msg.textContent="Done!";
+								s.textContent=text;
+								r = true;
+							}
+						);
+				}
+			'>
 			<div id="msg">画像をクリックしてスタート</div>
 			<div class="bar">
 				<div id="bar" style=""></div>
 			</div>
 			<div id="s" style="user-select:auto;-webkit-user-select:auto;"></div>
 		</div>
+		<script>
+			//https://qiita.com/tkyko13/items/1871d906736ac88a1f35
+			var video = document.getElementById("photo");
+			var constrains = { video: true, audio: false };
+			navigator.mediaDevices
+				.getUserMedia(constrains)
+				.then(function(stream) {
+					video.srcObject = stream;
+					video.play();
+				})
+				.catch(function(err) {
+					console.log("An error occured! " + err);
+				});
+		</script>
 		</body>
 </html>
