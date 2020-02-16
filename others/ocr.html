@@ -40,7 +40,8 @@
 			.file{
 				position: relative;
 				background-color: #444;
-				width: 320px;
+				width: 100%;
+				max-width: 320px;
 				height: 180px;
 				border: solid 2px #888;
 				border-radius: 7px;
@@ -59,6 +60,10 @@
 				opacity: 0;
 				border: solid 1px #fff;
 			}
+			#img{
+				width: 100%;
+				max-width: 320px;
+			}
 			.bar{width:50%;height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
 			.bar *{width:0;height:10px;background-color:#38f;}
 		</style>
@@ -73,34 +78,36 @@
 		</div>
 
 		<div id="stuff" style="display:none;">
-			<div class="file">
-				<input type="file" name="img" accept="image/png, image/jpeg" onchange="
-					fname.textContent=this.value.split('\\').pop();
-					fname.textContent=fname.textContent?'選択された画像: '+fname.textContent:'D&D又はクリックして選択';
-					reader.addEventListener('load', ()=>img.src = reader.result, false);
-					reader.readAsDataURL(this.files[0]);
-					console.log(reader);
-				">
-				<div id="fname">D&D又はクリックして選択</div>
+			<div style="display:flex;flex-wrap:wrap;align-items:flex-start;">
+				<div class="file">
+					<input type="file" name="img" accept="image/png, image/jpeg" onchange="
+						fname.textContent=this.value.split('\\').pop();
+						fname.textContent=fname.textContent?'選択された画像: '+fname.textContent:'D&D又はクリックして選択';
+						reader.addEventListener('load', ()=>img.src = reader.result, false);
+						reader.readAsDataURL(this.files[0]);
+						console.log(reader);
+					">
+					<div id="fname">D&D又はクリックして選択</div>
+				</div>
+				<img id="img" src="img/test.png" onclick='
+					if(r){
+						r = false;
+						msg.innerText = "Please wait…"
+						Tesseract.recognize(this,"jpn+eng",{
+							logger:(m) => {
+								console.log(m);
+								msg.innerText=m.status+"…";
+								bar.style.width = m.progress*100+"%";
+							}}).then(
+								({data:{text}}) => {
+									msg.textContent="Done!";
+									s.textContent=text;
+									r = true;
+								}
+							);
+					}
+				'>
 			</div>
-			<img id="img" src="img/test.png" width="320px" onclick='
-				if(r){
-					r = false;
-					msg.innerText = "Please wait…"
-					Tesseract.recognize(this,"jpn+eng",{
-						logger:(m) => {
-							console.log(m);
-							msg.innerText=m.status+"…";
-							bar.style.width = m.progress*100+"%";
-						}}).then(
-							({data:{text}}) => {
-								msg.textContent="Done!";
-								s.textContent=text;
-								r = true;
-							}
-						);
-				}
-			'>
 			<div id="msg">画像をクリックしてスタート</div>
 			<div class="bar">
 				<div id="bar" style=""></div>
