@@ -118,7 +118,7 @@
 						);
 				}
 			}
-			var constrains = {video:true,audio:false,facingMode:{exact:"environment"}};
+			var constrains = {video:true,audio:false,video:{facingMode:{exact:"environment"}}};
 			navigator.mediaDevices
 				.getUserMedia(constrains)
 				.then((v)=>{
