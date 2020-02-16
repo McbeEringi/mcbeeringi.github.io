@@ -118,14 +118,14 @@
 						);
 				}
 			}
-			var constrains = {video:true,audio:false};
+			var constrains = {video:true,audio:false,facingMode:{exact:"environment"}};
 			navigator.mediaDevices
 				.getUserMedia(constrains)
 				.then((v)=>{
 					photo.srcObject = v;
 					photo.play();
 				})
-				.catch((e)=>alert("Error! : "+e));
+				.catch((e)=>alert("camera error: "+e));
 		</script>
 		</body>
 </html>
