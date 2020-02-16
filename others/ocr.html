@@ -77,25 +77,34 @@
 			<div id="llog" style="font-size:11px;color:#888;"></div>
 		</div>
 
-		<div id="stuff" style="display:none;">
+		<div id="stuff" satyle="display:none;">
 			<div style="display:flex;flex-wrap:wrap;align-items:flex-start;">
 				<div class="file">
-					<input type="file" name="img" accept="image/png, image/jpeg" onchange="
-						fname.textContent=this.value.split('\\').pop();
-						fname.textContent=fname.textContent?'選択された画像: '+fname.textContent:'D&D又はクリックして選択';
-						reader.addEventListener('load', ()=>img.src = reader.result, false);
-						reader.readAsDataURL(this.files[0]);
-						console.log(reader);
-					">
+					<input type="file" name="img" accept="image/png, image/jpeg" onchange="file(this);">
 					<div id="fname">D&D又はクリックして選択</div>
 				</div>
 				<video id="photo" width="400" height="300"></video>
 			</div>
-			<img id="img" src="img/test.png" onclick='
+			<img id="img" src="img/test.png" onclick='main(this);'>
+			<div id="msg">画像をクリックしてスタート</div>
+			<div class="bar">
+				<div id="bar" style=""></div>
+			</div>
+			<div id="s" style="user-select:auto;-webkit-user-select:auto;"></div>
+		</div>
+		<script>
+			function file(_this) {
+				fname.textContent=_this.value.split('\\').pop();
+				fname.textContent=fname.textContent?'選択された画像: '+fname.textContent:'D&D又はクリックして選択';
+				reader.addEventListener('load', ()=>img.src = reader.result, false);
+				reader.readAsDataURL(_this.files[0]);
+				console.log(reader);
+			}
+			function main(_this) {
 				if(r){
 					r = false;
 					msg.innerText = "Please wait…"
-					Tesseract.recognize(this,"jpn+eng",{
+					Tesseract.recognize(_this,"jpn+eng",{
 						logger:(m) => {
 							console.log(m);
 							msg.innerText=m.status+"…";
@@ -108,26 +117,15 @@
 							}
 						);
 				}
-			'>
-			<div id="msg">画像をクリックしてスタート</div>
-			<div class="bar">
-				<div id="bar" style=""></div>
-			</div>
-			<div id="s" style="user-select:auto;-webkit-user-select:auto;"></div>
-		</div>
-		<script>
-			//https://qiita.com/tkyko13/items/1871d906736ac88a1f35
-			var video = document.getElementById("photo");
-			var constrains = { video: true, audio: false };
+			}
+			var constrains = {video:true,audio:false};
 			navigator.mediaDevices
 				.getUserMedia(constrains)
-				.then(function(stream) {
-					video.srcObject = stream;
-					video.play();
+				.then((v)=>{
+					photo.srcObject = v;
+					photo.play();
 				})
-				.catch(function(err) {
-					console.log("An error occured! " + err);
-				});
+				.catch((e)=>alert("Error! : "+e));
 		</script>
 		</body>
 </html>
