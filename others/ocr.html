@@ -84,6 +84,7 @@
 			<img id="img" src="img/test.png" width="320px" onclick='
 				if(r){
 					r = false;
+					msg.innerText = "Please wait…"
 					Tesseract.recognize(this,"jpn+eng",{
 						logger:(m) => {
 							console.log(m);
@@ -91,7 +92,7 @@
 							bar.style.width = m.progress*100+"%";
 						}}).then(
 							({data:{text}}) => {
-								msg.textContent="done!";
+								msg.textContent="Done!";
 								s.textContent=text;
 								r = true;
 							}
