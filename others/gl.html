@@ -63,11 +63,14 @@
 			<textarea rows="16" id="vsh" class="border">
 attribute highp vec4 POSITION;
 attribute vec4 COLOR;
+attribute vec2 TEXCOORD_1;
 uniform mat4 WORLDVIEWPROJ;
 varying vec4 color;
+varying vec2 uv1;
 
 void main(){
 	color = COLOR;
+	uv1 = TEXCOORD_1;
 	gl_Position = WORLDVIEWPROJ * POSITION;
 }</textarea>
 			fragment <br>
@@ -77,9 +80,12 @@ precision mediump float;
 
 uniform highp float TIME;
 varying vec4 color;
+varying vec2 uv1;
 
 void main(){
-	gl_FragColor = color;
+	vec4 diffuse = color;
+	diffuse.rgb *= max(uv1.x,uv1.y);
+	gl_FragColor = diffuse;
 }</textarea>
 			<div style="display:flex;flex-wrap:wrap;">
 				<button id="url" onclick="url_copy(document.getElementById('ifl').checked);" class="border" style="font-size:18px;">copy url</button>
@@ -93,6 +99,7 @@ void main(){
 					#extension GL_OES_standard_derivatives : enable<br>
 					attribute highp vec4 POSITION;<br>
 					attribute highp vec4 COLOR;<br>
+					attribute highp vec2 TEXCOORD_1;<br>
 					uniform highp float TIME;<br>
 					uniform highp vec4 FOG_COLOR;<br>
 					uniform highp vec4 CURRENT_COLOR;<br>
@@ -173,11 +180,13 @@ void main(){
 
 			var POSITION = gl.getAttribLocation(prg, "POSITION");//attributeLocationの取得
 			var COLOR = gl.getAttribLocation(prg, "COLOR");
+			var TEXCOORD_1 = gl.getAttribLocation(prg, "TEXCOORD_1");
 
 			var pos, col, index;
 			var pos_v = gl.createBuffer();
 			var col_v = gl.createBuffer();
-			att([pos_v, col_v], [POSITION,COLOR], [4,4]);
+			var uv1_v = gl.createBuffer();
+			att([pos_v, col_v, uv1_v], [POSITION,COLOR,TEXCOORD_1], [4,4,2]);
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());//ibo
 			radio();
 
@@ -296,7 +305,7 @@ void main(){
 
 			function radio(){
 				var value = document.getElementById("model").model.value;
-				if(value==0){
+				if(value==0){//blocks
 					pos = [
 						-1.,1.,-1.,1., 0.,1.,-1.,1.,  -1.,1.,0.,1., 0.,1.,0.,1.,
 						-1.,0.,-1.,1., 0.,0.,-1.,1., 1.,0.,-1.,1.,  -1.,0.,0.,1., 0.,0.,0.,1., 1.,0.,0.,1.,  -1.,0.,1.,1., 0.,0.,1.,1.,
@@ -304,8 +313,13 @@ void main(){
 					];
 					col = [
 						.6,.6,.6,1., .8,.8,.8,1.,  .8,.8,.8,1., 1.,1.,1.,1.,
-						.4,.4,.4,1., .6,.6,.6,1., .8,.8,.8,1.,  .6,.6,.6,1., .8,.8,.8,1.,1.,1.,1.,1.,  .8,.8,.8,1., 1.,1.,1.,1.,
+						.4,.4,.4,1., .6,.6,.6,1., .8,.8,.8,1.,  .6,.6,.6,1., .8,.8,.8,1., 1.,1.,1.,1.,  .8,.8,.8,1., 1.,1.,1.,1.,
 						.2,.2,.2,1., .4,.4,.4,1., .6,.6,.6,1.,  .4,.4,.4,1., .6,.6,.6,1., .8,.8,.8,1.,  .6,.6,.6,1., .8,.8,.8,1.
+					];
+					uv1 = [
+						1.,1., 1.,1., 1.,1., 1.,1.,
+						1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
+						1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1.
 					];
 					index = [
 						2,1,0, 1,2,3,  7,3,2, 3,7,8, 8,1,3, 1,8,5, 5,0,1, 0,5,4, 4,2,0, 2,4,7,
@@ -313,7 +327,7 @@ void main(){
 						13,15,12, 15,13,16, 14,16,13, 16,14,17, 16,18,15, 18,16,19
 					];
 				}
-				else if(value==1){
+				else if(value==1){//plane
 					pos = [
 						-2.,0.,-2.,1.,  -1.,0.,-2.,1.,  0.,0.,-2.,1.,  1.,0.,-2.,1.,  2.,0.,-2.,1.,
 						-2.,0.,-1.,1.,  -1.,0.,-1.,1.,  0.,0.,-1.,1.,  1.,0.,-1.,1.,  2.,0.,-1.,1.,
@@ -328,6 +342,13 @@ void main(){
 						1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.,
 						1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.
 					];
+					uv1 = [
+						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
+						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
+						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
+						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
+						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.
+					];
 					index = [
 						 6, 0, 5, 0, 6, 1,  7, 1, 6, 1, 7, 2,  8, 2, 7, 2, 8, 3,  9, 3, 8, 3, 9, 4,
 						11, 5,10, 5,11, 6, 12, 6,11, 6,12, 7, 13, 7,12, 7,13, 8, 14, 8,13, 8,14, 9,
@@ -335,12 +356,15 @@ void main(){
 						21,15,20,15,21,16, 22,16,21,16,22,17, 23,17,22,17,23,18, 24,18,23,18,24,19
 					];
 				}
-				else if(value==2){
+				else if(value==2){//coastal
 					pos = [
 						0.,0.,0.,1., 1.,0.,0.,1., 0.,1.,0.,1., 0.,0.,1.,1.
 					];
 					col = [
 						0.,0.,0.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.
+					];
+					uv1 = [
+						1.,1., 1.,1., 1.,1., 1.,1.
 					];
 					index = [
 						0,2,1, 0,3,2, 0,1,3, 1,2,3
@@ -350,6 +374,9 @@ void main(){
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
 				gl.bindBuffer(gl.ARRAY_BUFFER, col_v);
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(col), gl.STATIC_DRAW);
+				gl.bindBuffer(gl.ARRAY_BUFFER, null);
+				gl.bindBuffer(gl.ARRAY_BUFFER, uv1_v);
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uv1), gl.STATIC_DRAW);
 				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(index), gl.STATIC_DRAW);
 			}
 			function clear(c){
