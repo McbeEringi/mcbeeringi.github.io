@@ -41,13 +41,14 @@
 				display: flex;
 				flex-wrap: wrap;
 				align-items: flex-start;
+				justify-content: center;
 			}
-			.flex>*{
-				width: 100%;
-				max-width: 320px;
-				height: 180px;
-			}
+			.flex *{margin: 3px;}
 			.file{
+				margin:1px;
+				width: 45%;
+				min-width: 320px;
+				height: 180px;
 				position: relative;
 				background-color: #444;
 				border: solid 2px #888;
@@ -62,14 +63,22 @@
 				pointer-events: none;
 			}
 			.file input[type=file]{
+				margin: 0;
 				width: 100%;
 				height: 100%;
 				opacity: 0;
-				border: solid 1px #fff;
+			}
+			#photo{
+				margin:1px;
+				border: solid 2px #888;
+				border-radius: 7px;
+				width: 45%;
+				min-width: 320px;
+				height: 180px;
 			}
 			#img{
-				width: 100%;
-				max-width: 320px;
+				width: 45%;
+				min-width: 320px;
 			}
 			.bar{width:100%;height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
 			.bar *{width:0;height:10px;background-color:#38f;}
@@ -92,10 +101,9 @@
 				</div>
 				<video id="photo"></video>
 			</div>
-			<br>
 			<div class="flex">
 				<img id="img" src="img/test.png" style="height:auto;" onclick='main(this);'>
-				<div>
+				<div style="width:45%;min-width:320px;">
 					<div id="msg">画像をクリックしてスタート</div>
 					<div class="bar"><div id="bar"></div></div>
 				</div>
