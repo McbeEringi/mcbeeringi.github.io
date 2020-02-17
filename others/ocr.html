@@ -71,7 +71,7 @@
 				width: 100%;
 				max-width: 320px;
 			}
-			.bar{height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
+			.bar{width:100%;height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
 			.bar *{width:0;height:10px;background-color:#38f;}
 		</style>
 	</head>
@@ -92,10 +92,13 @@
 				</div>
 				<video id="photo"></video>
 			</div>
-			<img id="img" src="img/test.png" onclick='main(this);'>
+			<br>
 			<div class="flex">
-				<div id="msg">画像をクリックしてスタート</div>
-				<div class="bar"><div id="bar" style=""></div></div>
+				<img id="img" src="img/test.png" style="height:auto;" onclick='main(this);'>
+				<div>
+					<div id="msg">画像をクリックしてスタート</div>
+					<div class="bar"><div id="bar"></div></div>
+				</div>
 			</div>
 			<div id="s" style="user-select:auto;-webkit-user-select:auto;"></div>
 		</div>
