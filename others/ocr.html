@@ -80,8 +80,8 @@
 				width: 45%;
 				min-width: 320px;
 			}
-			.bar{width:100%;height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
-			.bar *{width:0;height:10px;background-color:#38f;}
+			.bar{width:100%;height:10px;background-color:#eee;border-radius:5px;}
+			.bar *{margin:0;width:0;height:10px;border-radius:5px;background-color:#38f;}
 		</style>
 	</head>
 	<body>
@@ -93,7 +93,7 @@
 			<div id="llog" style="font-size:11px;color:#888;"></div>
 		</div>
 
-		<div id="stuff" style="display:none;">
+		<div id="stuff" sstyle="display:none;">
 			<div class="flex">
 				<div class="file">
 					<input type="file" name="img" accept="image/png, image/jpeg" onchange="file(this);">
@@ -108,7 +108,9 @@
 					<div class="bar"><div id="bar"></div></div>
 				</div>
 			</div>
-			<div id="s" style="user-select:auto;-webkit-user-select:auto;"></div>
+			<div style="margin:3 auto;">
+				<div id="s" style="user-select:auto;-webkit-user-select:auto;width:90%;"></div>
+			</div>
 		</div>
 		<script>
 			function file(_this) {
