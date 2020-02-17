@@ -37,12 +37,19 @@
 				color: #fff;
 				font-family:sans-serif;
 			}
-			.file{
-				position: relative;
-				background-color: #444;
+			.flex{
+				display: flex;
+				flex-wrap: wrap;
+				align-items: flex-start;
+			}
+			.flex>*{
 				width: 100%;
 				max-width: 320px;
 				height: 180px;
+			}
+			.file{
+				position: relative;
+				background-color: #444;
 				border: solid 2px #888;
 				border-radius: 7px;
 			}
@@ -64,7 +71,7 @@
 				width: 100%;
 				max-width: 320px;
 			}
-			.bar{width:50%;height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
+			.bar{height:10px;background-color:#eee;border-radius:5px;overflow:hidden;}
 			.bar *{width:0;height:10px;background-color:#38f;}
 		</style>
 	</head>
@@ -78,17 +85,17 @@
 		</div>
 
 		<div id="stuff" style="display:none;">
-			<div style="display:flex;flex-wrap:wrap;align-items:flex-start;">
+			<div class="flex">
 				<div class="file">
 					<input type="file" name="img" accept="image/png, image/jpeg" onchange="file(this);">
 					<div id="fname">D&D又はクリックして選択</div>
 				</div>
-				<video id="photo" style="width:100%;max-width:320px;height:180px;"></video>
+				<video id="photo"></video>
 			</div>
 			<img id="img" src="img/test.png" onclick='main(this);'>
-			<div id="msg">画像をクリックしてスタート</div>
-			<div class="bar">
-				<div id="bar" style=""></div>
+			<div class="flex">
+				<div id="msg">画像をクリックしてスタート</div>
+				<div class="bar"><div id="bar" style=""></div></div>
 			</div>
 			<div id="s" style="user-select:auto;-webkit-user-select:auto;"></div>
 		</div>
@@ -125,7 +132,7 @@
 					photo.srcObject = v;
 					photo.play();
 				})
-				.catch((e)=>alert("camera error: "+e));
+				.catch((e)=>console.log("camera error: "+e));
 		</script>
 		</body>
 </html>
