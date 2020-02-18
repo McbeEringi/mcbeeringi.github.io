@@ -118,7 +118,7 @@
 					</div>
 				</div>
 				<div class="ratio">
-					<video id="photo"></video>
+					<video id="photo" onclick="cam();"></video>
 				</div>
 			</div>
 			<canvas id="canvas" width="300" height="300"></canvas>
@@ -172,7 +172,7 @@
 			function camt() {
 				photo.pause();
 				setTimeout(()=>photo.play(), 500);
-				canvas.getContext("2d").drawImage(photo, 0, 0, canvas.width, canvas.height);
+				canvas.getContext("2d").drawImage(photo, 0, 0, photo.width, photo.height);
 			}
 		</script>
 		</body>
