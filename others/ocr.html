@@ -109,7 +109,7 @@
 			<div id="llog" style="font-size:11px;color:#888;"></div>
 		</div>
 
-		<div id="stuff" sstyle="display:none;">
+		<div id="stuff" style="display:none;">
 			<div class="flex">
 				<div class="ratio">
 					<div class="file">
@@ -118,7 +118,6 @@
 					</div>
 				</div>
 				<div class="ratio">
-					<div id="camon"></div>
 					<video id="photo" onclick="cam();"></video>
 				</div>
 			</div>
@@ -176,7 +175,7 @@
 					console.groupEnd();
 					canvas.width = photo.videoWidth;
 					canvas.height = photo.videoHeight;
-					camon.style.display = "";
+					photo.onclick = "camt();";
 				});
 			}
 			function camt() {
