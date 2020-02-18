@@ -50,7 +50,7 @@
 				height: 100%;
 				position: relative;
 			}
-			.file div{
+			.file div, #pinfo{
 				position: absolute;
 				font-size: 14px;
 				top: calc(50% - 7px);
@@ -109,15 +109,16 @@
 			<div id="llog" style="font-size:11px;color:#888;"></div>
 		</div>
 
-		<div id="stuff" style="display:none;">
+		<div id="stuff" sstyle="display:none;">
 			<div class="flex">
 				<div class="ratio">
 					<div class="file">
-						<input type="file" name="img" accept="image/png, image/jpeg" onchange="file(this);">
+						<input type="file" name="img" accept="image/png, image/jpeg" onchange="file(this);" onclick="cams();">
 						<div id="fname">D&D又はクリックして選択</div>
 					</div>
 				</div>
 				<div class="ratio">
+					<div id="pinfo">クリックしてカメラを起動</div>
 					<video id="photo" onclick="cam();"></video>
 				</div>
 			</div>
@@ -167,7 +168,7 @@
 						photo.srcObject = v;
 						photo.play();
 					})
-					.catch((e)=>console.log("camera error: "+e));
+					.catch((e)=>pinfo.textContent="["+e.name+"]: "+e.message);
 				photo.addEventListener('loadedmetadata', function() {
 					console.group('metadata');
 					console.log('width:', photo.videoWidth);
@@ -183,6 +184,10 @@
 				setTimeout(()=>photo.play(), 500);
 				canvas.getContext("2d").drawImage(photo,0,0,canvas.width,canvas.height);
 				img.src = canvas.toDataURL();
+			}
+			function cams() {
+				pinfo.textContent = "クリックしてカメラを起動";
+				photo.stop();
 			}
 		</script>
 		</body>
