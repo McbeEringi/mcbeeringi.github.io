@@ -46,13 +46,9 @@
 			}
 			.flex *{margin: 3px;}
 			.file{
-				margin:1px;
 				width: 100%;
 				height: 100%;
 				position: relative;
-				background-color: #444;
-				border: solid 2px #888;
-				border-radius: 7px;
 			}
 			.file div{
 				position: absolute;
@@ -63,17 +59,16 @@
 				pointer-events: none;
 			}
 			.file input[type=file]{
+				cursor: pointer;
 				margin: 0;
 				width: 100%;
 				height: 100%;
 				opacity: 0;
 			}
 			#photo{
-				margin:1px;
+				position: absolute;
 				width: 100%;
 				height: 100%;
-				border: solid 2px #888;
-				border-radius: 7px;
 			}
 			#img{
 				width: 45%;
@@ -85,6 +80,10 @@
 				position: relative;
 				width: 45%;
 				min-width: 320px;
+				margin: 1px;
+				background-color: #444;
+				border: solid 2px #888;
+				border-radius: 7px;
 			}
 			.ratio:before {
 				content:"";
@@ -92,6 +91,7 @@
 				padding-top: 56.25%;/*ratio*/
 			}
 			.ratio * {
+				margin: 0;
 				position: absolute;
 				top: 0;
 				left: 0;
@@ -118,6 +118,7 @@
 					</div>
 				</div>
 				<div class="ratio">
+					<div id="camon"></div>
 					<video id="photo" onclick="cam();"></video>
 				</div>
 			</div>
@@ -170,12 +171,13 @@
 					.catch((e)=>console.log("camera error: "+e));
 				photo.addEventListener('loadedmetadata', function() {
 					console.group('metadata');
-					console.log('width:', photo.videoWidth); // 640
-					console.log('height:', photo.videoHeight); // 360
+					console.log('width:', photo.videoWidth);
+					console.log('height:', photo.videoHeight);
 					console.groupEnd();
+					canvas.width = photo.videoWidth;
+					canvas.height = photo.videoHeight;
+					camon.style.display = "";
 				});
-				canvas.width = photo.videoWidth;
-				canvas.height = photo.videoHeight;
 			}
 			function camt() {
 				photo.pause();
