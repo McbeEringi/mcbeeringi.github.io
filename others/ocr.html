@@ -109,7 +109,7 @@
 			<div id="llog" style="font-size:11px;color:#888;"></div>
 		</div>
 
-		<div id="stuff" style="display:none;">
+		<div id="stuff" sstyle="display:none;">
 			<div class="flex">
 				<div class="ratio">
 					<div class="file">
@@ -121,6 +121,7 @@
 					<video id="photo"></video>
 				</div>
 			</div>
+			<canvas id="canvas" width="300" height="300"></canvas>
 			<div class="flex">
 				<img id="img" src="img/test.png" style="height:auto;" onclick='main(this);'>
 				<div style="width:45%;min-width:320px;">
@@ -158,14 +159,21 @@
 						);
 				}
 			}
-			var constrains = {video:true,audio:false,video:{facingMode:{exact:"environment"}}};
-			navigator.mediaDevices
-				.getUserMedia(constrains)
-				.then((v)=>{
-					photo.srcObject = v;
-					photo.play();
-				})
-				.catch((e)=>console.log("camera error: "+e));
+			function cam() {
+				var constrains = {video:true,audio:false,video:{facingMode:{exact:"environment"}}};
+				navigator.mediaDevices
+					.getUserMedia(constrains)
+					.then((v)=>{
+						photo.srcObject = v;
+						photo.play();
+					})
+					.catch((e)=>console.log("camera error: "+e));
+			}
+			function camt() {
+				photo.pause();
+				setTimeout(()=>photo.play(), 500);
+				canvas.getContext("2d").drawImage(photo, 0, 0, canvas.width, canvas.height);
+			}
 		</script>
 		</body>
 </html>
