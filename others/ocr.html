@@ -175,6 +175,7 @@
 				photo.onloadedmetadata = ()=>{
 					canvas.width = photo.videoWidth;
 					canvas.height = photo.videoHeight;
+					console.log(canvas.width,canvas.height);
 				};
 				canvas.getContext("2d").drawImage(photo,0,0,canvas.width,canvas.height);
 				img.src = canvas.toDataURL();
