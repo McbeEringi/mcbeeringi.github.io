@@ -172,7 +172,8 @@
 			function camt() {
 				photo.pause();
 				setTimeout(()=>photo.play(), 500);
-				canvas.getContext("2d").drawImage(photo);
+				canvas.getContext("2d").drawImage(photo,0,0);
+				img.src = canvas.toDataURL();
 			}
 		</script>
 		</body>
