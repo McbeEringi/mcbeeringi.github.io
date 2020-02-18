@@ -176,7 +176,7 @@
 					canvas.width = photo.videoWidth;
 					canvas.height = photo.videoHeight;
 				};
-				canvas.getContext("2d").drawImage(photo,0,0);
+				canvas.getContext("2d").drawImage(photo,0,0,canvas.width,canvas.height);
 				img.src = canvas.toDataURL();
 			}
 		</script>
