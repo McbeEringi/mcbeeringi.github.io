@@ -118,10 +118,10 @@
 					</div>
 				</div>
 				<div class="ratio">
-					<video id="photo" onclick="cam();" width="1600" height="900"></video>
+					<video id="photo" onclick="cam();"></video>
 				</div>
 			</div>
-			<canvas id="canvas" width="1600" height="900"></canvas>
+			<canvas id="canvas" style="display:none;"></canvas>
 			<div class="flex">
 				<img id="img" src="img/test.png" style="height:auto;" onclick='main(this);'>
 				<div style="width:45%;min-width:320px;">
@@ -172,7 +172,11 @@
 			function camt() {
 				photo.pause();
 				setTimeout(()=>photo.play(), 500);
-				canvas.getContext("2d").drawImage(photo,0,0,canvas.width,canvas.height);
+				photo.onloadedmetadata = ()=>{
+					canvas.width = photo.videoWidth;
+					canvas.height = photo.videoHeight;
+				};
+				canvas.getContext("2d").drawImage(photo,0,0);
 				img.src = canvas.toDataURL();
 			}
 		</script>
