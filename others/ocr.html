@@ -36,7 +36,178 @@
 				background-color: #222;
 				color: #fff;
 				font-family:sans-serif;
+				word-wrap: break-word;<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<title>McbeEringi OCR</title>
+		<!--iOS-->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+		<meta name="apple-mobile-web-app-title" content="OCR">
+		<link rel="apple-touch-icon" href="pwa/corn.png">
+		<!--sw-->
+		<link rel="manifest" href="pwa/ocr_manifest.json">
+		<script>
+			if ('serviceWorker' in navigator){navigator.serviceWorker.register('pwa/ocr_sw.js').then((reg) => {console.log('Service worker registered.', reg);});}
+		</script>
+
+		<script src="https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js"></script>
+		<script>
+			var reader = new FileReader();
+			var r = true;
+			Tesseract.recognize("../img/6x6.png","jpn+eng",{
+				logger:(m) => {
+					console.log(m);
+					document.getElementById("llog").innerText += m.status+": "+m.progress*100+"%\n";
+				}}).then(
+					({data:{text}}) => {
+						document.getElementById("stuff").style.display="block";
+						document.getElementById("load").style.display="none";
+					}
+				);
+		</script>
+		<style>
+			:root{
+				user-select:none;
+				-webkit-user-select:none;
+				background-color: #222;
+				color: #fff;
+				font-family:sans-serif;
 				word-wrap: break-word;
+			}
+			.flex{
+				display: flex;
+				flex-wrap: wrap;
+				align-items: flex-start;
+				justify-content: center;
+			}
+			.flex *{margin: 3px;}
+			.file{
+				margin:1px;
+				width: 100%;
+				height: 100%;
+				position: relative;
+				background-color: #444;
+				border: solid 2px #888;
+				border-radius: 7px;
+			}
+			.file div{
+				position: absolute;
+				font-size: 14px;
+				top: calc(50% - 7px);
+				width: 100%;
+				text-align: center;
+				pointer-events: none;
+			}
+			.file input[type=file]{
+				margin: 0;
+				width: 100%;
+				height: 100%;
+				opacity: 0;
+			}
+			#photo{
+				margin:1px;
+				width: 100%;
+				height: 100%;
+				border: solid 2px #888;
+				border-radius: 7px;
+			}
+			#img{
+				width: 45%;
+				min-width: 320px;
+			}
+			.bar{width:100%;height:10px;background-color:#eee;border-radius:5px;}
+			.bar *{margin:0;width:0;height:10px;border-radius:5px;background-color:#38f;}
+			.ratio {/* https://qiita.com/ryounagaoka/items/a98f59347ed758743b8d */
+				position: relative;
+				width: 45%;
+				min-width: 320px;
+			}
+			.ratio:before {
+				content:"";
+				display: block;
+				padding-top: 56.25%;/*ratio*/
+			}
+			.ratio * {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="load" style="text-align:center;padding-top:50vh;position:relative;top:-150px;">
+			<img src="pwa/corn_192.png" style="width:100px;">
+			<h1>OCR!</h1>
+			<h2>Powered by Tesserect.js</h2>
+			<p>Please wait…</p>
+			<div id="llog" style="font-size:11px;color:#888;"></div>
+		</div>
+
+		<div id="stuff" sstyle="display:none;">
+			<div class="flex">
+				<div class="ratio">
+					<div class="file">
+						<input type="file" name="img" accept="image/png, image/jpeg" onchange="file(this);">
+						<div id="fname">D&D又はクリックして選択</div>
+					</div>
+				</div>
+				<div class="ratio">
+					<video id="photo"></video>
+				</div>
+			</div>
+			<div class="flex">
+				<img id="img" src="img/test.png" style="height:auto;" onclick='main(this);'>
+				<div style="width:45%;min-width:320px;">
+					<div id="msg">画像をクリックしてスタート</div>
+					<div class="bar"><div id="bar"></div></div>
+				</div>
+			</div>
+			<div class="flex">
+				<div id="s" style="user-select:text;-webkit-user-select:text;width:90%;"></div>
+			</div>
+		</div>
+		<script>
+			function file(_this) {
+				fname.textContent=_this.value.split('\\').pop();
+				fname.textContent=fname.textContent?'選択された画像: '+fname.textContent:'D&D又はクリックして選択';
+				reader.addEventListener('load', ()=>img.src = reader.result, false);
+				reader.readAsDataURL(_this.files[0]);
+				console.log(reader);
+			}
+			function main(_this) {
+				if(r){
+					r = false;
+					msg.innerText = "Please wait…"
+					Tesseract.recognize(_this,"jpn+eng",{
+						logger:(m) => {
+							console.log(m);
+							msg.innerText=m.status+"…";
+							bar.style.width = m.progress*100+"%";
+						}}).then(
+							({data:{text}}) => {
+								msg.textContent="Done!";
+								s.textContent=text;
+								r = true;
+							}
+						);
+				}
+			}
+			var constrains = {video:true,audio:false,video:{facingMode:{exact:"environment"}}};
+			navigator.mediaDevices
+				.getUserMedia(constrains)
+				.then((v)=>{
+					photo.srcObject = v;
+					photo.play();
+				})
+				.catch((e)=>console.log("camera error: "+e));
+		</script>
+		</body>
+</html>
+
 			}
 			.flex{
 				display: flex;
