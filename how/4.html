@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="jp">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<title>McbeEringi howto-4</title>
+		<link href="https://fonts.googleapis.com/css?family=Quicksand:400|M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="../main.css">
+	</head>
+	<body>
+		<header id="H"></header>
+		<p class="title">#4 影作る。</p>
+		<p align="center">ごにょごにょ言ってないで実際に作りましょ</p>
+		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
+		<div class="flex pad3 col1">
+			<div align="center"><a href="3.html"><< #3 型と演算子</a></div>
+			<div align="center"><a href="index.html">トップ</a></div>
+			<div align="center"><a href=".html">#5 coming soon… >></a></div>
+		</div>
+		<div class="col2">
+			<h2>index</h2>
+			<ul>
+				<li>検討</li>
+				<li>情報収集</li>
+				<li>設計</li>
+				<li>動かす!</li>
+			</ul>
+			<p style="text-align:right;">2020/2/24 作成 <br>2020/2/24 更新 <br></p>
+		</div>
+		<br>
+		<div class="col1">
+			<h2>検討</h2>
+		</div>
+		<div class="col2" style="padding-left:10px;">
+				いきなり影作るぞーなんて言っても困惑するだけですね、 <br>
+				設計する前に影を作るにあたってどの情報があればいいか考えましょう…
+			<ul>
+				<li>太陽光</li>
+				<li>周りのブロックの位置</li>
+			</ul>
+				この二つを思い浮かべたあなた<br>
+				確かに何も間違っていません、 <br>
+				駄菓子菓子世の中そう甘くないです。<br>
+				そんな贅沢な情報はマイクラは教えてくれないです。 <br>
+				「じゃぁ動的な影ができないじゃん」→できないです <br>
+				ほぼ全てのBEのシェダーが固定された影を持つ理由は、まさにこれです。<br>
+				<br><br>
+				逆に考えてみましょう <br>
+				マイクラは何を教えてくれるか…
+			<ul>
+				<li>人工的な光源の強さ(だいたい)</li>
+				<li>真上から光を当てたときに日陰になる度合いみたいな何か</li>
+			</ul>
+				材料は調いましたね!<br>
+				前者はuv1という変数の第一要素 <br>
+				後者はuv1の第二要素です。(つまりuv1.xとuv1.y)<br>
+				どちらも値域は0~1です(詳しいことはテクスチャについて調べてください) <br>
+			<br>
+		</div>
+		<br>
+		<div class="col1">
+			<h2>情報収集</h2>
+		</div>
+		<div class="col2" style="padding-left:10px;">
+			uv1なんて言われたって分からんぞー状態なので挙動を確認しましょう。 <br>
+			renderchunk.fragmentに書いていきます。 <br>
+			renderchunk.fragmentに処理を書く際は、l84~l86の <code>#endif</code>と<code>#ifdef FOG</code>の間に書いていきます。
+			<pre>
+diffuse.rgb = vec3(uv1,0);
+			</pre>
+			これでuv1.xの値が赤にuv1.yの値が緑にそれぞれ代入されます <br>
+			青は強制的に0です <br>
+			<img src="img/4-1.jpg" class="img_s">
+			<img src="img/4-2.jpg" class="img_s"> <br>
+			分かりましたよね??(丸投げ) <br>
+			境目はくっきりした線ではないのです。 <br>
+			なので"影"を作ってやるには、こちらで境目の値を調整してやる必要があります。 <br>
+		</div>
+		<br>
+		<div class="col1">
+			<h2>設計</h2>
+		</div>
+		<div class="col2" style="padding-left:10px;">
+			まずは基本となる影を作ります。 <br>
+			関数としてそのまま考えると萎えるので、グラフと一緒に考えていきます。 <br>
+			<img src="img/4-3.jpg" class="img"> <br>
+			日陰になった途端明るさを落とせばいいわけです。 <br>
+			関数に書き起こしてみます <br>
+			<img src="img/4-4.jpg" class="img"> <br>
+			smoothstepを使うと赤線の関数が作れます。 <br>
+			smoothstep(a,b,x)は、xがa以下の時に0,b以上の時に1になるような <br>
+			滑らかな連続した数を返してくれるone of the 超絶クソ便利関数です。 <br>
+			より詳しく知りたい人は<a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/smoothstep.xhtml">公式のレファレンス</a>を見るといいです。 <br>
+			<br>
+			そこにさらにmixを使うと
+			mix(a,b,x)は、x=0の時にa,x=1の時にbを返す線形補完された数(つまりb*x+a*(1-x)) <br>
+			を返すone of the 超絶クソ便利関数です。 <br>
+			<a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/mix.xhtml">公式のレファレンス</a><br>
+			(hlslではlerpという名前になっていますが中身はだいたい同じです) <br>
+			<br>
+			最後に松明などの明かりを使った時に影が消えるようにします。 <br>
+			これがないと洞窟の中で松明つけてもめちゃくらい惨事になるので割と重要です。 <br>
+			光源はuv1.xに入っているので最終的な影のかけ具合をmixを使って調整します。 <br>
+			<br><br>
+			これで設計は完了です。 <br>
+			inが0の時にoutが0になってないですが、あとでマイクラのデフォルトと合成するので問題ないです。 <br>
+			glslに書き起こしてみます <br>
+			<pre>
+float shadow = mix(0.5, 1.0, smoothstep(0.865, 0.875, uv1.y));
+diffuse.rgb *= mix(shadow, 1.0, uv1.x);
+			</pre>
+		</div>
+		<br>
+		<div class="col1">
+			<h2>動かす!</h2>
+		</div>
+		<div class="col2" style="padding-left:10px;">
+			ほい <br>
+			<img src="img/4-5.jpg" class="img_s">
+			<img src="img/4-6.jpg" class="img_s"> <br>
+			ほいほい <br>
+			<img src="img/4-7.jpg" class="img_s">
+			<img src="img/4-8.jpg" class="img_s"> <br>
+			ゴキブリホイホイ <br>
+			<img src="img/4-9.jpg" class="img_s">
+			<img src="img/4-a.jpg" class="img_s"> <br>
+			ちょっと暗いですかね、 <br>
+			上手く調整してください。 <br>
+		</div>
+		<br>
+		<div class="col2" style="padding-left:10px;">
+			今回の完成品、<a href="https://mcbeeringi.github.io/how/src/how_src_4.mcpack">こちら</a>から確認できます。 <br>
+			mixとsmoothstepの組み合わせは本当に便利なので覚えておくといいです <br>
+			<br>
+			次回はユーザー定義関数についてです。 <br>
+			トーンマップで世界観を変えます。 <br>
+			お楽しみに!
+		</div>
+		<div class="flex pad3 col1">
+			<div align="center"><a href="3.html"><< #3 型と演算子</a></div>
+			<div align="center"><a href="index.html">トップ</a></div>
+			<div align="center"><a href=".html">#5 coming soon… >></a></div>
+		</div>
+		<footer id="F"></footer>
+		<script src="../hf.js"></script>
+	</body>
+</html>
