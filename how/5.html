@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="jp">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<title>McbeEringi howto-5</title>
+		<link href="https://fonts.googleapis.com/css?family=Quicksand:400|M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="../main.css">
+	</head>
+	<body>
+		<header id="H"></header>
+		<p class="title">#5 トーンマップ</p>
+		<p align="center">brief</p>
+		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
+		<div class="flex pad3 col1">
+			<div align="center"><a href="4.html"><< #4 影作る。</a></div>
+			<div align="center"><a href="index.html">トップ</a></div>
+			<div align="center"><a href="6.html">#6 coming soon… >></a></div>
+		</div>
+		<div class="col2">
+			<h2>index</h2>
+			<ul>
+				<li>復習</li>
+				<li>トーンマップ</li>
+			</ul>
+			<p style="text-align:right;">2020/2/24 作成 <br>2020/2/24 更新 <br></p>
+		</div>
+		<br>
+		<div class="col1">
+			<h2>復習</h2>
+		</div>
+		<div class="col2" style="padding-left:10px;">
+			前回作り忘れたものがあるので <br>
+			復習がてらささっと作っちゃいましょう。 <br>
+			松明の色の話です。 <br>
+			<br>
+			光源の情報はuv1.xに0~1で入っているので、 <br>
+			それを元にこちらで用意した色(今回はvec3(1,0.5,0))を載せていきます。 <br>
+			<pre>
+diffuse.rgb += vec3(1,0.5,0)*uv1.x;
+			</pre>
+			<img src="img/4-8.jpg" class="img_s">
+			<img src="img/5-1.jpg" class="img_s"> <br>
+			明るすぎますね <br>
+			<pre>
+diffuse.rgb += vec3(1,0.5,0)*max(uv1.x-0.5,0.0);
+			</pre>
+			maxは二つの引数のうちの大きい方を返す関数です。 <br>
+			<a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/max.xhtml">公式のレファレンス</a><br>
+			一般的な言語と違って引数は二つしか取れないです。 <br>
+			今回はuv1.x-0.5が0以下になった時に0を返すようにしています。 <br>
+			<img src="img/5-1.jpg" class="img_s">
+			<img src="img/5-2.jpg" class="img_s"> <br>
+			マシになりましたがこれでは明るい色のブロックが白飛びしてしまいます。 <br>
+			<img src="img/5-3.jpg" class="img_s"> <br>
+			<pre>
+diffuse.rgb += vec3(1,0.5,0)*max(uv1.x-0.5,0.0)*(1.0-diffuse.rgb);
+			</pre>
+			ブロックの元の明るさに応じて載せ具合を変えてみます。 <br>
+			<img src="img/5-4.jpg" class="img_s"> <br>
+			問題なさそうですね。 <br>
+			本編に入ります(前置き長い) <br>
+		</div>
+		<br>
+		<div class="col1">
+			<h2>トーンマップ</h2>
+		</div>
+		<div class="col2" style="padding-left:10px;">
+			トーンマップとはざっくり言うと画像をきれいに見せる加工手法の一つです。 <br>
+			色付きのフィルターみたいなもんです。 <br>
+			要はただの関数です。 <br>
+			いろんなものがありますが <br>
+			いろいろなものを比較検討していきたいですが <br>
+			復習でかなり食ったので結論から行きます。 <br>
+			<a href="https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/">https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/</a>
+			<pre>
+vec3 ACESFilm(vec3 x)
+{
+	float a = 2.51;
+	float b = 0.03;
+	float c = 2.43;
+	float d = 0.59;
+	float e = 0.14;
+	return clamp((x*(a*x+b))/(x*(c*x+d)+e),0.,1.);
+}
+			</pre>
+			glslも関数を自分で定義することができます。 <br>
+			最初のvec3は関数が返す型、括弧の中は受け取る引数です。 <br>
+			突然出てきたclampですがclamp(x,a,b) = min(max(x,a),b)です。 <br>
+			<a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/clamp.xhtml">公式のレファレンス</a><br>
+			<br>
+			これを<code>void main(){</code>の前に入れます。 <br>
+			松明の処理の辺りでこの関数を通します。 <br>
+			<pre>
+diffuse.rgb = ACESFilm(diffuse.rgb);
+			</pre>
+			<img src="img/5-5.jpg" class="img_s">
+			<img src="img/5-6.jpg" class="img_s"><br>
+			ちなみにRGB各要素に直接トーンマップをかけるのではなく <br>
+			明るさをベースにトーンマップをかける方法もあります
+			<pre>
+vec3 lum_tonemap(vec3 col){
+	return col/dot(col, vec3(0.298912, 0.586611, 0.114478))*ACESFilm(col);
+}
+			</pre>
+			<pre>
+diffuse.rgb = lum_tonemap(diffuse.rgb);
+			</pre>
+			こちらは彩度を保ったままにできます。 <br>
+			<img src="img/5-7.jpg" class="img_s"><br>
+		</div>
+		<br>
+		<div class="col2" style="padding-left:10px;">
+			こちら<a href="https://mcbeeringi.github.io/how/src/how_src_5.mcpack">今回のサンプル</a>です。 <br>
+			pow関数を使うと色の制御がしやすかったりと、 <br>
+			ここで紹介しなかったこともたくさんありますので試してみてください。 <br>
+			<br>
+			次回は葉っぱを揺らす予定です。 <br>
+		</div>
+		<div class="flex pad3 col1">
+			<div align="center"><a href="4.html"><< #4 影作る。</a></div>
+			<div align="center"><a href="index.html">トップ</a></div>
+			<div align="center"><a href="6.html">#6 coming soon… >></a></div>
+		</div>
+		<footer id="F"></footer>
+		<script src="../hf.js"></script>
+	</body>
+</html>
