@@ -15,7 +15,7 @@
 		<div class="flex pad3 col1">
 			<div align="center"><a href="3.html"><< #3 型と演算子</a></div>
 			<div align="center"><a href="index.html">トップ</a></div>
-			<div align="center"><a href=".html">#5 coming soon… >></a></div>
+			<div align="center"><a href="5.html">#5 トーンマップ >></a></div>
 		</div>
 		<div class="col2">
 			<h2>index</h2>
@@ -64,7 +64,8 @@
 		<div class="col2" style="padding-left:10px;">
 			uv1なんて言われたって分からんぞー状態なので挙動を確認しましょう。 <br>
 			renderchunk.fragmentに書いていきます。 <br>
-			renderchunk.fragmentに処理を書く際は、l84~l86の <code>#endif</code>と<code>#ifdef FOG</code>の間に書いていきます。
+			renderchunk.fragmentに処理を書く際は、l84~l86の <code>#endif</code>と<code>#ifdef FOG</code>の間に書いていきます。 <br>
+			diffuse.rgbは最終的にgl_FragColorに代入されています。
 			<pre>
 diffuse.rgb = vec3(uv1,0);
 			</pre>
@@ -139,7 +140,7 @@ diffuse.rgb *= mix(shadow, 1.0, uv1.x);
 		<div class="flex pad3 col1">
 			<div align="center"><a href="3.html"><< #3 型と演算子</a></div>
 			<div align="center"><a href="index.html">トップ</a></div>
-			<div align="center"><a href=".html">#5 coming soon… >></a></div>
+			<div align="center"><a href="5.html">#5 トーンマップ >></a></div>
 		</div>
 		<footer id="F"></footer>
 		<script src="../hf.js"></script>
