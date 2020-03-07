@@ -14,7 +14,7 @@
 	background-color: var(--btcol);
 	border-radius: 50%;
 	transition: var(--tst);
-	z-index: 0;
+	z-index: 1;
 }
 .menu+label::before{
 	content: "";
@@ -25,7 +25,7 @@
 	position: absolute;
 	background-color: var(--brcol);
 	transition: var(--tst);
-	z-index: 0;
+	z-index: 1;
 }
 .menu+label::after{
 	content: "";
@@ -37,7 +37,7 @@
 	top: 25px;
 	background-color: var(--brcol);
 	transition: var(--tst);
-	z-index: 0;
+	z-index: 1;
 }
 .menusub{
 	position: relative;
@@ -46,7 +46,7 @@
 	background-image: radial-gradient(var(--btcol) 20px,transparent 20px);
 	border-radius: 50%;
 	overflow: hidden;
-	z-index: 1;
+	z-index: 2;
 }
 .menusub::before{
 	content: "";
@@ -60,7 +60,7 @@
 	position: absolute;
 	top: 7px;
 	left: 10px;
-	z-index: 1;
+	z-index: 2;
 }
 .menusub::after{
 	content: "";
@@ -70,7 +70,7 @@
 	position: absolute;
 	right: 0px;
 	transition: var(--tst);
-	z-index: 0;
+	z-index: 1;
 }
 .menul{
 	position: relative;
@@ -84,7 +84,7 @@
 	user-select: none;
 	-webkit-user-select: none;
 	transition: var(--tst);
-	z-index: 1;
+	z-index: 2;
 }
 .menul *{
 	display: block;
