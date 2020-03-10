@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Ace Editor sample</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<style media="screen">
+		:root{background-color: #222;}
+	</style>
+	<script src="https://pagecdn.io/lib/ace/1.4.8/ace.js"></script>
+</head>
+<body>
+	<button onclick="alert(vsh.getValue());">vsh</button>
+  <div id="vsh">attribute highp vec4 POSITION;
+attribute vec4 COLOR;
+attribute vec2 TEXCOORD_1;
+uniform mat4 WORLDVIEWPROJ;
+varying vec4 color;
+varying vec2 uv1;
+
+void main(){
+	color = COLOR;
+	uv1 = TEXCOORD_1;
+	gl_Position = WORLDVIEWPROJ * POSITION;
+}</div>
+	<button onclick="alert(fsh.getValue());">fsh</button>
+	<div id="fsh">#extension GL_OES_standard_derivatives : enable
+precision mediump float;
+
+uniform highp float TIME;
+varying vec4 color;
+varying vec2 uv1;
+
+void main(){
+	vec4 diffuse = color;
+	diffuse.rgb *= max(uv1.x,uv1.y);
+	gl_FragColor = diffuse;
+}</div>
+  <script>
+    var vsh = ace.edit("vsh",{
+			//readOnly: true,
+			showInvisibles: true,
+			theme: "ace/theme/monokai",
+			mode: "ace/mode/glsl",
+			minLines: 16,
+			maxLines: 32,
+			fontSize: 12,
+			wrap: true,
+			useSoftTabs: false,
+			tabSize: 2
+		});
+		vsh.resize();
+		var fsh = ace.edit("fsh",{
+			//readOnly: true,
+			showInvisibles: true,
+			theme: "ace/theme/monokai",
+			mode: "ace/mode/glsl",
+			minLines: 16,
+			maxLines: 32,
+			fontSize: 12,
+			wrap: true,
+			useSoftTabs: false,
+			tabSize: 2
+		});
+	</script>
+</body>
+</html>
