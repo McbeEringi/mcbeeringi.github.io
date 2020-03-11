@@ -2,40 +2,16 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-		<!--iOS-->
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-status-bar-style" content="default">
-		<meta name="apple-mobile-web-app-title" content="GLSL">
-		<link rel="apple-touch-icon" href="pwa/corn.png">
-		<!--sw-->
-		<link rel="manifest" href="pwa/gl_manifest.json">
-		<script>
-			if ('serviceWorker' in navigator){navigator.serviceWorker.register('pwa/gl_sw.js').then((reg) => {console.log('Service worker registered.', reg);});}
-		</script>
-
 		<title>McbeEringi WebGL</title>
-		<script src="https://wgld.org/j/minMatrix.js" type="text/javascript">// https://wgld.org/d/webgl/w013.html</script>
+		<script type="text/javascript" src="https://wgld.org/j/minMatrix.js">// https://wgld.org/d/webgl/w013.html</script>
 		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.js">// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
 		<script type="text/javascript" src="https://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.js"></script>
-		<link rel="stylesheet" href="https://mcbeeringi.github.io/menu.css">
-		<style>
-			body{user-select:none;-webkit-user-select:none;background-color:rgba(32,32,32,1.0);color:#fff;margin:0;font-family:menlo,sans-serif;word-wrap:break-word;}
-			body *{background-color:rgba(0,0,0,0);color:#fff;font-family:menlo,sans-serif;}
-			button{margin:7px;font-size:24px;width:45vw;min-width:128px;border:0px solid;border-radius:5px;box-shadow:0 0 7px;}
-			button:hover{background-color:rgba(0,88,208,.5);}
-			button:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 7px 0 #aaa inset;}
-			canvas,textarea{width:100%;}textarea{resize:vertical;border-radius:5px;}
-			p{font-size:11px;margin-left:7px;background-color:rgba(0,0,0,0);user-select:text;-webkit-user-select:text;}
-			form *{background-color:rgba(0,0,0,0);}
-			input{max-width:100%;}
-			input[type=radio]{display:none;}
-			input[type="radio"]+label{color:#888;}
-			input[type="radio"]:hover+label{color:#aaa;}
-			input[type="radio"]:checked+label{color:#fff;}
-			.border{border:1px solid #888;border-radius:5px;}
-		</style>
-		<link rel="stylesheet" href="https://mcbeeringi.github.io/toggle.css">
+		<script type="text/javascript" src="gl_/models.js"></script>
+		<script type="text/javascript" src="gl_/url_fx.js"></script>
+		<script type="text/javascript" src="gl_/sh_fx.js"></script>
+		<link rel="stylesheet" href="../menu.css">
+		<link rel="stylesheet" href="gl_/gl.css">
+		<link rel="stylesheet" href="../toggle.css">
 	</head>
 	<body style="overflow-x:hidden;">
 		<canvas id="canvas">JavaScriptが無効になっているようです…</canvas><br>
@@ -231,182 +207,6 @@ void main(){
 				gl.flush();//コンテキストの再描画
 				setTimeout(arguments.callee, 1000/fps);
 			})();
-
-
-			function re(){
-				document.getElementById("log").innerHTML = "";
-				prg = create_program(create_shader("vsh"), create_shader("fsh"));
-			}
-			function url_i(){
-				// https://qiita.com/tonkatu_tanaka/items/99d167ded9330dbc4019
-				var pair=location.search.substring(1);
-				if(pair){
-					pair = pair.split("&");
-					var arg = new Object;
-					for(var i=0;pair[i];i++) {
-						var kv = pair[i].split("=");
-						arg[kv[0]]=kv[1];
-					}
-					console.log(arg);
-					if(arg.vsh)document.getElementById("vsh").innerHTML=unescape(zip_inflate(atob(arg.vsh.replace(/-/g,"+").replace(/_/g,"/"))));
-					if(arg.fsh)document.getElementById("fsh").innerHTML=unescape(zip_inflate(atob(arg.fsh.replace(/-/g,"+").replace(/_/g,"/"))));
-					if(arg.fps)document.getElementById("fps").value=arg.fps;
-					if(arg.c_c)document.getElementById("c_c").value=arg.c_c.replace(/,/g,", ");
-					if(arg.c_rot)document.getElementById("c_rot").value=arg.c_rot.replace(/,/g,", ");
-					if(arg.c_os)document.getElementById("c_os").value=arg.c_os.replace(/,/g,", ");
-					if(arg.model){var model = document.getElementById("model").model;model[0].checked=false;model[arg.model].checked=true;}
-					if(arg.stuff)document.getElementById("stuff").style.display=arg.stuff;
-				}
-			}
-			function url_e(e_ifl){
-				var e_fps = document.getElementById("fps").value;
-				if(e_ifl && e_fps>30)e_fps = 30;
-				var e_c_c = document.getElementById("c_c").value.replace(/\s+/g,"");
-				var e_c_rot = document.getElementById("c_rot").value.replace(/\s+/g,"");
-				var e_c_os = document.getElementById("c_os").value.replace(/\s+/g,"");
-				var e_model = document.getElementById("model").model.value;
-				var url = location.href.replace(/\?.*$/,"")
-					+"?vsh="+btoa(zip_deflate(escape(document.getElementById("vsh").value))).replace(/\+/g,"-").replace(/\//g,"_")
-					+"&fsh="+btoa(zip_deflate(escape(document.getElementById("fsh").value))).replace(/\+/g,"-").replace(/\//g,"_");
-				if(e_fps!=60)url += "&fps="+e_fps;
-				if(e_c_c!="1.0,1.0,1.0,1.0")url += "&c_c="+e_c_c;
-				if(e_c_rot!="0.5,0.5*TIME,0.0")url += "&c_rot="+e_c_rot;
-				if(e_c_os!="0.0,0.0,5.0")url += "&c_os="+e_c_os;
-				if(e_model!=0)url += "&model="+e_model;
-				if(e_ifl)url = "<iframe style='width:1600;height:900' class='gl' src='"+url+"&stuff=none'>";//iflame用
-				return url;
-			}
-			function url_copy(ifl){
-				var disp = document.getElementById("url");
-				if (execCopy(url_e(ifl)))disp.innerHTML = "copied!";
-				setTimeout(function(){disp.innerHTML = "copy url";}, 1000);
-			}
-			//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
-			function execCopy(string) {
-				var tmp = document.createElement("div");//空div 生成
-				var pre = document.createElement("pre");//選択用のタグ生成
-				pre.style.webkitUserSelect = "auto";//親要素のCSSでuser-select:noneだとコピーできないので書き換える
-				pre.style.userSelect = "auto";
-				tmp.appendChild(pre).textContent = string;
-				var s = tmp.style;//要素を画面外へ
-				s.position = "fixed";
-				s.right = "200%";
-				document.body.appendChild(tmp);//bodyに追加
-				document.getSelection().selectAllChildren(tmp);//要素を選択
-				var result = document.execCommand("copy");//クリップボードにコピー
-				document.body.removeChild(tmp);//要素削除
-				return result;
-			}
-
-
-			function radio(){
-				var value = document.getElementById("model").model.value;
-				if(value==0){//blocks
-					pos = [
-						-1.,1.,-1.,1., 0.,1.,-1.,1.,  -1.,1.,0.,1., 0.,1.,0.,1.,
-						-1.,0.,-1.,1., 0.,0.,-1.,1., 1.,0.,-1.,1.,  -1.,0.,0.,1., 0.,0.,0.,1., 1.,0.,0.,1.,  -1.,0.,1.,1., 0.,0.,1.,1.,
-						-1.,-1.,-1.,1., 0.,-1.,-1.,1., 1.,-1.,-1.,1.,  -1.,-1.,0.,1., 0.,-1.,0.,1., 1.,-1.,0.,1.,  -1.,-1.,1.,1., 0.,-1.,1.,1.
-					];
-					col = [
-						.6,.6,.6,1., .8,.8,.8,1.,  .8,.8,.8,1., 1.,1.,1.,1.,
-						.4,.4,.4,1., .6,.6,.6,1., .8,.8,.8,1.,  .6,.6,.6,1., .8,.8,.8,1., 1.,1.,1.,1.,  .8,.8,.8,1., 1.,1.,1.,1.,
-						.2,.2,.2,1., .4,.4,.4,1., .6,.6,.6,1.,  .4,.4,.4,1., .6,.6,.6,1., .8,.8,.8,1.,  .6,.6,.6,1., .8,.8,.8,1.
-					];
-					uv1 = [
-						1.,1., 1.,1., 1.,1., 1.,1.,
-						1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
-						1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1., 1.,1.
-					];
-					index = [
-						2,1,0, 1,2,3,  7,3,2, 3,7,8, 8,1,3, 1,8,5, 5,0,1, 0,5,4, 4,2,0, 2,4,7,
-						10,8,7, 8,10,11, 8,6,5, 6,8,9,  18,11,10, 11,18,19, 19,8,11, 8,19,16, 16,9,8, 9,16,17, 17,6,9, 6,17,14, 14,5,6, 5,14,13, 13,4,5, 4,13,12, 12,7,4, 7,12,15, 15,10,7, 10,15,18,
-						13,15,12, 15,13,16, 14,16,13, 16,14,17, 16,18,15, 18,16,19
-					];
-				}
-				else if(value==1){//plane
-					pos = [
-						-2.,0.,-2.,1.,  -1.,0.,-2.,1.,  0.,0.,-2.,1.,  1.,0.,-2.,1.,  2.,0.,-2.,1.,
-						-2.,0.,-1.,1.,  -1.,0.,-1.,1.,  0.,0.,-1.,1.,  1.,0.,-1.,1.,  2.,0.,-1.,1.,
-						-2.,0., 0.,1.,  -1.,0., 0.,1.,  0.,0., 0.,1.,  1.,0., 0.,1.,  2.,0., 0.,1.,
-						-2.,0., 1.,1.,  -1.,0., 1.,1.,  0.,0., 1.,1.,  1.,0., 1.,1.,  2.,0., 1.,1.,
-						-2.,0., 2.,1.,  -1.,0., 2.,1.,  0.,0., 2.,1.,  1.,0., 2.,1.,  2.,0., 2.,1.
-					];
-					col = [
-						1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.,
-						1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.,
-						1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.,
-						1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.,
-						1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.
-					];
-					uv1 = [
-						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
-						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
-						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
-						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.,
-						1.,1., 1.,1., 1.,1., 1.,1., 1.,1.
-					];
-					index = [
-						 6, 0, 5, 0, 6, 1,  7, 1, 6, 1, 7, 2,  8, 2, 7, 2, 8, 3,  9, 3, 8, 3, 9, 4,
-						11, 5,10, 5,11, 6, 12, 6,11, 6,12, 7, 13, 7,12, 7,13, 8, 14, 8,13, 8,14, 9,
-						16,10,15,10,16,11, 17,11,16,11,17,12, 18,12,17,12,18,13, 19,13,18,13,19,14,
-						21,15,20,15,21,16, 22,16,21,16,22,17, 23,17,22,17,23,18, 24,18,23,18,24,19
-					];
-				}
-				else if(value==2){//coastal
-					pos = [
-						0.,0.,0.,1., 1.,0.,0.,1., 0.,1.,0.,1., 0.,0.,1.,1.
-					];
-					col = [
-						0.,0.,0.,1., 1.,1.,1.,1., 1.,1.,1.,1., 1.,1.,1.,1.
-					];
-					uv1 = [
-						1.,1., 1.,1., 1.,1., 1.,1.
-					];
-					index = [
-						0,2,1, 0,3,2, 0,1,3, 1,2,3
-					];
-				}
-				gl.bindBuffer(gl.ARRAY_BUFFER, pos_v);
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
-				gl.bindBuffer(gl.ARRAY_BUFFER, col_v);
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(col), gl.STATIC_DRAW);
-				gl.bindBuffer(gl.ARRAY_BUFFER, null);
-				gl.bindBuffer(gl.ARRAY_BUFFER, uv1_v);
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uv1), gl.STATIC_DRAW);
-				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(index), gl.STATIC_DRAW);
-			}
-			function clear(c){
-				gl.clearColor(c[0],c[1],c[2],c[3]);
-				gl.clearDepth(1.);
-				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-			}
-			function create_shader(id){
-				if(id=="vsh")var shader = gl.createShader(gl.VERTEX_SHADER);
-				else if(id=="fsh")var shader = gl.createShader(gl.FRAGMENT_SHADER);
-				gl.shaderSource(shader, glpre+document.getElementById(id).value);
-				gl.compileShader(shader);
-				if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))return shader;
-				else document.getElementById("log").innerHTML += id+" ERROR\n"+gl.getShaderInfoLog(shader);
-			}
-			function create_program(vsh, fsh){
-				var program = gl.createProgram();
-				gl.attachShader(program, vsh);
-				gl.attachShader(program, fsh);
-				gl.linkProgram(program);
-				document.getElementById("log").innerHTML += gl.getProgramInfoLog(program);
-				if(gl.getProgramParameter(program, gl.LINK_STATUS)){
-					gl.useProgram(program);
-					return program;
-				}
-			}
-			function att(vbo, attL, attS){
-				for(var i in vbo){//引数として受け取った配列を処理する
-					gl.bindBuffer(gl.ARRAY_BUFFER, vbo[i]);//バッファをバインドする
-					gl.enableVertexAttribArray(attL[i]);//attributeLocationを有効にする
-					gl.vertexAttribPointer(attL[i], attS[i], gl.FLOAT, false, 0, 0);//attributeLocationを通知し登録する
-					gl.bindBuffer(gl.ARRAY_BUFFER, null);//バッファのバインドを無効化
-				}
-			}
 		</script>
 	</body>
 </html>
