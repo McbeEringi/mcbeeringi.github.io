@@ -84,22 +84,14 @@ void main(){
 				<div class="menusub"></div>
 				<div class="menul">
 					<h3>Config</h3>
-					<div>
-						<label for="fps">fps</label><br>
-						<input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;">
-					</div><br>
-					<div>
-						<label for="c_c">CURRENT_COLOR</label><br>
-						<input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border">
-					</div><br>
-					<div>
-						<label for="c_rot">cam_rot</label><br>
-						<input type="text" id="c_rot" value="0.5, 0.5*TIME, 0.0" onchange="c_rot=this.value" class="border">
-					</div><br>
-					<div>
-						<label for="c_os">cam_offset</label><br>
-						<input type="text" id="c_os" value="0.0, 0.0, 5.0" onchange="c_os=this.value" class="border">
-					</div><br>
+					<label>fps<br>
+					<input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;"></label><br>
+					<label>CURRENT_COLOR<br>
+					<input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"></label><br>
+					<label>cam_rot<br>
+					<input type="text" id="c_rot" value="0.5, 0.5*TIME, 0.0" onchange="c_rot=this.value" class="border"></label><br>
+					<label>cam_offset<br>
+					<input type="text" id="c_os" value="0.0, 0.0, 5.0" onchange="c_os=this.value" class="border"></label><br>
 
 					<a href="https://mcbeeringi.github.io">Home</a>
 				</div>
