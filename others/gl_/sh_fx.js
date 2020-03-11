@@ -19,9 +19,9 @@ function clear(c){
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
 function create_shader(id){
-	if(id=="vsh")var shader = gl.createShader(gl.VERTEX_SHADER);
-	else if(id=="fsh")var shader = gl.createShader(gl.FRAGMENT_SHADER);
-	gl.shaderSource(shader, glpre+document.getElementById(id).value);
+	if(id=="vsh"){var shader = gl.createShader(gl.VERTEX_SHADER);var src = vsh.getValue()}
+	else if(id=="fsh"){var shader = gl.createShader(gl.FRAGMENT_SHADER); var src = fsh.getValue()}
+	gl.shaderSource(shader, glpre+src);
 	gl.compileShader(shader);
 	if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))return shader;
 	else document.getElementById("log").innerHTML += id+" ERROR\n"+gl.getShaderInfoLog(shader);
