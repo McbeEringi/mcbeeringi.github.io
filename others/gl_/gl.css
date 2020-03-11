@@ -16,3 +16,5 @@ label[for="config"]{background-color:#444;border-radius:5px;}#config{display:non
 #config+div *{height: 20px;}
 #config+div{height:0px;overflow:scroll;;transition:.3s;}
 #config:checked+div{height:100px;transition:.3s;}
+.ace_mobile-menu{display:none;}
+/*#ace_settingsmenu{display:none;}*/
