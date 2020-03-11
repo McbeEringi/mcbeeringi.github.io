@@ -9,8 +9,8 @@ function url_i(){
 			arg[kv[0]]=kv[1];
 		}
 		console.log(arg);
-		if(arg.vsh)document.getElementById("vsh").innerHTML=unescape(zip_inflate(atob(arg.vsh.replace(/-/g,"+").replace(/_/g,"/"))));
-		if(arg.fsh)document.getElementById("fsh").innerHTML=unescape(zip_inflate(atob(arg.fsh.replace(/-/g,"+").replace(/_/g,"/"))));
+		if(arg.vsh)vsh.setValue(unescape(zip_inflate(atob(arg.vsh.replace(/-/g,"+").replace(/_/g,"/")))),-1);
+		if(arg.fsh)fsh.setValue(unescape(zip_inflate(atob(arg.fsh.replace(/-/g,"+").replace(/_/g,"/")))),-1);
 		if(arg.fps)document.getElementById("fps").value=arg.fps;
 		if(arg.c_c)document.getElementById("c_c").value=arg.c_c.replace(/,/g,", ");
 		if(arg.c_rot)document.getElementById("c_rot").value=arg.c_rot.replace(/,/g,", ");
@@ -27,8 +27,8 @@ function url_e(e_ifl){
 	var e_c_os = document.getElementById("c_os").value.replace(/\s+/g,"");
 	var e_model = document.getElementById("model").model.value;
 	var url = location.href.replace(/\?.*$/,"")
-		+"?vsh="+btoa(zip_deflate(escape(document.getElementById("vsh").value))).replace(/\+/g,"-").replace(/\//g,"_")
-		+"&fsh="+btoa(zip_deflate(escape(document.getElementById("fsh").value))).replace(/\+/g,"-").replace(/\//g,"_");
+		+"?vsh="+btoa(zip_deflate(escape(vsh.getValue()))).replace(/\+/g,"-").replace(/\//g,"_")
+		+"&fsh="+btoa(zip_deflate(escape(fsh.getValue()))).replace(/\+/g,"-").replace(/\//g,"_");
 	if(e_fps!=60)url += "&fps="+e_fps;
 	if(e_c_c!="1.0,1.0,1.0,1.0")url += "&c_c="+e_c_c;
 	if(e_c_rot!="0.5,0.5*TIME,0.0")url += "&c_rot="+e_c_rot;
