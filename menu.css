@@ -97,6 +97,7 @@
 	/*text-stroke: 1px #000;
 	-webkit-text-stroke: 1px #000;*/
 	transition: var(--tst);
+	z-index: 3;
 }
 .menu:checked+label{}
 .menu:checked+label::before{transform: rotateZ(-360deg);}
