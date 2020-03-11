@@ -23,10 +23,23 @@
 					<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
 					<input type="radio" name="model" value="2" id="r2"><label for="r2"> coastal</label>
 				</form>
-				<label>fps:<input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;"></label>
-				<label>CURRENT_COLOR:<input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"></label><br>
-				<label>cam_rot:<input type="text" id="c_rot" value="0.5, 0.5*TIME, 0.0" onchange="c_rot=this.value" class="border"></label><br>
-				<label>cam_offset:<input type="text" id="c_os" value="0.0, 0.0, 5.0" onchange="c_os=this.value" class="border"></label><br>
+				<label for="config">config ▼</label><input type="checkbox" id="config">
+				<div>
+					<table>
+						<tr>
+							<td><label for="fps">fps</label></td><td><input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;"></td>
+						</tr>
+						<tr>
+							<td><label for="c_c">CURRENT_COLOR</label></td><td><input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"></td>
+						</tr>
+						<tr>
+							<td><label for="c_rot">cam_rot</label></td><td><input type="text" id="c_rot" value="0.5, 0.5*TIME, 0.0" onchange="c_rot=this.value" class="border"></td>
+						</tr>
+						<tr>
+							<td><label for="c_os">cam_offset</label></td><td><input type="text" id="c_os" value="0.0, 0.0, 5.0" onchange="c_os=this.value" class="border"></td>
+						</tr>
+					</table>
+				</div>
 				<button onclick="re();">compile</button>
 			</div>
 			<pre id="log" style="font-size:11px;color:#f00;"></pre>
