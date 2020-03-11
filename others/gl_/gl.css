@@ -16,4 +16,4 @@ label[for="config"]{background-color:#444;border-radius:5px;}#config{display:non
 #config+div *{height: 20px;}
 #config+div{height:0px;overflow:scroll;transition:.3s;}
 #config:checked+div{height:100px;transition:.3s;}
-#ace_settingsmenu, #ace_settingsmenu *,.ace_content,.ace_mobile-menu{background-color:#222;}
+body>div:last-child */*div一個しかないからstuffには当たらない?*/,.ace_mobile-menu{color:#000;}

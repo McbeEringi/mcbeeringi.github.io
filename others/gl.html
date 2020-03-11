@@ -114,32 +114,34 @@ void main(){
 				<a href="https://twitter.com/mcbeeringi" target="_blank">@McbeEringi</a>.｡:+* <br>　
 			</div>
 		</div>
-
+		<div>
+			<!-- last-child回避用? -->
+		</div>
 		<script>
-		var vsh = ace.edit("vsh",{
-			//readOnly: true,
-			showInvisibles: true,
-			theme: "ace/theme/monokai",
-			mode: "ace/mode/glsl",
-			minLines: 16,
-			maxLines: 32,
-			fontSize: 12,
-			wrap: true,
-			useSoftTabs: false,
-			tabSize: 2
-		});
-		var fsh = ace.edit("fsh",{
-			//readOnly: true,
-			showInvisibles: true,
-			theme: "ace/theme/monokai",
-			mode: "ace/mode/glsl",
-			minLines: 16,
-			maxLines: 32,
-			fontSize: 12,
-			wrap: true,
-			useSoftTabs: false,
-			tabSize: 2
-		});
+			var vsh = ace.edit("vsh",{
+				//readOnly: true,
+				showInvisibles: true,
+				theme: "ace/theme/monokai",
+				mode: "ace/mode/glsl",
+				minLines: 16,
+				maxLines: 32,
+				fontSize: 12,
+				wrap: true,
+				useSoftTabs: false,
+				tabSize: 2
+			});
+			var fsh = ace.edit("fsh",{
+				//readOnly: true,
+				showInvisibles: true,
+				theme: "ace/theme/monokai",
+				mode: "ace/mode/glsl",
+				minLines: 16,
+				maxLines: 32,
+				fontSize: 12,
+				wrap: true,
+				useSoftTabs: false,
+				tabSize: 2
+			});
 			url_i();
 			var glpre = "#define round(x) floor(x+.5)\n";
 
