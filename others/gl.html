@@ -11,8 +11,8 @@
 		<script type="text/javascript" src="gl_/url_fx.js"></script>
 		<script type="text/javascript" src="gl_/sh_fx.js"></script>
 		<link rel="stylesheet" href="../menu.css">
-		<link rel="stylesheet" href="gl_/gl.css">
 		<link rel="stylesheet" href="../toggle.css">
+		<link rel="stylesheet" href="gl_/gl.css">
 	</head>
 	<body style="overflow-x:hidden;">
 		<canvas id="canvas">JavaScriptが無効になっているようです…</canvas><br>
@@ -24,23 +24,6 @@
 					<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
 					<input type="radio" name="model" value="2" id="r2"><label for="r2"> coastal</label>
 				</form>
-				<label for="config">config ▼</label><input type="checkbox" id="config">
-				<div>
-					<table>
-						<tr>
-							<td><label for="fps">fps</label></td><td><input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;"></td>
-						</tr>
-						<tr>
-							<td><label for="c_c">CURRENT_COLOR</label></td><td><input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"></td>
-						</tr>
-						<tr>
-							<td><label for="c_rot">cam_rot</label></td><td><input type="text" id="c_rot" value="0.5, 0.5*TIME, 0.0" onchange="c_rot=this.value" class="border"></td>
-						</tr>
-						<tr>
-							<td><label for="c_os">cam_offset</label></td><td><input type="text" id="c_os" value="0.0, 0.0, 5.0" onchange="c_os=this.value" class="border"></td>
-						</tr>
-					</table>
-				</div>
 				<div class="button" onclick="re();">compile</div>
 			</div>
 			<pre id="log" style="font-size:11px;color:#f00;"></pre>
@@ -100,10 +83,24 @@ void main(){
 			<label for="menu" style="margin-top:24px;margin-right:5px;">
 				<div class="menusub"></div>
 				<div class="menul">
-					<h3>MENU</h3>
-					<p>
-						SOON™️
-					</p>
+					<h3>Config</h3>
+					<div>
+						<label for="fps">fps</label><br>
+						<input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;">
+					</div><br>
+					<div>
+						<label for="c_c">CURRENT_COLOR</label><br>
+						<input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border">
+					</div><br>
+					<div>
+						<label for="c_rot">cam_rot</label><br>
+						<input type="text" id="c_rot" value="0.5, 0.5*TIME, 0.0" onchange="c_rot=this.value" class="border">
+					</div><br>
+					<div>
+						<label for="c_os">cam_offset</label><br>
+						<input type="text" id="c_os" value="0.0, 0.0, 5.0" onchange="c_os=this.value" class="border">
+					</div><br>
+
 					<a href="https://mcbeeringi.github.io">Home</a>
 				</div>
 			</label>

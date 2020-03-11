@@ -1,8 +1,10 @@
+/*made by @McbeEringi cc0*/
 :root{
-	--tst: .5s;
-	--brcol: #888;
-	--btcol: #ccc;
-	--blength: 200px;
+	--tst: .5s;/*変化時間*/
+	--brcol: #888;/*バーの色*/
+	--btcol: #ccc;/*丸の色*/
+	--menu_h: 200px;/*メニューの高さ*/
+	--menu_w: 200px;/*メニューの幅+45px*/
 }
 .menu{display: none;}
 .menu+label{
@@ -75,7 +77,7 @@
 .menul{
 	position: relative;
 	float: right;
-	width: 200px;
+	width: var(--menu_w);
 	height: 0px;
 	top: -25px;
 	overflow: hidden;
@@ -86,7 +88,7 @@
 	transition: var(--tst);
 	z-index: 2;
 }
-.menul *{
+.menul>*{
 	display: block;
 	margin-right: 45px;
 	background-color: rgba(64, 64, 64, 0.5);
@@ -102,5 +104,5 @@
 .menu:checked+label .menusub{}
 .menu:checked+label .menusub::before{transform: rotateZ(-180deg);}
 .menu:checked+label .menusub::after{width: 70px;}
-.menu:checked+label .menul{height: var(--blength);top: calc(-30px - var(--blength));border-top: solid 5px transparent;}
+.menu:checked+label .menul{height: var(--menu_h);top: calc(-30px - var(--menu_h));border-top: solid 5px transparent;}
 .menu:checked+label .menul *{opacity: 1;}
