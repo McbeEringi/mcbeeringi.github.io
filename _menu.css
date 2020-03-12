@@ -1,0 +1,109 @@
+/*made by @McbeEringi cc0*/
+:root{
+	--tst: .5s;/*変化時間*/
+	--brcol: #888;/*バーの色*/
+	--btcol: #ccc;/*丸の色*/
+	--menu_h: 200px;/*メニューの高さ*/
+	--menu_w: 200px;/*メニューの幅+45px*/
+}
+.menu{display: none;}
+.menu+label{
+	position: sticky;
+	float: right;
+	bottom: 5px;
+	width: 50px;
+	height: 50px;
+	background-color: var(--btcol);
+	border-radius: 50%;
+	transition: var(--tst);
+	z-index: 1;
+}
+.menu+label::before{
+	content: "";
+	width: 50px;
+	height: 25px;
+	border-radius: 50px 50px 0 0;
+	transform-origin: bottom;
+	position: absolute;
+	background-color: var(--brcol);
+	transition: var(--tst);
+	z-index: 1;
+}
+.menu+label::after{
+	content: "";
+	width: 50px;
+	height: 25px;
+	border-radius: 0 0 50px 50px;
+	transform-origin: top;
+	position: absolute;
+	top: 25px;
+	background-color: var(--brcol);
+	transition: var(--tst);
+	z-index: 1;
+}
+.menusub{
+	position: relative;
+	width: 50px;
+	height: 50px;
+	background-image: radial-gradient(var(--btcol) 20px,transparent 20px);
+	border-radius: 50%;
+	overflow: hidden;
+	z-index: 2;
+}
+.menusub::before{
+	content: "";
+	width: 0;
+	height: 0;
+	border-right: 15px solid transparent;
+	border-bottom: 25.9808px solid #fff;
+	border-left: 15px solid transparent;
+	transform-origin: center 17px;
+	transition: var(--tst);
+	position: absolute;
+	top: 7px;
+	left: 10px;
+	z-index: 2;
+}
+.menusub::after{
+	content: "";
+	width: 0;
+	height: 25px;
+	background-color: var(--btcol);
+	position: absolute;
+	right: 0px;
+	transition: var(--tst);
+	z-index: 1;
+}
+.menul{
+	position: relative;
+	float: right;
+	width: var(--menu_w);
+	height: 0px;
+	top: -25px;
+	overflow: hidden;
+	border-right: solid 5px var(--brcol);
+	border-top: solid 0 transparent;
+	user-select: none;
+	-webkit-user-select: none;
+	transition: var(--tst);
+	z-index: 2;
+}
+.menul>*{
+	display: block;
+	margin-right: 45px;
+	background-color: rgba(64, 64, 64, 0.5);
+	color: #fff;
+	opacity: 0;
+	/*text-stroke: 1px #000;
+	-webkit-text-stroke: 1px #000;*/
+	transition: var(--tst);
+	z-index: 3;
+}
+.menu:checked+label{}
+.menu:checked+label::before{transform: rotateZ(-360deg);}
+.menu:checked+label::after{transform: rotateZ(-180deg);}
+.menu:checked+label .menusub{}
+.menu:checked+label .menusub::before{transform: rotateZ(-180deg);}
+.menu:checked+label .menusub::after{width: 70px;}
+.menu:checked+label .menul{height: var(--menu_h);top: calc(-30px - var(--menu_h));border-top: solid 5px transparent;}
+.menu:checked+label .menul *{opacity: 1;}

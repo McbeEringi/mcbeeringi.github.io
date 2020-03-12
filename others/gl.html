@@ -79,23 +79,33 @@ void main(){
 					model import
 				</p>
 			</div>
-			<input class="menu" type="checkbox" id="menu">
-			<label for="menu" style="margin-top:24px;margin-right:5px;">
-				<div class="menusub"></div>
-				<div class="menul">
+			<div class="menu" style="margin-top:24px;margin-right:5px;">
+				<input type="checkbox" id="menu">
+				<label for="menu"></label>
+				<div><div></div></div>
+				<div>
 					<h3>Config</h3>
-					<label>fps<br>
-					<input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;"></label><br>
-					<label>CURRENT_COLOR<br>
-					<input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"></label><br>
-					<label>cam_rot<br>
-					<input type="text" id="c_rot" value="0.5, 0.5*TIME, 0.0" onchange="c_rot=this.value" class="border"></label><br>
-					<label>cam_offset<br>
-					<input type="text" id="c_os" value="0.0, 0.0, 5.0" onchange="c_os=this.value" class="border"></label><br>
-
-					<a href="https://mcbeeringi.github.io">Home</a>
+					<div>
+						<label>fps<br>
+						<input type="number" id="fps" value="60" oninput="if(this.value!=0)fps=this.value;" class="border" style="width:4em;"></label><br>
+					</div><br>
+					<div>
+						<label>CURRENT_COLOR<br>
+						<input type="text" id="c_c" value="1.0, 1.0, 1.0, 1.0" onchange="c_c=this.value.split(',')" class="border"></label><br>
+					</div><br>
+					<div>
+						<label>cam_rot<br>
+						<input type="text" id="c_rot" value="0.5, 0.5*TIME, 0.0" onchange="c_rot=this.value" class="border"></label><br>
+					</div><br>
+					<div>
+						<label>cam_offset<br>
+						<input type="text" id="c_os" value="0.0, 0.0, 5.0" onchange="c_os=this.value" class="border"></label><br>
+					</div><br>
+					<div>
+						<a href="https://mcbeeringi.github.io">Home</a>
+					</div>
 				</div>
-			</label>
+			</div>
 			<div align="center">
 				powered by WebGL1.0 <br>
 				thanks to <a href="https://wgld.org" target="_blank">wgld.org</a> <br>
