@@ -7,7 +7,7 @@ document.getElementById("H").innerHTML = "\
 		<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE 2G</a>\
 		<a href='https://mcbeeringi.github.io/java-jajp'>java ja_JP</a>\
 		<a href='https://mcbeeringi.github.io/others'>Others</a>\
-		<a href='https://mcbeeringi.github.io/how'>How</a>\
+		<a href='https://mcbeeringi.github.io/how'>HowTo</a>\
 	</nav>\
 ";
 
