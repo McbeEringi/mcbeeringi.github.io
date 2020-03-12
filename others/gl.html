@@ -45,13 +45,11 @@ void main(){
 			<div id="fsh" class="border">#extension GL_OES_standard_derivatives : enable
 precision mediump float;
 
-uniform highp float TIME;
 uniform sampler2D TEXTURE_1;
 varying vec4 color;
 varying vec2 uv1;
 
 void main(){
-	vec2 pos = gl_FragCoord.xy/vec2(1600.,900.);
 	vec4 diffuse = color;
 	diffuse *= texture2D(TEXTURE_1, uv1);
 	gl_FragColor = diffuse;
