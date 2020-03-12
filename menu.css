@@ -1,109 +1,137 @@
-/*made by @McbeEringi cc0*/
+/*
+designed by @McbeEringi cc0
+usage:
+<div class="menu">
+	<input type="checkbox" id="example">
+	<label for="example"></label>
+	<div><div></div></div>
+	<div>
+		<p>menu</p>
+		<p>menu</p>
+		<p>menu</p>
+	</div>
+</div>
+*/
 :root{
-	--tst: .5s;/*変化時間*/
-	--brcol: #888;/*バーの色*/
-	--btcol: #ccc;/*丸の色*/
-	--menu_h: 200px;/*メニューの高さ*/
-	--menu_w: 200px;/*メニューの幅+45px*/
+	--bar_col: #888;
+	--button_col: #ccc;
+	--tri_col:#fff;
+	--transition: .5s;
+	--menu_w:200px;/*-45px*/
+	--menu_h:200px;
+	--bg_col:#aaa8;
 }
-.menu{display: none;}
-.menu+label{
+.menu{
 	position: sticky;
+	bottom: 5px;right: 5px;
+	width: 50px;height: 50px;
 	float: right;
-	bottom: 5px;
-	width: 50px;
-	height: 50px;
-	background-color: var(--btcol);
-	border-radius: 50%;
-	transition: var(--tst);
-	z-index: 1;
 }
-.menu+label::before{
-	content: "";
-	width: 50px;
-	height: 25px;
-	border-radius: 50px 50px 0 0;
-	transform-origin: bottom;
-	position: absolute;
-	background-color: var(--brcol);
-	transition: var(--tst);
-	z-index: 1;
-}
-.menu+label::after{
-	content: "";
-	width: 50px;
-	height: 25px;
-	border-radius: 0 0 50px 50px;
-	transform-origin: top;
-	position: absolute;
-	top: 25px;
-	background-color: var(--brcol);
-	transition: var(--tst);
-	z-index: 1;
-}
-.menusub{
-	position: relative;
-	width: 50px;
-	height: 50px;
-	background-image: radial-gradient(var(--btcol) 20px,transparent 20px);
-	border-radius: 50%;
-	overflow: hidden;
-	z-index: 2;
-}
-.menusub::before{
-	content: "";
-	width: 0;
-	height: 0;
-	border-right: 15px solid transparent;
-	border-bottom: 25.9808px solid #fff;
-	border-left: 15px solid transparent;
-	transform-origin: center 17px;
-	transition: var(--tst);
-	position: absolute;
-	top: 7px;
-	left: 10px;
-	z-index: 2;
-}
-.menusub::after{
-	content: "";
-	width: 0;
-	height: 25px;
-	background-color: var(--btcol);
-	position: absolute;
-	right: 0px;
-	transition: var(--tst);
-	z-index: 1;
-}
-.menul{
-	position: relative;
-	float: right;
-	width: var(--menu_w);
-	height: 0px;
-	top: -25px;
-	overflow: hidden;
-	border-right: solid 5px var(--brcol);
-	border-top: solid 0 transparent;
-	user-select: none;
-	-webkit-user-select: none;
-	transition: var(--tst);
-	z-index: 2;
-}
-.menul>*{
+.menu>input{display: none;}
+.menu>input+label{
 	display: block;
-	margin-right: 45px;
-	background-color: rgba(64, 64, 64, 0.5);
-	color: #fff;
-	opacity: 0;
-	/*text-stroke: 1px #000;
-	-webkit-text-stroke: 1px #000;*/
-	transition: var(--tst);
+	position: absolute;
+	bottom: 0;right: 0;
+	width: 50px;height: 50px;
+	border-radius: 50%;
+	/*background-color: #faa8;*/
+	z-index: 5;
+}
+.menu>input:checked+label{
+	position: fixed;
+	top: 0;left: 0;
+	width: 100vw;height: 100vh;
+	border-radius: 0;
+}
+
+.menu>input+label+div{/*circle_l*/
+	position: absolute;
+	bottom: 0;right: 0;
+	width: 50px;height: 50px;
+	border-radius: 50%;
+	overflow: hidden;
+	background-color: var(--button_col);
+	z-index: 1;
+}
+
+.menu>input+label+div::before{/*circle_top*/
+	content: "";
+	position: absolute;
+	bottom: 25px;;right: 0;
+	width: 50px;height: 25px;
+	transform-origin: bottom;
+	background-color: var(--bar_col);
+	transition: var(--transition);
+	z-index: 2;
+}
+.menu>input:checked+label+div::before{transform: rotateZ(-360deg);}
+.menu>input+label+div::after{/*circle_bottom*/
+	content: "";
+	position: absolute;
+	bottom: 0;right: 0;
+	transform-origin: top;
+	width: 50px;height: 25px;
+	background-color: var(--bar_col);
+	transition: var(--transition);
+	z-index: 2;
+}
+.menu>input:checked+label+div::after{transform: rotateZ(-180deg);}
+
+.menu>input+label+div>div{/*cover*/
+	position: absolute;
+	bottom: 25px;right: 0;
+	width: 0px;height: 25px;
+	background-color: var(--button_col);
+	transition: var(--transition);
 	z-index: 3;
 }
-.menu:checked+label{}
-.menu:checked+label::before{transform: rotateZ(-360deg);}
-.menu:checked+label::after{transform: rotateZ(-180deg);}
-.menu:checked+label .menusub{}
-.menu:checked+label .menusub::before{transform: rotateZ(-180deg);}
-.menu:checked+label .menusub::after{width: 70px;}
-.menu:checked+label .menul{height: var(--menu_h);top: calc(-30px - var(--menu_h));border-top: solid 5px transparent;}
-.menu:checked+label .menul *{opacity: 1;}
+.menu>input:checked+label+div>div{width: 70px;}
+
+.menu>input+label+div>div::before{/*circle_s*/
+	content: "";
+	position: absolute;
+	bottom: -20px;right: 5px;
+	width: 40px;height: 40px;
+	border-radius: 50%;
+	background-color: var(--button_col);
+	z-index: 4;
+}
+
+.menu>input+label+div>div::after{/*triangle*/
+	content: "";
+	position: absolute;
+	bottom: -9px;right: 10px;
+	width: 0;height: 0;
+	border-right: 15px solid transparent;
+	border-bottom: 25.9808px solid var(--tri_col);
+	border-left: 15px solid transparent;
+	transform-origin: center 17px;
+	transition: var(--transition);
+	z-index: 4;
+}
+.menu>input:checked+label+div>div::after{transform: rotateZ(-180deg);}
+
+.menu>input+label+div+div{/*menu_box*/
+	position: absolute;
+	bottom: 25px;right: 0;
+	width: var(--menu_w);height: 0;
+	overflow: hidden;
+	padding-right: 50px;
+	border-right: solid 5px var(--bar_col);
+	border-top: solid 0 transparent;
+	transition: var(--transition);
+	z-index: 6;
+	pointer-events: none;
+}
+.menu>input:checked+label+div+div{
+	height: var(--menu_h);
+	border-top: solid 5px transparent;
+}
+
+.menu>input+label+div+div>*{/*menu_contents*/
+	background-color: var(--bg_col);
+	transition: var(--transition);
+	pointer-events: auto;
+	opacity: 0;
+}
+.menu>input:checked+label+div+div>*{opacity: 1;}

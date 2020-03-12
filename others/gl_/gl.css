@@ -13,9 +13,6 @@ input[type="radio"]:checked+label{color:#fff;}
 .border{border:1px solid #888;border-radius:5px;}
 body>div:last-child *{color:#000;}/*div一個しかないからstuffには当たらない?*/
 :root{/*menu.css*/
-	--tst: .5s;/*変化時間*/
-	--brcol: #888;/*バーの色*/
-	--btcol: #ccc;/*丸の色*/
-	--menu_h: 350px;/*メニューの高さ*/
-	--menu_w: 200px;/*メニューの幅+45px*/
+	--bg_col:#8888;
+	--menu_h: 350px;
 }
