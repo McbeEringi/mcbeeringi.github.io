@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>menu.css</title>
+		<style media="screen">
+			div.n{
+				height:200px;
+				width:100%;
+				margin:10px 0;
+				border:3px dashed #f88;
+			}
+			div.n:nth-child(2n){
+				border:3px dashed #88f;
+			}
+
+
+			:root{
+				--bar_col: #888;
+				--button_col: #ccc;
+				--tri_col:#fff;
+				--transition: .5s;
+				--menu_w:200px;
+				--menu_h:200px;
+				--bg_col:#aaa8;
+			}
+			.menu{
+				position: sticky;
+				bottom: 5px;right: 5px;
+				float: right;
+			}
+			.menu>input{display: none;}
+			.menu>input+label{
+				display: block;
+				position: absolute;
+				bottom: 0;right: 0;
+				width: 50px;height: 50px;
+				border-radius: 50%;
+				/*background-color: #faa8;*/
+				z-index: 5;
+			}
+			.menu>input:checked+label{
+				position: fixed;
+				top: 0;left: 0;
+				width: 100vw;height: 100vh;
+				border-radius: 0;
+			}
+
+			.menu>input+label+div{/*circle_l*/
+				position: absolute;
+				bottom: 0;right: 0;
+				width: 50px;height: 50px;
+				border-radius: 50%;
+				overflow: hidden;
+				background-color: var(--button_col);
+				z-index: 1;
+			}
+
+			.menu>input+label+div::before{/*circle_top*/
+				content: "";
+				position: absolute;
+				bottom: 25px;;right: 0;
+				width: 50px;height: 25px;
+				transform-origin: bottom;
+				background-color: var(--bar_col);
+				transition: var(--transition);
+				z-index: 2;
+			}
+			.menu>input:checked+label+div::before{transform: rotateZ(-360deg);}
+			.menu>input+label+div::after{/*circle_bottom*/
+				content: "";
+				position: absolute;
+				bottom: 0;right: 0;
+				transform-origin: top;
+				width: 50px;height: 25px;
+				background-color: var(--bar_col);
+				transition: var(--transition);
+				z-index: 2;
+			}
+			.menu>input:checked+label+div::after{transform: rotateZ(-180deg);}
+
+			.menu>input+label+div>div{/*cover*/
+				position: absolute;
+				bottom: 25px;right: 0;
+				width: 0px;height: 25px;
+				background-color: var(--button_col);
+				transition: var(--transition);
+				z-index: 3;
+			}
+			.menu>input:checked+label+div>div{width: 70px;}
+
+			.menu>input+label+div>div::before{/*circle_s*/
+				content: "";
+				position: absolute;
+				bottom: -20px;right: 5px;
+				width: 40px;height: 40px;
+				border-radius: 50%;
+				background-color: var(--button_col);
+				z-index: 4;
+			}
+
+			.menu>input+label+div>div::after{/*triangle*/
+				content: "";
+				position: absolute;
+				bottom: -9px;right: 10px;
+				width: 0;height: 0;
+				border-right: 15px solid transparent;
+				border-bottom: 25.9808px solid var(--tri_col);
+				border-left: 15px solid transparent;
+				transform-origin: center 17px;
+				transition: var(--transition);
+				z-index: 4;
+			}
+			.menu>input:checked+label+div>div::after{transform: rotateZ(-180deg);}
+
+			.menu>input+label+div+div{/*menu_box*/
+				position: absolute;
+				bottom: 25px;right: 0;
+				width: var(--menu_w);height: 0;
+				overflow: hidden;
+				padding-right: 50px;
+				border-right: solid 5px var(--bar_col);
+				border-top: solid 0 transparent;
+				transition: var(--transition);
+				z-index: 6;
+				pointer-events: none;
+			}
+			.menu>input:checked+label+div+div{
+				height: var(--menu_h);
+				border-top: solid 5px transparent;
+			}
+
+			.menu>input+label+div+div>*{/*menu_contents*/
+				background-color: var(--bg_col);
+				transition: var(--transition);
+				pointer-events: auto;
+				opacity: 0;
+			}
+			.menu>input:checked+label+div+div>*{opacity: 1;}
+		</style>
+	</head>
+	<body>
+		<div class="n">1
+			<svg width="40px" height="40px" style="border:1px solid #000;">
+			  <polygon points="5,28.66 20,2.68 35,28.66" fill="#000"></polygon>
+			</svg>
+		</div>
+		<div class="n">2
+			<svg width="50px" height="25px">
+			  <path d="M0 25 A25 25 0 1 1 50 25" fill="#888" stroke="none"/>
+			</svg>
+		</div>
+		<div class="n">3</div>
+		<div class="n">4</div>
+		<div class="n">5</div>
+
+		<div class="menu">
+			<input type="checkbox" id="test">
+			<label for="test"></label>
+			<div><div></div></div>
+			<div>
+				<p>アイウエオ</p>
+				<p>かきくけこ</p>
+				<p>さしすせそ</p>
+				<input type="text" name="" value="test">
+			</div>
+		</div>
+
+		<div class="n">6</div>
+		<div class="n">7</div>
+	</body>
+</html>
