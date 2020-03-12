@@ -45,3 +45,15 @@ function att(vbo, attL, attS){
 		gl.bindBuffer(gl.ARRAY_BUFFER, null);//バッファのバインドを無効化
 	}
 }
+function tex(url,num){
+	var img = new Image();
+	img.onload = function() {
+		var tex = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, tex);//バインドセット
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);//読み込み
+		gl.generateMipmap(gl.TEXTURE_2D);//生成
+		gl.bindTexture(gl.TEXTURE_2D, null);//バインド解除
+		texture[num] = tex;
+	}
+	img.src = url;
+}

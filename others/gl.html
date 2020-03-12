@@ -46,12 +46,14 @@ void main(){
 precision mediump float;
 
 uniform highp float TIME;
+uniform sampler2D TEXTURE_1;
 varying vec4 color;
 varying vec2 uv1;
 
 void main(){
+	vec2 pos = gl_FragCoord.xy/vec2(1600.,900.);
 	vec4 diffuse = color;
-	diffuse.rgb *= max(uv1.x,uv1.y);
+	diffuse *= texture2D(TEXTURE_1, uv1);
 	gl_FragColor = diffuse;
 }</div>
 			<div style="display:flex;flex-wrap:wrap;">
@@ -70,7 +72,9 @@ void main(){
 					uniform highp float TIME;<br>
 					uniform highp vec4 FOG_COLOR;<br>
 					uniform highp vec4 CURRENT_COLOR;<br>
-					uniform highp mat4 WORLDVIEWPROJ;
+					uniform highp mat4 WORLDVIEWPROJ;<br>
+					uniform sampler2D TEXTURE_0;<br>
+					uniform sampler2D TEXTURE_1;
 				</p><br>
 				TODO<br>
 				<p>
@@ -215,6 +219,9 @@ void main(){
 			var c_rot_;
 			var c_os = document.getElementById("c_os").value;
 			var c_os_;
+			var texture = [];
+			tex("gl_/TEXTURE_0.png",0);
+			tex("gl_/TEXTURE_1.png",1);
 			(function(){
 				TIME+=1/fps;
 				clear(FOG_COLOR);
@@ -234,14 +241,24 @@ void main(){
 					gl.getUniformLocation(prg, "WORLDVIEWPROJ"),
 					gl.getUniformLocation(prg, "TIME"),
 					gl.getUniformLocation(prg, "FOG_COLOR"),
-					gl.getUniformLocation(prg, "CURRENT_COLOR")
+					gl.getUniformLocation(prg, "CURRENT_COLOR"),
+					gl.getUniformLocation(prg, "TEXTURE_0"),
+					gl.getUniformLocation(prg, "TEXTURE_1")
 				];
 				gl.uniformMatrix4fv(uniform[0], false, WORLDVIEWPROJ);//uniformLocationへ座標変換行列を登録
 				gl.uniform1f(uniform[1], TIME);
 				gl.uniform4fv(uniform[2], FOG_COLOR);
 				gl.uniform4fv(uniform[3], c_c);
+
+				gl.activeTexture(gl.TEXTURE0);
+				gl.bindTexture(gl.TEXTURE_2D, texture[0]);
+				gl.uniform1i(uniform[4], 0);
+				gl.activeTexture(gl.TEXTURE1);
+				gl.bindTexture(gl.TEXTURE_2D, texture[1]);
+				gl.uniform1i(uniform[5], 1);
+
 				gl.drawElements(gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0);//モデルの描画
-				gl.flush();//コンテキストの再描画
+				gl.flush();//コンテキスト再描画
 				setTimeout(arguments.callee, 1000/fps);
 			})();
 		</script>
