@@ -75,12 +75,6 @@ void main(){
 					uniform highp mat4 WORLDVIEWPROJ;<br>
 					uniform sampler2D TEXTURE_0;<br>
 					uniform sampler2D TEXTURE_1;
-				</p><br>
-				TODO<br>
-				<p>
-					toggle of FOG_COLOR, cull & blend<br>
-					more models<br>
-					model import
 				</p>
 			</div>
 			<div class="menu" style="margin-top:24px;margin-right:5px;">
@@ -105,20 +99,14 @@ void main(){
 						<label>cam_offset<br>
 						<input type="text" id="c_os" value="0.0, 0.0, 5.0" onchange="c_os=this.value" class="border"></label><br>
 					</div><br>
-					<div>
-						<a href="https://mcbeeringi.github.io">Home</a>
-					</div>
+					<p align="center" style="margin:0;">
+						powered by WebGL1.0 <br>
+						special thanks to <a href="https://wgld.org" target="_blank">wgld.org</a> <br>
+						display: 1600px * 900px <br>
+						<a href="https://twitter.com/mcbeeringi" target="_blank">@McbeEringi</a>.｡:+*
+					</p>
 				</div>
 			</div>
-			<div align="center">
-				powered by WebGL1.0 <br>
-				thanks to <a href="https://wgld.org" target="_blank">wgld.org</a> <br>
-				display: 1600px * 900px <br>
-				<a href="https://twitter.com/mcbeeringi" target="_blank">@McbeEringi</a>.｡:+* <br>　
-			</div>
-		</div>
-		<div style="height:0px;">
-			<!-- last-child回避用? -->
 		</div>
 		<script>
 			var vsh = ace.edit("vsh",{
