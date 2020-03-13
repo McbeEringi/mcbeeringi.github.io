@@ -14,5 +14,5 @@ input[type="radio"]:checked+label{color:#fff;}
 body>div:last-child *{color:#000;}
 :root{/*menu.css*/
 	--bg_col:#8888;
-	--menu_h: 350px;
+	--menu_h:350px;
 }
