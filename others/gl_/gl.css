@@ -11,7 +11,7 @@ input[type="radio"]+label{color:#888;}
 input[type="radio"]:hover+label{color:#aaa;}
 input[type="radio"]:checked+label{color:#fff;}
 .border{border:1px solid #888;border-radius:5px;}
-body>div:last-child *{color:#000;}/*div一個しかないからstuffには当たらない?*/
+body>div:last-child *{color:#000;}
 :root{/*menu.css*/
 	--bg_col:#8888;
 	--menu_h: 350px;
