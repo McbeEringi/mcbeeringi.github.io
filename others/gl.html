@@ -215,10 +215,10 @@ void main(){
 				c_os_ = eval("["+c_os+"]");
 				m.lookAt([0,0,c_os_[2]], [c_os_[0],c_os_[1],0], [0,1,0], VIEW);//ビュー座標変換行列
 				m.perspective(70, c.width / c.height, 0.1, 100, PROJ);//プロジェクション座標変換行列
-				m.multiply(PROJ, VIEW, WORLDVIEWPROJ);//各行列を掛け合わせ座標変換行列を完成させる
+				m.multiply(PROJ, VIEW, WORLDVIEWPROJ);
 				m.identity(WORLD);
 				c_rot_ = eval("["+c_rot+"]");
-				m.rotate(WORLD, c_rot_[0], [1, 0, 0], WORLD);
+				m.rotate(WORLD, c_rot_[0], [1, 0, 0], WORLD);//ワールド座標変換行列
 				m.rotate(WORLD, c_rot_[1], [0, 1, 0], WORLD);
 				m.rotate(WORLD, c_rot_[2], [0, 0, 1], WORLD);
 				m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
@@ -231,7 +231,7 @@ void main(){
 					gl.getUniformLocation(prg, "TEXTURE_0"),
 					gl.getUniformLocation(prg, "TEXTURE_1")
 				];
-				gl.uniformMatrix4fv(uniform[0], false, WORLDVIEWPROJ);//uniformLocationへ座標変換行列を登録
+				gl.uniformMatrix4fv(uniform[0], false, WORLDVIEWPROJ);//uniformLocationにぶち込む
 				gl.uniform1f(uniform[1], TIME);
 				gl.uniform4fv(uniform[2], FOG_COLOR);
 				gl.uniform4fv(uniform[3], c_c);
