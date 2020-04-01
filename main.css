@@ -144,8 +144,9 @@ header a {
 /*others*/
 textarea, input[type="text"], input[type="number"] {
 	color: #eaf4fc;
-	background-color: rgba(84, 121, 128, .5);
+	background-color: rgba(84, 121, 128, .3);
 	border: 1px solid #eaf4fccc;
+	border-radius: 3px;
 }
 
 textarea {
@@ -168,7 +169,7 @@ button:hover {
 }
 
 button:active {
-	background: rgba(133, 227, 225, .5)
+	background: rgba(133, 227, 225, .5);
 }
 
 iframe.gl {

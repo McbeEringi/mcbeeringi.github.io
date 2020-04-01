@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>FILENAME</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+</head>
+<body>
+	<h1>FILENAME</h1>
+	key: <input id="key" onchange="main()"><br>
+	<span id="log">パスワードを入力してください</span><br>
+	↓<br>
+	<a download="FILENAME" id="dl" href="javascript:void(0);">download</a>
+	<script>
+		var data = ["はっしゅ","Crypto.jsを使ったAES暗号化ページだよ!"];
+		function main(){
+			if(CryptoJS.MD5(key.value).toString()==data[0]){
+				log.innerText = "認証完了";
+				dl.href = CryptoJS.AES.decrypt(data[1],key.value).toString(CryptoJS.enc.Utf8);
+			}else{
+				log.innerText = "パスワードが間違っています";
+				dl.href = "javascript:void(0);";
+			}
+		}
+	</script>
+</body>
+</html>
