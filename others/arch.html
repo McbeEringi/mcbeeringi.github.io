@@ -9,8 +9,9 @@
 	<link rel="stylesheet" type="text/css" href="../main.css">
 	<style>
 		canvas{
-			background: #444;
+			background: #222;
 			color: #fff;
+			width: 100%;
 		}
 	</style>
 </head>
@@ -23,9 +24,12 @@
 	<div class="col1">
 		<h2>input</h2>
 		<p>
-			幅　　：<input type="number" id="w" value="50" oninput="graph()"><br>
-			高さ　：<input type="number" id="h" value="6" oninput="graph()"><br>
-			解像度：<input type="range" id="r" value="10" min="1" max="100" step="1" oninput="graph()">
+			幅　　：<input type="number" id="w" value="16" oninput="graph();">
+			<input type="range" value="16" min="4" max="64" step="1" oninput="w.value=this.value;graph();"><br>
+			高さ　：<input type="number" id="h" value="4" oninput="graph();">
+			<input type="range" value="4" min="2" max="32" step="1" oninput="h.value=this.value;graph();"><br>
+			解像度：<input type="number" id="r" value="32" oninput="graph();">
+			<input type="range" value="32" min="1" max="128" step="1" oninput="r.value=this.value;graph();">(px/block)
 		</p>
 	</div>
 	<div class="col2" style="padding:2%;">
@@ -41,41 +45,48 @@
 	<footer id="F"></footer>
 	<script src="../hf.js"></script>
 	<script>
-		window.onload = function(){graph();}
+		window.onload = ()=>{graph();}
 		function graph(){
 			var res = document.getElementById("r").value*1;
 			var cir = document.getElementById("cir");
 			var par = document.getElementById("par");
 			var w = document.getElementById("w").value*res;
 			var h = document.getElementById("h").value*res;
-			var w2 = w/2;
+			var w2 = w*.5;
 			cir.width=w;cir.height=h;
 			par.width=w;par.height=h;
 			if (cir.getContext) {
 				var cir_c = cir.getContext('2d');
+				ruler(cir_c,res,h,w);
+				//弧
+				cir_c.beginPath();cir_c.strokeStyle = "#ff8";
 				var r = (w2*w2+h*h)/(2*h);
-				cir_c.beginPath();
-				cir_c.strokeStyle = "#fff";
-				cir_c.arc(w2,r,r,0,3.14,true);
-				//罫線
-				cir_c.moveTo(res,0);for (var i = res; i < w; i+=res) {cir_c.lineTo(i,h);cir_c.moveTo(i+res,0);}
-				cir_c.moveTo(0,res/2);for (var i = res/2; i < h; i+=res/2) {cir_c.lineTo(w,i);cir_c.moveTo(0,i+res/2);}
-				//=*=*=
+				cir_c.arc(w2,r,r,0,Math.PI,true);
 				cir_c.stroke();
+				//=*=*=
 
 				var par_c = par.getContext('2d');
+				ruler(par_c,res,h,w);
+				//=*=*=
 				par_c.beginPath();
-				par_c.strokeStyle = "#fff";
+				par_c.strokeStyle = "#ff8";
 				par_c.moveTo(0,h);
 				for (var i = 0; i < 64; i++) {
 					par_c.lineTo(w,0);
 				}
-				//罫線
-				par_c.moveTo(res,0);for (var i = res; i < w; i+=res) {par_c.lineTo(i,h);par_c.moveTo(i+res,0);}
-				par_c.moveTo(0,res/2);for (var i = res/2; i < h; i+=res/2) {par_c.lineTo(w,i);par_c.moveTo(0,i+res/2);}
-				//=*=*=
 				par_c.stroke();
 			}
+		}
+		function ruler(c,res,h,w) {
+			//ハーフ
+			c.beginPath();c.strokeStyle = "#448";
+			c.moveTo(0,res*.5);for (var i = res*.5; i < h; i+=res) {c.lineTo(w,i);c.moveTo(0,i+res);}
+			c.stroke();
+			//罫線
+			c.beginPath();c.strokeStyle = "#aaa";
+			c.moveTo(res,0);for (var i = res; i < w; i+=res) {c.lineTo(i,h);c.moveTo(i+res,0);}
+			c.moveTo(0,res);for (var i = res; i < h; i+=res) {c.lineTo(w,i);c.moveTo(0,i+res);}
+			c.stroke();
 		}
 	</script>
 </body>
