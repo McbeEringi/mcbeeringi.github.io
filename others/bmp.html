@@ -15,8 +15,7 @@
 </head>
 
 <body>
-	画像サイズ<input id="imgs" type="number" value="800" onchange="ims();document.getElementById('imgs2').value=this.value/16;">px^2<br>
-	(1文字あたりのスペース:<output id="imgs2">50</output>px^2)<br>
+	画像サイズ<input id="imgs" type="number" value="800" onchange="ims();document.getElementById('imgs2').value=this.value/16;">px^2 = <output id="imgs2">50</output>px^2 per char<br>
 
 	フォントサイズ<input id="fontsSl" type="range" value="42" min="1" max="100" step="0.5" oninput="document.getElementById('fonts').value=this.value;fos();">
 	<input id="fonts" type="number" value="42" oninput="document.getElementById('fontsSl').value=this.value;fos()"><br>
@@ -326,11 +325,11 @@
 			</div>
 		</div>
 	</div>
-	↓img↓<br>
-	<img id="img">
+	<!--↓img↓<br>
+	<img id="img">-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
 	<script>
-		window.onload = function() {
+		window.onload = ()=>{
 			render();
 			ims();
 		}
@@ -373,6 +372,7 @@
 			var p = document.getElementsByTagName("p");
 			var men = document.getElementById("men").value;
 			document.getElementById("glyph").download = "glyph_" + men + ".png"
+			document.getElementById("glyph").innerText = "save as glyph_" + men + ".png"
 			for (var i = 0; i < 256; i++) {
 				p[i].innerHTML = unescape("%u" + men + p[i].id);
 			}
@@ -382,13 +382,13 @@
 		function render() {
 			document.body.style.background = "#0000";
 			html2canvas(document.getElementById("diffuse"), {
-				onrendered: function(canvas) {
+				onrendered: (canvas)=>{
 					var imgData = canvas.toDataURL();
 					document.getElementById("glyph").href = imgData;
-					document.getElementById("img").src = imgData;
+					//document.getElementById("img").src = imgData;
 				}
 			});
-			document.body.style.background = "rgb(84, 121, 128)";
+			document.body.style.background = "rgb(40, 44, 52)";
 		}
 	</script>
 </body>
