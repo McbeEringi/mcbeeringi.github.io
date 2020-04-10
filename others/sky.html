@@ -33,11 +33,10 @@
 			</tr>
 		</table>
 		<script>
-			var instr = new Tone.Sampler({"A4":"audio/sampler/appiano_a4.mp3"}).toMaster();
-			var instr = new Tone.Synth().toMaster();
+			var instr = new Tone.Sampler({"A4":"audio/sampler/harp_a4.mp3"}).toMaster();
 			var key = document.querySelectorAll('div');
 			for(var i = 0; i < key.length; i++) {
-				key[i].addEventListener("click",function(){var id = this.id;console.log(this.id);instr.triggerAttackRelease(id, "8n");},false);
+				key[i].addEventListener("click",function(){var id = this.id;console.log(this.id);instr.triggerAttackRelease(id, "1n");},false);
 			}
 		</script>
 	</body>
