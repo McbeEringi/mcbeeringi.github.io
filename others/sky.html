@@ -37,9 +37,8 @@
 			var instr = new Tone.Synth().toMaster();
 			var key = document.querySelectorAll('div');
 			for(var i = 0; i < key.length; i++) {
-				key[i].addEventListener("click",()=>{alert(this.id);instr.triggerAttackRelease(this.id, "8n");},false);
+				key[i].addEventListener("click",function(){var id = this.id;console.log(this.id);instr.triggerAttackRelease(id, "8n");},false);
 			}
-			instr.triggerAttackRelease("a4", "8n");
 		</script>
 	</body>
 </html>
