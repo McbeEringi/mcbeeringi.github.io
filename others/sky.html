@@ -29,30 +29,49 @@
 				0%{transform:rotateZ(45deg)scale(1,1);}
 				100%{transform:rotateZ(45deg)scale(.9,.9);}
 			}
-			@keyframes click{
+			/*@keyframes click{
 				0%{transform:rotateY(0deg)scale(1,1);}
 				100%{transform:rotateY(360deg)scale(.8,.8);}
-			}
+			}*/
 		</style>
 	</head>
 	<body>
 		<pre id="pre">loading…</pre>
-		<table align="center" style="display:none" id="kb">
-			<tr>
-				<td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td>
-			</tr>
-			<tr>
-				<td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td>
-			</tr>
-			<tr>
-				<td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td>
-			</tr>
-		</table>
+		<div id="kb" align="center">
+			<table>
+				<tr>
+					<td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td>
+				</tr>
+				<tr>
+					<td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td>
+				</tr>
+				<tr>
+					<td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td>
+				</tr>
+			</table>
+			<select id="instruments" onchange="instr()">
+				<option value="APPiano">アップライトピアノ</option>
+				<option value="Contrabass">コントラバス</option>
+				<option value="Flute">フルート</option>
+				<option value="Glock">鉄琴</option>
+				<option value="Guitar">ギター</option>
+				<option value="Harp" selected>ハープ</option>
+				<option value="Horn">ホーン</option>
+				<option value="Piano">ピアノ</option>
+				<option value="Quena">ケーナ</option>
+				<option value="Ukulele">ウクレレ</option>
+			</select>
+		</div>
 		<script>
-			var instr = new Tone.Sampler({"A4":"audio/sampler/harp_a4.mp3"},()=>{kb.style.display="";pre.style.display="none"}).toMaster();
-			var key = document.querySelectorAll('div');
+			function instr() {
+				kb.style.display="none";
+				pre.style.display="";
+				synth = new Tone.Sampler({"A4":"audio/instruments/"+instruments.value+"_a4.mp3"},()=>{kb.style.display="";pre.style.display="none"}).toDestination();
+			}
+			instr();
+			var key = document.querySelectorAll('table div');
 			for(var i = 0; i < key.length; i++) {
-				key[i].addEventListener("click",function(){var id = this.id;console.log(this.id);instr.triggerAttackRelease(id, "1n");},false);
+				key[i].addEventListener("click",function(){console.log(this.id);synth.triggerAttackRelease(this.id, "1n");},false);
 			}
 		</script>
 	</body>
