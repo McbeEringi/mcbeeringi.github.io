@@ -68,7 +68,7 @@
 			var cookie = cookie("instr");
 			if(cookie)
 				for(var i=0;true;i++)
-					if(instruments.options[i].value==cookie){instruments.selectedIndex=i;break;log.innerText+="\n[info]cookieから前回の楽器を復元しました"}
+					if(instruments.options[i].value==cookie){instruments.selectedIndex=i;log.innerText+="\n[info]cookieから前回の楽器を復元しました";break;}
 			function instr() {
 				kb.style.opacity="0";kb.style.pointerEvents="none";
 				instruments.style.display="none";
