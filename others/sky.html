@@ -25,7 +25,8 @@
 			td div.c::after{content:"";display:block;position:absolute;top:12px;left:12px;width:36px;height:36px;}
 			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;pointer-events:none;box-shadow:0 0 10px #fea8, 0 0 10px #fea8 inset;}
 			td div:active{transform:scale(.8,.8);}
-			select{background-color:#fff4;border-radius:4px;border:1px solid #aaa;}
+			select{background-color:#fff4;border-radius:4px;border:1px solid #aaa;margin:0;flex-shrink:0;}
+			pre{background-color:#444a;color:#fea;text-shadow:0 0 8px;height:11.2em;line-height:1.4;overflow-y:scroll;margin:0;flex-grow:1;}
 			@keyframes bob{
 				0%{transform:rotateZ(45deg)scale(1,1);}
 				100%{transform:rotateZ(45deg)scale(.9,.9);}
@@ -33,19 +34,18 @@
 		</style>
 	</head>
 	<body>
-		<pre id="pre">loading…</pre>
-		<div id="kb" align="center">
-			<table>
-				<tr>
-					<td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td>
-				</tr>
-				<tr>
-					<td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td>
-				</tr>
-				<tr>
-					<td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td>
-				</tr>
-			</table>
+		<table id="kb" align="center">
+			<tr>
+				<td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td>
+			</tr>
+			<tr>
+				<td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td>
+			</tr>
+			<tr>
+				<td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td>
+			</tr>
+		</table>
+		<div style="display:flex;">
 			<select id="instruments" onchange="instr()" size="10">
 				<option value="APPiano">アップライトピアノ</option>
 				<option value="Contrabass">コントラバス</option>
@@ -58,6 +58,7 @@
 				<option value="Quena">ケーナ</option>
 				<option value="Ukulele">ウクレレ</option>
 			</select>
+			<pre id="log">[info]楽器の保存にcookieを利用しています</pre>
 		</div>
 		<script>
 			function cookie(key){
@@ -67,14 +68,16 @@
 			var cookie = cookie("instr");
 			if(cookie)
 				for(var i=0;true;i++)
-					if(instruments.options[i].value==cookie){instruments.selectedIndex=i;break;}
+					if(instruments.options[i].value==cookie){instruments.selectedIndex=i;break;log.innerText+="\n[info]cookieから前回の楽器を復元しました"}
 			function instr() {
-				kb.style.opacity="0";
-				pre.style.display="";
+				kb.style.opacity="0";kb.style.pointerEvents="none";
+				instruments.style.display="none";
+				log.innerText+="\n[info]loading…";
 				document.cookie = "instr="+instruments.value+";max-age=604800;";
 				synth = new Tone.Sampler({"A4":"audio/instruments/"+instruments.value+"_a4.mp3"},()=>{
-					kb.style.opacity="1";
-					pre.style.display="none"
+					kb.style.opacity="1";kb.style.pointerEvents="auto";
+					instruments.style.display="";
+					log.innerText+="\n[info]"+instruments.value+"を読み込みました";
 				}).toDestination();
 			}
 			instr();
