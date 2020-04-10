@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>sky instrument</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
+		<style media="screen">
+			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100vh;}
+			td{width:76px;height:76px;}
+			td div{width:64px;height:64px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;}
+			td div::before{content:"";display:block;position:absolute;top:15px;left:15px;width:30px;height:30px;margin:0;}
+			td:nth-child(2n-1) div::before{top:10px;left:10px;width:40px;height:40px;border-radius:50%;}
+			td div.c::before{top:12px;left:12px;width:36px;height:36px;border-radius:50%;}
+			td div.c::after{content:"";display:block;position:absolute;top:12px;left:12px;width:36px;height:36px;}
+			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;pointer-events:none;}
+			td div:active{transform:scale(.9,.9);}
+			@keyframes bob{
+				0%{transform:rotateZ(45deg)scale(1,1);}
+				100% {transform:rotateZ(45deg)scale(.9,.9);}
+			}
+		</style>
+	</head>
+	<body>
+		<table align="center">
+			<tr>
+				<td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td>
+			</tr>
+			<tr>
+				<td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td>
+			</tr>
+			<tr>
+				<td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td>
+			</tr>
+		</table>
+		<script>
+			var key = document.getElementsByTagName("div");
+			for(var i = 0; i<key.length; i++)key[i].onclick = "play(this.id);";
+			var sampler = new Tone.Sampler({"A4" : "audio/sampler/appiano_a4.mp3"}).toMaster();
+			sampler.triggerAttackRelease("a4", "8n");
+			function play(id) {
+				sampler.triggerAttackRelease(id, "8n");
+			}
+		</script>
+	</body>
+</html>
