@@ -16,17 +16,17 @@
 		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style>
-			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100%;user-select:none;-webkit-user-select:none;}
+			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100%;user-select:none;-webkit-user-select:none;pointer-events:none;}
 			td{width:76px;height:76px;}
 			td div{width:64px;height:64px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;}
 			td div::before{content:"";display:block;position:absolute;top:15px;left:15px;width:30px;height:30px;}
 			td:nth-child(2n-1) div::before{top:10px;left:10px;width:40px;height:40px;border-radius:50%;}
 			td div.c::before{top:12px;left:12px;width:36px;height:36px;border-radius:50%;}
 			td div.c::after{content:"";display:block;position:absolute;top:12px;left:12px;width:36px;height:36px;}
-			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;pointer-events:none;box-shadow:0 0 10px #fea8, 0 0 10px #fea8 inset;}
+			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;box-shadow:0 0 10px #fea8, 0 0 10px #fea8 inset;}
 			td div:active{transform:scale(.8,.8);}
-			select{background-color:#fff4;border-radius:4px;border:1px solid #aaa;margin:0;flex-shrink:0;}
-			pre{background-color:#444a;color:#fea;text-shadow:0 0 8px;height:11.2em;line-height:1.4;overflow-y:scroll;margin:0;flex-grow:1;}
+			select{background-color:#fff4;border-radius:4px;border:1px solid #aaa;margin:0;flex-shrink:0;pointer-events:auto;}
+			pre{background-color:#444a;color:#fea;text-shadow:0 0 8px;height:11.2em;line-height:1.4;overflow-y:scroll;margin:0;flex-grow:1;pointer-events:auto;}
 			@keyframes bob{
 				0%{transform:rotateZ(45deg)scale(1,1);}
 				100%{transform:rotateZ(45deg)scale(.9,.9);}
