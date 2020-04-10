@@ -60,10 +60,10 @@
 		</div>
 		<script>
 			function instr() {
-				kb.style.opaque="0";
+				kb.style.opacity="0";
 				pre.style.display="";
 				synth = new Tone.Sampler({"A4":"audio/instruments/"+instruments.value+"_a4.mp3"},()=>{
-					kb.style.opaque="1";
+					kb.style.opacity="1";
 					pre.style.display="none"
 				}).toDestination();
 			}
