@@ -25,7 +25,7 @@
 			td div.c::after{content:"";display:block;position:absolute;top:12px;left:12px;width:36px;height:36px;}
 			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;pointer-events:none;box-shadow:0 0 10px #fea8, 0 0 10px #fea8 inset;}
 			td div:active{transform:scale(.8,.8);}
-			select{background-color:#fff4;border-radius:4px;}
+			select{background-color:#fff4;border-radius:4px;border:1px solid #aaa;}
 			@keyframes bob{
 				0%{transform:rotateZ(45deg)scale(1,1);}
 				100%{transform:rotateZ(45deg)scale(.9,.9);}
@@ -68,7 +68,6 @@
 			if(cookie)
 				for(var i=0;true;i++)
 					if(instruments.options[i].value==cookie){instruments.selectedIndex=i;break;}
-					else instruments.selectedIndex = 5;
 			function instr() {
 				kb.style.opacity="0";
 				pre.style.display="";
