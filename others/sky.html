@@ -25,8 +25,8 @@
 			td div.c::after{content:"";display:block;position:absolute;top:12px;left:12px;width:36px;height:36px;}
 			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;box-shadow:0 0 10px #fea8, 0 0 10px #fea8 inset;}
 			td div:active{transform:scale(.8,.8);}
-			select{background-color:#fff4;border-radius:4px;border:1px solid #aaa;margin:0;flex-shrink:0;pointer-events:auto;}
-			pre{background-color:#444a;color:#fea;text-shadow:0 0 8px;height:11.2em;line-height:1.4;overflow-y:scroll;margin:0;flex-grow:1;pointer-events:auto;}
+			select{background-color:#fff4;border-radius:4px;border:1px solid #aaa;margin:0;pointer-events:auto;}
+			pre{background-color:#444a;color:#fea;text-shadow:0 0 8px;height:11.2em;line-height:1.4;overflow-y:scroll;margin:0;pointer-events:auto;float:right;}
 			@keyframes bob{
 				0%{transform:rotateZ(45deg)scale(1,1);}
 				100%{transform:rotateZ(45deg)scale(.9,.9);}
@@ -45,26 +45,25 @@
 				<td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td>
 			</tr>
 		</table>
-		<div style="display:flex;">
-			<select id="instruments" onchange="instr()" size="10">
-				<option value="APPiano">アップライトピアノ</option>
-				<option value="Contrabass">コントラバス</option>
-				<option value="Flute">フルート</option>
-				<option value="Glock">鉄琴</option>
-				<option value="Guitar">ギター</option>
-				<option value="Harp" selected>ハープ</option>
-				<option value="Horn">ホーン</option>
-				<option value="Piano">ピアノ</option>
-				<option value="Quena">ケーナ</option>
-				<option value="Ukulele">ウクレレ</option>
-			</select>
-			<pre id="log">[info]楽器の保存にcookieを利用しています</pre>
-		</div>
+		<select id="instruments" onchange="instr()" size="10">
+			<option value="APPiano">アップライトピアノ</option>
+			<option value="Contrabass">コントラバス</option>
+			<option value="Flute">フルート</option>
+			<option value="Glock">鉄琴</option>
+			<option value="Guitar">ギター</option>
+			<option value="Harp" selected>ハープ</option>
+			<option value="Horn">ホーン</option>
+			<option value="Piano">ピアノ</option>
+			<option value="Quena">ケーナ</option>
+			<option value="Ukulele">ウクレレ</option>
+		</select>
+		<pre id="log">Welcome to Sky instruments!</pre>
 		<script>
 			function cookie(key){
 				//https://qiita.com/wifeofvillon/items/9edda7c0f0031b1b5f12
 				return ((document.cookie+";").match(key+"=([^¥S;]*)")||[])[1];
 			}
+			log.innerText+="\n[info]楽器の保存にcookieを利用しています";
 			var cookie = cookie("instr");
 			if(cookie)
 				for(var i=0;true;i++)
