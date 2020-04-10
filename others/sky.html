@@ -25,7 +25,7 @@
 			td div.c::after{content:"";display:block;position:absolute;top:12px;left:12px;width:36px;height:36px;}
 			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;box-shadow:0 0 10px #fea8, 0 0 10px #fea8 inset;}
 			td div:active{transform:scale(.8,.8);}
-			select{background-color:#fff4;border-radius:4px;border:1px solid #aaa;margin:0;pointer-events:auto;}
+			form{pointer-events:auto;}
 			pre{background-color:#444a;color:#fea;text-shadow:0 0 8px;height:11.2em;line-height:1.4;overflow-y:scroll;margin:0;pointer-events:auto;float:right;}
 			@keyframes bob{
 				0%{transform:rotateZ(45deg)scale(1,1);}
@@ -45,41 +45,40 @@
 				<td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td>
 			</tr>
 		</table>
-		<select id="instruments" onchange="instr()" size="10">
-			<option value="APPiano">アップライトピアノ</option>
-			<option value="Contrabass">コントラバス</option>
-			<option value="Flute">フルート</option>
-			<option value="Glock">鉄琴</option>
-			<option value="Guitar">ギター</option>
-			<option value="Harp" selected>ハープ</option>
-			<option value="Horn">ホーン</option>
-			<option value="Piano">ピアノ</option>
-			<option value="Quena">ケーナ</option>
-			<option value="Ukulele">ウクレレ</option>
-		</select>
 		<pre id="log">Welcome to Sky instruments!</pre>
+		<form id="instr_" onchange="set();">
+			<input type="radio" name="instr" value="0">アップライトピアノ<br>
+			<input type="radio" name="instr" value="1">コントラバス<br>
+			<input type="radio" name="instr" value="2">フルート<br>
+			<input type="radio" name="instr" value="3">鉄琴<br>
+			<input type="radio" name="instr" value="4">ギター<br>
+			<input type="radio" name="instr" value="5" checked>ハープ<br>
+			<input type="radio" name="instr" value="6">ホーン<br>
+			<input type="radio" name="instr" value="7">ピアノ<br>
+			<input type="radio" name="instr" value="8">ケーナ<br>
+			<input type="radio" name="instr" value="9">ウクレレ<br>
+		</form>
 		<script>
+			var instr_li = ["APPiano","Contrabass","Flute","Glock","Guitar","Harp","Horn","Piano","Quena","Ukulele"];
 			function cookie(key){
 				//https://qiita.com/wifeofvillon/items/9edda7c0f0031b1b5f12
 				return ((document.cookie+";").match(key+"=([^¥S;]*)")||[])[1];
 			}
 			log.innerText+="\n[info]楽器の保存にcookieを利用しています";
 			var cookie = cookie("instr");
-			if(cookie)
-				for(var i=0;true;i++)
-					if(instruments.options[i].value==cookie){instruments.selectedIndex=i;log.innerText+="\n[info]cookieから前回の楽器を復元しました";break;}
-			function instr() {
+			if(cookie){instr_.instr[5].checked=false;instr_.instr[parseInt(cookie)].checked=true;log.innerText+="\n[info]前回の楽器:"+instr_li[parseInt(cookie)]+"を復元しました";}
+			function set() {
 				kb.style.opacity="0";kb.style.pointerEvents="none";
-				instruments.style.display="none";
+				instr_.style.display="none";
 				log.innerText+="\n[info]loading…";
-				document.cookie = "instr="+instruments.value+";max-age=604800;";
-				synth = new Tone.Sampler({"A4":"audio/instruments/"+instruments.value+"_a4.mp3"},()=>{
+				document.cookie = "instr="+instr_.instr.value+";max-age=604800;";
+				synth = new Tone.Sampler({"A4":"audio/instruments/"+instr_li[instr_.instr.value]+"_a4.mp3"},()=>{
 					kb.style.opacity="1";kb.style.pointerEvents="auto";
-					instruments.style.display="";
-					log.innerText+="\n[info]"+instruments.value+"を読み込みました";
+					instr_.style.display="";
+					log.innerText+="\n[info]"+instr_li[instr_.instr.value]+"を読み込みました";
 				}).toDestination();
 			}
-			instr();
+			set();
 			var key = document.querySelectorAll('table div');
 			for(var i = 0; i < key.length; i++) {
 				key[i].addEventListener("click",function(){console.log(this.id);synth.triggerAttackRelease(this.id, "1n");},false);
