@@ -16,7 +16,7 @@
 		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style media="screen">
-			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100%;}
+			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100%;user-select:none;}
 			td{width:76px;height:76px;}
 			td div{width:64px;height:64px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;}
 			td div::before{content:"";display:block;position:absolute;top:15px;left:15px;width:30px;height:30px;}
@@ -64,9 +64,12 @@
 		</div>
 		<script>
 			function instr() {
-				kb.style.display="none";
+				kb.style.opaque="0";
 				pre.style.display="";
-				synth = new Tone.Sampler({"A4":"audio/instruments/"+instruments.value+"_a4.mp3"},()=>{kb.style.display="";pre.style.display="none"}).toDestination();
+				synth = new Tone.Sampler({"A4":"audio/instruments/"+instruments.value+"_a4.mp3"},()=>{
+					kb.style.opaque="1";
+					pre.style.display="none"
+				}).toDestination();
 			}
 			instr();
 			var key = document.querySelectorAll('table div');
