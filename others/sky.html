@@ -65,7 +65,10 @@
 				return ((document.cookie+";").match(key+"=([^¥S;]*)")||[])[1];
 			}
 			var cookie = cookie("instr");
-			if(cookie)instruments.cookie.selected = true;
+			if(cookie)
+				for(var i=0;true;i++)
+					if(instruments.options[i].value==cookie){instruments.selectedIndex=i;break;}
+					else instruments.selectedIndex = 5;
 			function instr() {
 				kb.style.opacity="0";
 				pre.style.display="";
