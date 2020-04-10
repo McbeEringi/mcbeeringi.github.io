@@ -12,10 +12,10 @@
 		<!--sw-->
 		<link rel="manifest" href="pwa/sky_manifest.json">
 		<script>
-			if ('serviceWorker' in navigator){navigator.serviceWorker.register('pwa/sky_sw.js').then((reg) => {console.log('Service worker registered.', reg);});}
+			if('serviceWorker' in navigator){navigator.serviceWorker.register('pwa/sky_sw.js').then((reg)=>{console.log('Service worker registered.', reg);});}
 		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
-		<style media="screen">
+		<style>
 			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100%;user-select:none;-webkit-user-select:none;}
 			td{width:76px;height:76px;}
 			td div{width:64px;height:64px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;}
@@ -24,15 +24,11 @@
 			td div.c::before{top:12px;left:12px;width:36px;height:36px;border-radius:50%;}
 			td div.c::after{content:"";display:block;position:absolute;top:12px;left:12px;width:36px;height:36px;}
 			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;pointer-events:none;box-shadow:0 0 10px #fea8, 0 0 10px #fea8 inset;}
-			td div:active{transform:scale(.8,.8);/*animation:click .2s ease 0s;*/}
+			td div:active{transform:scale(.8,.8);}
 			@keyframes bob{
 				0%{transform:rotateZ(45deg)scale(1,1);}
 				100%{transform:rotateZ(45deg)scale(.9,.9);}
 			}
-			/*@keyframes click{
-				0%{transform:rotateY(0deg)scale(1,1);}
-				100%{transform:rotateY(360deg)scale(.8,.8);}
-			}*/
 		</style>
 	</head>
 	<body>
