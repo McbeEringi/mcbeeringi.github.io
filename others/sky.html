@@ -3,6 +3,17 @@
 	<head>
 		<meta charset="utf-8">
 		<title>sky instrument</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<!--iOS-->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+		<meta name="apple-mobile-web-app-title" content="sky instr">
+		<link rel="apple-touch-icon" href="pwa/sky_512.png">
+		<!--sw-->
+		<link rel="manifest" href="pwa/sky_manifest.json">
+		<script>
+			if ('serviceWorker' in navigator){navigator.serviceWorker.register('pwa/sky_sw.js').then((reg) => {console.log('Service worker registered.', reg);});}
+		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style media="screen">
 			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100vh;}
@@ -13,15 +24,20 @@
 			td div.c::before{top:12px;left:12px;width:36px;height:36px;border-radius:50%;}
 			td div.c::after{content:"";display:block;position:absolute;top:12px;left:12px;width:36px;height:36px;}
 			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;pointer-events:none;box-shadow:0 0 10px #fea8, 0 0 10px #fea8 inset;}
-			td div:active{transform:scale(.9,.9);}
+			td div:active{transform:scale(.8,.8);/*animation:click .2s ease 0s;*/}
 			@keyframes bob{
 				0%{transform:rotateZ(45deg)scale(1,1);}
-				100% {transform:rotateZ(45deg)scale(.9,.9);}
+				100%{transform:rotateZ(45deg)scale(.9,.9);}
+			}
+			@keyframes click{
+				0%{transform:rotateY(0deg)scale(1,1);}
+				100%{transform:rotateY(360deg)scale(.8,.8);}
 			}
 		</style>
 	</head>
 	<body>
-		<table align="center">
+		<pre id="pre">loading…</pre>
+		<table align="center" style="display:none" id="kb">
 			<tr>
 				<td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td>
 			</tr>
@@ -33,7 +49,7 @@
 			</tr>
 		</table>
 		<script>
-			var instr = new Tone.Sampler({"A4":"audio/sampler/harp_a4.mp3"}).toMaster();
+			var instr = new Tone.Sampler({"A4":"audio/sampler/harp_a4.mp3"},()=>{kb.style.display="";pre.style.display="none"}).toMaster();
 			var key = document.querySelectorAll('div');
 			for(var i = 0; i < key.length; i++) {
 				key[i].addEventListener("click",function(){var id = this.id;console.log(this.id);instr.triggerAttackRelease(id, "1n");},false);
