@@ -16,7 +16,7 @@
 		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style>
-			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100%;user-select:none;-webkit-user-select:none;pointer-events:none;}
+			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100%;user-select:none;-webkit-user-select:none;pointer-events:none;font-family:sans-serif;}
 			td{width:76px;height:76px;}
 			td div{width:64px;height:64px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;}
 			td div::before{content:"";display:block;position:absolute;top:15px;left:15px;width:30px;height:30px;}
@@ -25,8 +25,9 @@
 			td div.c::after{content:"";display:block;position:absolute;top:12px;left:12px;width:36px;height:36px;}
 			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;box-shadow:0 0 10px #fea8, 0 0 10px #fea8 inset;}
 			td div:active{transform:scale(.8,.8);}
-			form{pointer-events:auto;}
-			pre{background-color:#444a;color:#fea;text-shadow:0 0 8px;height:11.2em;line-height:1.4;overflow-y:scroll;margin:0;pointer-events:auto;float:right;}
+			input[type=radio]{display:none;}input[type=radio]+div{text-align:center;}input[type=radio]:checked+div{background-color:#444;border-radius: 4px;}
+			pre,form{background-color:#444a;color:#fea;text-shadow:0 0 8px;line-height:1.4;pointer-events:auto;flex-shrink:0;border-radius:4px;margin:2px;}
+			pre{overflow-y:scroll;min-height:11.2em;max-height:22.4em}
 			@keyframes bob{
 				0%{transform:rotateZ(45deg)scale(1,1);}
 				100%{transform:rotateZ(45deg)scale(.9,.9);}
@@ -45,19 +46,21 @@
 				<td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td>
 			</tr>
 		</table>
-		<pre id="log">Welcome to Sky instruments!</pre>
-		<form id="instr_" onchange="set();">
-			<input type="radio" name="instr" value="0">アップライトピアノ<br>
-			<input type="radio" name="instr" value="1">コントラバス<br>
-			<input type="radio" name="instr" value="2">フルート<br>
-			<input type="radio" name="instr" value="3">鉄琴<br>
-			<input type="radio" name="instr" value="4">ギター<br>
-			<input type="radio" name="instr" value="5" checked>ハープ<br>
-			<input type="radio" name="instr" value="6">ホーン<br>
-			<input type="radio" name="instr" value="7">ピアノ<br>
-			<input type="radio" name="instr" value="8">ケーナ<br>
-			<input type="radio" name="instr" value="9">ウクレレ<br>
-		</form>
+		<div style="display:flex;justify-content:center;flex-wrap:wrap;">
+			<form id="instr_" onchange="set();">
+				<label><input type="radio" name="instr" value="0"><div>アップライトピアノ</div></label>
+				<label><input type="radio" name="instr" value="1"><div>コントラバス</div></label>
+				<label><input type="radio" name="instr" value="2"><div>フルート</div></label>
+				<label><input type="radio" name="instr" value="3"><div>鉄琴</div></label>
+				<label><input type="radio" name="instr" value="4"><div>ギター</div></label>
+				<label><input type="radio" name="instr" value="5" checked><div>ハープ</div></label>
+				<label><input type="radio" name="instr" value="6"><div>ホーン</div></label>
+				<label><input type="radio" name="instr" value="7"><div>ピアノ</div></label>
+				<label><input type="radio" name="instr" value="8"><div>ケーナ</div></label>
+				<label><input type="radio" name="instr" value="9"><div>ウクレレ</div></label>
+			</form>
+			<pre id="log">Welcome to Sky instruments!</pre>
+		</div>
 		<script>
 			var instr_li = ["APPiano","Contrabass","Flute","Glock","Guitar","Harp","Horn","Piano","Quena","Ukulele"];
 			function cookie(key){
