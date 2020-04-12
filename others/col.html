@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>hex2vec</title>
+		<style>
+			pre{background-color:#eee;}
+			pre:not(#log){border:1px solid #888;}
+		</style>
+	</head>
+	<body>
+		<label>hex: <input type="text" id="inp" oninput="main();"></label><br>
+		<label>round: 1/<input type="text" id="r" oninput="main();" value="100"></label>
+		<pre id="log"></pre>
+		<pre id="c1"></pre>
+		<pre id="c2"></pre>
+		<script>
+			main()
+			function main(){
+				var val = inp.value.replace("#","");
+				if(/^[\da-fA-F]{3}$|^[\da-fA-F]{4}$|^[\da-fA-F]{6}$|^[\da-fA-F]{8}$/.test(val)){
+					var spreg = ".{"+((val.length==3||val.length==4)?1:2)+"}";
+					var s = val.match(new RegExp(spreg,"g"));
+					log.innerText = "raw: "+s;
+					s = s.map(x=>parseInt(x,16));
+					log.innerText +="\ndec: "+s;
+					s = s.map(x=>x/((val.length==3||val.length==4)?15:255));
+					log.innerText +="\n0~1: "+s;
+					s = s.map(x=>Math.round(x*r.value)/r.value);
+					log.innerText +="\nround: "+s;
+					s = s.map(x=>x.toString().replace(/^0\./,"."));
+					c1.innerText = s;
+					c1.onclick = ()=>{execCopy(c1.innerText);log.innerText+="\ncopied"};
+					s = ((val.length==3||val.length==6)?"vec3(":"vec4(")+s+")";
+					c2.innerText = s;
+					c2.onclick = ()=>{execCopy(c2.innerText);log.innerText+="\ncopied"};
+					log.innerText +="\nvec: "+s+"\n\n↓click to copy↓";
+				}
+				else log.innerText = "any of\n\nrgb\nrgba\nrrggbb\nrrggbbaa";
+			}
+			//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
+			function execCopy(string) {
+				var tmp = document.createElement("div");//空div 生成
+				var pre = document.createElement("pre");//選択用のタグ生成
+				pre.style.webkitUserSelect = "auto";//親要素のCSSでuser-select:noneだとコピーできないので書き換える
+				pre.style.userSelect = "auto";
+				tmp.appendChild(pre).textContent = string;
+				var s = tmp.style;//要素を画面外へ
+				s.position = "fixed";
+				s.right = "200%";
+				document.body.appendChild(tmp);//bodyに追加
+				document.getSelection().selectAllChildren(tmp);//要素を選択
+				var result = document.execCommand("copy");//クリップボードにコピー
+				document.body.removeChild(tmp);//要素削除
+				return result;
+			}
+		</script>
+	</body>
+</html>
