@@ -136,7 +136,7 @@ a:hover, a:active {
 	color: #fff;
 }
 
-header a {
+header a, header span {
 	text-decoration: none;
 	margin: 0 1%;
 }
