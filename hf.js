@@ -8,7 +8,7 @@ document.getElementById("H").innerHTML = "\
 		<a href='https://mcbeeringi.github.io/java-jajp'>java ja_JP</a>\
 		<a href='https://mcbeeringi.github.io/others'>Others</a>\
 		<a href='https://mcbeeringi.github.io/how'>HowTo</a>\
-		<span onClick=\"window.open('https://translate.google.com/translate?sl=ja&tl=en&u='+location.href,'_blank')\">English</span>\
+		<div class='lang' onClick=\"window.open('https://translate.google.com/translate?sl=ja&tl=en&u='+location.href)\"></div>\
 	</nav>\
 ";
 
