@@ -117,6 +117,7 @@ img.img_s {
 }*/
 /*header*/
 header {
+	font-family: 'Lato';
 	z-index: 10;
 	top: 0;
 	left: 0;
@@ -127,10 +128,6 @@ header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-}
-
-header h3 {
-	font-family: 'Quicksand';
 }
 
 a:link, a:visited {
