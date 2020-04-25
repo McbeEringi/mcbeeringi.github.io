@@ -4,12 +4,16 @@
 		<meta charset="utf-8">
 		<title>hex2vec</title>
 		<style>
-			pre{background-color:#eee;}
+			:root{font-family:sans-serif;background-color:#000;color:#fff;font-size:16px;}
+			input{background-color:#0000;color:#fff;border:none;border-bottom:2px solid #888;font-size:16px;}
+			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
+			pre{background-color:#222;}
 			pre:not(#log){border:1px solid #888;}
+			#log{border-left:4px solid #888;}
 		</style>
 	</head>
 	<body>
-		<label>hex: <input type="text" id="inp" oninput="main();"></label><br>
+		<input type="text" id="inp" placeholder="hex" oninput="main();"><br>
 		<label>round: 1/<input type="text" id="r" oninput="main();" value="100"></label>
 		<pre id="log"></pre>
 		<pre id="c1"></pre>
@@ -19,6 +23,7 @@
 			function main(){
 				var val = inp.value.replace("#","");
 				if(/^[\da-fA-F]{3}$|^[\da-fA-F]{4}$|^[\da-fA-F]{6}$|^[\da-fA-F]{8}$/.test(val)){
+					log.style.borderColor = "#"+val;
 					var spreg = ".{"+((val.length==3||val.length==4)?1:2)+"}";
 					var s = val.match(new RegExp(spreg,"g"));
 					log.innerText = "raw: "+s;
@@ -35,8 +40,10 @@
 					c2.innerText = s;
 					c2.onclick = ()=>{execCopy(c2.innerText);log.innerText+="\ncopied"};
 					log.innerText +="\nvec: "+s+"\n\n↓click to copy↓";
+				}else{
+					log.style.borderColor = "#888";
+					log.innerText = "any of\n\nrgb\nrgba\nrrggbb\nrrggbbaa";
 				}
-				else log.innerText = "any of\n\nrgb\nrgba\nrrggbb\nrrggbbaa";
 			}
 			//https://qiita.com/simiraaaa/items/2e7478d72f365aa48356
 			function execCopy(string) {
