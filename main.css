@@ -1,6 +1,6 @@
 body {
 	background-color: rgb(84, 121, 128);
-	font-family: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
+	font-family: 'M PLUS Rounded 1c', sans-serif;
 	word-wrap: break-word;
 	margin: 0;
 	box-sizing: border-box;
@@ -126,6 +126,10 @@ header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+}
+
+header h3 {
+	font-family: 'Quicksand';
 }
 
 a:link, a:visited {
