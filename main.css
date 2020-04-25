@@ -156,6 +156,7 @@ textarea, input[type="text"], input[type="number"] {
 	color: #eaf4fc;
 	background-color: rgba(84, 121, 128, .2);
 	border: none;
+	border-radius: 0;
 	border-bottom: 2px solid #eaf4fccc;
 	font-size: 13px;
 }
