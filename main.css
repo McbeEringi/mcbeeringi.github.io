@@ -146,17 +146,28 @@ header a {
 }
 
 lang {
-	width:16px;
-	height:16px;
+	width: 16px;
+	height: 16px;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='7' cx='8' cy='8' style='fill:transparent;stroke:%23ccc;stroke-width:1'/%3E%3Cellipse cx='8' cy='8' rx='4' ry='7' style='fill:transparent;stroke:%23ccc;stroke-width:1'/%3E%3Cpath d='M8,1 L8,15 M2,4 L14,4 M1,8 L15,8 M2,12 L14,12' style='stroke:%23ccc;stroke-width:1'/%3E%3C/svg%3E");
 }
 
 /*others*/
 textarea, input[type="text"], input[type="number"] {
 	color: #eaf4fc;
-	background-color: rgba(84, 121, 128, .3);
-	border: 1px solid #eaf4fccc;
-	border-radius: 3px;
+	background-color: rgba(84, 121, 128, .2);
+	border: none;
+	border-bottom: 2px solid #eaf4fccc;
+	font-size: 13px;
+}
+
+textarea::placeholder, input[type="text"]::placeholder, input[type="number"]::placeholder {
+	color: #eaf4fc88;
+}
+
+textarea:focus, input[type="text"]:focus, input[type="number"]:focus {
+	outline: none;
+	border-bottom: 2px solid #48f;
+	transition: .2s;
 }
 
 textarea {
@@ -171,7 +182,7 @@ button {
 	color: #fff;
 	border: 1px solid #eaf4fc;
 	font-size: 3ex;
-	font-family: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
+	font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 
 button:hover {
