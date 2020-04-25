@@ -213,6 +213,8 @@ pre {
 	-webkit-transform: translateZ(0px);
 	background-color: #1115;
 	border-radius: 10px;
+	line-height: 16px;
+	font-size: 13px;
 }
 
 pre:before {
