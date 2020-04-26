@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style media="screen">
+			:root{background-color:#222;color:#fff;font-family:menlo,monospace;font-size:13px;}
+			.box{background-color:#444;border:1px solid #888;line-height:14px;max-height:448px;overflow:scroll;}
+			.box:focus{outline:none;background-color:#333;border-color:#48f;}
+			.button{background-color:#444;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;}
+			.button:active{background-color:#48f8;}
+		</style>
+	</head>
+	<body>
+		obj
+		<div class="box" id="inp" contenteditable="true"></div><br>
+		<span class="button" onclick="main();">run</span><br><br>
+		mc_model
+		<div class="box" id="out" contenteditable="true"></div>
+		<script>
+			var fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
+			var fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{return x.split("/").map(x=>x-1);}).slice(1);return [str[0],str[1],str[2],str[0]]};
+			function main() {
+				var s = inp.innerText;
+				var o = s.match(/\no\s.+\n/)[0].replace(/\n/g,"").replace(/^o\s/,"");
+				var pos = s.match(/\nv\s.+\n/g).map(fx);
+				var uv = s.match(/\nvt\s.+\n/g).map(fx);
+				var n = s.match(/\nvn\s.+\n/g).map(fx);
+				var pol = s.match(/\nf\s.+\n/g).map(fx_);
+				console.log(o,pos,uv,n,pol);
+				s =
+					'{"name":"'+o+'","pivot":[0,0,0]'+
+					',"poly_mesh":{"normalized_uvs":true,"positions":'+JSON.stringify(pos)+
+					',"uvs":'+JSON.stringify(uv)+',"normals":'+JSON.stringify(n)+
+					',"polys":'+JSON.stringify(pol)+'}}';
+				out.textContent = s;
+			}
+		</script>
+	</body>
+</html>
