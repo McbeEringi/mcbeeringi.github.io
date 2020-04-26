@@ -34,7 +34,7 @@ function url_e(e_ifl){
 	if(e_c_rot!="0.5,0.5*TIME,0.0")url += "&c_rot="+e_c_rot;
 	if(e_c_os!="0.0,0.0,5.0")url += "&c_os="+e_c_os;
 	if(e_model!=0)url += "&model="+e_model;
-	if(e_ifl)url = "<iframe style='width:1600;height:900' class='gl' src='"+url+"&stuff=none'>";//iflame用
+	if(e_ifl)url = "<iframe style='width:1600;height:900' class='gl' src='"+url+"&stuff=none'></iframe><br>";//iflame用
 	return url;
 }
 function url_copy(ifl){

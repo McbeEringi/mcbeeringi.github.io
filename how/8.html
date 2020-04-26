@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="jp">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<title>McbeEringi howto-8</title>
+		<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="../main.css">
+	</head>
+	<body>
+		<header id="H"></header>
+		<p class="title">#8 空を描く(後編)</p>
+		<p align="center">もふもふしたい(？？)</p>
+		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
+		<div class="flex pad3 col1" id="nav">
+			<div align="center"><a href="7.html"><< #7 雲を描く(前編)</a></div>
+			<div align="center"><a href="index.html">トップ</a></div>
+			<div align="center"><a href="9.html">#9 coming soon… >></a></div>
+		</div>
+		<div class="col2">
+			<h2>index</h2>
+			<ul>
+				<li>ノイズの種類</li>
+				<li>fbmで雲</li>
+			</ul>
+			<p style="text-align:right;">2020/4/26 作成 <br>2020/4/27 更新 <br></p>
+		</div>
+		<br>
+		<div>
+			<h2 class="col1">ノイズの種類</h2>
+			<div class="col2" style="--pl:2ex;">
+				「ノイズが〜」と言われたときにあなたは何を思い浮かべますか? <br>
+				テレビの砂嵐とか周りの環境音とかでしょうか <br>
+				多くの方が邪魔なものという印象を持っているでしょう<br>
+				現実世界の中にはノイズが満ち溢れています <br>
+				先ほど挙げた例も当てはまりますね <br>
+				ノイズは自然な表現には欠かせません <br>
+				<br>
+				テンプレじみた話はここまでにして <br>
+				シェダーでいうノイズはランダム関数に近いものです <br>
+				完全にランダムだと使いにくいので同じ値を渡すと同じ値が返ってくるノイズ <br>
+				=ハッシュ関数ですね <br>
+				マイクラの地形なんかもハッシュですね(同じシード値→同じ地形) <br>
+				<br>
+				まず砂嵐のノイズを出してみましょう <br>
+				今回もこちらのコードを借りることにします
+				<a href="https://www.shadertoy.com/view/4djSRW">https://www.shadertoy.com/view/4djSRW</a><br>
+				ここでは入力がvec3出力がfloatのものを使っています(z=TIME) <br>
+				<pre>
+return hash13(vec3(p,TIME));
+				</pre>
+				<a href="https://mcbeeringi.github.io/others/gl.html?vsh=VY_NDoIwEISfZi8kQi0Q5CiWA8ZYgkaOBhVhE2kJFqI-veVHo6dJvt2Z2c2UavDUqhwoKbEoa61dfna0xHwX7SO-BTsAsmwFXmVTaV5lqh-nPNmwQxSmccLX406XNU8UxRhBtdQTl3gZjCiALoD64PUYiN_Xgc1-2szHy5gT6pjaalngBjNKHO1Zjeoy8EJNJ_hhQ1hxO8byjgql-Mb-XWn8vwQeewM=&fsh=TVDLjoMgFP0aNp3EILdJdTljZ5Iuupt9QwT1JgoGa9P26-cCI7JA8Dzu48xOt7igNUzwSStcp5le3WjlncEX45-rwc66icAB-2EnBf-9XL-j5iHdC01P2EO3gq454ptykMtQAhMV0eBp-tTEs5NXMV57gDM4--pOtuSpAnSgU5QcSq-HXPwR1cpu2ibULV7vZ2AFBygAcp_T99WZrEVwFpvem708dqW_924-nf2WFpVPSaIJ5jqN_7_WorVKe0SsosCaEFQ2yBaLwq5bF50sKaZYaDf04-3Hyb6xo3V5g2OKtEq1aIGmzCf_Aw==&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1">WebGL</a><br>
+				<iframe style='width:1600;height:900' class='gl' src='https://mcbeeringi.github.io/others/gl.html?vsh=VY_NDoIwEISfZi8kQi0Q5CiWA8ZYgkaOBhVhE2kJFqI-veVHo6dJvt2Z2c2UavDUqhwoKbEoa61dfna0xHwX7SO-BTsAsmwFXmVTaV5lqh-nPNmwQxSmccLX406XNU8UxRhBtdQTl3gZjCiALoD64PUYiN_Xgc1-2szHy5gT6pjaalngBjNKHO1Zjeoy8EJNJ_hhQ1hxO8byjgql-Mb-XWn8vwQeewM=&fsh=TVDLjoMgFP0aNp3EILdJdTljZ5Iuupt9QwT1JgoGa9P26-cCI7JA8Dzu48xOt7igNUzwSStcp5le3WjlncEX45-rwc66icAB-2EnBf-9XL-j5iHdC01P2EO3gq454ptykMtQAhMV0eBp-tTEs5NXMV57gDM4--pOtuSpAnSgU5QcSq-HXPwR1cpu2ibULV7vZ2AFBygAcp_T99WZrEVwFpvem708dqW_924-nf2WFpVPSaIJ5jqN_7_WorVKe0SsosCaEFQ2yBaLwq5bF50sKaZYaDf04-3Hyb6xo3V5g2OKtEq1aIGmzCf_Aw==&fps=30&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1&stuff=none'></iframe><br>
+				このままでは使いづらいのでピクセル化します <br>
+				<pre>
+p = floor(p*.1)*10.;//floorは切り捨ての関数
+return hash13(vec3(p,TIME));
+				</pre>
+				<a href="https://mcbeeringi.github.io/others/gl.html?vsh=VY_NDoIwEISfZi8kQi0Q5CiWA8ZYgkaOBhVhE2kJFqI-veVHo6dJvt2Z2c2UavDUqhwoKbEoa61dfna0xHwX7SO-BTsAsmwFXmVTaV5lqh-nPNmwQxSmccLX406XNU8UxRhBtdQTl3gZjCiALoD64PUYiN_Xgc1-2szHy5gT6pjaalngBjNKHO1Zjeoy8EJNJ_hhQ1hxO8byjgql-Mb-XWn8vwQeewM=&fsh=TZHNboMwEISfxhcqWQuOFDi2JJV6yK33ysIGLAFGJkQhT99dOxgf-Jv9ZtezzE43ZjF2YgWMWpl1nPGtHay8M_HF4HOdTGvdiGJvuv4oFvD7c7sG5iHdZqYOtYduCnzMQd_JXi59LlhRYllQGW8V1tmZKAYVCcDEhbo72aCn9FKGF89B5MSLFP4ItLI7W_u-fHs9fbUAIbgQqc_p--qmZIR38p0nM-FhKn69DvP5QimtUbQlaSZvruLx37EWrVXMEbQSF1b7RSUHIY4_tyPyYK1D9q1nwIECZzkAj6Z9l8q07broaI67DdOPKd3w9-1kV9uBmh-nOsX_UMZemLrO07j_&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1">WebGL</a><br>
+				<iframe style='width:1600;height:900' class='gl' src='https://mcbeeringi.github.io/others/gl.html?vsh=VY_NDoIwEISfZi8kQi0Q5CiWA8ZYgkaOBhVhE2kJFqI-veVHo6dJvt2Z2c2UavDUqhwoKbEoa61dfna0xHwX7SO-BTsAsmwFXmVTaV5lqh-nPNmwQxSmccLX406XNU8UxRhBtdQTl3gZjCiALoD64PUYiN_Xgc1-2szHy5gT6pjaalngBjNKHO1Zjeoy8EJNJ_hhQ1hxO8byjgql-Mb-XWn8vwQeewM=&fsh=TZHNboMwEISfxhcqWQuOFDi2JJV6yK33ysIGLAFGJkQhT99dOxgf-Jv9ZtezzE43ZjF2YgWMWpl1nPGtHay8M_HF4HOdTGvdiGJvuv4oFvD7c7sG5iHdZqYOtYduCnzMQd_JXi59LlhRYllQGW8V1tmZKAYVCcDEhbo72aCn9FKGF89B5MSLFP4ItLI7W_u-fHs9fbUAIbgQqc_p--qmZIR38p0nM-FhKn69DvP5QimtUbQlaSZvruLx37EWrVXMEbQSF1b7RSUHIY4_tyPyYK1D9q1nwIECZzkAj6Z9l8q07broaI67DdOPKd3w9-1kV9uBmh-nOsX_UMZemLrO07j_&fps=20&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1&stuff=none'></iframe><br>
+				まだまだ粗いので座標の周囲4点の値を補完して滑らかにします <br>
+				<img src="" class="img_s">
+				<img src="" class="img">
+				<pre>
+vec2 fl = floor(p);//切り捨て
+vec2 ce = ceil(p);//切り上げ
+vec2 fr = smoothstep(0.,1.,fract(p));//小数部分を取る関数+smoothstep
+return mix(
+	mix(hash13(vec3(fl,TIME)), hash13(vec3(fl.x,ce.y,TIME)),fr.y),
+	mix(hash13(vec3(ce.x,fl.y,TIME)), hash13(vec3(ce,TIME)),fr.y),
+	fr.x);
+				</pre>
+				<a href="https://mcbeeringi.github.io/others/gl.html?vsh=VY_NDoIwEISfZi8kQi0Q5CiWA8ZYgkaOBhVhE2kJFqI-veVHo6dJvt2Z2c2UavDUqhwoKbEoa61dfna0xHwX7SO-BTsAsmwFXmVTaV5lqh-nPNmwQxSmccLX406XNU8UxRhBtdQTl3gZjCiALoD64PUYiN_Xgc1-2szHy5gT6pjaalngBjNKHO1Zjeoy8EJNJ_hhQ1hxO8byjgql-Mb-XWn8vwQeewM=&fsh=hZJNa4QwEIZ_TS4WQj4Kq8fWbaGH3novEhMNqJGoi7u_vjNRo-0WFvzKzDPvZN7Ye63sYF1HBGt1aae2hy_TuGIk8pWwl6mzxvkWgrWt6j0p2NfH59vCXAp_tV0FsYtWAl79Et_IuhhqLolIIS0xDY8M8uSEFGEZBhiRZ1T3hYKaNIQSuClnkiMvj_DTQpduY_OgS6-3OWQFk5JKeazzepx8d2gRKunGYzHiS1dY3fbi0xmndLZElwrbheIsbn-d2jT7FI1zHvUTynDzCWeMxp2svNKRV9o2j3DjIz60zo31MGo4jxRIkXN8RO9WmeP021mU1php2Du3dsZpAgPXsvxzYClOlofzXkSD2_cQepkrjT7-po1fvc0fNIJi1ACpO41_OqKBDxtBaD4aUTXf776octe43VAQfN51o0coxI-_wQ8=&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1">WebGL</a><br>
+				<iframe style='width:1600;height:900' class='gl' src='https://mcbeeringi.github.io/others/gl.html?vsh=VY_NDoIwEISfZi8kQi0Q5CiWA8ZYgkaOBhVhE2kJFqI-veVHo6dJvt2Z2c2UavDUqhwoKbEoa61dfna0xHwX7SO-BTsAsmwFXmVTaV5lqh-nPNmwQxSmccLX406XNU8UxRhBtdQTl3gZjCiALoD64PUYiN_Xgc1-2szHy5gT6pjaalngBjNKHO1Zjeoy8EJNJ_hhQ1hxO8byjgql-Mb-XWn8vwQeewM=&fsh=hZJNa4QwEIZ_TS4WQj4Kq8fWbaGH3novEhMNqJGoi7u_vjNRo-0WFvzKzDPvZN7Ye63sYF1HBGt1aae2hy_TuGIk8pWwl6mzxvkWgrWt6j0p2NfH59vCXAp_tV0FsYtWAl79Et_IuhhqLolIIS0xDY8M8uSEFGEZBhiRZ1T3hYKaNIQSuClnkiMvj_DTQpduY_OgS6-3OWQFk5JKeazzepx8d2gRKunGYzHiS1dY3fbi0xmndLZElwrbheIsbn-d2jT7FI1zHvUTynDzCWeMxp2svNKRV9o2j3DjIz60zo31MGo4jxRIkXN8RO9WmeP021mU1php2Du3dsZpAgPXsvxzYClOlofzXkSD2_cQepkrjT7-po1fvc0fNIJi1ACpO41_OqKBDxtBaD4aUTXf776octe43VAQfN51o0coxI-_wQ8=&fps=20&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1&stuff=none'></iframe><br>
+				まだブロックっぽいというか雑にぼかした感拭えないので <br>
+				四点に設定したランダムなベクトルと座標から四点に対するベクトルの内積を使って補完することでさらに滑らかにします <br>
+				ランダムなベクトルを作るので出力がvec2のハッシュ関数を使います <br>
+				パーリンノイズという名がついています <br>
+				<pre>長いのでコードは↓から</pre>
+				<a href="https://mcbeeringi.github.io/others/gl.html?vsh=VU9BDoJADHxNLyQCWSTAUVwOGOMSNHI0qAhNZJfgQtTXW8AYuXQy006nzbVu8dzpAphdYVk1hH1xWRIkYh8fYrEDJwR71Um8qbYmvc710M5EuuXHOMqSVGymmT5vXyjLaQUjaL66wutoRAnMBxaAN8hgB0McOPwvzXy-Dd8kn2WBGy4oaU3F5eBFxAc6stFd3k-JeqBGJX97ZmcZ8x_A4x8=&fsh=pVLJboMwEP0aX4LieCmFHBuSSj301nuFwmYJcGQgIvn6zthhKY2UVpWs8Xj8Zt5sJ5MeVaN0TQSr0kR11Qm0rNRxS-SOsJeuVpk2FRgLlRfTp2Afb-8HhznH5qLqHGzn9CjgOjk7fjlDETeFkESE8JYIALFFROBwWzSwFZF7uIT_TIcA7sPZMxMfgTi8YS0bxqScSU5EBBZU2U1l28CywPkWzHPREj3EimxC9HLtPSmplHMPk7adqWfk1of2vWc9ALoC5XpBRdA1x8Q3G-Lv1pwEB078va0S5VmrBLscq9rG2Y7F35qUlVOppdYGqea5DDDzsyN3YM0M11Rat0XTpgAMGYWSOQpEjH7oOow2UVnWNenoX6keU7YYOO7pGriYbJiVnkvA8aCAEUR2WdwwkHd9B4M_I4U7jyj4Lyj4ggL6QvsF2x8K4r8oiP-voAcUfEExKwg03ESP-vOp5uXnq4nzSJd6WgkI9jRlMA4co_BpK4L9Fw==&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1">WebGL</a><br>
+				<iframe style='width:1600;height:900' class='gl' src='https://mcbeeringi.github.io/others/gl.html?vsh=VU9BDoJADHxNLyQCWSTAUVwOGOMSNHI0qAhNZJfgQtTXW8AYuXQy006nzbVu8dzpAphdYVk1hH1xWRIkYh8fYrEDJwR71Um8qbYmvc710M5EuuXHOMqSVGymmT5vXyjLaQUjaL66wutoRAnMBxaAN8hgB0McOPwvzXy-Dd8kn2WBGy4oaU3F5eBFxAc6stFd3k-JeqBGJX97ZmcZ8x_A4x8=&fsh=pVLJboMwEP0aX4LieCmFHBuSSj301nuFwmYJcGQgIvn6zthhKY2UVpWs8Xj8Zt5sJ5MeVaN0TQSr0kR11Qm0rNRxS-SOsJeuVpk2FRgLlRfTp2Afb-8HhznH5qLqHGzn9CjgOjk7fjlDETeFkESE8JYIALFFROBwWzSwFZF7uIT_TIcA7sPZMxMfgTi8YS0bxqScSU5EBBZU2U1l28CywPkWzHPREj3EimxC9HLtPSmplHMPk7adqWfk1of2vWc9ALoC5XpBRdA1x8Q3G-Lv1pwEB078va0S5VmrBLscq9rG2Y7F35qUlVOppdYGqea5DDDzsyN3YM0M11Rat0XTpgAMGYWSOQpEjH7oOow2UVnWNenoX6keU7YYOO7pGriYbJiVnkvA8aCAEUR2WdwwkHd9B4M_I4U7jyj4Lyj4ggL6QvsF2x8K4r8oiP-voAcUfEExKwg03ESP-vOp5uXnq4nzSJd6WgkI9jRlMA4co_BpK4L9Fw==&fps=20&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1&stuff=none'></iframe><br>
+				まだ四角いですね <br>
+				補完する点は4点である必要が無いので3点にします <br>
+				これにより高速化が図れます <br>
+				同じくパーリン氏が作ったようです 先人の知恵は偉大ですね… <br>
+				シンプレックスノイズと呼ばれています <br>
+				<a href="https://github.com/ashima/webgl-noise/tree/master/src">こちら</a>のコードを使っています <br><br>
+				<a href="https://mcbeeringi.github.io/others/gl.html?vsh=VU9BDoJADHxNLyQCWSTAUVwOGOMSNHI0qAhNZJfgQtTXW8AYuXQy006nzbVu8dzpAphdYVk1hH1xWRIkYh8fYrEDJwR71Um8qbYmvc710M5EuuXHOMqSVGymmT5vXyjLaQUjaL66wutoRAnMBxaAN8hgB0McOPwvzXy-Dd8kn2WBGy4oaU3F5eBFxAc6stFd3k-JeqBGJX97ZmcZ8x_A4x8=&fsh=rVhbb6M6EP41eSEqMZeW8Ngl3VWltudI7fuKJDR4xW0NJJBffzwe29x7otVKhBjb833jmfF4oGDRgZY0z1Y2SaMjrdOCtz6TPKxWzrcVeawz-pmzlHfG9BR3gzb5eH59wjnnkLU0O_G-c3Sw-V-B_fzabPBmk11UHhgtKuRaOY_8_shY2PL_MDvyexU1Vc2iJCpL_vTj5f2F_9m7jbPbuDveLGlaJFED0hLz9ivLaRmB8nV2ABVKcwHjsa7inGkNn0PQ9vXwdIFGABPKmKahUL4aoLyGNKv4L-qkyyo61XNEL2FZpflRT7SJZZGtbYvRLf3F7e3PytFDlImFoFyQFy3jfqlQMAAxRJtqyv-ThN_FfLAwi8qInaPjkim-uHa0rBjd11UEa6izo1h0FYNmr88fnaZA-x5B98tz8PT2_gQ-oEn0B5xxVRUlX_Zmc6JVXO_NQ55uQrHGzSXan5I7dPLfARaum8UVcc0D3YEtkx_tLTf5Vj436ICVJ8JfoLOIB3WGY-QO9w8E2BaeDfSbZcJMQOdo0PYRx9A9uJ-8nWZ3R-yuYve-_TVGQSexi4il3N3LZFoZvBrDcQXuWlD5hpg_Aq3CNsnZc3Z-_82qDpqNoC3T8-2ta_uWS4h178tlEXN773iO69nEv3csV6rPNIvKVKXc_cpLZ8SXzhReOvCUAFNlAoOtJTbZTveByTYPsJZAqEQ2jrSb8s4YyJV7pQ_E-7ZEgRDzXqNhw0bIXva0yXfKBOIhZ5BbFJFcC5VhLAiUo_kCyZr_jnmFT4AdmG3bSoU1Rx-q6YBkvzQ0HcBRBdc0zWD9Ut9_eBpgWt9yzHLSJHyLFRApxGyvDYLydtNe59VLtCAG750Am86jlp6Y0kxEIzkhLFAk5rVpF21A7U44bG4QVvK9nNOzY6MUFT4XRsSWoS3Y06GPYU0xcGGIYt2GYs-g2B2KfRuKM0Wx9HqcZQwVV0trWX8ltKT6Woey803pyddhcKAuQDadynzuBHtmQbsOcnQJhju-4LUzorkTG1g97JBI7oJ_Rb4MRa2h-WkXXCpbUhlKvVykMq6e3OXeLx80wP9e1LxKS45TErVMGerUVi30tTwibuBYC4Z2maHVDO0Mw20LQZJmmaTRJM0MySBj_WDhkUZZVWJR5TUemDanmSiT8rNIZ1BIlb_rkEUIl4ZFIaqfPKtyGIeTKj9UYRwdWZ7pAudDFEUM6-OSXuHJ8gzL0-4VgUAocB2SXFR3iAgsdVJRXvUC9ie_uZi-t65vPHQAvtt3jTr2sp96BjEt197ee3jv7Rw4xzyTjHcISJdaWgAZYpNcIBPKDdNcm1ESlJH7q4tcOdn1dZZQZ1Qhn3kpfh00fb0LVQ4SlTIIBJ7hyZWOKJturYrg1xR1JNTOC4HCntYXkXta9XRDxbhM8LagliYQMAbXRYUsb7Yy5YzV0kLt7UKxFupOx3BfYtXnDzra6eklQfbdySV3FGhuNnKbtubCySlkrVnZ60XJQmv24JQA5YQc3gQ_YthYW9AsIKpQNWy9RksXxyO0iTp9NOs2tKlmKk5AHyW4Xha0poLWTYKdO-9kmRSjHfuZzl90ZNhpvOcl1bW9SLoSn4wy5udui5E2YQ87tffWQNrS0tfr5dJJj9JHMXAl79mGBKMoNpv5wquwZkRE8MRmuyBiT0QsxbJQQxbOjIhkuQzPhbecpWGCXw1O-oAYWSrDTyOIOP82s8WqGUwSFOg08KPshUCE27DXxif4Hw44MN1RB-VghQUmLEzYXC1zUFUJ8_ZHBzlEWLI_eh2MOqPRy_D4fKWQnj5pFiar7kvLOUzqaGyvzlhYXRPzQe68gbGgKguasbGgjgyasbGgUAyasaWgxAsabSl82xpnrp42K0z2aX9Yv3-6XZ2M6DDTSAcbsvPRrO7FSPfba7U_vnqxNDFP0TMPGb8T4ht6To_CTfIVypffNIivyosj_fys5bco8To3fMsW5zV8IzRcU-ZZ837NC2adMYh_Sn5-Z-EpyBP5ya2XriWKZgH9rb6S_wE=&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1">WebGL</a>(開いても絶望するだけです)<br>
+				<iframe style='width:1600;height:900' class='gl' src='https://mcbeeringi.github.io/others/gl.html?vsh=VU9BDoJADHxNLyQCWSTAUVwOGOMSNHI0qAhNZJfgQtTXW8AYuXQy006nzbVu8dzpAphdYVk1hH1xWRIkYh8fYrEDJwR71Um8qbYmvc710M5EuuXHOMqSVGymmT5vXyjLaQUjaL66wutoRAnMBxaAN8hgB0McOPwvzXy-Dd8kn2WBGy4oaU3F5eBFxAc6stFd3k-JeqBGJX97ZmcZ8x_A4x8=&fsh=rVhbb6M6EP41eSEqMZeW8Ngl3VWltudI7fuKJDR4xW0NJJBffzwe29x7otVKhBjb833jmfF4oGDRgZY0z1Y2SaMjrdOCtz6TPKxWzrcVeawz-pmzlHfG9BR3gzb5eH59wjnnkLU0O_G-c3Sw-V-B_fzabPBmk11UHhgtKuRaOY_8_shY2PL_MDvyexU1Vc2iJCpL_vTj5f2F_9m7jbPbuDveLGlaJFED0hLz9ivLaRmB8nV2ABVKcwHjsa7inGkNn0PQ9vXwdIFGABPKmKahUL4aoLyGNKv4L-qkyyo61XNEL2FZpflRT7SJZZGtbYvRLf3F7e3PytFDlImFoFyQFy3jfqlQMAAxRJtqyv-ThN_FfLAwi8qInaPjkim-uHa0rBjd11UEa6izo1h0FYNmr88fnaZA-x5B98tz8PT2_gQ-oEn0B5xxVRUlX_Zmc6JVXO_NQ55uQrHGzSXan5I7dPLfARaum8UVcc0D3YEtkx_tLTf5Vj436ICVJ8JfoLOIB3WGY-QO9w8E2BaeDfSbZcJMQOdo0PYRx9A9uJ-8nWZ3R-yuYve-_TVGQSexi4il3N3LZFoZvBrDcQXuWlD5hpg_Aq3CNsnZc3Z-_82qDpqNoC3T8-2ta_uWS4h178tlEXN773iO69nEv3csV6rPNIvKVKXc_cpLZ8SXzhReOvCUAFNlAoOtJTbZTveByTYPsJZAqEQ2jrSb8s4YyJV7pQ_E-7ZEgRDzXqNhw0bIXva0yXfKBOIhZ5BbFJFcC5VhLAiUo_kCyZr_jnmFT4AdmG3bSoU1Rx-q6YBkvzQ0HcBRBdc0zWD9Ut9_eBpgWt9yzHLSJHyLFRApxGyvDYLydtNe59VLtCAG750Am86jlp6Y0kxEIzkhLFAk5rVpF21A7U44bG4QVvK9nNOzY6MUFT4XRsSWoS3Y06GPYU0xcGGIYt2GYs-g2B2KfRuKM0Wx9HqcZQwVV0trWX8ltKT6Woey803pyddhcKAuQDadynzuBHtmQbsOcnQJhju-4LUzorkTG1g97JBI7oJ_Rb4MRa2h-WkXXCpbUhlKvVykMq6e3OXeLx80wP9e1LxKS45TErVMGerUVi30tTwibuBYC4Z2maHVDO0Mw20LQZJmmaTRJM0MySBj_WDhkUZZVWJR5TUemDanmSiT8rNIZ1BIlb_rkEUIl4ZFIaqfPKtyGIeTKj9UYRwdWZ7pAudDFEUM6-OSXuHJ8gzL0-4VgUAocB2SXFR3iAgsdVJRXvUC9ie_uZi-t65vPHQAvtt3jTr2sp96BjEt197ee3jv7Rw4xzyTjHcISJdaWgAZYpNcIBPKDdNcm1ESlJH7q4tcOdn1dZZQZ1Qhn3kpfh00fb0LVQ4SlTIIBJ7hyZWOKJturYrg1xR1JNTOC4HCntYXkXta9XRDxbhM8LagliYQMAbXRYUsb7Yy5YzV0kLt7UKxFupOx3BfYtXnDzra6eklQfbdySV3FGhuNnKbtubCySlkrVnZ60XJQmv24JQA5YQc3gQ_YthYW9AsIKpQNWy9RksXxyO0iTp9NOs2tKlmKk5AHyW4Xha0poLWTYKdO-9kmRSjHfuZzl90ZNhpvOcl1bW9SLoSn4wy5udui5E2YQ87tffWQNrS0tfr5dJJj9JHMXAl79mGBKMoNpv5wquwZkRE8MRmuyBiT0QsxbJQQxbOjIhkuQzPhbecpWGCXw1O-oAYWSrDTyOIOP82s8WqGUwSFOg08KPshUCE27DXxif4Hw44MN1RB-VghQUmLEzYXC1zUFUJ8_ZHBzlEWLI_eh2MOqPRy_D4fKWQnj5pFiar7kvLOUzqaGyvzlhYXRPzQe68gbGgKguasbGgjgyasbGgUAyasaWgxAsabSl82xpnrp42K0z2aX9Yv3-6XZ2M6DDTSAcbsvPRrO7FSPfba7U_vnqxNDFP0TMPGb8T4ht6To_CTfIVypffNIivyosj_fys5bco8To3fMsW5zV8IzRcU-ZZ837NC2adMYh_Sn5-Z-EpyBP5ya2XriWKZgH9rb6S_wE=&fps=20&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1&stuff=none'></iframe><br>
+				だいぶ滑らかになりましたねー <br>
+				ここでは入力がvec3なので全体的に長めですが <br>
+				今回の雲の描写で使うのは入力がvec2のものなのでもう少し短いです
+			</div>
+		</div>
+		<br>
+		<div>
+			<h2 class="col1">fbmで雲</h2>
+			<div class="col2" style="--pl:2ex;">
+				ふらくたるぶらうにあんもーしょんの略です <br>
+				日本語では非整数ブラウン運動らしいです <br>
+				ざっくり説明すると上で述べたノイズをサイズ変えて重ねたものです <br><br>
+				<a href="https://mcbeeringi.github.io/others/gl.html?vsh=VU_RDoIwDPyavpAIOCTIozgeMMYRNPJopiI0kY3gIOrXu4Ex8tLLXXvXlivV4rlTBRC3wrJqNPbFZaEhZfvkkLAdeBG4q07gTba11muuTDtn2ZYekzhPM7YZZ3revlCUYwTR0Hx1idfBiALIEkgIgZHBDc068OjfNvv5tmxf-xwH_Gg2B7LWxacQxJobOrDBXd5PqXygQil-OZOzrOkPENAP&fsh=rVhZj6M4EP41_ULUhCtDeOwmPaOWumdX6n4fkYQEz3ItRwL59ety2cYYmI1GIxECtuuru1y4rOIDqUmRPzhWFh9Jm5X06ZQWUfPgPj9YT21OTkWV0cGEnJNh0rE-X99fcM0lqnqSn-nYJT449K_EcXqt13hzrF1cHypSNsjrwX2i96eqinr6H-VHem_irmmrOI3rmr59e_t4o3_Obu3u1t6OPtYkK9O4A2qOef-VF6SOQfg2P4AItbmA8dQ2SVFJCV8jkPb98HKFhxAW1AnJIiZ8M0J5j0je0F88UNdNfG7nGL1FdZMVR7nQsWzb2joOm92Sn9TewSwdOcQ5UwTpwqLsK-qXBglDIEO0qaT0P03pna0HC1dxHVeX-Lhkil9cO1I3Fdm3TQw6tPmRKd0kINn76-cgKbD9iGH47TV8-f7xAj4gafwbPJOmKWuq9np9Jk3S7s1Dka0jpuP6Gu_P6SM6-c8AM9fN4rK4poHuQsoUR2dLTb7l7x064MFn4c_Qq5gGdY5z1iPmDwTYFt4N9JttwkpAp2jwHCCOIUcwn_yd5O5p3D3B3X_-YxwZO45dxlVG3b3MTAqDV2e4HsNdMVaBwdZroE3Up0X1ml8-_q2aAbrSoG3TD5yt5wS2Z1n2JuBqWeZ24_qu5ztWsHFtj4tfSS6iUtU8-4WXLojPncm8dKAlAZbyAgapxZJsJ8fAZOsvoEvIRLLWLreb8I4O5PFcUYHo2NYSIJa5kWj44CCkUj0d6yupGOKhqKC2CEZcF8LDmDEQjqYKWiv6OxYNvgF2aPZ9zwWWPFSobgDi49zQZARHBFzXdSP9ubx_0TJQSXlrnctZMqEpVkKkWGZ_6xCUPnf9bV68VBJi8D4ysOk6YsuFGclZNFpnhAUWqXnr-kUbEGcgjro7iAW9UnMUO3ZCUOZzZkR8MqQFFRlUDHuKgYohin0fijOD4gwozn0o7hTFlvq4yxgirpZ0Wf2KaEn0lQxl91nISfUwKNAQIOtBZLp2gj2j0G6A1C7G4ZEqvHI1No8sgcXLDhnxLPib1cuI9RqSPxmCS1RLwkNJqUWi4srFQ-395YsE-N-LmDduSb0kEdvkoU4c8YS-5lvEHTxWjEO_zKGXHPoZDvcpgky6ZSadZNLNMBlVrG9VdCRx3tTYVPmdD6YtSM7apOLCyhk0UvW_bVTFCJdFZcm6nyJvCpiHnao4NFESH6silw3OJ2uKKuyPa3KDN9s3bF-6lwWCRYDXIS1Yd4eIwKVNG0K7XsA-0ZuH5XvrBcaXASDwVNeIbS__IVdYpu05242PdyVzYB_zTUvPEKCuJTUDMliSXKES8oTpbp1WBHnk_hwily_2AlklxB5V8nfait9Gj4HMQlGDWKcMBKFv-FxTjWU36CoY_JyiakT9PBEI7Et5EVmRSpENBaM04fcFsSQDBmNQWUTI0seelxxdLEnU30-USKJhd4z2NXZ9wWign-5eHGQ_7Fw8o0Bys-Np2psLOyejtWdpb1dBC0-zGycHqCfM4UvwM4HE2oJkoSUaVcOROtqyOdbQJuKoaPZ9aFPJRJyAPIJwtUxoTwntuwgHdz7yNilBO6qVLlh0ZDRIvKct1a2_cnY1vhl1QvfdHiNtwj0axN7bI2pbUt9u1-tArZWPcuRKOrKNLIyixOzmG6_SniFhwZOY_QKJMyGxBZeFHrJ0Z0g4l-t4X_heVFmU4qnBWW4QmqVyPBpBxPmvmS12zWCSsESngR_5KAQi3MajDr7B_3jCheWu2ChHGpZYsLBgU7HMUVfFzKvOjmoIs6Q6exvNutrsdbx9vhMoTyeSR-nDcNJyidI21u01GAu7a8v8wjNvZCzoysJONxb0kWGnGwsaxbDTLQUtXthJS-HXll65FGkesNhn6rT8_vSGPhnRYaWRjRJy8NGs7KUm-_292m9fSixNzFMq5rH0b8LRt_Pp-Z2uF1-1YjQtrnH1XLRwbgeo-nxLeyN1nqcfrGG88HzECvQzRQyaoWuR9WWyMsrKlDTtUV29katPeIRH2-scFg99t4XbOA6AZB4fWK000eglpFkhrcqSH6PIkwWhmcEFEd96G6WoACQ5IeGg6AuCqxYDoH0VR_-olHHK0koHWE1sESKg6qJZQOaw2YvnuqOYn15j9ScmF4dTgUybOiuKJuHblx4xkwhBfUYxCAdFBTmyasG_5APpHxEIR3I6tfUQBhiwlklhbbjxOg_dI5xYG-gSdeO0gnP642sVncMi5Ue_StvA6SUbyCNbFfQ_&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1">WebGL</a><br>
+				<iframe style='width:1600;height:900' class='gl' src='https://mcbeeringi.github.io/others/gl.html?vsh=VU_RDoIwDPyavpAIOCTIozgeMMYRNPJopiI0kY3gIOrXu4Ex8tLLXXvXlivV4rlTBRC3wrJqNPbFZaEhZfvkkLAdeBG4q07gTba11muuTDtn2ZYekzhPM7YZZ3revlCUYwTR0Hx1idfBiALIEkgIgZHBDc068OjfNvv5tmxf-xwH_Gg2B7LWxacQxJobOrDBXd5PqXygQil-OZOzrOkPENAP&fsh=rVhZj6M4EP41_ULUhCtDeOwmPaOWumdX6n4fkYQEz3ItRwL59ety2cYYmI1GIxECtuuru1y4rOIDqUmRPzhWFh9Jm5X06ZQWUfPgPj9YT21OTkWV0cGEnJNh0rE-X99fcM0lqnqSn-nYJT449K_EcXqt13hzrF1cHypSNsjrwX2i96eqinr6H-VHem_irmmrOI3rmr59e_t4o3_Obu3u1t6OPtYkK9O4A2qOef-VF6SOQfg2P4AItbmA8dQ2SVFJCV8jkPb98HKFhxAW1AnJIiZ8M0J5j0je0F88UNdNfG7nGL1FdZMVR7nQsWzb2joOm92Sn9TewSwdOcQ5UwTpwqLsK-qXBglDIEO0qaT0P03pna0HC1dxHVeX-Lhkil9cO1I3Fdm3TQw6tPmRKd0kINn76-cgKbD9iGH47TV8-f7xAj4gafwbPJOmKWuq9np9Jk3S7s1Dka0jpuP6Gu_P6SM6-c8AM9fN4rK4poHuQsoUR2dLTb7l7x064MFn4c_Qq5gGdY5z1iPmDwTYFt4N9JttwkpAp2jwHCCOIUcwn_yd5O5p3D3B3X_-YxwZO45dxlVG3b3MTAqDV2e4HsNdMVaBwdZroE3Up0X1ml8-_q2aAbrSoG3TD5yt5wS2Z1n2JuBqWeZ24_qu5ztWsHFtj4tfSS6iUtU8-4WXLojPncm8dKAlAZbyAgapxZJsJ8fAZOsvoEvIRLLWLreb8I4O5PFcUYHo2NYSIJa5kWj44CCkUj0d6yupGOKhqKC2CEZcF8LDmDEQjqYKWiv6OxYNvgF2aPZ9zwWWPFSobgDi49zQZARHBFzXdSP9ubx_0TJQSXlrnctZMqEpVkKkWGZ_6xCUPnf9bV68VBJi8D4ysOk6YsuFGclZNFpnhAUWqXnr-kUbEGcgjro7iAW9UnMUO3ZCUOZzZkR8MqQFFRlUDHuKgYohin0fijOD4gwozn0o7hTFlvq4yxgirpZ0Wf2KaEn0lQxl91nISfUwKNAQIOtBZLp2gj2j0G6A1C7G4ZEqvHI1No8sgcXLDhnxLPib1cuI9RqSPxmCS1RLwkNJqUWi4srFQ-395YsE-N-LmDduSb0kEdvkoU4c8YS-5lvEHTxWjEO_zKGXHPoZDvcpgky6ZSadZNLNMBlVrG9VdCRx3tTYVPmdD6YtSM7apOLCyhk0UvW_bVTFCJdFZcm6nyJvCpiHnao4NFESH6silw3OJ2uKKuyPa3KDN9s3bF-6lwWCRYDXIS1Yd4eIwKVNG0K7XsA-0ZuH5XvrBcaXASDwVNeIbS__IVdYpu05242PdyVzYB_zTUvPEKCuJTUDMliSXKES8oTpbp1WBHnk_hwily_2AlklxB5V8nfait9Gj4HMQlGDWKcMBKFv-FxTjWU36CoY_JyiakT9PBEI7Et5EVmRSpENBaM04fcFsSQDBmNQWUTI0seelxxdLEnU30-USKJhd4z2NXZ9wWign-5eHGQ_7Fw8o0Bys-Np2psLOyejtWdpb1dBC0-zGycHqCfM4UvwM4HE2oJkoSUaVcOROtqyOdbQJuKoaPZ9aFPJRJyAPIJwtUxoTwntuwgHdz7yNilBO6qVLlh0ZDRIvKct1a2_cnY1vhl1QvfdHiNtwj0axN7bI2pbUt9u1-tArZWPcuRKOrKNLIyixOzmG6_SniFhwZOY_QKJMyGxBZeFHrJ0Z0g4l-t4X_heVFmU4qnBWW4QmqVyPBpBxPmvmS12zWCSsESngR_5KAQi3MajDr7B_3jCheWu2ChHGpZYsLBgU7HMUVfFzKvOjmoIs6Q6exvNutrsdbx9vhMoTyeSR-nDcNJyidI21u01GAu7a8v8wjNvZCzoysJONxb0kWGnGwsaxbDTLQUtXthJS-HXll65FGkesNhn6rT8_vSGPhnRYaWRjRJy8NGs7KUm-_292m9fSixNzFMq5rH0b8LRt_Pp-Z2uF1-1YjQtrnH1XLRwbgeo-nxLeyN1nqcfrGG88HzECvQzRQyaoWuR9WWyMsrKlDTtUV29katPeIRH2-scFg99t4XbOA6AZB4fWK000eglpFkhrcqSH6PIkwWhmcEFEd96G6WoACQ5IeGg6AuCqxYDoH0VR_-olHHK0koHWE1sESKg6qJZQOaw2YvnuqOYn15j9ScmF4dTgUybOiuKJuHblx4xkwhBfUYxCAdFBTmyasG_5APpHxEIR3I6tfUQBhiwlklhbbjxOg_dI5xYG-gSdeO0gnP642sVncMi5Ue_StvA6SUbyCNbFfQ_&fps=20&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1&stuff=none'></iframe><br>
+				このデモでは4枚重ねています <br>
+				(fbmでvec3入力のノイズ重ねるあほそうそういないと思うんですよ……) <br>
+				もう既に雲っぽいですね <br>
+				閾値の調整(smoothstepとmix→#4参照)などして雲にしていきます <br>
+				雲にvec3入力のノイズを使っても大した効果はないのでvec2入力を使います <br>
+				雲が流れる様子は <code>p.x+TIME</code>などで代用できますし <br>
+				変形する様子はfbm/time set noon重ね合わせの段階でどうにでもなりますね <br>
+				こんな感じになりました(飛躍*丸投げ) <br>
+				<a href="https://mcbeeringi.github.io/others/gl.html?vsh=VU_RDoIwDPyavpAIOCTIozgeMMYRNPJopiI0kY3gIOrXu4Ex8tLLXXvXlivV4rlTBRC3wrJqNPbFZaEhZfvkkLAdeBG4q07gTba11muuTDtn2ZYekzhPM7YZZ3revlCUYwTR0Hx1idfBiALIEkgIgZHBDc068OjfNvv5tmxf-xwH_Gg2B7LWxacQxJobOrDBXd5PqXygQil-OZOzrOkPENAP&fsh=vVZJk6IwFP41XrDEEATh2NJ21Rz6NvcpWlFTI8uwCf76ycvLBmrXnKYKMbzle2teUtXZgTWsLBaU5NmRdXnFV6drmbYLf7cgb13BTmWdc-KFnS-GScnPH597lOnTemTFmdP67ED5X4V0pcGpPuCXRxrFCxrN6MOCcipZbHf8XWdtVxdIJSs0V9ZcCb4dEKOR5_I3WfMfx4N1jAiOpvg7Afg-dYK-cIL-Tycg4iqr867N_jUV2ufBsXzwN8KDJf952r5l0zKrStYUJWuyx-B7Yxb04kNZNK1Vci624X8JyPjvmhChNH-ISz3Pp5soDDYk8KLtggph8azXmDHfJavmT93iEh1eh3xlUPwwJJRD-Ntos_HjBxTiBpCCCcpKRq9QVlxou_UDQsPYi-KQhhpGYKC8yBsVK0hm4g6WG4Ry4-ZlEishTO03nvQfdGdZZdJ3kTHVQb00fSxb_EqE9XE0BXyGNRikXvYkPmyCxxTeMHwDxjzbs4G4g_jY48coPj60OHZ6IrJPZKP4b4ZNFFvW4YlRaJ7BoxOT4zBK18Hb-13rcUFX8FYozL2VLOAyDaJ3BXthVew0FDcbzqyYqxxAWRMI84BlhSSCBkkmUvVCZ5jrWG7PR6GJIh0ETCCrKnGxnIMEHxAx0XVWOUowsWL9IHC_GQFYx1qGTCtleePk31OfxDLYzWR21KlOD-BJpXfY7YZOiDg9HJDPAC82YPrV4MxTipCqF4rloNXqsiuOSvGFeGrtAQnOEaxAc-E6NmHRZ3WTycGTqiBTNUkuknD5xt5ZM87uJGkpUd-OtR-pxp5xRwtnvNso4stRPXHX-hP6eNP6-oTxsCWEDDZQjp1yxnj41At2YnBu9_AOxAEzOdrUGXPafXJ1dYIo6rW8ZfUOiwK4c35XVRP-bGKB7OSEmlvt02uX6VSQJ82lJNO8urK2O9rSpqNOMKThsGIFCJtpI49zJICHoSQslzPX-KO8WcrKWCbl7UGfxCoyRzqCJRMr00gw906oaALdI7idOQD6qrP0t62ZXcEQmQMsH3KRIKBdqqeAonBPH8cMgYm81dD6gekOV0jHJYEjixOxpTeLe5q7h3qpq45p5SYvy_bStBkvejRvu3mbyWQoi-re1JeMC_DZzAq45XC-Kq6-SenGwH53-QZPPJe_qpU8F1VwnDY7EOLz9ddHnZ6T8ortZt-pcgYHgjwGXLi7uFuJDdNbMWIgurHgx_J4aPDPswP6Cw==&c_rot=1.0,1.57,1.57&c_os=0.0,0.3,1.5&model=1">WebGL</a><br>
+				<iframe style='width:1600;height:900' class='gl' src='https://mcbeeringi.github.io/others/gl.html?vsh=VU_RDoIwDPyavpAIOCTIozgeMMYRNPJopiI0kY3gIOrXu4Ex8tLLXXvXlivV4rlTBRC3wrJqNPbFZaEhZfvkkLAdeBG4q07gTba11muuTDtn2ZYekzhPM7YZZ3revlCUYwTR0Hx1idfBiALIEkgIgZHBDc068OjfNvv5tmxf-xwH_Gg2B7LWxacQxJobOrDBXd5PqXygQil-OZOzrOkPENAP&fsh=vVZJk6IwFP41XrDEEATh2NJ21Rz6NvcpWlFTI8uwCf76ycvLBmrXnKYKMbzle2teUtXZgTWsLBaU5NmRdXnFV6drmbYLf7cgb13BTmWdc-KFnS-GScnPH597lOnTemTFmdP67ED5X4V0pcGpPuCXRxrFCxrN6MOCcipZbHf8XWdtVxdIJSs0V9ZcCb4dEKOR5_I3WfMfx4N1jAiOpvg7Afg-dYK-cIL-Tycg4iqr867N_jUV2ufBsXzwN8KDJf952r5l0zKrStYUJWuyx-B7Yxb04kNZNK1Vci624X8JyPjvmhChNH-ISz3Pp5soDDYk8KLtggph8azXmDHfJavmT93iEh1eh3xlUPwwJJRD-Ntos_HjBxTiBpCCCcpKRq9QVlxou_UDQsPYi-KQhhpGYKC8yBsVK0hm4g6WG4Ry4-ZlEishTO03nvQfdGdZZdJ3kTHVQb00fSxb_EqE9XE0BXyGNRikXvYkPmyCxxTeMHwDxjzbs4G4g_jY48coPj60OHZ6IrJPZKP4b4ZNFFvW4YlRaJ7BoxOT4zBK18Hb-13rcUFX8FYozL2VLOAyDaJ3BXthVew0FDcbzqyYqxxAWRMI84BlhSSCBkkmUvVCZ5jrWG7PR6GJIh0ETCCrKnGxnIMEHxAx0XVWOUowsWL9IHC_GQFYx1qGTCtleePk31OfxDLYzWR21KlOD-BJpXfY7YZOiDg9HJDPAC82YPrV4MxTipCqF4rloNXqsiuOSvGFeGrtAQnOEaxAc-E6NmHRZ3WTycGTqiBTNUkuknD5xt5ZM87uJGkpUd-OtR-pxp5xRwtnvNso4stRPXHX-hP6eNP6-oTxsCWEDDZQjp1yxnj41At2YnBu9_AOxAEzOdrUGXPafXJ1dYIo6rW8ZfUOiwK4c35XVRP-bGKB7OSEmlvt02uX6VSQJ82lJNO8urK2O9rSpqNOMKThsGIFCJtpI49zJICHoSQslzPX-KO8WcrKWCbl7UGfxCoyRzqCJRMr00gw906oaALdI7idOQD6qrP0t62ZXcEQmQMsH3KRIKBdqqeAonBPH8cMgYm81dD6gekOV0jHJYEjixOxpTeLe5q7h3qpq45p5SYvy_bStBkvejRvu3mbyWQoi-re1JeMC_DZzAq45XC-Kq6-SenGwH53-QZPPJe_qpU8F1VwnDY7EOLz9ddHnZ6T8ortZt-pcgYHgjwGXLi7uFuJDdNbMWIgurHgx_J4aPDPswP6Cw==&fps=20&c_rot=1.0,1.57,1.57&c_os=0.0,0.3,1.5&model=1&stuff=none'></iframe><br>
+			</div>
+		</div>
+		<br>
+		<div class="col2" style="--pl:2ex;">
+			ノイズ埋め込みまくってたらページが鬼みたいに重くなってしまいました… <br>
+			申し訳ないです <br>
+			7つも同時に動かせるってやっぱりgpuすごいですねー(ごめんなさいごめんなさい) <br>
+			マイクラに移植した今回のサンプルは<a href="src/how_src_8.mcpack">こちら</a>です <br>
+			この雲自体にさらに影をつけるなんて演出も可能です <br>
+			是非考えてみてください <br>
+			次はちょっと休憩に太陽とか月とか描いていきましょうか…
+		</div>
+		<footer id="F"></footer>
+		<script src="../hf.js"></script>
+		<script>F.innerHTML = nav.outerHTML+F.innerHTML;</script>
+	</body>
+</html>
