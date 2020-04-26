@@ -5,23 +5,23 @@
 		<title></title>
 		<style media="screen">
 			:root{background-color:#222;color:#fff;font-family:menlo,monospace;font-size:13px;}
-			.box{background-color:#444;border:1px solid #888;line-height:14px;max-height:448px;overflow:scroll;}
-			.box:focus{outline:none;background-color:#333;border-color:#48f;}
+			textarea{background-color:#333;color:#fff;line-height:14px;min-height:92px;max-height:448px;width:100%;overflow:scroll;}
 			.button{background-color:#444;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;}
 			.button:active{background-color:#48f8;}
 		</style>
 	</head>
 	<body>
-		obj(blender)
-		<div class="box" id="inp" contenteditable="true"></div><br>
+		obj(blender) <br>
+		<textarea class="box" id="inp"></textarea><br><br>
 		<span class="button" onclick="main();">run</span><br><br>
-		mcbe poly_mesh
-		<div class="box" id="out" contenteditable="true"></div>
+		mcbe poly_mesh <br>
+		<textarea class="box" id="out"></textarea><br><br>
+		<span class="button" onclick="copy(out.value);">copy</span>
 		<script>
-			var fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
-			var fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2],x[1]]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
+			let fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
+			let fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2],x[1]]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
 			function main() {
-				var s = inp.innerText;
+				var s = inp.value;
 				var o = s.match(/^o\s.+$/m)[0].replace(/\n/g,"").replace(/^o\s/,"");
 				var pos = s.match(/^v\s.+$/gm).map(fx);
 				var n = s.match(/^vn\s.+$/gm).map(fx);
@@ -33,7 +33,22 @@
 					',"poly_mesh":{"normalized_uvs":true,"positions":'+JSON.stringify(pos)+
 					',"normals":'+JSON.stringify(n)+',"uvs":'+JSON.stringify(uv)+
 					',"polys":'+JSON.stringify(pol)+'}}';
-				out.textContent = s;
+				out.value = s;
+			}
+			function copy(string) {
+				var tmp = document.createElement("div");
+				var pre = document.createElement("pre");
+				pre.style.webkitUserSelect = "auto";
+				pre.style.userSelect = "auto";
+				tmp.appendChild(pre).textContent = string;
+				var s = tmp.style;
+				s.position = "fixed";
+				s.right = "200%";
+				document.body.appendChild(tmp);
+				document.getSelection().selectAllChildren(tmp);
+				var result = document.execCommand("copy");
+				document.body.removeChild(tmp);
+				return result;
 			}
 		</script>
 	</body>
