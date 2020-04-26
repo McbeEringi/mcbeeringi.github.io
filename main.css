@@ -223,7 +223,7 @@ pre {
 	position: relative;
 	overflow-x: scroll;
 	overflow-y: hidden;
-	border-radius: 10px;
+	border-radius: 8px;
 	line-height: 16px;
 	font-size: 13px;
 	background-image:  repeating-linear-gradient(0deg,#1115 0px, #1115 16px, #1117 16px, #1117 32px);
