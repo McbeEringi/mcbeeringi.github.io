@@ -72,12 +72,16 @@ img.img_s {
 }
 
 .col1, .col2 {
+	--pt:8px;
+	--pb:16px;
+	--pl:8px;
+	--pr:0;
+}
+
+.col1, .col2 {
 	margin: 0;
 	overflow: hidden;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	padding-left: 7px;
-	padding-right: 7px;
+	padding: var(--pt) var(--pr) var(--pb) var(--pl);
 }
 
 //.col1:not(.flex), .col2:not(.flex) {}
@@ -214,59 +218,28 @@ code {
 
 /*https://makotoiwasaki.com/pre-line-number.html*/
 pre {
-	padding: 0 2em;
+	padding: 0 2.5em;
 	word-wrap: normal;
 	position: relative;
 	overflow-x: scroll;
 	overflow-y: hidden;
-	-webkit-overflow-scrolling: touch;
-	-webkit-transform: translateZ(0px);
-	background-color: #1115;
 	border-radius: 10px;
 	line-height: 16px;
 	font-size: 13px;
+	background-image:  repeating-linear-gradient(0deg,#1115 0px, #1115 16px, #1117 16px, #1117 32px);
+	-webkit-overflow-scrolling: touch;
+	-webkit-transform: translateZ(0px);
 }
 
 pre:before {
 	content: "01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99";
 	width: 20px;
+	text-align: center;
 	position: absolute;
-	left: 5px;
+	left: 4px;
 	overflow: hidden;
-	color: rgb(84, 121, 128);
-	background-color: #4448;
+	color: #666;
+	border-right: 2px solid;
 	word-wrap: break-word;
 	white-space: pre-line;
-}
-
-/*https://prasm.blog/14859https://prasm.blog/14859*/
-ol.code {
-	counter-reset: number;
-	/* 名前を付けたカウンターをリセット */
-	list-style: none;
-	/* olが数字を付けることをキャンセル */
-	margin: 0;
-	padding: 0;
-	background-color: #1115;
-}
-
-ol.code li {
-	margin: 0;
-	padding: 0 0 0 2px;
-}
-
-ol.code li:nth-child(2n) {
-	background-color: #1116;
-}
-
-ol.code li:before {
-	/* カウンタ（数字になる部分） */
-	counter-increment: number;
-	/* 任意の名前を付けて！ */
-	content: "　"counter(number)"　";
-	/* 名前を付けたカウンターを呼び出し */
-	/* 色を変えたり、背景画像を敷いたり！自由自在！ */
-	margin: 0;
-	color: rgb(84, 121, 128);
-	background-color: #4448;
 }

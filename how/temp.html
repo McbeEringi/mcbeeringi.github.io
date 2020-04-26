@@ -12,7 +12,7 @@
 		<p class="title">#x example</p>
 		<p align="center">brief</p>
 		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
-		<div class="flex pad3 col1">
+		<div class="flex pad3 col1" id="nav">
 			<div align="center"><a href=".html"><< #x privious</a></div>
 			<div align="center"><a href="index.html">トップ</a></div>
 			<div align="center"><a href=".html">#x next >></a></div>
@@ -27,24 +27,24 @@
 			<p style="text-align:right;">2020/xx/xx 作成 <br>2020/xx/xx 更新 <br></p>
 		</div>
 		<br>
-		<div class="col1">
-			<h2>title</h2>
-		</div>
-		<div class="col2" style="padding-left:10px;">
-			aa
-			<img src="" class="img_s">
+		<div>
+			<h2 class="col1">title</h2>
+			<div class="col2" style="--pl:2ex;">
+				aa
+				<img src="" class="img_s">
+				<img src="" class="img">
+				<pre>
+sample
+				</pre>
+			</div>
 		</div>
 		<br>
-		<div class="col2" style="padding-left:10px;">
+		<div class="col2" style="--pl:2ex;">
 			next <br>
 			a
 		</div>
-		<div class="flex pad3 col1">
-			<div align="center"><a href=".html"><< #x privious</a></div>
-			<div align="center"><a href="index.html">トップ</a></div>
-			<div align="center"><a href=".html">#x next >></a></div>
-		</div>
 		<footer id="F"></footer>
 		<script src="../hf.js"></script>
+		<script>F.innerHTML = nav.outerHTML+F.innerHTML;</script>
 	</body>
 </html>
