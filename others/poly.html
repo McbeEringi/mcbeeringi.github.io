@@ -2,10 +2,10 @@
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<title></title>
+		<title>McbeEringi obj2mcbe</title>
 		<style media="screen">
 			:root{background-color:#222;color:#fff;font-family:menlo,monospace;font-size:13px;}
-			textarea{background-color:#333;color:#fff;line-height:14px;min-height:92px;max-height:448px;width:100%;overflow:scroll;}
+			textarea{background-color:#333;color:#fff;line-height:14px;min-height:92px;max-height:448px;width:calc(100% - 16px);overflow:scroll;}
 			.button{background-color:#444;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;}
 			.button:active{background-color:#48f8;}
 		</style>
@@ -16,7 +16,7 @@
 		<span class="button" onclick="main();">run</span><br><br>
 		mcbe poly_mesh <br>
 		<textarea class="box" id="out"></textarea><br><br>
-		<span class="button" onclick="copy(out.value);">copy</span>
+		<span class="button" onclick="if(copy(out.value))this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);">copy</span>
 		<script>
 			let fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
 			let fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2],x[1]]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
