@@ -28,7 +28,7 @@
 					<li><a href="#12">スウィズル演算子</a></li>
 				</ul>
 			</ul>
-			<p style="text-align:right;">2019/11/20作成 <br>2019/11/20更新 <br></p>
+			<p style="text-align:right;">2019/11/20作成 <br>2020/4/26更新 <br></p>
 		</div>
 		<br>
 		<div class="col1">
@@ -52,10 +52,10 @@
 					<td>float</td>
 					<td>
 						浮動小数点数<br>
-						<ol class="code">
-							<li>float a = 1.0;</li>
-							<li><span style="color: #666;">float a = 1; //これはダメ</li>
-						</ol>
+						<pre>
+float a = 1.0;
+<span style="color:#666;">float a = 1; //これはダメ
+						</pre>
 					</td>
 				</tr>
 				<tr>
@@ -63,10 +63,10 @@
 					<td>int</td>
 					<td>
 						整数。<br>
-						<ol class="code">
-							<li>int a = 1;</li>
-							<li><span style="color: #666;">int a = 1.0; //これはダメ</li>
-						</ol>
+						<pre>
+int a = 1;
+<span style="color: #666;">int a = 1.0; //これはダメ
+						</pre>
 					</td>
 				</tr>
 				<tr>
@@ -74,35 +74,35 @@
 					<td>bool</td>
 					<td>ブーレアンの略 ブーメランじゃないです <br>
 						値はtrueまたはfalseのみ<br>
-						<ol class="code">
-							<li>bool a = true;</li>
-						</ol>
+						<pre>
+bool a = true;
+						</pre>
 					</td>
 				</tr>
 				<tr>
 					<td>vec2</td>
 					<td>float2</td>
 					<td>floatが二つ集まったもの<br>
-						<ol class="code">
-							<li>vec2 a = vec2(1.0,1.0);</li>
-							<li>float2 a = float2(1.0,1.0);</li>
-							<li>vec2 a = vec2(1); <span style="color: #666;">//これはok(int→vec2への型変換) </li>
-							<li><span style="color: #666;">float2 a = float2(1.0); //これはダメ</li>
-							<li>float2 a = 1.0; <span style="color: #666;">//hlslはfloatで入れる</li>
-						</ol>
+						<pre>
+vec2 a = vec2(1.0,1.0);
+float2 a = float2(1.0,1.0);
+vec2 a = vec2(1); <span style="color: #666;">//これはok(int→vec2への型変換)
+<span style="color: #666;">float2 a = float2(1.0); //これはダメ
+float2 a = 1.0; <span style="color: #666;">//hlslはfloatで入れる
+						</pre>
 					</td>
 				</tr>
 				<tr>
 					<td>vec3</td>
 					<td>float3</td>
 					<td>floatが三つ集まったもの<br>
-						<ol class="code">
-							<li>vec3 a = vec2(1.0,1.0,1.0);</li>
-							<li>float3 a = float3(1.0,1.0,1.0);</li>
-							<li>vec3 a = vec3(1); <span style="color: #666;">//これはok(int→vec3への型変換) </li>
-							<li><span style="color: #666;">float3 a = float3(1.0); //これはダメ</li>
-							<li>float3 a = 1.0; <span style="color: #666;">//hlslはfloatで入れる</li>
-						</ol>
+						<pre>
+vec3 a = vec2(1.0,1.0,1.0);
+float3 a = float3(1.0,1.0,1.0);
+vec3 a = vec3(1); <span style="color: #666;">//これはok(int→vec3への型変換)
+<span style="color: #666;">float3 a = float3(1.0); //これはダメ
+float3 a = 1.0; <span style="color: #666;">//hlslはfloatで入れる
+						</pre>
 
 					</td>
 				</tr>
@@ -115,11 +115,11 @@
 					<td>mat2<br>mat3<br>mat4</td>
 					<td>float2x2<br>float3x3<br>float4x4</td>
 					<td>それぞれのvecに対応する行列<br>
-						<ol class="code">
-							<li>mat2 a = mat2(vec2(1.0,1.0),vec2(1.0,1.0));</li>
-							<li>mat3 a = mat3(vec3(1),vec3(1),vec3(1));</li>
-							<li>float2x2 a = float2x2(float2(1.0,1.0),float2(1.0,1.0));</li>
-						</ol>
+						<pre>
+mat2 a = mat2(vec2(1.0,1.0),vec2(1.0,1.0));
+mat3 a = mat3(vec3(1),vec3(1),vec3(1));
+float2x2 a = float2x2(float2(1.0,1.0),float2(1.0,1.0));
+						</pre>
 					</td>
 				</tr>
 			</table>
@@ -150,26 +150,26 @@
 				<code>()</code>…括弧 <code>=</code>で代入です <br>
 				余りを出してくれる <code>%</code>は使えないみたいです…
 			</p>
-			<ol class="code" style="margin-left:10px;">
-				<li>float a = 1.0;</li>
-				<li>float b = 2.0;</li>
-				<li></li>
-				<li>a = a+b; <span style="color: #666;">//加算 a = 3.0;</li>
-				<li>a = a/b; <span style="color: #666;">//除算 a = 1.5;</li>
-				<li>a = b-a; <span style="color: #666;">//減算 a = 0.5;</li>
-				<li>a = b*a; <span style="color: #666;">//乗算 a = 1.0;</li>
-				<li></li>
-				<li><span style="color: #666;">//もちろんvecも行ける</li>
-				<li><span style="color: #666;">//それぞれの要素ごとに計算する</li>
-				<li>vec2 c = vec2(a, b); <span style="color: #666;">//c = vec2(5.0, 2.0);</li>
-				<li>vec2 d = vec2(a/b, b/a) <span style="color: #666;">//d = vec2(2.5, 0.4);</li>
-				<li>c = c+d; <span style="color: #666;">//c = vec2(7.5, 2.4);</li>
-				<li>c = c/d; <span style="color: #666;">//c = vec2(3.0, 6.0);</li>
-				<li>c = d-c; <span style="color: #666;">//c = vec2(-0.5, -5.6);</li>
-				<li>c = d*c; <span style="color: #666;">//c = vec2(-1.25, -2.24);</li>
-				<li></li>
-				<li>a = ((a+b)*b+5.0-a)/2.0; //a = 5.0; 括弧は全部小かっこ</li><span style="color: #666;">
-			</ol>
+			<pre>
+float a = 1.0;
+float b = 2.0;
+
+a = a+b; <span style="color: #666;">//加算 a = 3.0;</span>
+a = a/b; <span style="color: #666;">//除算 a = 1.5;</span>
+a = b-a; <span style="color: #666;">//減算 a = 0.5;</span>
+a = b*a; <span style="color: #666;">//乗算 a = 1.0;</span>
+
+<span style="color: #666;">//もちろんvecも行ける</span>
+<span style="color: #666;">//それぞれの要素ごとに計算する</span>
+vec2 c = vec2(a, b); <span style="color: #666;">//c = vec2(5.0, 2.0);</span>
+vec2 d = vec2(a/b, b/a) <span style="color: #666;">//d = vec2(2.5, 0.4);</span>
+c = c+d; <span style="color: #666;">//c = vec2(7.5, 2.4);</span>
+c = c/d; <span style="color: #666;">//c = vec2(3.0, 6.0);</span>
+c = d-c; <span style="color: #666;">//c = vec2(-0.5, -5.6);</span>
+c = d*c; <span style="color: #666;">//c = vec2(-1.25, -2.24);</span>
+
+a = ((a+b)*b+5.0-a)/2.0; <span style="color: #666;">//a = 5.0; 括弧は全部小かっこ</span>
+			</pre>
 			<br>
 
 			<a name="11"></a>
@@ -183,24 +183,24 @@
 				これは実際に使った方が理解早いですので <br>
 				上の例をすっきりさせてみます
 			</p>
-			<ol class="code" style="margin-left:10px;">
-				<li>float a = 1.0;</li>
-				<li>float b = 2.0;</li>
-				<li></li>
-				<li>a += b; <span style="color: #666;">//加算 a = 3.0;</li>
-				<li>a /= b; <span style="color: #666;">//除算 a = 1.5;</li>
-				<li>a = b-a; <span style="color: #666;">//減算 a = 0.5;</li>
-				<li>a *= b; <span style="color: #666;">//乗算 a = 1.0;</li>
-				<li></li>
-				<li><span style="color: #666;">//もちろんvecも行ける</li>
-				<li><span style="color: #666;">//それぞれの要素ごとに計算する</li>
-				<li>vec2 c = vec2(a, b); <span style="color: #666;">//c = vec2(5.0, 2.0);</li>
-				<li>vec2 d = vec2(a/b, b/a) <span style="color: #666;">//d = vec2(2.5, 0.4);</li>
-				<li>c += d; <span style="color: #666;">//c = vec2(7.5, 2.4);</li>
-				<li>c /= d; <span style="color: #666;">//c = vec2(3.0, 6.0);</li>
-				<li>c = d-c; <span style="color: #666;">//c = vec2(-0.5, -5.6);</li>
-				<li>c *= d; <span style="color: #666;">//c = vec2(-1.25, -2.24);</li>
-			</ol>
+			<pre>
+float a = 1.0;
+float b = 2.0;
+
+a += b; <span style="color: #666;">//加算 a = 3.0;</span>
+a /= b; <span style="color: #666;">//除算 a = 1.5;</span>
+a = b-a; <span style="color: #666;">//減算 a = 0.5;</span>
+a *= b; <span style="color: #666;">//乗算 a = 1.0;</span>
+
+<span style="color: #666;">//もちろんvecも行ける</span>
+<span style="color: #666;">//それぞれの要素ごとに計算する</span>
+vec2 c = vec2(a, b); <span style="color: #666;">//c = vec2(5.0, 2.0);</span>
+vec2 d = vec2(a/b, b/a) <span style="color: #666;">//d = vec2(2.5, 0.4);</span>
+c += d; <span style="color: #666;">//c = vec2(7.5, 2.4);</span>
+c /= d; <span style="color: #666;">//c = vec2(3.0, 6.0);</span>
+c = d-c; <span style="color: #666;">//c = vec2(-0.5, -5.6);</span>
+c *= d; <span style="color: #666;">//c = vec2(-1.25, -2.24);</span>
+			</pre>
 			<p style="margin-left:10px;">
 				6, 15行目見れば分かると思いますが <br>
 				減算,除算の場合、元の式の順番大事です。 当たり前ですね
@@ -233,15 +233,15 @@
 				併用する演算子が同じ列の中のものなら大丈夫です <br>
 				説明しづらいので例を
 			</p>
-			<ol class="code" style="margin-left:10px;">
-				<li>vec4 a = vec4(1.0, 2.0, 3.0, 4.0);</li>
-				<li>vec2 b = a.xy; <span style="color: #666;">//b = vec2(1.0, 2.0);</li>
-				<li>b = a.aa; <span style="color: #666;">//b = vec2(4.0, 4.0); 同じ要素を複数回使うのもok</li>
-				<li><span style="color: #666;">b = a.xs; //異なる組のスウィズル演算子を使うことはできない</li>
-				<li>vec3 c = a.zxz; <span style="color: #666;">//b = vec3(3.0, 1.0, 3.0);</li>
-				<li>float d = b.s+c.p; <span style="color: #666;">//d = 4.0+1.0; つまり5.0</li>
-				<li>a = a.agbr; <span style="color: #666;">//a = vec4(4.0, 2.0, 3.0, 1.0); 順番の入れ替えも可能</li>
-			</ol>
+			<pre>
+vec4 a = vec4(1.0, 2.0, 3.0, 4.0);
+vec2 b = a.xy; <span style="color: #666;">//b = vec2(1.0, 2.0);</span>
+b = a.aa; <span style="color: #666;">//b = vec2(4.0, 4.0); 同じ要素を複数回使うのもok</span>
+<span style="color: #666;">b = a.xs; //異なる組のスウィズル演算子を使うことはできない</span>
+vec3 c = a.zxz; <span style="color: #666;">//b = vec3(3.0, 1.0, 3.0);</span>
+float d = b.s+c.p; <span style="color: #666;">//d = 4.0+1.0; つまり5.0</span>
+a = a.agbr; <span style="color: #666;">//a = vec4(4.0, 2.0, 3.0, 1.0); 順番の入れ替えも可能</span>
+			</pre>
 		</div>
 		<br>
 		<div class="col2">
