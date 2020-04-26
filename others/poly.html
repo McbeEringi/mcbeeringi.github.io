@@ -12,14 +12,14 @@
 		</style>
 	</head>
 	<body>
-		obj
+		obj(blender)
 		<div class="box" id="inp" contenteditable="true"></div><br>
 		<span class="button" onclick="main();">run</span><br><br>
-		mc_model
+		mcbe poly_mesh
 		<div class="box" id="out" contenteditable="true"></div>
 		<script>
 			var fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
-			var fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2],x[1]]}).slice(1);return [str[0],str[1],str[2],str[0]]};
+			var fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2],x[1]]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
 			function main() {
 				var s = inp.innerText;
 				var o = s.match(/^o\s.+$/m)[0].replace(/\n/g,"").replace(/^o\s/,"");
