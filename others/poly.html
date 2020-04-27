@@ -5,27 +5,32 @@
 		<title>McbeEringi obj2mcbe</title>
 		<style media="screen">
 			:root{background-color:#222;color:#fff;font-family:menlo,monospace;font-size:13px;}
+			.inp{display:inline-block;background-color:#333;border-bottom:1px solid #888;min-width:18em;max-width:100%; margin-bottom:4px;}
 			textarea{background-color:#333;color:#fff;line-height:14px;min-height:92px;max-height:448px;width:calc(100% - 16px);overflow:scroll;}
 			.button{background-color:#444;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;}
 			.button:active{background-color:#48f8;}
 		</style>
 	</head>
 	<body>
-		obj(blender) <br>
-		<textarea class="box" id="inp"></textarea><br><br>
+		obj(blender) 8=1block<br>
+		<textarea id="inp"></textarea><br>
+		options <br>
+		<span contenteditable="true" class="inp" id="vfx">[1-v[0],v[1],v[2]];</span><br>
+		<span contenteditable="true" class="inp" id="vnfx">[vn[0],vn[1],vn[2]];</span><br>
+		<span contenteditable="true" class="inp" id="vtfx">[vt[0],vt[1]];</span><br><br>
 		<span class="button" onclick="main();">run</span><br><br>
 		mcbe poly_mesh <br>
-		<textarea class="box" id="out"></textarea><br><br>
-		<span class="button" onclick="if(copy(out.value))this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);">copy</span>
+		<textarea id="out"></textarea><br><br>
+		<span class="button" onclick="if(copy(out.value))this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);">copy</span><br><br>
 		<script>
-			let fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
-			let fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2],x[1]]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
+			const fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
+			const fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2],x[1]]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
 			function main() {
 				var s = inp.value;
 				var o = s.match(/^o\s.+$/m)[0].replace(/\n/g,"").replace(/^o\s/,"");
-				var pos = s.match(/^v\s.+$/gm).map(fx);
-				var n = s.match(/^vn\s.+$/gm).map(fx);
-				var uv = s.match(/^vt\s.+$/gm).map(fx);
+				var pos = s.match(/^v\s.+$/gm).map(fx).map(v=>eval(vfx.textContent));
+				var n = s.match(/^vn\s.+$/gm).map(fx).map(vn=>eval(vnfx.textContent));
+				var uv = s.match(/^vt\s.+$/gm).map(fx).map(vt=>eval(vtfx.textContent));
 				var pol = s.match(/^f\s.+$/gm).map(fx_);
 				console.log(o,pos,uv,n,pol);
 				s =
