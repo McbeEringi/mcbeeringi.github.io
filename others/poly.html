@@ -5,23 +5,41 @@
 		<title>McbeEringi obj2mcbe</title>
 		<style media="screen">
 			:root{background-color:#222;color:#fff;font-family:menlo,monospace;font-size:13px;}
-			.inp{display:inline-block;background-color:#333;border-bottom:1px solid #888;min-width:18em;max-width:100%; margin-bottom:4px;}
-			textarea{background-color:#333;color:#fff;line-height:14px;min-height:92px;max-height:448px;width:calc(100% - 16px);overflow:scroll;}
-			.button{background-color:#444;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;}
-			.button:active{background-color:#48f8;}
+			h1,h2{margin:2px;}.box{background-color:#333;padding:4px;}
+			textarea{background-color:#0000;color:#fff;line-height:14px;min-height:92px;max-height:448px;width:calc(100% - 8px);overflow:scroll;resize:vertical;}
+			.inp{display:inline-block;border-bottom:2px solid #888;min-width:18em;max-width:100%;margin-bottom:8px;outline:none;transition:.2s;}
+			.inp:focus{border-bottom-color:#48fc;}
+			.button{background-color:#555;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;display:inline-block;}
+			.button:active{background-color:#48fc;}
 		</style>
 	</head>
 	<body>
-		obj(blender) 8=1block<br>
-		<textarea id="inp"></textarea><br>
-		settings <br>
-		<span contenteditable="true" class="inp" id="vfx">[-v[0],v[1],v[2]];</span><br>
-		<span contenteditable="true" class="inp" id="vnfx">[vn[0],vn[1],vn[2]];</span><br>
-		<span contenteditable="true" class="inp" id="vtfx">[vt[0],vt[1]];</span><br><br>
-		<span class="button" onclick="main();">run</span><br><br>
-		mcbe poly_mesh <br>
-		<textarea id="out"></textarea><br><br>
-		<span class="button" onclick="if(copy(out.value))this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);">copy</span><br><br>
+		<h1>obj2mcbe</h1>
+		<br>
+		<div class="box">
+			<h2>.obj</h2>
+			<span style="float:right;">8=1block<br>All parameters are required<br>ex: Blender</span>
+			<label><input type="radio" name="inpm" value="t" checked>text</label><br>
+			<label><input type="radio" name="inpm" value="f" disabled>file (coming soon…</label>
+			<textarea id="inp"></textarea>
+		</div>
+		<br>
+		<div class="box">
+			<h2>settings</h2>
+			<span contenteditable="true" class="inp" id="vfx">[v[0],v[1],v[2]];</span><br>
+			<span contenteditable="true" class="inp" id="vnfx">[vn[0],vn[1],vn[2]];</span><br>
+			<span contenteditable="true" class="inp" id="vtfx">[vt[0],vt[1]];</span>
+		</div>
+		<br>
+		<span class="button" onclick="main();">run</span><br>
+		<br>
+		<div class="box">
+			<h2>mcbe poly_mesh</h2>
+			<label><input type="radio" name="outm" value="t" checked>text</label><br>
+			<label><input type="radio" name="outm" value="f" disabled>file (coming soon…</label>
+			<textarea id="out"></textarea><br>
+			<span class="button" onclick="if(copy(out.value))this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);">copy</span>
+		</div>
 		<script>
 			const fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
 			const fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2],x[1]]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
