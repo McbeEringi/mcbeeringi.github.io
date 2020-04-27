@@ -5,12 +5,15 @@
 		<title>McbeEringi obj2mcbe</title>
 		<style media="screen">
 			:root{background-color:#222;color:#fff;font-family:menlo,monospace;font-size:13px;}
-			h1,h2{margin:2px;}.box{background-color:#333;padding:4px;}
+			h1,h2{margin:2px;}a:link{color:#48f}.box{background-color:#333;padding:4px;}
 			textarea{background-color:#0000;color:#fff;line-height:14px;min-height:92px;max-height:448px;width:calc(100% - 8px);overflow:scroll;resize:vertical;}
 			.inp{display:inline-block;border-bottom:2px solid #888;min-width:18em;max-width:100%;margin-bottom:8px;outline:none;transition:.2s;}
 			.inp:focus{border-bottom-color:#48fc;}
 			.button{background-color:#555;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;display:inline-block;}
 			.button:active{background-color:#48fc;}
+			.file{max-width:320px;height:90px;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;}
+			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
+			.file div{position:absolute;top:50%;transform:translateY(-50%);text-align:center;width:100%;pointer-events:none;}
 		</style>
 	</head>
 	<body>
@@ -18,10 +21,18 @@
 		<br>
 		<div class="box">
 			<h2>.obj</h2>
-			<span style="float:right;">8=1block<br>All parameters are required<br>ex: Blender</span>
-			<label><input type="radio" name="inpm" value="t" checked>text</label><br>
-			<label><input type="radio" name="inpm" value="f" disabled>file (coming soon…</label>
-			<textarea id="inp"></textarea>
+			<span style="float:right;">8^3=1block</span>
+			<form onchange="inpm=this.m.value;inpt.style.display=['block','none'][this.m.value];inpf.style.display=['none','block'][this.m.value];">
+				<label><input type="radio" name="m" value="0" checked>text</label><br>
+				<label><input type="radio" name="m" value="1">file</label>
+			</form>
+			<div id="inpt">
+				<textarea id="tinp"></textarea>
+			</div>
+			<div id="inpf" style="display:none;">
+				<br>
+				<div class="file"><input type="file" id="finp" onchange="read(this)" accept=".obj,text/plane"><div id="finpl">D&D又はクリックして選択</div></div>
+			</div>
 		</div>
 		<br>
 		<div class="box">
@@ -32,31 +43,70 @@
 		</div>
 		<br>
 		<span class="button" onclick="main();">run</span><br>
+		<pre id="log" style="margin:0;"></pre>
 		<br>
 		<div class="box">
 			<h2>mcbe poly_mesh</h2>
-			<label><input type="radio" name="outm" value="t" checked>text</label><br>
-			<label><input type="radio" name="outm" value="f" disabled>file (coming soon…</label>
-			<textarea id="out"></textarea><br>
-			<span class="button" onclick="if(copy(out.value))this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);">copy</span>
+			<form id="outm" onchange="outm=this.m.value;outt.style.display=['block','none'][this.m.value];outf.style.display=['none','block'][this.m.value];">
+				<label><input type="radio" name="m" value="1" checked>file ("format_version": "1.8.0")</label><br>
+				<label><input type="radio" name="m" value="0">text (raw json)</label><br>
+			</form>
+			<div id="outt" style="display:none;">
+				<textarea id="tout"></textarea><br>
+				<span class="button" onclick="if(copy(out.value))this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);">copy</span>
+			</div>
+			<div id="outf">
+				<br>
+				<a id="fout">Press run first to generate file</a>
+			</div>
 		</div>
 		<script>
+			inpm=0, outm=1;//0:text, 1:file
+			var reader = new FileReader(), fname = "unknown";
+			function read(_this) {
+				fname=_this.files[0].name;
+				finpl.textContent="D&D又はクリックして選択";
+				reader.addEventListener("progress",(x)=>finpl.textContent=x.loaded/x.total+"% loaded…",false);
+				reader.addEventListener("load",()=>{finpl.textContent="選択されたファイル: "+fname;},false);
+				reader.addEventListener("error",()=>finpl.textContent=fname+"の読み込みに失敗しました",false);
+				reader.addEventListener("loadend",(x)=>console.log(x),false);
+				reader.readAsText(_this.files[0]);
+			}
 			const fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
-			const fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2],x[1]]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
+			const fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x-1);return [x[0],x[2]?x[2]:0,x[1]?x[1]:0]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
+			const time = ()=>{var d=new Date();return d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"."+d.getMilliseconds()+" ";}
 			function main() {
-				var s = inp.value;
-				var o = s.match(/^o\s.+$/m)[0].replace(/\n/g,"").replace(/^o\s/,"");
-				var pos = s.match(/^v\s.+$/gm).map(fx).map(v=>eval(vfx.textContent));
-				var n = s.match(/^vn\s.+$/gm).map(fx).map(vn=>eval(vnfx.textContent));
-				var uv = s.match(/^vt\s.+$/gm).map(fx).map(vt=>eval(vtfx.textContent));
-				var pol = s.match(/^f\s.+$/gm).map(fx_);
+				log.textContent = "";
+				var s = [tinp.value,reader.result][inpm];
+					if(s){log.textContent += time()+"[info] convertion started…\n"}
+					else{log.textContent += time()+"[error] Input not found\n";return;}
+				var o = s.match(/^o\s.+$/m);
+					if(o){o = o[0].replace(/\n/g,"").replace(/^o\s/,"");}
+					else{log.textContent += time()+"[info] o not found\n";o="poly"}
+				var pos = s.match(/^v\s.+$/gm);
+					if(!pos){log.textContent += time()+"[error] v not found\n";return;};
+					pos = pos.map(fx).map(v=>eval(vfx.textContent));
+				var n = s.match(/^vn\s.+$/gm);
+					if(n){n = n.map(fx);}
+					else{log.textContent += time()+"[info] vn not found\n";n=[[0,1,0]];}
+					n = n.map(vn=>eval(vnfx.textContent));
+				var uv = s.match(/^vt\s.+$/gm);
+					if(uv){uv = uv.map(fx);}
+					else{log.textContent += time()+"[info] vt not found\n";uv=[[0,0]];}
+					uv = uv.map(vt=>eval(vtfx.textContent));
+				var pol = s.match(/^f\s.+$/gm);
+					if(!uv){log.textContent += time()+"[error] f not found\n";return;}
+					pol = pol.map(fx_);
 				console.log(o,pos,uv,n,pol);
 				s =
 					'{"name":"'+o+'","pivot":[0,0,0]'+
 					',"poly_mesh":{"normalized_uvs":true,"positions":'+JSON.stringify(pos)+
 					',"normals":'+JSON.stringify(n)+',"uvs":'+JSON.stringify(uv)+
 					',"polys":'+JSON.stringify(pol)+'}}';
-				out.value = s;
+				tout.value = s;
+				fout.href = "data:,"+encodeURI('{"format_version":"1.8.0","geometry.armor_stand":{"bones":['+s+']}}');
+				fout.download = o+".geo.json";fout.textContent = 'save as "'+fout.download+'"';
+				log.textContent += time()+"[info] convertion complete\n";
 			}
 			function copy(string) {
 				var tmp = document.createElement("div");
