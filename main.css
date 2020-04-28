@@ -38,6 +38,7 @@ img.img_s {
 	background-size: cover;
 	background-position: center;
 	text-align: center;
+	text-shadow:0 0 8px #888;
 }
 
 .text {
