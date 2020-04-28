@@ -71,7 +71,7 @@
 				fname=_this.files[0].name;
 				finpl.textContent="Drag & Drop or click to select";
 				reader.addEventListener("progress",(x)=>finpl.textContent=x.loaded/x.total+"% loaded…",false);
-				reader.addEventListener("load",()=>finpl.textContent="Selected: "+fname,false);
+				reader.addEventListener("load",(x)=>finpl.textContent=fname+" "+(x.total>=1e9?Math.round(x.total/1e7)/1e2+"GB":(x.total>=1e6?Math.round(x.total/1e4)/1e2+"MB":(x.total>=1e3?Math.round(x.total/1e1)/1e2+"KB":x.total+"byte"))),false);
 				reader.addEventListener("error",()=>finpl.textContent="Loading failed: "+fname,false);
 				reader.addEventListener("loadend",(x)=>console.log(x),false);
 				reader.readAsText(_this.files[0]);
