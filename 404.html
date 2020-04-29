@@ -11,7 +11,7 @@
 			}
 			a:link{color:#48f;}
 			.bar{width:100%;height:8px;background-color:#333;}
-			.bar *{height:100%;background-color:#48f;animation: fill 3s linear 0s 1 alternate;}
+			.bar *{height:100%;background-color:#48f;animation: fill 5s linear 0s 1 alternate;}
 			@keyframes fill{0%{width:0;}100%{width:100%;}}
 		</style>
 	</head>
@@ -42,7 +42,7 @@
 				esbefg.style.display="block";
 				fixed = "https://nari0978.github.io/1g/"+(fixed.match(/info/i)?"esbe-info.html":"1g.html");
 				log.innerText = fixed;
-				setTimeout(()=>location.href=fixed, 3000);
+				setTimeout(()=>location.href=fixed, 5000);
 			}else{
 				fixed = fixed.replace(/others\/gl/i,"apps/webgl/index").replace(/others\/aes/i,"apps/aes").replace(/others\/col/i,"apps/col").replace(/others\/unicode/i,"apps/unc");
 				fixed = fixed.replace(/others\/bmp/i,"apps/mc/bmp").replace(/others\/arch/i,"apps/mc/arch").replace(/others\/poly/i,"apps/mc/poly");
