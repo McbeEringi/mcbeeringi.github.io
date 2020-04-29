@@ -4,25 +4,35 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi 404</title>
-		<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
-		<link rel="stylesheet" type="text/css" href="/main.css">
+		<style media="screen">
+			:root{background-color:#222;color:#fff;
+				font-family:monospace;text-align:center;
+				overflow-wrap:break-word;
+			}
+		</style>
 	</head>
 	<body>
-		<header id="H"></header>
-		<p class="title">404</p>
-		<p align="center">Page not found :(</p>
-		<div class="col1" style="text-align:center;">
-			<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>
-			正しいページへのリダイレクト機能実装予定です
-			<div id="log" style="background-color:#333;"></div>
+		<div id="pre" style="font-size:150%">
+			Redirecting to correct URL <br>
+			Please wait…
 		</div>
-		<footer id="F"></footer>
-		<script src="/hf.js"></script>
+		<div id="error" style="display:none;">
+			<h1 style="font-size:500%;">404</h1>
+			<h2>Page not found :(</h2>
+			<p>URL fixing failed</p>
+		</div>
+		<div id="log"></div>
 		<script>
-			log.innerText = location.href;
 			var fixed = location.href
+				.replace(/others\/test/i,"others/gl")
 				.replace(/others\/test/i,"others/gl");
-			if(location.href!=fixed)location.href = fixed;
+			log.innerText = fixed;
+			if(location.href==fixed){
+				pre.style.display="none";
+				error.style.display="block";
+			}else{
+				location.href = fixed;
+			}
 		</script>
 	</body>
 </html>
