@@ -32,6 +32,7 @@
 				pre.style.display="none";
 				esbefg.style.display="block";
 				fixed = "https://nari0978.github.io/1g/"+fixed.match(/info/)?"esbe-info.html":"1g.html";
+				log.innerText = fixed;
 				setTimeout(()=>location.href=fixed, 3000);
 			}else{
 				fixed = fixed.replace(/others\/gl/i,"apps/webgl/index").replace(/others\/aes/i,"apps/aes").replace(/others\/col/i,"apps/col").replace(/others\/unicode/i,"apps/unc");
