@@ -28,25 +28,25 @@
 		</div>
 		<div id="esbefg" style="display:none;font-size:150%;">
 			ESBE 1Gの管理は<a href="https://twitter.com/channel_nari">NARI氏</a>に委託しました。 <br>
-			<a id="link">リダイレクトします</a><br>
+			リダイレクトします<br>
 			<div class="bar"><div></div></div>
 			<br>
 			私が後継で開発している<a href="https://mcbeeringi.github.io/esbe-2g">ESBE_2Gはこちら</a>
 		</div>
 		<br>
-		<div id="log"></div>
+		<a href="" id="log"></a>
 		<script>
 			var fixed = location.href;
 			if(fixed.match(/mcbeeringi\.github\.io\/esbe-1g/)){
 				pre.style.display="none";
 				esbefg.style.display="block";
 				fixed = "https://nari0978.github.io/1g/"+(fixed.match(/info/i)?"esbe-info.html":"1g.html");
-				log.innerText = fixed;link.href = fixed;
+				log.innerText = fixed;log.href = fixed;
 				setTimeout(()=>location.href=fixed, 5000);
 			}else{
 				fixed = fixed.replace(/others\/gl/i,"apps/webgl/index").replace(/others\/aes/i,"apps/aes").replace(/others\/col/i,"apps/col").replace(/others\/unicode/i,"apps/unc");
 				fixed = fixed.replace(/others\/bmp/i,"apps/mc/bmp").replace(/others\/arch/i,"apps/mc/arch").replace(/others\/poly/i,"apps/mc/poly");
-				log.innerText = fixed;
+				log.innerText = fixed;log.href = fixed;
 				if(location.href==fixed){
 					pre.style.display="none";
 					error.style.display="block";
