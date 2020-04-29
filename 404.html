@@ -24,6 +24,7 @@
 		<div id="log"></div>
 		<script>
 			var fixed = location.href
+<<<<<<< HEAD
 				.replace(/others\/gl/i,"apps/webgl/index")
 				.replace(/others\/bmp/i,"apps/mc/bmp")
 				.replace(/others\/arch/i,"apps/mc/arch")
@@ -32,6 +33,10 @@
 				.replace(/others\/col/i,"apps/col")
 				.replace(/others\/unicode/i,"apps/mc/unc")
 				;
+=======
+				.replace(/others\/test/i,"others/gl")
+				.replace(/others\/test/i,"others/gl");
+>>>>>>> 771a5381f06cdb8fb7a7f731ca13538ebf103a3b
 			log.innerText = fixed;
 			if(location.href==fixed){
 				pre.style.display="none";
