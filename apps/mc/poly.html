@@ -69,7 +69,7 @@
 		<script>
 			var reader = new FileReader(), fname = "unknown";
 			const fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
-			const time = ()=>{var d=new Date();return d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"."+d.getMilliseconds()+" ";}
+			const time = ()=>{var d=new Date();return d.getHours()+":"+d.getMinutes()+":"+(d.getSeconds()+d.getMilliseconds()*1e-3)+" ";}
 			function read(_this) {
 				fname=_this.files[0].name;
 				finpl.textContent="Drag & Drop or click to select";
