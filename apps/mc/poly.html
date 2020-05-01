@@ -7,6 +7,7 @@
 			:root,textarea,input{background-color:#222;color:#fff;font-family:menlo,monospace;font-size:13px;}
 			h1,h2{margin:2px;}a:link{color:#48f}.box{background-color:#333;padding:4px;}
 			textarea{background-color:#0000;line-height:14px;min-height:92px;max-height:448px;width:calc(100% - 8px);overflow:scroll;resize:vertical;}
+			#log{line-height:14px;max-height:448px;overflow:scroll;background-color:#333;}
 			.inp{background-color:#0000;display:inline-block;border:none;border-bottom:2px solid #888;border-radius:0;min-width:18em;max-width:100%;margin-bottom:8px;outline:none;transition:.2s;}
 			.inp:focus{border-bottom-color:#48fc;}
 			.button{background-color:#555;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;display:inline-block;}
@@ -41,17 +42,17 @@
 			<span style="color:#0000">__</span>normal:<span contenteditable="true" class="inp" id="vnfx">[vn[0],vn[1],vn[2]];</span><br>
 			<span style="color:#0000">__</span>tex_uv:<span contenteditable="true" class="inp" id="vtfx">[vt[0],vt[1]];</span><br>
 			<br>
-			<label>format(1.8.0):<input type="checkbox" id="frm" onchange="frmc.style.display=this.checked?'block':'none';outtitle.textContent=this.checked?'mcbe geometry':'mcbe poly_mesh'"></label><br>
+			<label>format(1.8.0):<input type="checkbox" id="frm" onchange="frmc.style.display=this.checked?'block':'none';outtitle.textContent=this.checked?'mcbe geometry':'mcbe bones(poly_mesh)'"></label><br>
 			<div id="frmc" style="display:none;">
 				geometry.<input class="inp" id="mname" value="armor_stand" oninput="this.value=this.value.replace(/[^\w.]+/g,'')"><br>
 			</div>
 		</div>
 		<br>
 		<span class="button" onclick="main();">run</span><br>
-		<pre id="log" style="margin:0;"></pre>
+		<pre id="log"></pre>
 		<br>
 		<div class="box">
-			<h2 id="outtitle">mcbe poly_mesh</h2>
+			<h2 id="outtitle">mcbe bones(poly_mesh)</h2>
 			<form id="outm" onchange="outt.style.display=['block','none'][this.m.value];outf.style.display=['none','block'][this.m.value];">
 				<label><input type="radio" name="m" value="1" checked>file</label><br>
 				<label><input type="radio" name="m" value="0">text</label><br>
@@ -67,6 +68,8 @@
 		</div>
 		<script>
 			var reader = new FileReader(), fname = "unknown";
+			const fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
+			const time = ()=>{var d=new Date();return d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"."+d.getMilliseconds()+" ";}
 			function read(_this) {
 				fname=_this.files[0].name;
 				finpl.textContent="Drag & Drop or click to select";
@@ -76,14 +79,8 @@
 				reader.addEventListener("loadend",(x)=>console.log(x),false);
 				reader.readAsText(_this.files[0]);
 			}
-			const fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
-			const fx_ = str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x?x-1:x);return [x[0],x[2]?x[2]:0,x[1]?x[1]:0]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]};
-			const time = ()=>{var d=new Date();return d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"."+d.getMilliseconds()+" ";}
-			function main() {
-				log.textContent = "";
-				var s = [tinp.value,reader.result][inpm.m.value];
-					if(s){log.textContent += time()+"[info] convertion started…\n"}
-					else{log.textContent += time()+"[error] Input not found\n";return;}
+			function core(s,posf,nf,uvf) {
+				//log.textContent += time()+"[info] started…\n";
 				var o = s.match(/^o\s.+$/m);
 					if(o){o = o[0].replace(/\n/g,"").replace(/^o\s/,"");}
 					else{log.textContent += time()+"[info] o not found\n";o="poly"}
@@ -99,22 +96,39 @@
 					else{log.textContent += time()+"[info] vt not found\n";uv=[[0,0]];}
 					uv = uv.map(vt=>eval(vtfx.textContent));
 				var pol = s.match(/^f\s.+$/gm);
-					if(!uv){log.textContent += time()+"[error] f not found\n";return;}
-					pol = pol.map(fx_);
+					if(pol)pol = pol.map(str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x?x-1:x);return [x[0]-posf,x[2]?x[2]-nf:0,x[1]?x[1]-uvf:0]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]});
+					else{log.textContent += time()+"[info] f not found… '"+o+"' skipped\n";return ["",pos.length,n.length,uv.length];}
 				console.log(o,pos,uv,n,pol);
 				s =
 					'{"name":"'+o+'","pivot":[0,0,0]'+
 					',"poly_mesh":{"normalized_uvs":true,"positions":'+JSON.stringify(pos)+
 					',"normals":'+JSON.stringify(n)+',"uvs":'+JSON.stringify(uv)+
-					',"polys":'+JSON.stringify(pol)+'}}';
+					',"polys":'+JSON.stringify(pol)+'}},';
+				log.textContent += time()+"[info] '"+o+"' done\n"
+				return [s,pos.length,n.length,uv.length];
+			}
+			function main() {
+				log.textContent = time()+"[info] all convertions started\n";
+				var posf=0,nf=0,uvf=0,o=fname,diffuse="",tmp;
+				var s = [tinp.value,reader.result][inpm.m.value];
+				if(!s){log.textContent += time()+"[error] Input not found\n";return;}
+				if(s.match(/^o\s.+$/m))s = ("o\n#\n"+s).split(/\n(?=o)/).slice(1);
+				else s=[s];
+				console.log(s);
+				for (var i = 0; i < s.length; i++) {
+					tmp = core(s[i],posf,nf,uvf);
+					if(tmp){diffuse+=tmp[0]; posf+=tmp[1]; nf+=tmp[2]; uvf+=tmp[3];}
+					else {return;}
+				}
+				diffuse = diffuse.slice(0,-1);
 				if(frm.checked){
 					o = mname.value;
-					s = '{"format_version":"1.8.0","geometry.'+o+'":{"bones":['+s+']}}';
+					diffuse = '{"format_version":"1.8.0","geometry.'+o+'":{"bones":['+diffuse+']}}';
 				}
-				tout.value = s;
-				fout.href = "data:,"+encodeURI(s);
+				tout.value = diffuse;
+				fout.href = "data:,"+encodeURI(diffuse);
 				fout.download = o+".geo.json";fout.textContent = 'save as "'+fout.download+'"';
-				log.textContent += time()+"[info] convertion complete\n";
+				log.textContent += time()+"[info] all convertions completed";
 			}
 			function copy(string) {
 				var tmp = document.createElement("div");
