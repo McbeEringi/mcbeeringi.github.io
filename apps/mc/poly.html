@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<br>
-		<span class="button" onclick="main();">run</span><br>
+		<span class="button" onclick="main();this.textContent='done!';setTimeout(()=>this.textContent='run',1000);">run</span><br>
 		<pre id="log"></pre>
 		<br>
 		<div class="box">
@@ -115,7 +115,7 @@
 				if(s.match(/^o\s.+$/m))s = ("o\n#\n"+s).split(/\n(?=o)/).slice(1);
 				else s=[s];
 				console.log(s);
-				for (var i = 0; i < s.length; i++) {
+				for(var i=0; i<s.length; i++) {
 					tmp = core(s[i],posf,nf,uvf);
 					if(tmp){diffuse+=tmp[0]; posf+=tmp[1]; nf+=tmp[2]; uvf+=tmp[3];}
 					else {return;}
