@@ -15,7 +15,8 @@ usage:
 :root{
 	--bar_col: #888;
 	--button_col: #ccc;
-	--tri_col:#fff;
+	--o_img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='5,28.66 20,2.68 35,28.66' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A");
+	--c_img:var(--o_img);/*180deg rotated*/
 	--transition: .5s;
 	--menu_w:200px;/*-45px*/
 	--menu_h:200px;
@@ -97,19 +98,19 @@ usage:
 	z-index: 4;
 }
 
-.menu>input+label+div>div::after{/*triangle*/
+.menu>input+label+div>div::after{/*button_icon*/
 	content: "";
 	position: absolute;
-	bottom: -9px;right: 10px;
-	width: 0;height: 0;
-	border-right: 15px solid transparent;
-	border-bottom: 25.9808px solid var(--tri_col);
-	border-left: 15px solid transparent;
-	transform-origin: center 17px;
+	bottom: -20px;right: 5px;
+	width: 40px;height: 40px;
+	background-image: var(--o_img);
 	transition: var(--transition);
 	z-index: 4;
 }
-.menu>input:checked+label+div>div::after{transform: rotateZ(-180deg);}
+.menu>input:checked+label+div>div::after{
+	transform: rotateZ(-180deg);
+	background-image: var(--c_img);
+}
 
 .menu>input+label+div+div{/*menu_box*/
 	position: absolute;
