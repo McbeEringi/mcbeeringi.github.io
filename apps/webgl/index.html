@@ -181,7 +181,9 @@ void main(){
 			var texture = [];
 			tex("TEXTURE_0.png",0);
 			tex("TEXTURE_1.png",1);
+			var prc;
 			function main(){
+				clearTimeout(prc);
 				TIME+=1/fps;
 				clear(FOG_COLOR);
 
@@ -218,7 +220,7 @@ void main(){
 
 				gl.drawElements(gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0);//モデルの描画
 				gl.flush();//コンテキスト再描画
-				setTimeout(main, 1000/fps);
+				prc =setTimeout(main, 1000/fps);
 			}
 			main();
 		</script>
