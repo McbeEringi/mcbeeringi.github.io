@@ -181,7 +181,7 @@ void main(){
 			var texture = [];
 			tex("TEXTURE_0.png",0);
 			tex("TEXTURE_1.png",1);
-			var prc;
+			var prc;//二重起動防止
 			function main(){
 				clearTimeout(prc);
 				TIME+=1/fps;
