@@ -86,7 +86,7 @@ void main(){
 		}
 
 		var c = document.getElementById("canvas");
-		c.width = w_.value;c.height = h_.value;
+		c.width = 4096;c.height = 4096;
 		var gl = c.getContext("webgl") || c.getContext("experimental-webgl");
 		gl.enable(gl.CULL_FACE);
 		gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
@@ -116,6 +116,7 @@ void main(){
 		}
 		function compile(){
 			log.innerText = "";
+			c.width = w_.value;c.height = h_.value;
 			prg = create_program(create_shader(0),create_shader(1));
 		}
 		compile();
