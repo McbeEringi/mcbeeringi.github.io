@@ -24,7 +24,7 @@
 					<input type="radio" name="model" value="1" id="r1"><label for="r1"> plane</label>
 					<input type="radio" name="model" value="2" id="r2"><label for="r2"> coastal</label>
 				</form>
-				<div class="button" onclick="re();">compile</div>
+				<div class="button" onclick="compile();">compile</div>
 			</div>
 			<pre id="log" style="font-size:11px;color:#f00;"></pre>
 
@@ -148,7 +148,7 @@ void main(){
 			gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
 			gl.getExtension("OES_standard_derivatives");
 
-			var prg = create_program(create_shader("vsh"), create_shader("fsh"));//シェダープログラム生成
+			compile();//シェダープログラム生成
 
 			var POSITION = gl.getAttribLocation(prg, "POSITION");//attributeLocationの取得
 			var COLOR = gl.getAttribLocation(prg, "COLOR");
@@ -181,7 +181,7 @@ void main(){
 			var texture = [];
 			tex("TEXTURE_0.png",0);
 			tex("TEXTURE_1.png",1);
-			(function(){
+			function main(){
 				TIME+=1/fps;
 				clear(FOG_COLOR);
 
@@ -218,8 +218,9 @@ void main(){
 
 				gl.drawElements(gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0);//モデルの描画
 				gl.flush();//コンテキスト再描画
-				setTimeout(arguments.callee, 1000/fps);
-			})();
+				setTimeout(main, 1000/fps);
+			}
+			main();
 		</script>
 	</body>
 </html>
