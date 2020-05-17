@@ -1,4 +1,4 @@
-function re(){
+function compile(){
 	document.getElementById("log").innerHTML = "";
 	prg = create_program(create_shader("vsh"), create_shader("fsh"));
 }
