@@ -54,16 +54,16 @@ void main(){
 				<h3>Config</h3>
 				<div>
 					img size<br>
-					<input type="number" id="w_" value="16" oninput="if(this.value!=0)c.width=this.value;" style="width:4em">*
-					<input type="number" id="h_" value="16" oninput="if(this.value!=0)c.height=this.value;" style="width:4em"><br>
+					<input type="number" id="w_" value="16" oninput="if(this.value>0)c.width=this.value;else this.value=1" style="width:4em">*
+					<input type="number" id="h_" value="16" oninput="if(this.value>0)c.height=this.value;else this.value=1" style="width:4em"><br>
 				</div><br>
 				<div>
 					<label>fps<br>
-					<input type="number" id="fps_" value="60" oninput="if(this.value!=0)fps=this.value;"></label><br>
+					<input type="number" id="fps_" value="60" oninput="if(this.value>0)fps=this.value;else this.value=1"></label><br>
 				</div><br>
 				<div>
 					<label>compile wait(ms)<br>
-					<input type="number" id="wait_" value="1000"></label><br>
+					<input type="number" id="wait_" value="1000" oninput="if(this.value<0)this.value=0"></label><br>
 				</div><br>
 				<p align="center" style="margin:0;font-size:11px;">
 					powered by WebGL1.0 <br>
@@ -151,7 +151,6 @@ void main(){
 			}
 			img.src = imgurl[i];
 		}
-
 		var t = 0;
 		var fps = fps_.value;
 		var prc;//二重起動防止
@@ -161,7 +160,7 @@ void main(){
 			gl.clearColor(0,0,0,0);
 			gl.clearDepth(1.);
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-			var uniform = [//uniformLocationの取得
+			var uniform = [
 				gl.getUniformLocation(prg, "time"),
 				gl.getUniformLocation(prg, "resolution"),
 				gl.getUniformLocation(prg, "tex0"),
@@ -185,8 +184,8 @@ void main(){
 			gl.bindTexture(gl.TEXTURE_2D, texture[3]);
 			gl.uniform1i(uniform[5], 3);
 
-			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);//モデルの描画
-			gl.flush();//コンテキスト再描画
+			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+			gl.flush();
 			diffuse.src = c.toDataURL();
 
 			prc =setTimeout(main, 1000/fps);
