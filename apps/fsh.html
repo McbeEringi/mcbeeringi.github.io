@@ -4,11 +4,13 @@
 		<meta charset="utf-8">
 		<title>McbeEringi fsh</title>
 		<link rel="stylesheet" href="../menu.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/monokai.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
 		<style>
-			:root{--pos:fixed;--menu_h:200px;font-family:sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;}
+			:root{--pos:fixed;--menu_h:300px;font-family:sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;}
 			canvas{position:fixed;border:1px solid #f44;left:200%;}
 			.flex{display:flex;justify-content:space-around;flex-wrap:wrap;align-items:flex-start;}
-			#diffuse{width:100%;max-width:640px;height:100%;object-fit: contain;}
+			#diffuse{width:100%;max-width:640px;height:100%;object-fit: contain;}#log{color:#f22;margin:0;}
 			.box{min-width:200px;min-height:320px;height:50vh;flex-grow:1;display:block;border:1px solid #888;margin:2px;}
 			.file{width:160px;height:120px;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
@@ -20,44 +22,71 @@
 			<div class="box">
 				<img id="diffuse" src="" alt="diffuse">
 			</div>
-			<pre class="box" contenteditable="true" id="fsh" oninput="compile();">precision mediump float;
+			<pre class="box"><code class="glsl" contenteditable="true" id="fsh" oninput="clearTimeout(t);var t=setTimeout(compile,wait_.value);" style="height:100%;padding-top:0;padding-bottom:0;">precision mediump float;
 uniform float time;
 uniform vec2 resolution;
 void main(){
 	vec2 p = gl_FragCoord.xy/resolution;
 	gl_FragColor=vec4(p,sin(time)*.5+.5,1);
-}</pre>
+}</code></pre>
 		</div>
+		<pre id="log"></pre>
 		<div class="flex" style="max-width:800px;margin:0 auto;">
 			<div class="file" id="inp0d"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0</div>
 			<div class="file" id="inp1d"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1</div>
 			<div class="file" id="inp2d"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2</div>
 			<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
 		</div>
-		<pre id="log"></pre>
+		<h3>uniforms</h3>
+		<p>
+			uniform float time;<br>
+			uniform vec2 resolution;<br>
+			uniform sampler2D tex0;<br>
+			uniform sampler2D tex1;<br>
+			uniform sampler2D tex2;<br>
+			uniform sampler2D tex3;<br>
+		</p>
 		<div class="menu">
 			<input type="checkbox" id="example">
 			<label for="example"></label>
 			<div><div></div></div>
 			<div>
-				<p>menu</p>
-				<p>menu</p>
-				<p>menu</p>
+				<h3>Config</h3>
+				<div>
+					img size<br>
+					<input type="number" id="w_" value="16" oninput="if(this.value!=0)c.width=this.value;" style="width:4em">*
+					<input type="number" id="h_" value="16" oninput="if(this.value!=0)c.width=this.value;" style="width:4em"><br>
+				</div><br>
+				<div>
+					<label>fps<br>
+					<input type="number" id="fps_" value="60" oninput="if(this.value!=0)fps=this.value;"></label><br>
+				</div><br>
+				<div>
+					<label>compile wait(ms)<br>
+					<input type="number" id="wait_" value="1000"></label><br>
+				</div><br>
+				<p align="center" style="margin:0;font-size:11px;">
+					powered by WebGL1.0 <br>
+					special thanks to <a href="https://wgld.org" target="_blank">wgld.org</a> <br>
+					<a href="https://twitter.com/mcbeeringi" target="_blank">@McbeEringi</a>.｡:+*
+				</p>
 			</div>
 		</div>
 		<script>
-		var imgurl=[null,null,null,null];
+		hljs.initHighlightingOnLoad();
+		var imgurl=[];
 		function read(_this) {
 			var reader = new FileReader();
 			var d = document.getElementById(_this.id+"d").style;
-			reader.addEventListener('load', ()=>{d.backgroundImage="url('"+reader.result+"')";imgurl[_this.id.slice(-1)]=reader.result;}, false);
-			reader.addEventListener('error',()=>{d.backgroundImage="linear-gradient(#f0f,#f0f)";},false);
+			var num = parseInt(_this.id.slice(-1));
+			reader.addEventListener('load', ()=>{d.backgroundImage="url('"+reader.result+"')";imgurl[num]=reader.result;tex(num);}, false);
+			reader.addEventListener('error',()=>{d.backgroundImage="linear-gradient(#f0f,#f0f)";log.innerText+="ERROR: "+_this.id+" loading failed"},false);
 			reader.readAsDataURL(_this.files[0]);
 			console.log(_this.id,imgurl,reader);
 		}
 
 		var c = document.getElementById("canvas");
-		c.width = 16;c.height = 16;
+		c.width = w_.value;c.height = h_.value;
 		var gl = c.getContext("webgl") || c.getContext("experimental-webgl");
 		gl.enable(gl.CULL_FACE);
 		gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
@@ -87,7 +116,8 @@ void main(){
 		}
 		function compile(){
 			log.innerText = "";
-			prg = create_program(create_shader(0),create_shader(1));}
+			prg = create_program(create_shader(0),create_shader(1));
+		}
 		compile();
 		//attribute
 		var UV = gl.getAttribLocation(prg, "UV");
@@ -102,24 +132,27 @@ void main(){
 			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array([0,1,2, 3,2,1]), gl.STATIC_DRAW);
 		//texture
 		var texture = [];
-		function tex(){
-			for (var i=0; i<4; i++){
-				var img = new Image();
-				img.onload = function() {
-					var tex = gl.createTexture();
-					gl.bindTexture(gl.TEXTURE_2D, tex);//バインドセット
-					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);//読み込み
-					gl.generateMipmap(gl.TEXTURE_2D);//生成
-					gl.bindTexture(gl.TEXTURE_2D, null);//バインド解除
-					texture[i] = tex;
-				}
-				img.src = imgurl[i];
+		function tex(i){
+			var img = new Image();
+			img.onload = function() {
+				var tex = gl.createTexture();
+				gl.bindTexture(gl.TEXTURE_2D, tex);//バインドセット
+				gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);//y反転
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);//読み込み
+				gl.generateMipmap(gl.TEXTURE_2D);//生成
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);//拡大縮小
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//端数処理
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				gl.bindTexture(gl.TEXTURE_2D, null);//バインド解除
+				texture[i] = tex;
+				console.log("imgurl["+i+"] loaded");
 			}
+			img.src = imgurl[i];
 		}
-		tex();
 
 		var t = 0;
-		var fps = 60;
+		var fps = fps_.value;
 		var prc;//二重起動防止
 		function main(){
 			clearTimeout(prc);
@@ -144,10 +177,10 @@ void main(){
 			gl.activeTexture(gl.TEXTURE1);
 			gl.bindTexture(gl.TEXTURE_2D, texture[1]);
 			gl.uniform1i(uniform[3], 1);
-			gl.activeTexture(gl.TEXTURE1);
+			gl.activeTexture(gl.TEXTURE2);
 			gl.bindTexture(gl.TEXTURE_2D, texture[2]);
 			gl.uniform1i(uniform[4], 2);
-			gl.activeTexture(gl.TEXTURE1);
+			gl.activeTexture(gl.TEXTURE3);
 			gl.bindTexture(gl.TEXTURE_2D, texture[3]);
 			gl.uniform1i(uniform[5], 3);
 
