@@ -18,7 +18,7 @@ usage:
 	--button_col:#ccc;
 	/*40px*40px*/
 	--o_img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='5,28.66 20,2.68 35,28.66' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A");
-	--c_img:var(--o_img);/*180deg rotated*/
+	--c_img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='5,28.66 20,2.68 35,28.66' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A");/*180deg rotated*/
 	--transition: .5s;
 	--menu_w:200px;/*-45px*/
 	--menu_h:200px;
