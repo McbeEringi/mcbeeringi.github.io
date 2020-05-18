@@ -32,7 +32,7 @@ uniform float time;
 uniform vec2 resolution;
 void main(){
 	vec2 p = gl_FragCoord.xy/resolution;
-	gl_FragColor=vec4(p,sin(time)*.5+.5,1);
+	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 }</code></pre>
 		</div>
 		<pre id="log"></pre>
@@ -61,15 +61,15 @@ void main(){
 					img size<br>
 					<input type="number" id="w_" value="16" oninput="if(this.value>0)c.width=this.value;else this.value=null" style="width:4em">
 					*
-					<input type="number" id="h_" value="16" oninput="if(this.value>0)c.height=this.value;else this.value=null" style="width:4em"><br>
+					<input type="number" id="h_" value="16" oninput="if(this.value>0)c.height=this.value;else this.value=null" style="width:4em">
 				</div><br>
 				<div>
 					<label>fps<br>
-					<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;main();}else this.value=null"></label><br>
+					<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;main();}else this.value=null"></label>
 				</div><br>
 				<div>
 					<label>compile wait(ms)<br>
-					<input type="number" id="wait_" value="1000" oninput="if(this.value<0)this.value=0"></label><br>
+					<input type="number" id="wait_" value="1000" oninput="if(this.value<0)this.value=0"></label>
 				</div><br>
 				<p align="center" style="margin:0;font-size:11px;">
 					powered by WebGL1.0 <br>
