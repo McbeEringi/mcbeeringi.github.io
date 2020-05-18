@@ -100,7 +100,6 @@ usage:
 }
 .menu>input+label+div>div::before{
 	background-image: var(--o_img);
-	opacity: 1;
 }
 .menu>input+label+div>div::after{
 	background-image: var(--c_img);
@@ -108,7 +107,6 @@ usage:
 }
 .menu>input:checked+label+div>div::before{
 	transform: rotateZ(-180deg);
-	opacity: 0;
 }
 .menu>input:checked+label+div>div::after{
 	transform: rotateZ(-180deg);
