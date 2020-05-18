@@ -8,9 +8,14 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/monokai.min.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
 		<style>
-			:root{--pos:fixed;--menu_h:300px;font-family:sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;}
+			:root{
+				--pos:fixed;--menu_h:300px;--bg_col:#888a;
+				--o_img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='2' cx='10' cy='12.5' fill='%23fff'/%3E%3Cpolygon points='15,14 15,11 30,11 30,14' fill='%23fff'%3E%3C/polygon%3E%3Ccircle r='2' cx='10' cy='20' fill='%23fff'/%3E%3Cpolygon points='15,21.5 15,18.5 30,18.5 30,21.5' fill='%23fff'%3E%3C/polygon%3E%3Ccircle r='2' cx='10' cy='27.5' fill='%23fff'/%3E%3Cpolygon points='15,29 15,26 30,26 30,29' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E");
+				--c_img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='9,11 11,9 20,18.5 29,9 31,11 21.5,20 31,29 29,31 20,21.5 11,31 9,29 18.5,20' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E");
+				font-family:sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;
+			}
 			.flex{display:flex;justify-content:space-around;flex-wrap:wrap;align-items:flex-start;}
-			#diffuse{width:100%;max-width:640px;height:100%;object-fit: contain;}#log{width:100%;color:#f22;margin:0;word-wrap:break-word;}
+			#diffuse{width:100%;max-width:640px;height:100%;object-fit:contain;}#log{width:100%;color:#f22;margin:0;word-wrap:break-word;}
 			.box{width:300px;min-height:320px;height:50vh;flex-grow:1;display:block;border:1px solid #888;margin:2px;}
 			.file{width:160px;height:120px;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
@@ -59,7 +64,7 @@ void main(){
 				</div><br>
 				<div>
 					<label>fps<br>
-					<input type="number" id="fps_" value="60" oninput="if(this.value>0)fps=this.value;else this.value=null"></label><br>
+					<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;main();}else this.value=null"></label><br>
 				</div><br>
 				<div>
 					<label>compile wait(ms)<br>
