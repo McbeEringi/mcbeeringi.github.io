@@ -7,7 +7,7 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/monokai.min.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
 		<style>
-			:root{--pos:fixed;--menu_h:300px;font-family:sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;}
+			:root{--pos:fixed;--menu_h:300px;font-family:sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;}
 			.flex{display:flex;justify-content:space-around;flex-wrap:wrap;align-items:flex-start;}
 			#diffuse{width:100%;max-width:640px;height:100%;object-fit: contain;}#log{width:100%;color:#f22;margin:0;word-wrap:break-word;}
 			.box{min-width:200px;min-height:320px;height:50vh;flex-grow:1;display:block;border:1px solid #888;margin:2px;}
@@ -53,12 +53,12 @@ void main(){
 				<h3>Config</h3>
 				<div>
 					img size<br>
-					<input type="number" id="w_" value="16" oninput="if(this.value>0)c.width=this.value;else this.value=1" style="width:4em">*
-					<input type="number" id="h_" value="16" oninput="if(this.value>0)c.height=this.value;else this.value=1" style="width:4em"><br>
+					<input type="number" id="w_" value="16" oninput="if(this.value>0)c.width=this.value;else this.value=null" style="width:4em">*
+					<input type="number" id="h_" value="16" oninput="if(this.value>0)c.height=this.value;else this.value=null" style="width:4em"><br>
 				</div><br>
 				<div>
 					<label>fps<br>
-					<input type="number" id="fps_" value="60" oninput="if(this.value>0)fps=this.value;else this.value=1"></label><br>
+					<input type="number" id="fps_" value="60" oninput="if(this.value>0)fps=this.value;else this.value=null"></label><br>
 				</div><br>
 				<div>
 					<label>compile wait(ms)<br>
@@ -73,6 +73,13 @@ void main(){
 		</div>
 		<script>
 		hljs.initHighlightingOnLoad();
+		/*fsh.addEventListener('keydown',e=>{
+			if(e.key=='Tab'){
+				e.preventDefault();
+				if(e.shiftKey){alert("del");}
+				else{alert("add")}
+			}
+		});*/
 		var imgurl=[];
 		function read(_this) {
 			var reader = new FileReader();
