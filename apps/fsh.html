@@ -59,7 +59,8 @@ void main(){
 				<h3>Config</h3>
 				<div>
 					img size<br>
-					<input type="number" id="w_" value="16" oninput="if(this.value>0)c.width=this.value;else this.value=null" style="width:4em">*
+					<input type="number" id="w_" value="16" oninput="if(this.value>0)c.width=this.value;else this.value=null" style="width:4em">
+					*
 					<input type="number" id="h_" value="16" oninput="if(this.value>0)c.height=this.value;else this.value=null" style="width:4em"><br>
 				</div><br>
 				<div>
@@ -79,13 +80,22 @@ void main(){
 		</div>
 		<script>
 		hljs.initHighlightingOnLoad();
-		/*fsh.addEventListener('keydown',e=>{
+		fsh.addEventListener('keydown',e=>{
 			if(e.key=='Tab'){
 				e.preventDefault();
-				if(e.shiftKey){alert("del");}
-				else{alert("add")}
+				if(!e.shiftKey){//https://systemix.ne.jp/info/88
+					var sel = window.getSelection(),
+						rng = sel.getRangeAt(0),
+						tabstr = document.createTextNode("\t");
+					rng.deleteContents();
+					rng.insertNode(tabstr);
+					rng.setStartAfter(tabstr);
+					rng.setEndAfter(tabstr);
+					sel.removeAllRanges();
+					sel.addRange(rng);
+				}
 			}
-		});*/
+		});
 		var imgurl=[];
 		function read(_this) {
 			var reader = new FileReader();
