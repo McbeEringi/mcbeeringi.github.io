@@ -17,7 +17,7 @@ usage:
 	--bar_col:#888;
 	--button_col:#ccc;
 	/*40px*40px*/
-	--o_img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='5,28.66 20,2.68 35,28.66' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A");
+	--o_img:url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='20' cx='20' cy='20' fill='%23ccc'/%3E%3Cpolygon points='5,28.66 20,2.68 35,28.66' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A");
 	--c_img:var(--o_img);/*180deg rotated*/
 	--transition: .5s;
 	--menu_w:200px;/*-45px*/
@@ -90,28 +90,29 @@ usage:
 }
 .menu>input:checked+label+div>div{width: 70px;}
 
-.menu>input+label+div>div::before{/*circle_s*/
+.menu>input+label+div>div::before,.menu>input+label+div>div::after{/*button_icon*/
 	content: "";
 	position: absolute;
 	bottom: -20px;right: 5px;
 	width: 40px;height: 40px;
-	border-radius: 50%;
-	background-color: var(--button_col);
-	z-index: 4;
-}
-
-.menu>input+label+div>div::after{/*button_icon*/
-	content: "";
-	position: absolute;
-	bottom: -20px;right: 5px;
-	width: 40px;height: 40px;
-	background-image: var(--o_img);
 	transition: var(--transition);
 	z-index: 4;
 }
+.menu>input+label+div>div::before{
+	background-image: var(--o_img);
+	opacity: 1;
+}
+.menu>input+label+div>div::after{
+	background-image: var(--c_img);
+	opacity: 0;
+}
+.menu>input:checked+label+div>div::before{
+	transform: rotateZ(-180deg);
+	opacity: 0;
+}
 .menu>input:checked+label+div>div::after{
 	transform: rotateZ(-180deg);
-	background-image: var(--c_img);
+	opacity: 1;
 }
 
 .menu>input+label+div+div{/*menu_box*/
