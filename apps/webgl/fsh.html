@@ -11,7 +11,7 @@
 		<style>
 			:root{
 				--pos:fixed;--menu_h:300px;--bg_col:#888a;
-				font-family:sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;
+				font-family:sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;user-select:none;-webkit-user-select:none;
 			}
 			.flex{display:flex;justify-content:space-around;flex-wrap:wrap;align-items:flex-start;}
 			#diffuse{width:100%;max-width:640px;height:100%;object-fit:contain;}#log{width:100%;color:#f22;margin:0;word-wrap:break-word;}
@@ -42,7 +42,7 @@ void main(){
 			<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
 		</div>
 		<h3>uniforms</h3>
-		<p>
+		<p style="user-select:text;-webkit-user-select:text;">
 			uniform float time;<br>
 			uniform vec2 resolution;<br>
 			uniform sampler2D tex0;<br>
