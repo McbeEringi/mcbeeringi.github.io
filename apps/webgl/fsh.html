@@ -99,9 +99,9 @@ void main(){
 			console.log(_this.id,imgurl,reader);
 		}
 		dl.onclick=()=>{
-			dl.href="data:text/html,<a href='"+
+			dl.href="data:text/html,click anywhere to close<a href='"+
 				diffuse.src+"'download='diffuse.png'id='a'></a>"+
-				unescape("%3Cscript%3Ea.dispatchEvent%28new%20CustomEvent%28%27click%27%29%29%3B%3C/script%3E");
+				unescape("%3Cscript%3Ea.click%28%29%3Bwindow.onclick%3D%28%29%3D%3Ewindow.open%28%27about%3Ablank%27%2C%27_self%27%29.close%28%29%3B%3C/script%3E");
 		}
 
 		var c = document.getElementById("canvas");
