@@ -3,6 +3,8 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi WebGL</title>
+	</head>
+	<body>
 		<script type="text/javascript" src="https://wgld.org/j/minMatrix.js">// https://wgld.org/d/webgl/w013.html</script>
 		<script type="text/javascript" src="../../inflate.js">// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
 		<script type="text/javascript" src="../../deflate.js"></script>
@@ -12,9 +14,22 @@
 		<script type="text/javascript" src="sh_fx.js"></script>
 		<link rel="stylesheet" href="../../menu.css">
 		<link rel="stylesheet" href="../../toggle.css">
-		<link rel="stylesheet" href="style.css">
-	</head>
-	<body style="overflow-x:hidden;">
+		<style>
+			:root{--menu_h:350px;--bg_col:#444c}
+			body{user-select:none;-webkit-user-select:none;background-color:rgba(32,32,32,1.0);color:#fff;margin:0;font-family:menlo,sans-serif;word-wrap:break-word;overflow-x:hidden;}
+			body *{background-color:rgba(0,0,0,0);color:#fff;font-family:menlo,sans-serif;}
+			.button{margin:7px;font-size:24px;width:45%;min-width:128px;border:0px solid;border-radius:5px;box-shadow:0 0 7px;text-align:center;}
+			.button:hover{background-color:rgba(0,88,208,.5);}
+			.button:active{background-color:rgb(0,88,208);color:#eee;box-shadow:0 0 7px 0 #aaa inset;}
+			canvas{width:100%;}
+			p{font-size:11px;margin-left:7px;background-color:rgba(0,0,0,0);user-select:text;-webkit-user-select:text;}
+			input{max-width:100%;}input[type=radio]{display:none;}
+			input[type="radio"]+label{color:#888;}input[type="radio"]:hover+label{color:#aaa;}input[type="radio"]:checked+label{color:#fff;}
+			.border{border:1px solid #888;border-radius:5px;}
+			body>div:last-child *{color:#000;}
+		</style>
+
+
 		<canvas id="canvas">JavaScriptが無効になっているようです…</canvas><br>
 		<div id="stuff">
 			<div align="center">
@@ -179,7 +194,7 @@ void main(){
 			var c_os = document.getElementById("c_os").value;
 			var c_os_;
 			var texture = [];
-			tex("TEXTURE_0.png",0);
+			tex("TEXTURE_0/diffuse.png",0);
 			tex("TEXTURE_1.png",1);
 			var prc;//二重起動防止
 			function main(){
