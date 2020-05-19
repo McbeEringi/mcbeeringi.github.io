@@ -23,7 +23,7 @@
 
 		<canvas id="canvas" style="display:none;"></canvas>
 		<div class="flex">
-			<a id="dl" class="box" download="diffuse.png" onclick="this.href=diffuse.src" target="_blank">
+			<a id="dl" class="box" target="_blank">
 				<img id="diffuse" alt="diffuse">
 			</a>
 			<div class="box" id="fsh">precision mediump float;
@@ -89,7 +89,7 @@ void main(){
 		});
 		fsh_e.on("input",()=>{clearTimeout(comp_timer);var comp_timer=setTimeout(compile,wait_.value);});
 		var imgurl=[];
-		function read(_this) {
+		function read(_this){
 			var reader = new FileReader();
 			var d = document.getElementById(_this.id+"d").style;
 			var num = parseInt(_this.id.slice(-1));
@@ -97,6 +97,11 @@ void main(){
 			reader.addEventListener('error',()=>{d.backgroundImage="linear-gradient(#f0f,#f0f)";log.innerText+="ERROR: "+_this.id+" loading failed"},false);
 			reader.readAsDataURL(_this.files[0]);
 			console.log(_this.id,imgurl,reader);
+		}
+		dl.onclick=()=>{
+			dl.href="data:text/html,<a href='"+
+				diffuse.src+"'download='diffuse.png'id='a'></a>"+
+				unescape("%3Cscript%3Ea.dispatchEvent%28new%20CustomEvent%28%27click%27%29%29%3B%3C/script%3E");
 		}
 
 		var c = document.getElementById("canvas");
