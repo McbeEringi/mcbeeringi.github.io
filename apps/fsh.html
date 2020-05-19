@@ -30,9 +30,9 @@
 
 		<canvas id="canvas" style="display:none;"></canvas>
 		<div class="flex">
-			<div class="box">
-				<img id="diffuse" src="" alt="diffuse">
-			</div>
+			<a id="dl" class="box" download="diffuse.png" onclick="this.href=diffuse.src">
+				<img id="diffuse" alt="diffuse">
+			</a>
 			<div class="box" id="fsh">precision mediump float;
 uniform float time;
 uniform vec2 resolution;
