@@ -13,6 +13,7 @@
 				--pos:fixed;--menu_h:300px;--bg_col:#888a;
 				font-family:sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;user-select:none;-webkit-user-select:none;
 			}
+			_:lang(x)::-moz-placeholder,:root {image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;}
 			.flex{display:flex;justify-content:space-around;flex-wrap:wrap;align-items:flex-start;}
 			#diffuse{width:100%;max-width:640px;height:100%;object-fit:contain;}#log{width:100%;color:#f22;margin:0;word-wrap:break-word;}
 			.box{width:300px;min-height:320px;height:50vh;flex-grow:1;display:block;border:1px solid #888;margin:2px;}
@@ -101,7 +102,7 @@ void main(){
 		dl.onclick=()=>{
 			dl.href="data:text/html,click anywhere to close<a href='"+
 				diffuse.src+"'download='diffuse.png'id='a'></a>"+
-				unescape("%3Cscript%3Ea.click%28%29%3Bwindow.onclick%3D%28%29%3D%3Ewindow.open%28%27about%3Ablank%27%2C%27_self%27%29.close%28%29%3B%3C/script%3E");
+				unescape("%3Cscript%3Ea.click%28%29%3B%3C/script%3E");
 		}
 
 		var c = document.getElementById("canvas");
