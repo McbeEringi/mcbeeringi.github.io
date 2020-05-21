@@ -108,7 +108,8 @@ usage:
 	position:absolute;
 	bottom:25px;right:0;
 	width:var(--menu_w);height:0;
-	overflow:hidden;
+	overflow-x:hidden;
+	overflow-y:scroll;
 	padding-right:50px;
 	border-right:solid 5px var(--bar_col);
 	border-top:solid 0 transparent;
