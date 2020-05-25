@@ -65,13 +65,13 @@ void main(){
 				<h3>Config</h3>
 				<div>
 					img size<br>
-					<input type="number" id="w_" value="16" oninput="if(this.value>0)c.width=this.value;else this.value=null" style="width:4em">
+					<input type="number" id="w_" value="16" oninput="if(this.value>0){c.width=this.value;save();}else this.value=null" style="width:4em">
 					*
-					<input type="number" id="h_" value="16" oninput="if(this.value>0)c.height=this.value;else this.value=null" style="width:4em">
+					<input type="number" id="h_" value="16" oninput="if(this.value>0){c.height=this.value;save();}else this.value=null" style="width:4em">
 				</div><br>
 				<div>
 					<label>fps<br>
-					<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;main();}else this.value=null"></label>
+					<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;save();main();}else this.value=null"></label>
 				</div><br>
 				<div>
 					<label>compile wait(ms)<br>
@@ -115,12 +115,16 @@ void main(){
 			if(data){
 				data=JSON.parse(decodeURIComponent(data));
 				fsh_e.setValue(unescape(data.fsh),-1);
+				w_.value = data.size[0];h_.value = data.size[1];
+				fps_.value = data.fps;
 			}
 		}
 		load();
 		function save() {
 			var data = {
-				"fsh":fsh_e.getValue()
+				"fsh":fsh_e.getValue(),
+				"size":[w_.value,h_.value],
+				"fps":fps_.value
 			}
 			location.hash = encodeURIComponent(JSON.stringify(data));
 		}
