@@ -31,6 +31,7 @@ usage:
 	float:right;
 	user-select:none;-webkit-user-select:none;
 }
+.menu input,.menu textarea{user-select:text;-webkit-user-select:text;}
 .menu>input{display:none;}
 .menu>input+label{
 	display:block;
