@@ -106,18 +106,18 @@ void main(){
 		}
 
 		function load() {
-			var data = atob(location.hash.slice(1));
+			var data = location.hash.slice(1);
 			if(data){
-				data=JSON.parse(unescape(data));
+				data=JSON.parse(decodeURIComponent(data));
 				fsh_e.setValue(unescape(data.fsh),-1);
 			}
 		}
 		load();
 		function save() {
 			var data = {
-				"fsh":escape(fsh_e.getValue())
+				"fsh":fsh_e.getValue()
 			}
-			location.hash = btoa(escape(JSON.stringify(data)));
+			location.hash = encodeURIComponent(JSON.stringify(data));
 		}
 
 		var c = document.getElementById("canvas");
