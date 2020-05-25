@@ -8,6 +8,7 @@
 	<body>
 		<link rel="stylesheet" href="../../menu.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/zlibjs@0.3.1/bin/zlib.min.js"></script>
 		<style>
 			:root{
 				--pos:fixed;--menu_h:300px;--bg_col:#888a;
@@ -24,7 +25,7 @@
 
 		<canvas id="canvas" style="display:none;"></canvas>
 		<div class="flex">
-			<a id="dl" class="box" target="_blank">
+			<a id="dl" class="box" target="_blank" rel="noreferrer noopener">
 				<img id="diffuse" alt="diffuse">
 			</a>
 			<div class="box" id="fsh">precision mediump float;
@@ -100,9 +101,23 @@ void main(){
 			console.log(_this.id,imgurl,reader);
 		}
 		dl.onclick=()=>{
-			dl.href="data:text/html,click anywhere to close<a href='"+
-				diffuse.src+"'download='diffuse.png'id='a'></a>"+
+			dl.href="data:text/html,<a href='"+diffuse.src+"'download id='a'></a>"+
 				unescape("%3Cscript%3Ea.click%28%29%3B%3C/script%3E");
+		}
+
+		function load() {
+			var data = atob(location.hash.slice(1));
+			if(data){
+				data=JSON.parse(unescape(data));
+				fsh_e.setValue(unescape(data.fsh),-1);
+			}
+		}
+		load();
+		function save() {
+			var data = {
+				"fsh":escape(fsh_e.getValue())
+			}
+			location.hash = btoa(escape(JSON.stringify(data)));
 		}
 
 		var c = document.getElementById("canvas");
@@ -138,6 +153,7 @@ void main(){
 		function compile(){
 			log.innerText = "";
 			prg = create_program(create_shader(0),create_shader(1));
+			if(!log.innerText)save();
 		}
 		compile();
 		//attribute
