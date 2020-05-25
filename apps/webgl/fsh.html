@@ -113,7 +113,7 @@ void main(){
 		function load() {
 			var data = location.hash.slice(1);
 			if(data){
-				data=JSON.parse(decodeURIComponent(data));
+				data=JSON.parse(decodeURIComponent(data.replace(/%28/g,"(").replace(/%29/g,")")));
 				fsh_e.setValue(unescape(data.fsh),-1);
 				if(data.size){w_.value = data.size[0];h_.value = data.size[1];}
 				if(data.fps)fps_.value = data.fps;
@@ -126,7 +126,7 @@ void main(){
 				"size":[w_.value,h_.value],
 				"fps":fps_.value
 			}
-			location.hash = encodeURIComponent(JSON.stringify(data));
+			location.hash = encodeURIComponent(JSON.stringify(data)).replace(/\(/g,"%28").replace(/\)/g,"%29");
 		}
 		function copy(str){
 			var tmp=document.createElement("div");
