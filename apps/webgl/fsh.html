@@ -18,6 +18,7 @@
 			.flex{display:flex;justify-content:space-around;flex-wrap:wrap;align-items:flex-start;}
 			#diffuse{width:100%;max-width:640px;height:100%;object-fit:contain;}#log{width:100%;color:#f22;margin:0;word-wrap:break-word;}
 			.box{width:300px;min-height:320px;height:50vh;flex-grow:1;display:block;border:1px solid #888;margin:2px;}
+			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
 			.file{width:160px;height:120px;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
 		</style>
@@ -42,6 +43,9 @@ void main(){
 			<div class="file" id="inp1d"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1</div>
 			<div class="file" id="inp2d"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2</div>
 			<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
+		</div>
+		<div class="button" style="float:right;margin:1ex 0;" onclick="if(copy(location.href)){this.textContent='copied!';setTimeout(()=>this.textContent='copy url',1000);}">
+			copy url
 		</div>
 		<h3>uniforms</h3>
 		<p style="user-select:text;-webkit-user-select:text;">
@@ -118,6 +122,18 @@ void main(){
 				"fsh":fsh_e.getValue()
 			}
 			location.hash = encodeURIComponent(JSON.stringify(data));
+		}
+		function copy(str){
+			var tmp=document.createElement("div");
+			var pre=document.createElement("pre");
+			pre.style.webkitUserSelect="auto";pre.style.userSelect="auto";
+			tmp.appendChild(pre).textContent = str;
+			var s=tmp.style;s.position="fixed";s.right="200%";
+			document.body.appendChild(tmp);
+			document.getSelection().selectAllChildren(tmp);
+			var result=document.execCommand("copy");
+			document.body.removeChild(tmp);
+			return result;
 		}
 
 		var c = document.getElementById("canvas");
