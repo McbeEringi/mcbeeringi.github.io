@@ -115,8 +115,8 @@ void main(){
 			if(data){
 				data=JSON.parse(decodeURIComponent(data));
 				fsh_e.setValue(unescape(data.fsh),-1);
-				w_.value = data.size[0];h_.value = data.size[1];
-				fps_.value = data.fps;
+				if(data.size){w_.value = data.size[0];h_.value = data.size[1];}
+				if(data.fps)fps_.value = data.fps;
 			}
 		}
 		load();
