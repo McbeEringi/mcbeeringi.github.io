@@ -36,7 +36,8 @@
 			</svg>
 		</div>
 		<div class="n">2
-			<img class="test" onmousedown="log.textContent+='down ';" onmouseover="log.textContent+='over ';" onclick="log.textContent+='click ';" src="data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='40px' height='40px'%3E%3Ccircle r='20' cx='20' cy='20' fill='%23ccc'/%3E%3Cpolygon points='5,28.66 20,2.68 35,28.66' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A">
+			<img id="imgdl" src="#">
+			<button onclick="imgdl.src=imga">reset</button>
 			<pre id="log"></pre>
 		</div>
 		<div class="n">3<input type="checkbox" class="toggle" id="id"><label for="id"><div></div></label></div>
@@ -44,8 +45,8 @@
 		<div class="n">5</div>
 
 		<div class="menu">
-			<input type="checkbox" id="test">
-			<label for="test"></label>
+			<input type="checkbox" id="menu">
+			<label for="menu"></label>
 			<div><div></div></div>
 			<div>
 				<p>アイウエオ</p>
@@ -57,5 +58,12 @@
 
 		<div class="n">6</div>
 		<div class="n">7</div>
+		<script>
+			imga = "data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='40px' height='40px'%3E%3Ccircle r='20' cx='20' cy='20' fill='%23ccc'/%3E%3Cpolygon points='5,28.66 20,2.68 35,28.66' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A";
+			imgb = "data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='40px' height='40px'%3E%3Ccircle r='20' cx='20' cy='20' fill='%23ccc'/%3E%3Cpolygon points='9,11 11,9 20,18 29,9 31,11 22,20 31,29 29,31 20,22 11,31 9,29 18,20' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A";
+			imgdl.onmousedown=()=>{log.textContent+='down ';imgdl.src=imgb;}
+			imgdl.onmouseover=()=>{log.textContent+='over ';}
+			imgdl.onclick=()=>{log.textContent+='click ';}
+		</script>
 	</body>
 </html>
