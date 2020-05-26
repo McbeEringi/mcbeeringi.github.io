@@ -94,7 +94,7 @@ void main(){
 			useSoftTabs: false,
 			tabSize: 2
 		});
-		fsh_e.on("input",()=>{clearTimeout(comp_timer);var comp_timer=setTimeout(compile,wait_.value,true);});
+		fsh_e.on("input",()=>{clearTimeout(comp_timer);var comp_timer=setTimeout(compile,wait_.value,1);});
 		var imgurl=[];
 		function read(_this){
 			var reader = new FileReader();
@@ -176,7 +176,7 @@ void main(){
 			prg = create_program(create_shader(0),create_shader(1));
 			if(!log.innerText&&s)save();
 		}
-		compile(false);
+		compile(0);
 		//attribute
 		var UV = gl.getAttribLocation(prg, "UV");
 		var uv_v = gl.createBuffer();
