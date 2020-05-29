@@ -64,7 +64,7 @@
 
 			var tflag = false;
 			imgdl.ontouchstart=()=>{log.textContent+='touch ';tflag=true;imgdl.src=imgb;}
-			imgdl.onmousedown=()=>{log.textContent+='down ';if(tflag)tflag=false;else imgdl.src=imgb;}
+			imgdl.onmousedown=()=>{log.textContent+=(tflag?'//':'')+'down ';if(tflag)tflag=false;else imgdl.src=imgb;}
 			imgdl.onclick=()=>{log.textContent+='click ';}
 		</script>
 	</body>
