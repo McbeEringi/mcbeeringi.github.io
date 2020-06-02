@@ -66,8 +66,8 @@
 			var instr_li = ["APPiano","Contrabass","Flute","Glock","Guitar","Harp","Horn","Piano","Quena","Ukulele"];
 			if(location.hash){instr_.instr[5].checked=false;instr_.instr[parseInt(location.hash.slice(1))].checked=true;log.innerText+="\n[info]前回の楽器:"+instr_li[parseInt(location.hash.slice(1))]+"を復元しました";}
 			function set() {
-				kb.style.opacity="0.1";kb.style.pointerEvents="none";
-				instr_.style.opacity="0.5";instr_.style.pointerEvents="none";
+				kb.style.opacity="0.2";kb.style.pointerEvents="none";
+				instr_.style.opacity="0.2";instr_.style.pointerEvents="none";
 				log.innerText+="\n[info]loading…";
 				location.hash = instr_.instr.value;
 				synth = new Tone.Sampler({"A4":"audio/instruments/"+instr_li[instr_.instr.value]+"_a4.mp3"},()=>{
