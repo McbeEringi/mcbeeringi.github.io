@@ -26,10 +26,11 @@
 			td:nth-child(2n-1) div::after{content:"";top:13px;left:13px;width:40px;height:40px;border-radius:50%;}
 			td div.c::before, td div.c::after{content:"";top:15px;left:15px;width:36px;height:36px;}
 			td div.on{transform:scale(.8,.8);}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg)rotateZ(45deg);}
-			form{width:100%;display:flex;justify-content:center;flex-wrap:wrap;top:100%;position:absolute;}
+			form{width:100%;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;top:100%;position:absolute;}
 			input[type=radio]{display:none;}
-			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#aaa;}
-			form input[type=radio]:checked+div{position:relative;top:-2px;left:-2px;border:2px solid #fea;}
+			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#aaa;position:relative;overflow:hidden;}
+			form div img{position:absolute;width:300%;}
+			form input[type=radio]:checked+div{border:2px solid #fea;}
 			@keyframes bob{
 				0%{transform:rotateZ(45deg)scale(1,1);}
 				100%{transform:rotateZ(45deg)scale(1.1,1.1);}
@@ -46,29 +47,39 @@
 			<tr><td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td></tr>
 			<tr><td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td></tr>
 		</table>
+		<svg height="10px" width="20px" style="position:absolute;bottom:12px;left:50%;transform:translate(-50%);"><polygon points="0,0 10,10 20,0 10,3" fill="#fff"></polygon></svg>
 		<form id="instr_" onchange="set();">
-			<label><input type="radio" name="instr" value="0" checked><div>A</div></label>
-			<label><input type="radio" name="instr" value="1"><div>Pianno</div></label>
-			<label><input type="radio" name="instr" value="2"><div>フルート</div></label>
-			<label><input type="radio" name="instr" value="3"><div>鉄琴</div></label>
-			<label><input type="radio" name="instr" value="4"><div>ギター</div></label>
-			<label><input type="radio" name="instr" value="5"><div>ハープ</div></label>
-			<label><input type="radio" name="instr" value="6"><div>ホーン</div></label>
-			<label><input type="radio" name="instr" value="7"><div>ピアノ</div></label>
-			<label><input type="radio" name="instr" value="8"><div>ケーナ</div></label>
-			<label><input type="radio" name="instr" value="9"><div>ウクレレ</div></label>
+			<label><input type="radio" name="instr" value="0" checked><div><img src="instr.png" style="top:-64px;left:-64px;"></div></label>
+			<label><input type="radio" name="instr" value="1"><div><img src="instr.png" style="top:-128px;left:-0px;"></div></label>
+			<label><input type="radio" name="instr" value="2"><div><img src="instr.png" style="top:-128px;left:-64px;"></div></label>
+			<label><input type="radio" name="instr" value="3"><div><img src="instr.png" style="top:-128px;left:-128px;"></div></label>
+			<label><input type="radio" name="instr" value="4"><div><img src="instr.png" style="top:-192px;left:-128px;"></div></label>
+			<label><input type="radio" name="instr" value="5"><div><img src="instr.png" style="top:-256px;left:-0px;"></div></label>
+			<label><input type="radio" name="instr" value="6"><div><img src="instr.png" style="top:-256px;left:-64px;"></div></label>
+			<label><input type="radio" name="instr" value="7"><div><img src="instr.png" style="top:-256px;left:-128px;"></div></label>
+			<label><input type="radio" name="instr" value="8"><div><img src="instr.png" style="top:-320px;left:-64px;"></div></label>
 		</form>
 		<script>
-			var instr_li = ["APPiano","Contrabass","Flute","Glock","Guitar","Harp","Horn","Piano","Quena","Ukulele"];
+			var instr_li = [
+				{"c4":"Harp_0.wav","a4":"Harp_5.wav"},
+				{"d5":"Contrabass_1.wav","a5":"Contrabass_5.wav"},
+				{"c5":"Horn_0.wav","c6":"Horn_7.wav"},
+				{"c4":"Piano_0.wav","c5":"APPiano_0.wav","c6":"APPiano_7.wav"},
+				{"c4":"Flute_0.wav","c5":"Flute_7.wav"},
+				{"a5":"Quena_5.wav"},
+				{"a5":"Guitar_5.wav"},
+				{"a5":"Ukulele_5.wav"},
+				{"c5":"Glock_0.wav","c6":"Glock_7.wav"}
+			];
 			if(location.hash){instr_.instr[5].checked=false;instr_.instr[parseInt(location.hash.slice(1))].checked=true;}
 			function set() {
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";
 				instr_.style.opacity="0.2";instr_.style.pointerEvents="none";
 				location.hash = instr_.instr.value;
-				synth = new Tone.Sampler({"A4":"instr/"+instr_li[instr_.instr.value]+"_a4.mp3"},()=>{
+				synth = new Tone.Sampler(instr_li[instr_.instr.value],()=>{
 					kb.style.opacity="1";kb.style.pointerEvents="auto";
 					instr_.style.opacity="1";instr_.style.pointerEvents="auto";
-					console.log(instr_li[instr_.instr.value]+"loaded");
+					console.log(JSON.stringify(instr_li[instr_.instr.value]));
 				}).toDestination();
 			}
 			set();
