@@ -16,18 +16,19 @@
 		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style>
-			:root{background:#444 linear-gradient(#cce5f0,#ced980);background-repeat:no-repeat;height:100%;user-select:none;-webkit-user-select:none;pointer-events:none;font-family:sans-serif;}
-			html,body{height:100%;position:relative;}
+			:root{background-repeat:no-repeat;user-select:none;-webkit-user-select:none;pointer-events:none;font-family:sans-serif;}
+			html,body{height:100%;position:relative;margin:0;}
+			#fixed{position:fixed;width:100%;height:100%;background:linear-gradient(#0008,#0000 64px),linear-gradient(#cce5f0,#ced980);}
 			#kb{touch-action:none;margin:0 auto;}
 			td{width:83px;height:83px;}
-			td div{width:70px;height:70px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;margin:0 auto;transition:.1s;}
-			td div::before, td div::after{display:block;position:absolute;animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;box-shadow:0 0 4px #fea8, 0 0 4px #fea8 inset;transition:0;}
+			td div{width:70px;height:70px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;margin:0 auto;}
+			td div::before, td div::after{display:block;position:absolute;animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;box-shadow:0 0 4px #fea8, 0 0 4px #fea8 inset;z-index:1;}
 			td:nth-child(2n) div::before{content:"";top:18px;left:18px;width:30px;height:30px;}
 			td:nth-child(2n-1) div::after{content:"";top:13px;left:13px;width:40px;height:40px;border-radius:50%;}
 			td div.c::before, td div.c::after{content:"";top:15px;left:15px;width:36px;height:36px;}
-			td div.on{transform:scale(.8,.8);}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg)rotateZ(45deg);}
+			td div.on_{transform:scale(.8,.8);}td div:not(.on_){transition:.1s;}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg)rotateZ(45deg);}
 			svg{position:absolute;bottom:18px;left:50%;transform:translate(-50%);filter:drop-shadow(0 0 2px #0008);}
-			form{width:100%;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;top:100%;position:absolute;}
+			form{width:100%;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;top:100%;position:absolute;background:#444;}
 			input[type=radio]{display:none;}
 			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#aaa;position:relative;overflow:hidden;}
 			form div img{position:absolute;width:300%;}
@@ -43,12 +44,14 @@
 		</style>
 	</head>
 	<body>
-		<table id="kb">
-			<tr><td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td></tr>
-			<tr><td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td></tr>
-			<tr><td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td></tr>
-		</table>
-		<svg height="16px" width="32px"><polygon points="0,0 16,16 32,0 16,5.3" stroke="#fff" fill="#0000"></polygon></svg>
+		<div id="fixed">
+			<table id="kb">
+				<tr><td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td></tr>
+				<tr><td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td></tr>
+				<tr><td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td></tr>
+			</table>
+		</div>
+		<svg height="16px" width="32px"><polygon points="0,16 16,0 32,16 16,10.7" stroke="#fff" fill="#0000"></polygon></svg>
 		<form id="instr_" onchange="set();">
 			<label><input type="radio" name="instr" value="0" checked><div><img src="instr.png" style="top:-64px;left:-64px;"></div></label>
 			<label><input type="radio" name="instr" value="1"><div><img src="instr.png" style="top:-128px;left:-0px;"></div></label>
@@ -86,10 +89,11 @@
 			set();
 			var key = document.querySelectorAll('table div');
 			for(var i = 0; i < key.length; i++) {
-				key[i].addEventListener("touchstart",function(e){e.preventDefault();this.textContent="　";console.log(this.id);synth.triggerAttackRelease(this.id);this.classList.add('on');},false);
-				key[i].addEventListener("touchend",function(){this.classList.remove('on');},false);
-				key[i].addEventListener("mousedown",function(){if(this.textContent=="　")this.textContent="";else{console.log(this.id);synth.triggerAttackRelease(this.id);this.classList.add('on');}},false);
-				key[i].addEventListener("mouseup",function(){this.classList.remove('on');},false);
+				key[i].addEventListener("touchstart",function(e){e.preventDefault();this.textContent="　";console.log(this.id);synth.triggerAttackRelease(this.id);this.classList.add('on_','on');},false);
+				key[i].addEventListener("touchend",function(){this.classList.remove('on_');},false);
+				key[i].addEventListener("mousedown",function(){if(this.textContent=="　")this.textContent="";else{console.log(this.id);synth.triggerAttackRelease(this.id);this.classList.add('on_','on');}},false);
+				key[i].addEventListener("mouseup",function(){this.classList.remove('on_');},false);
+				key[i].addEventListener("animationend",function(){this.classList.remove('on');},false);
 			}
 		</script>
 	</body>
