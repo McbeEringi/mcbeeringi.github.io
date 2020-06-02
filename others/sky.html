@@ -71,8 +71,8 @@
 				log.innerText+="\n[info]loading…";
 				location.hash = instr_.instr.value;
 				synth = new Tone.Sampler({"A4":"audio/instruments/"+instr_li[instr_.instr.value]+"_a4.mp3"},()=>{
-					kb.style.opacity="0.1";kb.style.pointerEvents="auto";
-					instr_.style.opacity="0.5";instr_.style.pointerEvents="auto";
+					kb.style.opacity="1";kb.style.pointerEvents="auto";
+					instr_.style.opacity="5";instr_.style.pointerEvents="auto";
 					log.innerText+="\n[info]"+instr_li[instr_.instr.value]+"を読み込みました";
 				}).toDestination();
 			}
