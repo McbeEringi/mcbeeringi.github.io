@@ -38,8 +38,8 @@
 				100%{transform:rotateZ(45deg)scale(1.1,1.1);}
 			}
 			@keyframes on{
-				0%{transform:rotateY(0deg)rotateZ(45deg)translateZ();}
-				100%{transform:rotateY(360deg)rotateZ(45deg)translateZ();}
+				0%{transform:rotateY(0deg)rotateZ(45deg);}
+				100%{transform:rotateY(360deg)rotateZ(45deg);}
 			}
 		</style>
 	</head>
@@ -100,7 +100,9 @@
 				key[i].addEventListener("touchend",function(){this.classList.remove('on_');},false);
 				key[i].addEventListener("mousedown",function(){
 					if(this.textContent=="　")this.textContent="";
-					else{console.log(this.id);synth.triggerAttackRelease(this.id);
+					else{
+						console.log(this.id);
+						synth.triggerAttackRelease(this.id);
 						this.classList.remove('on');
 						void this.offsetWidth;//reflow
 						this.classList.add('on_','on');
