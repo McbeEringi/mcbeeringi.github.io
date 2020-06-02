@@ -16,7 +16,7 @@
 		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style>
-			:root{background-repeat:no-repeat;user-select:none;-webkit-user-select:none;pointer-events:none;font-family:sans-serif;}
+			:root{background:#222;background-repeat:no-repeat;user-select:none;-webkit-user-select:none;pointer-events:none;font-family:sans-serif;}
 			html,body{height:100%;position:relative;margin:0;}
 			#fixed{position:fixed;width:100%;height:100%;background:linear-gradient(#0008,#0000 64px),linear-gradient(#cce5f0,#ced980);}
 			#kb{touch-action:none;margin:0 auto;}
@@ -89,9 +89,23 @@
 			set();
 			var key = document.querySelectorAll('table div');
 			for(var i = 0; i < key.length; i++) {
-				key[i].addEventListener("touchstart",function(e){e.preventDefault();this.textContent="　";console.log(this.id);synth.triggerAttackRelease(this.id);this.classList.add('on_','on');},false);
+				key[i].addEventListener("touchstart",function(e){
+					e.preventDefault();this.textContent="　";
+					console.log(this.id);
+					synth.triggerAttackRelease(this.id);
+					this.classList.remove('on');
+					void this.offsetWidth;//reflow
+					this.classList.add('on_','on');
+				},false);
 				key[i].addEventListener("touchend",function(){this.classList.remove('on_');},false);
-				key[i].addEventListener("mousedown",function(){if(this.textContent=="　")this.textContent="";else{console.log(this.id);synth.triggerAttackRelease(this.id);this.classList.add('on_','on');}},false);
+				key[i].addEventListener("mousedown",function(){
+					if(this.textContent=="　")this.textContent="";
+					else{console.log(this.id);synth.triggerAttackRelease(this.id);
+						this.classList.remove('on');
+						void this.offsetWidth;//reflow
+						this.classList.add('on_','on');
+					}
+				},false);
 				key[i].addEventListener("mouseup",function(){this.classList.remove('on_');},false);
 				key[i].addEventListener("animationend",function(){this.classList.remove('on');},false);
 			}
