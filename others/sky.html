@@ -19,12 +19,12 @@
 			:root{background:linear-gradient(#a0d8ef88,#c3d82588);height:100%;user-select:none;-webkit-user-select:none;pointer-events:none;font-family:sans-serif;}
 			#kb{touch-action:none;margin:0 auto;}
 			td{width:83px;height:83px;}
-			td div{width:70px;height:70px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;margin:0 auto;transition:.2s;}
+			td div{width:70px;height:70px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;margin:0 auto;transition:.1s;}
 			td div::before, td div::after{display:block;position:absolute;animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;box-shadow:0 0 4px #fea8, 0 0 4px #fea8 inset;transition:0;}
 			td:nth-child(2n) div::before{content:"";top:18px;left:18px;width:30px;height:30px;}
 			td:nth-child(2n-1) div::after{content:"";top:13px;left:13px;width:40px;height:40px;border-radius:50%;}
 			td div.c::before, td div.c::after{content:"";top:15px;left:15px;width:36px;height:36px;}
-			td div.on{transform:scale(.8,.8);}td div.on::before, td div.on::after{animation:on .2s;transform:rotateY(0deg)rotateZ(45deg);}
+			td div.on{transform:scale(.8,.8);}td div.on::before, td div.on::after{animation:on .2s ease-in-out;transform:rotateY(0deg)rotateZ(45deg);}
 			input[type=radio]{display:none;}input[type=radio]+div{text-align:center;}input[type=radio]:checked+div{background-color:#444;border-radius: 4px;}
 			pre,form{background-color:#444a;color:#fea;text-shadow:0 0 8px;line-height:1.4;pointer-events:auto;flex-shrink:0;border-radius:4px;margin:2px;}
 			pre{overflow-y:scroll;min-height:11.2em;max-height:22.4em}
