@@ -17,6 +17,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style>
 			:root{background:#444 linear-gradient(#cce5f0,#ced980);background-repeat:no-repeat;height:100%;user-select:none;-webkit-user-select:none;pointer-events:none;font-family:sans-serif;}
+			html,body{height:100%;position:relative;}
 			#kb{touch-action:none;margin:0 auto;}
 			td{width:83px;height:83px;}
 			td div{width:70px;height:70px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;margin:0 auto;transition:.1s;}
@@ -25,7 +26,7 @@
 			td:nth-child(2n-1) div::after{content:"";top:13px;left:13px;width:40px;height:40px;border-radius:50%;}
 			td div.c::before, td div.c::after{content:"";top:15px;left:15px;width:36px;height:36px;}
 			td div.on{transform:scale(.8,.8);}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg)rotateZ(45deg);}
-			form{width:100%;display:flex;justify-content:center;flex-wrap:wrap;margin-top:calc(100vh - 263px);}
+			form{width:100%;display:flex;justify-content:center;flex-wrap:wrap;top:100%;position:absolute;}
 			input[type=radio]{display:none;}
 			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#aaa;}
 			form input[type=radio]:checked+div{position:relative;top:-1px;left:-1px;border:2px solid #fea;}
