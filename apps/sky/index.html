@@ -26,6 +26,7 @@
 			td:nth-child(2n-1) div::after{content:"";top:13px;left:13px;width:40px;height:40px;border-radius:50%;}
 			td div.c::before, td div.c::after{content:"";top:15px;left:15px;width:36px;height:36px;}
 			td div.on{transform:scale(.8,.8);}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg)rotateZ(45deg);}
+			svg{position:absolute;bottom:18px;left:50%;transform:translate(-50%);filter:drop-shadow(0 0 2px #0008);}
 			form{width:100%;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;top:100%;position:absolute;}
 			input[type=radio]{display:none;}
 			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#aaa;position:relative;overflow:hidden;}
@@ -47,7 +48,7 @@
 			<tr><td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td></tr>
 			<tr><td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td></tr>
 		</table>
-		<svg height="10px" width="20px" style="position:absolute;bottom:12px;left:50%;transform:translate(-50%);"><polygon points="0,0 10,10 20,0 10,3" fill="#fff"></polygon></svg>
+		<svg height="16px" width="32px"><polygon points="0,0 16,16 32,0 16,5.3" stroke="#fff" fill="#0000"></polygon></svg>
 		<form id="instr_" onchange="set();">
 			<label><input type="radio" name="instr" value="0" checked><div><img src="instr.png" style="top:-64px;left:-64px;"></div></label>
 			<label><input type="radio" name="instr" value="1"><div><img src="instr.png" style="top:-128px;left:-0px;"></div></label>
