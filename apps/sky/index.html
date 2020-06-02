@@ -38,8 +38,8 @@
 				100%{transform:rotateZ(45deg)scale(1.1,1.1);}
 			}
 			@keyframes on{
-				0%{transform:rotateY(0deg)rotateZ(45deg);}
-				100%{transform:rotateY(360deg)rotateZ(45deg);}
+				0%{transform:rotateY(0deg)rotateZ(45deg)translateZ();}
+				100%{transform:rotateY(360deg)rotateZ(45deg)translateZ();}
 			}
 		</style>
 	</head>
@@ -75,7 +75,7 @@
 				{"a5":"Ukulele_5.mp3"},
 				{"c5":"Glock_0.mp3","c6":"Glock_7.mp3"}
 			];
-			if(location.hash){instr_.instr[5].checked=false;instr_.instr[parseInt(location.hash.slice(1))].checked=true;}
+			if(location.hash)instr_.instr[parseInt(location.hash.slice(1))].checked=true;
 			function set() {
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";
 				instr_.style.opacity="0.2";instr_.style.pointerEvents="none";
