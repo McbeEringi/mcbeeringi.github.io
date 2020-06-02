@@ -64,7 +64,7 @@
 		</div>
 		<script>
 			var instr_li = ["APPiano","Contrabass","Flute","Glock","Guitar","Harp","Horn","Piano","Quena","Ukulele"];
-			if(location.hash){instr_.instr[5].checked=false;instr_.instr[parseInt(location.hash.slice(1))].checked=true;log.innerText+="\n[info]前回の楽器:"+instr_li[parseInt(location.hash.slice(1))]+"を復元しました";}
+			if(location.hash){instr_.instr[5].checked=false;instr_.instr[parseInt(location.hash.slice(1))].checked=true;}
 			function set() {
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";
 				instr_.style.opacity="0.2";instr_.style.pointerEvents="none";
