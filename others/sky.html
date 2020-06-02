@@ -12,7 +12,7 @@
 		<!--sw-->
 		<link rel="manifest" href="pwa/sky_manifest.json">
 		<script>
-			if('serviceWorker' in navigator){navigator.serviceWorker.register('pwa/sky_sw.js').then((reg)=>{console.log('Service worker registered.', reg);});}
+			if('serviceWorker' in navigator)navigator.serviceWorker.register('pwa/sky_sw.js').then((reg)=>{console.log('Service worker registered.', reg);});
 		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style>
@@ -64,21 +64,15 @@
 		</div>
 		<script>
 			var instr_li = ["APPiano","Contrabass","Flute","Glock","Guitar","Harp","Horn","Piano","Quena","Ukulele"];
-			function cookie(key){
-				//https://qiita.com/wifeofvillon/items/9edda7c0f0031b1b5f12
-				return ((document.cookie+";").match(key+"=([^¥S;]*)")||[])[1];
-			}
-			log.innerText+="\n[info]楽器の保存にcookieを利用しています";
-			var cookie = cookie("instr");
-			if(cookie){instr_.instr[5].checked=false;instr_.instr[parseInt(cookie)].checked=true;log.innerText+="\n[info]前回の楽器:"+instr_li[parseInt(cookie)]+"を復元しました";}
+			if(location.hash){instr_.instr[5].checked=false;instr_.instr[parseInt(location.hash.slice(1))].checked=true;log.innerText+="\n[info]前回の楽器:"+instr_li[parseInt(location.hash.slice(1))]+"を復元しました";}
 			function set() {
-				kb.style.opacity="0";kb.style.pointerEvents="none";
-				instr_.style.display="none";
+				kb.style.opacity="0.1";kb.style.pointerEvents="none";
+				instr_.style.opacity="0.5";instr_.style.pointerEvents="none";
 				log.innerText+="\n[info]loading…";
-				document.cookie = "instr="+instr_.instr.value+";max-age=604800;";
+				location.hash = instr_.instr.value;
 				synth = new Tone.Sampler({"A4":"audio/instruments/"+instr_li[instr_.instr.value]+"_a4.mp3"},()=>{
-					kb.style.opacity="1";kb.style.pointerEvents="auto";
-					instr_.style.display="";
+					kb.style.opacity="0.1";kb.style.pointerEvents="auto";
+					instr_.style.opacity="0.5";instr_.style.pointerEvents="auto";
 					log.innerText+="\n[info]"+instr_li[instr_.instr.value]+"を読み込みました";
 				}).toDestination();
 			}
