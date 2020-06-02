@@ -20,10 +20,10 @@
 			#kb{touch-action:none;margin:0 auto;}
 			td{width:83px;height:83px;}
 			td div{width:70px;height:70px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;margin:0 auto;}
-			td:nth-child(2n) div::before{content:"";display:block;position:absolute;top:18px;left:18px;width:30px;height:30px;}
-			td:nth-child(2n-1) div::after{content:"";display:block;position:absolute;top:13px;left:13px;width:40px;height:40px;border-radius:50%;}
+			td div::before, td div::after{content:"";display:block;position:absolute;animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;box-shadow:0 0 4px #fea8, 0 0 4px #fea8 inset;}
+			td:nth-child(2n) div::before{top:18px;left:18px;width:30px;height:30px;}
+			td:nth-child(2n-1) div::after{top:13px;left:13px;width:40px;height:40px;border-radius:50%;}
 			td div.c::before, td div.c::after{top:15px;left:15px;width:36px;height:36px;}
-			td div::before, td div::after{animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;box-shadow:0 0 4px #fea8, 0 0 4px #fea8 inset;}
 			td div:active{transform:scale(.8,.8);}
 			input[type=radio]{display:none;}input[type=radio]+div{text-align:center;}input[type=radio]:checked+div{background-color:#444;border-radius: 4px;}
 			pre,form{background-color:#444a;color:#fea;text-shadow:0 0 8px;line-height:1.4;pointer-events:auto;flex-shrink:0;border-radius:4px;margin:2px;}
