@@ -78,11 +78,11 @@
 			if(location.hash)instr_.instr[parseInt(location.hash.slice(1))].checked=true;
 			function set() {
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";
-				instr_.style.opacity="0.2";instr_.style.pointerEvents="none";
+				instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
 				location.hash = instr_.instr.value;
 				synth = new Tone.Sampler(instr_li[instr_.instr.value],()=>{
 					kb.style.opacity="1";kb.style.pointerEvents="auto";
-					instr_.style.opacity="1";instr_.style.pointerEvents="auto";
+					instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
 					console.log(JSON.stringify(instr_li[instr_.instr.value]));
 				}).toDestination();
 			}
@@ -106,9 +106,9 @@
 						this.classList.remove('on');
 						void this.offsetWidth;//reflow
 						this.classList.add('on_','on');
+						setTimeout(()=>this.classList.remove('on_'),100);
 					}
 				},false);
-				key[i].addEventListener("mouseup",function(){this.classList.remove('on_');},false);
 				key[i].addEventListener("animationend",function(){this.classList.remove('on');},false);
 			}
 		</script>
