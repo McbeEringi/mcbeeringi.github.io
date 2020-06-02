@@ -51,7 +51,7 @@
 				<tr><td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td></tr>
 			</table>
 		</div>
-		<svg height="16px" width="32px"><polygon points="0,16 16,0 32,16 16,10.7" stroke="#fff" fill="#0000"></polygon></svg>
+		<svg height="16px" width="32px"><polygon points="0,16 16,0 32,16 16,10.7" stroke="#fff" fill="#fff8"></polygon></svg>
 		<form id="instr_" onchange="set();">
 			<label><input type="radio" name="instr" value="0" checked><div><img src="instr.png" style="top:-64px;left:-64px;"></div></label>
 			<label><input type="radio" name="instr" value="1"><div><img src="instr.png" style="top:-128px;left:-0px;"></div></label>
@@ -61,18 +61,20 @@
 			<label><input type="radio" name="instr" value="5"><div><img src="instr.png" style="top:-256px;left:-0px;"></div></label>
 			<label><input type="radio" name="instr" value="6"><div><img src="instr.png" style="top:-256px;left:-64px;"></div></label>
 			<label><input type="radio" name="instr" value="7"><div><img src="instr.png" style="top:-256px;left:-128px;"></div></label>
-			<label><input type="radio" name="instr" value="8"><div><img src="instr.png" style="top:-320px;left:-64px;"></div></label>
+			<label><input type="radio" name="instr" value="8"><div><img src="instr.png" style="top:-320px;left:-0px;"></div></label>
+			<label><input type="radio" name="instr" value="9"><div><img src="instr.png" style="top:-320px;left:-64px;"></div></label>
 		</form>
 		<script>
 			var instr_li = [
 				{"c4":"Harp_0.mp3","a4":"Harp_5.mp3"},
 				{"d5":"Contrabass_1.mp3","a5":"Contrabass_5.mp3"},
 				{"c5":"Horn_0.mp3","c6":"Horn_7.mp3"},
-				{"c4":"Piano_0.mp3","a4":"Piano_5.mp3","c5":"APPiano_0.mp3","c6":"APPiano_7.mp3"},
+				{"a4":"Piano_5.mp3","c5":"APPiano_0.mp3","c6":"APPiano_7.mp3"},
 				{"c4":"Flute_0.mp3","c5":"Flute_7.mp3"},
 				{"a5":"Quena_5.mp3"},
 				{"a5":"Guitar_5.mp3"},
 				{"a5":"Ukulele_5.mp3"},
+				{"c4":"APPiano_0.mp3","c5":"APPiano_7.mp3"},
 				{"c5":"Glock_0.mp3","c6":"Glock_7.mp3"}
 			];
 			if(location.hash)instr_.instr[parseInt(location.hash.slice(1))].checked=true;
