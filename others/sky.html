@@ -84,8 +84,16 @@
 			set();
 			var key = document.querySelectorAll('table div');
 			for(var i = 0; i < key.length; i++) {
-				key[i].onmousedown=function(){console.log(this.id);synth.triggerAttackRelease(this.id);};
-				key[i].ontouchstart=function(){console.log(this.id);synth.triggerAttackRelease(this.id);};
+				key[i].onmousedown=(e)=>{
+					e.preventDefault();
+					console.log(this.id);
+					synth.triggerAttackRelease(this.id);
+				};
+				key[i].ontouchstart=(e)=>{
+					e.preventDefault();
+					console.log(this.id);
+					synth.triggerAttackRelease(this.id);
+				};
 			}
 		</script>
 	</body>
