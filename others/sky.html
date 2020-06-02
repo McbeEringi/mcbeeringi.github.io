@@ -84,16 +84,8 @@
 			set();
 			var key = document.querySelectorAll('table div');
 			for(var i = 0; i < key.length; i++) {
-				key[i].onmousedown=(e)=>{
-					e.preventDefault();
-					console.log(this.id);
-					synth.triggerAttackRelease(this.id);
-				};
-				key[i].ontouchstart=(e)=>{
-					e.preventDefault();
-					console.log(this.id);
-					synth.triggerAttackRelease(this.id);
-				};
+				key[i].addEventListener("mousedown",function(e){e.preventDefault();console.log(this.id);synth.triggerAttackRelease(this.id);},false);
+				key[i].addEventListener("touchstart",function(e){e.preventDefault();console.log(this.id);synth.triggerAttackRelease(this.id);},false);
 			}
 		</script>
 	</body>
