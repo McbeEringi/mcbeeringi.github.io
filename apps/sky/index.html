@@ -28,7 +28,8 @@
 			td div.c::before, td div.c::after{content:"";top:15px;left:15px;width:36px;height:36px;}
 			td div.on_{transform:scale(.8,.8);}td div:not(.on_){transition:.1s;}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg)rotateZ(45deg);}
 			svg{position:absolute;bottom:18px;left:50%;transform:translate(-50%);filter:drop-shadow(0 0 2px #0008);}
-			form{width:100%;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;top:100%;position:absolute;background:#444;}
+			#cfg{top:100%;width:100%;position:absolute;background:#444;}
+			form{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;}
 			input[type=radio]{display:none;}
 			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#aaa;position:relative;overflow:hidden;}
 			form div img{position:absolute;width:300%;}
@@ -52,20 +53,23 @@
 			</table>
 		</div>
 		<svg height="16px" width="32px"><polygon points="0,16 16,0 32,16 16,10.7" stroke="#fff" fill="#fff8"></polygon></svg>
-		<form id="instr_" onchange="set();">
-			<label><input type="radio" name="instr" value="0" checked><div><img src="instr.png" style="top:-64px;left:-64px;"></div></label>
-			<label><input type="radio" name="instr" value="1"><div><img src="instr.png" style="top:-128px;left:-0px;"></div></label>
-			<label><input type="radio" name="instr" value="2"><div><img src="instr.png" style="top:-128px;left:-64px;"></div></label>
-			<label><input type="radio" name="instr" value="3"><div><img src="instr.png" style="top:-128px;left:-128px;"></div></label>
-			<label><input type="radio" name="instr" value="4"><div><img src="instr.png" style="top:-192px;left:-128px;"></div></label>
-			<label><input type="radio" name="instr" value="5"><div><img src="instr.png" style="top:-256px;left:-0px;"></div></label>
-			<label><input type="radio" name="instr" value="6"><div><img src="instr.png" style="top:-256px;left:-64px;"></div></label>
-			<label><input type="radio" name="instr" value="7"><div><img src="instr.png" style="top:-256px;left:-128px;"></div></label>
-			<label><input type="radio" name="instr" value="8"><div><img src="instr.png" style="top:-320px;left:-0px;"></div></label>
-			<label><input type="radio" name="instr" value="9"><div><img src="instr.png" style="top:-320px;left:-64px;"></div></label>
-		</form>
+		<div id="cfg">
+			<form id="instr_" onchange="set();">
+				<label><input type="radio" name="instr" value="0" checked><div><img src="instr.png" style="top:-64px;left:-64px;"></div></label>
+				<label><input type="radio" name="instr" value="1"><div><img src="instr.png" style="top:-128px;left:-0px;"></div></label>
+				<label><input type="radio" name="instr" value="2"><div><img src="instr.png" style="top:-128px;left:-64px;"></div></label>
+				<label><input type="radio" name="instr" value="3"><div><img src="instr.png" style="top:-128px;left:-128px;"></div></label>
+				<label><input type="radio" name="instr" value="4"><div><img src="instr.png" style="top:-192px;left:-128px;"></div></label>
+				<label><input type="radio" name="instr" value="5"><div><img src="instr.png" style="top:-256px;left:-0px;"></div></label>
+				<label><input type="radio" name="instr" value="6"><div><img src="instr.png" style="top:-256px;left:-64px;"></div></label>
+				<label><input type="radio" name="instr" value="7"><div><img src="instr.png" style="top:-256px;left:-128px;"></div></label>
+				<label><input type="radio" name="instr" value="8"><div><img src="instr.png" style="top:-320px;left:-0px;"></div></label>
+				<label><input type="radio" name="instr" value="9"><div><img src="instr.png" style="top:-320px;left:-64px;"></div></label>
+			</form>
+		</div>
 		<script>
-			var instr_li = [
+			var instr_li,sc=0;
+			const instr_li_ = JSON.stringify([
 				//https://tomari.org/main/java/oto.html
 				//鍵盤番号+20
 				{60:"Harp_0.mp3",69:"Harp_5.mp3"},//c4,a4
@@ -78,11 +82,12 @@
 				{81:"Ukulele_5.mp3"},//a5
 				{60:"APPiano_0.mp3",72:"APPiano_7.mp3"},//c4,c5
 				{72:"Glock_0.mp3",84:"Glock_7.mp3"}//c5,c6
-			];
+			]);
 			if(location.hash)instr_.instr[parseInt(location.hash.slice(1))].checked=true;
 			function set() {
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";
 				instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
+				instr_li = JSON.parse(instr_li_.replace(/\d{2}/g,n=>parseInt(n)-sc));
 				location.hash = instr_.instr.value;
 				synth = new Tone.Sampler(instr_li[instr_.instr.value],()=>{
 					kb.style.opacity="1";kb.style.pointerEvents="auto";
