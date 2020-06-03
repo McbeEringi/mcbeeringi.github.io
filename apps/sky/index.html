@@ -109,6 +109,7 @@
 					this.classList.add('on_','on');
 				},false);
 				key[i].addEventListener("touchend",function(){this.classList.remove('on_');},false);
+				key[i].addEventListener("touchcancel",function(){this.classList.remove('on_');},false);
 				key[i].addEventListener("mousedown",function(){
 					if(this.textContent=="　")this.textContent="";
 					else{
