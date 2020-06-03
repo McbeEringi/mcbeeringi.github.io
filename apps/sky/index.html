@@ -49,9 +49,9 @@
 
 		<div id="fixed">
 			<table id="kb">
-				<tr><td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td></tr>
-				<tr><td><div id="a4"></div></td><td><div id="b4"></div></td><td><div class="c" id="c5"></div></td><td><div id="d5"></div></td><td><div id="e5"></div></td></tr>
-				<tr><td><div id="f5"></div></td><td><div id="g5"></div></td><td><div id="a5"></div></td><td><div id="b5"></div></td><td><div class="c" id="c6"></div></td></tr>
+				<tr><td><div class="c" id="_-9"></div></td><td><div id="_-7"></div></td><td><div id="_-5"></div></td><td><div id="_-4"></div></td><td><div id="_-2"></div></td></tr>
+				<tr><td><div id="_0"></div></td><td><div id="_2"></div></td><td><div class="c" id="_3"></div></td><td><div id="_5"></div></td><td><div id="_7"></div></td></tr>
+				<tr><td><div id="_8"></div></td><td><div id="_10"></div></td><td><div id="_12"></div></td><td><div id="_14"></div></td><td><div class="c" id="_15"></div></td></tr>
 			</table>
 		</div>
 		<svg height="16px" width="32px"><polygon points="0,16 16,0 32,16 16,10.7" stroke="#fff" fill="#fff8"></polygon></svg>
@@ -70,26 +70,23 @@
 			</form>
 		</div>
 		<script>
-			var instr_li,sc=0;
-			const instr_li_ = JSON.stringify([
-				//https://tomari.org/main/java/oto.html
-				//鍵盤番号+20
-				{60:"Harp_0.mp3",69:"Harp_5.mp3"},//c4,a4
-				{74:"Contrabass_1.mp3",81:"Contrabass_5.mp3"},//d5,a5
-				{72:"Horn_0.mp3",84:"Horn_7.mp3"},//c5,c6
-				{69:"Piano_5.mp3",72:"APPiano_0.mp3",84:"APPiano_7.mp3"},//a4,c5,c6
-				{60:"Flute_0.mp3",72:"Flute_7.mp3"},//c4,c5
-				{81:"Quena_5.mp3"},//a5
-				{81:"Guitar_5.mp3"},//a5
-				{81:"Ukulele_5.mp3"},//a5
-				{60:"APPiano_0.mp3",72:"APPiano_7.mp3"},//c4,c5
-				{72:"Glock_0.mp3",84:"Glock_7.mp3"}//c5,c6
-			]);
+			var sc=0;
+			const instr_li = [//鍵盤番号+20
+				{"c4":"Harp_0.mp3","a4":"Harp_5.mp3"},
+				{"d5":"Contrabass_1.mp3","a5":"Contrabass_5.mp3"},
+				{"c5":"Horn_0.mp3","c6":"Horn_7.mp3"},
+				{"a4":"Piano_5.mp3","c5":"APPiano_0.mp3","c6":"APPiano_7.mp3"},
+				{"c4":"Flute_0.mp3","c5":"Flute_7.mp3"},
+				{"a5":"Quena_5.mp3"},
+				{"a5":"Guitar_5.mp3"},
+				{"a5":"Ukulele_5.mp3"},
+				{"c4":"APPiano_0.mp3","c5":"APPiano_7.mp3"},
+				{"c5":"Glock_0.mp3","c6":"Glock_7.mp3"}
+			];
 			if(location.hash)instr_.instr[parseInt(location.hash.slice(1))].checked=true;
 			function set() {
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";
 				instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
-				instr_li = JSON.parse(instr_li_.replace(/\d{2}/g,n=>parseInt(n)-sc));
 				location.hash = instr_.instr.value;
 				synth = new Tone.Sampler(instr_li[instr_.instr.value],()=>{
 					kb.style.opacity="1";kb.style.pointerEvents="auto";
@@ -99,11 +96,12 @@
 			}
 			set();
 			var key = document.querySelectorAll('table div');
-			for(var i = 0; i < key.length; i++) {
+			//https://tomari.org/main/java/oto.html
+			for(var i=0; i<key.length; i++){
 				key[i].addEventListener("touchstart",function(e){
 					e.preventDefault();this.textContent="　";
 					console.log(this.id);
-					synth.triggerAttackRelease(this.id);
+					synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
 					this.classList.remove('on');
 					void this.offsetWidth;//reflow
 					this.classList.add('on_','on');
@@ -114,7 +112,7 @@
 					if(this.textContent=="　")this.textContent="";
 					else{
 						console.log(this.id);
-						synth.triggerAttackRelease(this.id);
+						synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
 						this.classList.remove('on');
 						void this.offsetWidth;//reflow
 						this.classList.add('on_','on');
