@@ -14,6 +14,8 @@
 		<script>
 			if('serviceWorker' in navigator)navigator.serviceWorker.register('sky_sw.js').then((reg)=>{console.log('Service worker registered.', reg);});
 		</script>
+	</head>
+	<body>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style>
 			:root{background:#222;background-repeat:no-repeat;user-select:none;-webkit-user-select:none;pointer-events:none;font-family:sans-serif;}
@@ -43,8 +45,8 @@
 				100%{transform:rotateY(360deg)rotateZ(45deg);}
 			}
 		</style>
-	</head>
-	<body>
+
+
 		<div id="fixed">
 			<table id="kb">
 				<tr><td><div class="c" id="c4"></div></td><td><div id="d4"></div></td><td><div id="e4"></div></td><td><div id="f4"></div></td><td><div  id="g4"></div></td></tr>
