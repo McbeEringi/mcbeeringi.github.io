@@ -66,16 +66,18 @@
 		</form>
 		<script>
 			var instr_li = [
-				{"c4":"Harp_0.mp3","a4":"Harp_5.mp3"},
-				{"d5":"Contrabass_1.mp3","a5":"Contrabass_5.mp3"},
-				{"c5":"Horn_0.mp3","c6":"Horn_7.mp3"},
-				{"a4":"Piano_5.mp3","c5":"APPiano_0.mp3","c6":"APPiano_7.mp3"},
-				{"c4":"Flute_0.mp3","c5":"Flute_7.mp3"},
-				{"a5":"Quena_5.mp3"},
-				{"a5":"Guitar_5.mp3"},
-				{"a5":"Ukulele_5.mp3"},
-				{"c4":"APPiano_0.mp3","c5":"APPiano_7.mp3"},
-				{"c5":"Glock_0.mp3","c6":"Glock_7.mp3"}
+				//https://tomari.org/main/java/oto.html
+				//鍵盤番号+20
+				{60:"Harp_0.mp3",69:"Harp_5.mp3"},//c4,a4
+				{74:"Contrabass_1.mp3",81:"Contrabass_5.mp3"},//d5,a5
+				{72:"Horn_0.mp3",84:"Horn_7.mp3"},//c5,c6
+				{69:"Piano_5.mp3",72:"APPiano_0.mp3",84:"APPiano_7.mp3"},//a4,c5,c6
+				{60:"Flute_0.mp3",72:"Flute_7.mp3"},//c4,c5
+				{81:"Quena_5.mp3"},//a5
+				{81:"Guitar_5.mp3"},//a5
+				{81:"Ukulele_5.mp3"},//a5
+				{60:"APPiano_0.mp3",72:"APPiano_7.mp3"},//c4,c5
+				{72:"Glock_0.mp3",84:"Glock_7.mp3"}//c5,c6
 			];
 			if(location.hash)instr_.instr[parseInt(location.hash.slice(1))].checked=true;
 			function set() {
