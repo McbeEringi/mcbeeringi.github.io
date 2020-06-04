@@ -46,7 +46,7 @@
 				.rotdisp>*:nth-child(3){transform:rotateZ(180deg);}
 			.rotdisp>*:nth-child(2){position:relative;width:96px;height:96px;background:#555;border-radius:24px;margin:6px;}
 			.rotdisp>*:nth-child(2)::before{content:"";position:absolute;width:5px;height:5px;left:44px;top:3px;transform:rotateZ(45deg);background:#caf0f6;filter:drop-shadow(0 0 3px #caf0f6);}
-			.rotdisp>*:nth-child(2)>*{position:relative;margin:10.5px;width:72px;height:72px;box-shadow:0 0 3px #222,0 0 3px #222 inset;border-radius:50%;transition:.5s;}
+			.rotdisp>*:nth-child(2)>*{position:relative;margin:10.5px;width:72px;height:72px;box-shadow:0 0 3px #222,0 0 3px #222 inset;border-radius:50%;transition:.3s;}
 			.rotdisp>*:nth-child(2)>*::before{content:"";position:absolute;width:6px;height:6px;left:33px;top:6px;transform:rotateZ(45deg);background:#caf0f6;filter:drop-shadow(0 0 3px #caf0f6);}
 		</style>
 
@@ -72,11 +72,7 @@
 				<label><input type="radio" name="instr" value="8"><div><img src="instr.png" style="top:-320px;left:-0px;"></div></label>
 				<label><input type="radio" name="instr" value="9"><div><img src="instr.png" style="top:-320px;left:-64px;"></div></label>
 			</form>
-			<div class="rotdisp">
-				<div onclick="sc--;rotd();"></div>
-				<div onclick="sc=0;rotd();"><div id="sc_rotd"></div></div>
-				<div onclick="sc++;rotd();"></div>
-			</div>
+			<div class="rotdisp" id="sc_rot"><div></div> <div><div id="sc_rotd"></div></div> <div></div></div>
 		</div>
 		<script>
 			var sc=0;
@@ -118,28 +114,25 @@
 			//https://tomari.org/main/java/oto.html
 			for(var i=0; i<key.length; i++){
 				key[i].addEventListener("touchstart",function(e){
-					e.preventDefault();this.textContent="　";
-					console.log(this.id);
+					e.preventDefault();this.textContent="　";console.log(this.id);
 					synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
-					this.classList.remove('on');
-					void this.offsetWidth;//reflow
-					this.classList.add('on_','on');
+					this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 				},false);
 				key[i].addEventListener("touchend",function(){this.classList.remove('on_');},false);
 				key[i].addEventListener("touchcancel",function(){this.classList.remove('on_');},false);
 				key[i].addEventListener("mousedown",function(){
-					if(this.textContent=="　")this.textContent="";
-					else{
+					if(this.textContent=="　")this.textContent="";else{
 						console.log(this.id);
 						synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
-						this.classList.remove('on');
-						void this.offsetWidth;//reflow
-						this.classList.add('on_','on');
+						this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 						setTimeout(()=>this.classList.remove('on_'),100);
 					}
 				},false);
 				key[i].addEventListener("animationend",function(){this.classList.remove('on');},false);
 			}
+			sc_rot.children[0].addEventListener("click",function(e){e.preventDefault;sc--;rotd();},false);
+			sc_rot.children[1].addEventListener("click",function(e){e.preventDefault;sc=0;rotd();},false);
+			sc_rot.children[2].addEventListener("click",function(e){e.preventDefault;sc++;rotd();},false);
 		</script>
 	</body>
 </html>
