@@ -92,12 +92,13 @@
 				}
 			}
 			load();
-			const rotd = ()=>{sc_rotd.style.transform="rotateZ("+sc*30+"deg)";location.hash=[instr_.instr.value,sc].join();}
-			rotd();
+			const save = ()=>{location.hash=[instr_.instr.value,sc].join();}
+			const rotd = (s)=>{sc_rotd.style.transform="rotateZ("+sc*30+"deg)";if(s)save();}
+			rotd(0);
 			function set(){
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";
 				instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
-				location.hash = [instr_.instr.value,sc].join();
+				save();
 				synth = new Tone.Sampler(instr_li[instr_.instr.value],()=>{
 					kb.style.opacity="1";kb.style.pointerEvents="auto";
 					instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
@@ -126,11 +127,11 @@
 				key[i].addEventListener("animationend",function(){this.classList.remove('on');},false);
 			}
 			sc_rot.children[0].ontouchstart = (e)=>{e.preventDefault;sc_rotd.textContent="　";scm=[true,sc,e.changedTouches[0].clientX,e.changedTouches[0].clientY];console.log("touch",scm);};
-			sc_rot.children[0].ontouchmove = (e)=>{e.preventDefault;if(scm[0]){sc=scm[1]+Math.floor((e.changedTouches[0].clientX-scm[2])*.05+.5);rotd();}};
-			sc_rot.children[0].ontouchend = (e)=>{e.preventDefault;sc_rotd.textContent="　　";if(scm[2]==e.changedTouches[0].clientX&&scm[3]==e.changedTouches[0].clientY)sc=0;rotd();scm[0]=false;};
-			sc_rot.children[0].onmousedown = (e)=>{if(sc_rotd.textContent!="　　"){scm=[true,sc,e.clientX,e.clientY];console.log("mouse",scm);}};
-			window.onmousemove = (e)=>{if(scm[0]){sc=scm[1]+Math.floor((e.clientX-scm[2])*.05+.5);rotd();}};
-			window.onmouseup = (e)=>{if(sc_rotd.textContent=="　　")sc_rotd.textContent="";else{if(scm[2]==e.clientX&&scm[3]==e.clientY)sc=0;rotd();scm[0]=false;}};
+			sc_rot.children[0].ontouchmove = (e)=>{e.preventDefault;if(scm[0]){sc=scm[1]+Math.floor((e.changedTouches[0].clientX-scm[2])*.05+.5);rotd(0);}};
+			sc_rot.children[0].ontouchend = (e)=>{if(scm[2]==e.changedTouches[0].clientX&&scm[3]==e.changedTouches[0].clientY)sc=0;rotd(1);scm[0]=false;console.log("touch_",sc);};
+			sc_rot.children[0].onmousedown = (e)=>{if(sc_rotd.textContent=="　")sc_rotd.textContent="";else{scm=[true,sc,e.clientX,e.clientY];console.log("mouse",scm);}};
+			window.onmousemove = (e)=>{if(scm[0]){sc=scm[1]+Math.floor((e.clientX-scm[2])*.05+.5);rotd(0);}};
+			window.onmouseup = (e)=>{if(scm[0]){if(scm[2]==e.clientX&&scm[3]==e.clientY)sc=0;rotd(1);scm[0]=false;console.log("mouse_",sc);}};
 		</script>
 	</body>
 </html>
