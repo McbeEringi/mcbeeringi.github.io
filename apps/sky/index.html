@@ -92,7 +92,7 @@
 				}
 			}
 			load();
-			const save = ()=>{location.hash=[instr_.instr.value,sc].join();}
+			const save = ()=>{location.hash=[instr_.instr.value,sc].join();console.log("saved")}
 			const rotd = (s)=>{sc_rotd.style.transform="rotateZ("+sc*30+"deg)";if(s)save();}
 			rotd(0);
 			function set(){
