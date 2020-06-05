@@ -23,21 +23,19 @@
 			#fixed{position:fixed;width:100%;height:100%;background:linear-gradient(#0008,#0000 64px),linear-gradient(#cce5f0,#ced980);}
 			/*keyboard*/
 			#kb{touch-action:none;margin:0 auto;pointer-events:none;}td{width:83px;height:83px;}
-			td div{width:70px;height:70px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;margin:0 auto;z-index:0;}
-			td div::before, td div::after{display:block;position:absolute;animation:bob 1.2s ease-in-out 0s infinite alternate;border:2px solid #fea;filter:drop-shadow(0 0 2px #fea8);z-index:1;}
-			td:nth-child(2n) div::before{content:"";top:18px;left:18px;width:30px;height:30px;}
-			td:nth-child(2n-1) div::after{content:"";top:13px;left:13px;width:40px;height:40px;border-radius:50%;}
-			td div.c::before, td div.c::after{content:"";top:15px;left:15px;width:36px;height:36px;}
-			td div.on_{transform:scale(.8,.8);}td div:not(.on_){transition:.1s;}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg)rotateZ(45deg);}
-			@keyframes bob{0%{transform:rotateZ(45deg)scale(1,1);}100%{transform:rotateZ(45deg)scale(1.1,1.1);}}
-			@keyframes on{0%{transform:rotateY(0deg)rotateZ(45deg);}100%{transform:rotateY(360deg)rotateZ(45deg);}}
+			td div{width:70px;height:70px;background-color:#aaa;border-radius:16px;box-shadow:0 0 10px #aaa;position:relative;cursor:pointer;margin:0 auto;}
+			td div::before{content:"";display:block;position:absolute;width:70px;height:70px;animation:bob 1.2s ease-in-out 0s infinite alternate;background-image:url(instr.png);background-size:210px auto;}
+			td:nth-child(2n) div:not(.c)::before{background-position:-70px 0;}
+			td:nth-child(2n-1) div:not(.c)::before{background-position:-140px 0;}
+			td div.on_{transform:scale(.8,.8);}td div:not(.on_){transition:.1s;}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg);}
+			@keyframes bob{0%{transform:scale(1,1);}100%{transform:scale(.9,.9);}}
+			@keyframes on{0%{transform:rotateY(0deg);}100%{transform:rotateY(360deg);}}
 			svg{position:absolute;bottom:18px;left:50%;transform:translate(-50%);filter:drop-shadow(0 0 2px #0008);}
 			/*config*/
 			#cfg{top:100%;width:100%;position:absolute;background:#444;box-shadow:0 0 16px #444;}
 			form{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;}
 			input[type=radio]{display:none;}
-			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#888;box-shadow:0 0 8px #888;position:relative;overflow:hidden;}
-			form div img{position:absolute;width:300%;}
+			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#888;box-shadow:0 0 8px #888;position:relative;overflow:hidden;background-image:url(instr.png);background-size:300% auto;background-position:var(--bp);}
 			form input[type=radio]:checked+div{border:2px solid #fea;box-shadow:0 0 8px #fea;}
 			/*rotdisp*/
 			.rotdisp{margin:8px auto;width:256px;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;touch-action:manipulation;}
@@ -61,16 +59,16 @@
 		<svg height="16px" width="32px"><polygon points="0,16 16,0 32,16 16,10.7" stroke="#fff" fill="#fff8"></polygon></svg>
 		<div id="cfg">
 			<form id="instr_" onchange="set();">
-				<label><input type="radio" name="instr" value="0" checked><div><img src="instr.png" style="top:-64px;left:-64px;"></div></label>
-				<label><input type="radio" name="instr" value="1"><div><img src="instr.png" style="top:-128px;left:-0px;"></div></label>
-				<label><input type="radio" name="instr" value="2"><div><img src="instr.png" style="top:-128px;left:-64px;"></div></label>
-				<label><input type="radio" name="instr" value="3"><div><img src="instr.png" style="top:-128px;left:-128px;"></div></label>
-				<label><input type="radio" name="instr" value="4"><div><img src="instr.png" style="top:-192px;left:-128px;"></div></label>
-				<label><input type="radio" name="instr" value="5"><div><img src="instr.png" style="top:-256px;left:-0px;"></div></label>
-				<label><input type="radio" name="instr" value="6"><div><img src="instr.png" style="top:-256px;left:-64px;"></div></label>
-				<label><input type="radio" name="instr" value="7"><div><img src="instr.png" style="top:-256px;left:-128px;"></div></label>
-				<label><input type="radio" name="instr" value="8"><div><img src="instr.png" style="top:-320px;left:-0px;"></div></label>
-				<label><input type="radio" name="instr" value="9"><div><img src="instr.png" style="top:-320px;left:-64px;"></div></label>
+				<label><input type="radio" name="instr" value="0" checked><div style="--bp:-64px -64px;"></div></label>
+				<label><input type="radio" name="instr" value="1"><div style="--bp:-0px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="2"><div style="--bp:-64px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="3"><div style="--bp:-128px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="4"><div style="--bp:-128px -192px;"></div></label>
+				<label><input type="radio" name="instr" value="5"><div style="--bp:-0px -256px;"></div></label>
+				<label><input type="radio" name="instr" value="6"><div style="--bp:-64px -256px;"></div></label>
+				<label><input type="radio" name="instr" value="7"><div style="--bp:-128px -256px;"></div></label>
+				<label><input type="radio" name="instr" value="8"><div style="--bp:-0px -320px;"></div></label>
+				<label><input type="radio" name="instr" value="9"><div style="--bp:-64px -320px;"></div></label>
 			</form>
 			<div class="rotdisp" id="sc_rot"><div></div> <div><div id="sc_rotd"></div></div> <div></div></div>
 		</div>
