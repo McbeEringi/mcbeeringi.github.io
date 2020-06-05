@@ -128,7 +128,7 @@
 			sc_rot.children[0].ontouchstart = (e)=>{sc_rotd.textContent="　";scm=[true,sc,e.changedTouches[0].clientX,e.changedTouches[0].clientY];console.log("touch",scm);};
 			sc_rot.children[0].ontouchmove = (e)=>{if(scm[0]){sc=scm[1]+Math.floor((e.changedTouches[0].clientX-scm[2])*.05+.5);rotd();}};
 			sc_rot.children[0].ontouchend = (e)=>{sc_rotd.textContent="　　";if(scm[2]==e.changedTouches[0].clientX&&scm[3]==e.changedTouches[0].clientY)sc=0;rotd();scm[0]=false;};
-			sc_rot.children[0].onmousedown = (e)=>{if(sc_rotd.textContent==""){sc_rotd.textContent=="";scm=[true,sc,e.clientX,e.clientY];console.log("mouse",scm);}};
+			sc_rot.children[0].onmousedown = (e)=>{if(sc_rotd.textContent!="　　"){scm=[true,sc,e.clientX,e.clientY];console.log("mouse",scm);}};
 			window.onmousemove = (e)=>{if(scm[0]){sc=scm[1]+Math.floor((e.clientX-scm[2])*.05+.5);rotd();}};
 			window.onmouseup = (e)=>{if(sc_rotd.textContent=="　　")sc_rotd.textContent="";else{if(scm[2]==e.clientX&&scm[3]==e.clientY)sc=0;rotd();scm[0]=false;}};
 		</script>
