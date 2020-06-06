@@ -9,17 +9,17 @@
 		</style>
 	</head>
 	<body>
-		<pre id="today">時刻計算中…</pre>
+		<pre id="time">時刻計算中…</pre>
 		<hr>
-		<pre id="main">loading…</pre>
+		<h2>本日分</h2>
+		<pre id="today">loading…</pre>
+		<hr>
+		<h2>次回更新分</h2>
+		<pre id="next">loading…</pre>
 		<hr>
 		<pre>大キャンドル参考元: https://twitter.com/sky_tea11/status/1234038235149426689/photo/1</pre>
 		<script>
-			setTimeout(()=>setInterval(()=>{
-				var date = new Date();
-				today.textContent = "現在時刻: "+date.toLocaleString();
-				date.setMinutes(date.getMinutes()-420+date.getTimezoneOffset());
-				today.textContent += "\nサーバー時刻: "+date.toLocaleString();
+			function main(date) {
 				const dt = date.getDate(),dy=date.getDay(),h=date.getHours();
 				const c_pat = (x)=>[(x-1)%5,Math.floor(x/5)%[2,3,3,2,3][x%5]];
 				const c_dic =[
@@ -50,9 +50,18 @@
 					],
 				];
 				var c_pat_ = c_pat(dt);
-				main.innerText =
-					"大キャンドル:	"+c_dic[c_pat_[0]][0]+"\n		"+c_dic[c_pat_[0]][c_pat_[1]+1].join(", ")+
-					"\nオフィス:	"+(dt%7==4?"翌日ねこ":(dt%7==5?"ねこ(翌日宇宙)":(dt%7==6?"宇宙":"特になし")));
+				return "大キャンドル:	"+c_dic[c_pat_[0]][0]+"\n		"+c_dic[c_pat_[0]][c_pat_[1]+1].join(", ")+
+					"\nデイリー:	"+
+					"\nオフィス:	"+(dt%7==5?"ねこ":(dt%7==6?"宇宙":"特になし"));
+			}
+			setTimeout(()=>setInterval(()=>{
+				var date = new Date();
+				time.textContent = "現在時刻: "+date.toLocaleString();
+				date.setMinutes(date.getMinutes()-420+date.getTimezoneOffset());
+				time.textContent += "\nサーバー時刻: "+date.toLocaleString();
+				today.innerText = main(date);
+				date.setDate(date.getDate()+1);
+				next.innerText = main(date);
 			},1000),1000-new Date().getMilliseconds());
 		</script>
 	</body>
