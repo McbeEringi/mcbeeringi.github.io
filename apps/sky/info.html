@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>McbeEringi sky_info</title>
+		<style media="screen">
+			:root{color:#fff;background:#222;font-family:monospace;tab-size:4em;font-size:16px;}
+		</style>
+	</head>
+	<body>
+		<pre id="today">時刻計算中…</pre>
+		<hr>
+		<pre id="main">loading…</pre>
+		<script>
+			setTimeout(()=>setInterval(()=>{
+				var date = new Date();
+				today.textContent = "現在時刻: "+date.toLocaleString();
+				date.setMinutes(date.getMinutes()-420+date.getTimezoneOffset());
+				today.textContent += "\nサーバー時刻: "+date.toLocaleString();
+				const dt = date.getDate(),dy=date.getDay(),h=date.getHours();
+				const c_pat = (x)=>[(x-1)%5,Math.floor(x/5)%[2,3,3,2,3][x%5]];
+				const c_dic =[
+					//https://twitter.com/sky_tea11/status/1234038235149426689/photo/1
+					//https://twitter.com/i/events/1176090791342567424
+					["~草原~",
+						["入口左手前","丸石奥","鳥の塔右奥","洞窟入口"],
+						["入口右奥","丸石右","4島中央","神殿内"],
+						["入口左奥","鳥の塔中央","洞窟内","神殿前"]
+					],
+					["~雨林~",
+						["入口右手前","開拓地船","川&蟹木","晴れ間池"],
+						["入口左奥","開拓地奥木","墓所中央","神殿後"],
+						["入口右奥","川&蟹出口","墓所橋","晴れ間奥"]
+					],
+					["~峡谷~",
+						["入口左","スケート橋","天球儀入口","ゴール左"],
+						["入口右奥","スケート氷","天球儀出口","ゴール右"]
+					],
+					["~捨て地~",
+						["入口後ろ","祠出口","投石台手前","戦場砦右奥"],
+						["入口左奥","祠闇花","投石台中央","難破船後端"],
+						["入口右奥","投石台出口","難破船先端","戦場砦上"]
+					],
+					["~書庫~",
+						["1F手前","1F奥","2F奥","6F手前"],
+						["1F右","2F扉左","4F祠","6F奥"]
+					],
+				];
+				var c_pat_ = c_pat(dt);
+				main.innerText =
+					"大キャンドル:	"+c_dic[c_pat_[0]][0]+"\n		"+c_dic[c_pat_[0]][c_pat_[1]+1].join(", ")+
+					"\nオフィス:	"+(dt%7==4?"翌日ねこ":(dt%7==5?"ねこ(翌日宇宙)":(dt%7==6?"宇宙":"特になし")));
+			},1000),1000-new Date().getMilliseconds());
+		</script>
+	</body>
+</html>
