@@ -25,7 +25,7 @@
 			/*keyboard*/
 			#kb{touch-action:none;margin:0 auto;pointer-events:none;}td{width:83px;height:83px;}
 			td div{width:70px;height:70px;background-color:#8888;border-radius:16px;box-shadow:0 0 10px #8888;position:relative;cursor:pointer;margin:0 auto;z-index:0;}
-			td div::before{content:"";display:block;position:absolute;width:70px;height:70px;animation:bob 1.2s ease-in-out 0s infinite alternate;background-image:url(instr.png);background-size:210px auto;z-index:1;}
+			td div::before{content:"";display:block;position:absolute;width:70px;height:70px;animation:bob 1.2s ease-in-out 0s infinite alternate;background-image:url(button.png);background-size:210px auto;z-index:1;}
 			td:nth-child(2n) div:not(.c)::before{background-position:-70px 0;}
 			td:nth-child(2n-1) div:not(.c)::before{background-position:-140px 0;}
 			td div.on_{transform:scale(.8,.8);}td div:not(.on_){transition:.1s;}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg);}
@@ -55,36 +55,32 @@
 			</table>
 		</div>
 		<svg height="16px" width="32px"><polygon points="0,16 16,0 32,16 16,10.7" stroke="#fff" fill="#fff8"></polygon></svg>
-		<div id="cfg">
+		<div id="cfg"><!--
 			<form id="instr_" onchange="set();">
-				<label><input type="radio" name="instr" value="0" checked><div style="--bp:-64px -64px;"></div></label>
-				<label><input type="radio" name="instr" value="1"><div style="--bp:-0px -128px;"></div></label>
-				<label><input type="radio" name="instr" value="2"><div style="--bp:-64px -128px;"></div></label>
-				<label><input type="radio" name="instr" value="3"><div style="--bp:-128px -128px;"></div></label>
-				<label><input type="radio" name="instr" value="4"><div style="--bp:-128px -192px;"></div></label>
-				<label><input type="radio" name="instr" value="5"><div style="--bp:-0px -256px;"></div></label>
-				<label><input type="radio" name="instr" value="6"><div style="--bp:-64px -256px;"></div></label>
-				<label><input type="radio" name="instr" value="7"><div style="--bp:-128px -256px;"></div></label>
-				<label><input type="radio" name="instr" value="8"><div style="--bp:-0px -320px;"></div></label>
-				<label><input type="radio" name="instr" value="9"><div style="--bp:-64px -320px;"></div></label>
-			</form>
+				<label><input type="radio" name="instr" value="0" checked><div style="--bp:-64px -0px;"></div></label>
+				<label><input type="radio" name="instr" value="1"><div style="--bp:-0px -64px;"></div></label>
+				<label><input type="radio" name="instr" value="2"><div style="--bp:-64px -64px;"></div></label>
+				<label><input type="radio" name="instr" value="3"><div style="--bp:-128px -64px;"></div></label>
+				<label><input type="radio" name="instr" value="4"><div style="--bp:-128px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="5"><div style="--bp:-0px -192px;"></div></label>
+				<label><input type="radio" name="instr" value="6"><div style="--bp:-64px -192px;"></div></label>
+				<label><input type="radio" name="instr" value="7"><div style="--bp:-128px -192px;"></div></label>
+				<label><input type="radio" name="instr" value="8"><div style="--bp:-0px -256px;"></div></label>
+				<label><input type="radio" name="instr" value="9"><div style="--bp:-64px -256px;"></div></label>
+			</form>-->
 			<div class="rotdisp" id="sc_rot"><div><div id="sc_rotd"></div></div></div>
 		</div>
 		<script>
 			var sc=0,scm=[];
-			const instr_li = [//鍵盤番号+20
-				{"c4":"harp_c3.mp3","a4":"harp_a3.mp3"},
-				{"d5":"contrabass_d2.mp3","a5":"contrabass_a2.mp3"},
-				{"c5":"horn_c3.mp3","c6":"horn_c4.mp3"},
-				{"a4":"piano_a4.mp3","c5":"piano_c5.mp3","c6":"piano_c6.mp3"},
-				{"c4":"flute_c5.mp3","c5":"flute_c6.mp3"},
-				{"a5":"quena_a5.mp3"},//unverified
-				{"e4":"guitar_e3.mp3","g4":"guitar_g3.mp3","a5":"guitar_a4.mp3"},
-				{"a5":"ukulele_a4.mp3"},//unverified
-				{"c4":"piano_c5.mp3","c5":"piano_c6.mp3"},
-				{"c5":"glock_c5.mp3","c6":"glock_c6.mp3"}
-			],
-			bgcol = [
+			const slmd = {
+				//https://github.com/Tonejs/Tone.js/tree/dev/examples/audio/salamander
+				"A2":"https://tonejs.github.io/examples/audio/salamander/A2.mp3","D#3":"https://tonejs.github.io/examples/audio/salamander/Ds3.mp3",
+				"A3":"https://tonejs.github.io/examples/audio/salamander/A3.mp3","D#4":"https://tonejs.github.io/examples/audio/salamander/Ds4.mp3",
+				"A4":"https://tonejs.github.io/examples/audio/salamander/A4.mp3","D#5":"https://tonejs.github.io/examples/audio/salamander/Ds5.mp3",
+				"A5":"https://tonejs.github.io/examples/audio/salamander/A5.mp3","D#6":"https://tonejs.github.io/examples/audio/salamander/Ds6.mp3",
+				"A6":"https://tonejs.github.io/examples/audio/salamander/A6.mp3","D#7":"https://tonejs.github.io/examples/audio/salamander/Ds7.mp3"
+			}
+			const bgcol = [
 				[4,1,2,2,3,4][Math.floor(Math.max(new Date().getHours()-1,0)*.25)],
 				"#fff1cf,#ced980",//morn
 				"#cce5f0,#ced980",//day
@@ -96,22 +92,21 @@
 				var h = location.hash.slice(1);
 				if(h){
 					h = h.split(",");
-					if(h[0])instr_.instr[parseInt(h[0])].checked=true;
-					if(h[1])sc=parseInt(h[1]);
+					//if(h[0])instr_.instr[parseInt(h[0])].checked=true;
+					if(h[0])sc=parseInt(h[0]);
 				}
 			}
 			load();
-			const save = ()=>{location.hash=[instr_.instr.value,sc].join();console.log("saved")},
+			const save = ()=>{location.hash=[sc].join();console.log("saved")},
 			rotd = (s)=>{sc_rotd.style.transform="rotateZ("+sc*30+"deg)";if(s)save();};
 			rotd(0);
 			function set(){
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";
-				instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
+				//instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
 				save();
-				synth = new Tone.Sampler(instr_li[instr_.instr.value],()=>{
+				synth = new Tone.Sampler(slmd,()=>{
 					kb.style.opacity="1";kb.style.pointerEvents="auto";
-					instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
-					console.log(JSON.stringify(instr_li[instr_.instr.value]));
+					//instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
 				}).toDestination();
 			}
 			set();
