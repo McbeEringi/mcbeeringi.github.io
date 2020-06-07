@@ -1,4 +1,4 @@
-:root{font-family:'M PLUS Rounded 1c',sans-serif;background:#222;color:#fff;text-shadow:0 0 4px #222;}
+:root{font-family:'M PLUS Rounded 1c',sans-serif;background:#222;color:#fff;text-shadow:0 0 4px #222;word-wrap:break-word;}
 html,body,#bg{height:100%;width:100%;position:relative;}
 #bg{position:fixed;bottom:0;right:0;z-index:-16;}
 a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
