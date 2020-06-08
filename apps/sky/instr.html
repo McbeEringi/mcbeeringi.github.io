@@ -34,10 +34,6 @@
 			svg{position:absolute;bottom:18px;left:50%;transform:translate(-50%);filter:drop-shadow(0 0 2px #0008);}
 			/*config*/
 			#cfg{top:100%;width:100%;position:absolute;background:#444c;box-shadow:0 0 16px #444c;}
-			/*form{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;}
-			input[type=radio]{display:none;}
-			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#888;box-shadow:0 0 8px #888;position:relative;overflow:hidden;background-image:url(instr.png);background-size:300% auto;background-position:var(--bp);}
-			form input[type=radio]:checked+div{border:2px solid #fea;box-shadow:0 0 8px #fea;}*/
 			/*rotdisp*/
 			.rotdisp{margin:0 auto;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;touch-action:none;background:center no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='32'%3E%3Cpolygon points='0,16 16,32 20,32 6,18 154,18 140,32 144,32 160,16 144,0 140,0 154,14 6,14 20,0 16,0' fill='%23555a'%3E%3C/polygon%3E%3C/svg%3E");}
 			.rotdisp>*{position:relative;width:96px;height:96px;background:#555;border-radius:24px;margin:8px;box-shadow:0 0 8px #555;}
@@ -74,15 +70,16 @@
 		</div>
 		<script>
 			var sc=0,scm=[];
-			const slmd = [
+			kb.style.opacity="0.2";kb.style.pointerEvents="none";
+			const piano = new Tone.Sampler(
 				{"A2":"A2.mp3","D#3":"Ds3.mp3","A3":"A3.mp3","D#4":"Ds4.mp3","A4":"A4.mp3","D#5":"Ds5.mp3","A5":"A5.mp3","D#6":"Ds6.mp3","A6":"A6.mp3","D#7":"Ds7.mp3"},
-				"https://tonejs.github.io/examples/audio/salamander/"
-			];
+				()=>{kb.style.opacity="1";kb.style.pointerEvents="auto";},"https://tonejs.github.io/examples/audio/salamander/"
+			).toDestination();
+
 			function load() {
 				var h = location.hash.slice(1);
 				if(h){
 					h = h.split(",");
-					//if(h[0])instr_.instr[parseInt(h[0])].checked=true;
 					if(h[0])sc=parseInt(h[0]);
 				}
 			}
@@ -90,22 +87,12 @@
 			const save = ()=>{location.hash=[sc].join();console.log("saved")},
 			rotd = (s)=>{sc_rotd.style.transform="rotateZ("+sc*30+"deg)";if(s)save();};
 			rotd(0);
-			function set(){
-				kb.style.opacity="0.2";kb.style.pointerEvents="none";
-				//instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
-				save();
-				synth = new Tone.Sampler(slmd[0],()=>{
-					kb.style.opacity="1";kb.style.pointerEvents="auto";
-					//instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
-				},slmd[1]).toDestination();
-			}
-			set();
 			var key = document.querySelectorAll('table div');
 			//https://tomari.org/main/java/oto.html
 			for(var i=0; i<key.length; i++){
 				key[i].addEventListener("touchstart",function(e){
 					e.preventDefault();this.textContent="　";console.log(this.id);
-					synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
+					piano.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
 					this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 				},false);
 				key[i].addEventListener("touchend",function(){this.classList.remove('on_');},false);
@@ -113,7 +100,7 @@
 				key[i].addEventListener("mousedown",function(){
 					if(this.textContent=="　")this.textContent="";else{
 						console.log(this.id);
-						synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
+						piano.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
 						this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 						setTimeout(()=>this.classList.remove('on_'),100);
 					}
