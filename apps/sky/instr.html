@@ -74,14 +74,10 @@
 		</div>
 		<script>
 			var sc=0,scm=[];
-			const slmd = {
-				//https://github.com/Tonejs/Tone.js/tree/dev/examples/audio/salamander
-				"A2":"https://tonejs.github.io/examples/audio/salamander/A2.mp3","D#3":"https://tonejs.github.io/examples/audio/salamander/Ds3.mp3",
-				"A3":"https://tonejs.github.io/examples/audio/salamander/A3.mp3","D#4":"https://tonejs.github.io/examples/audio/salamander/Ds4.mp3",
-				"A4":"https://tonejs.github.io/examples/audio/salamander/A4.mp3","D#5":"https://tonejs.github.io/examples/audio/salamander/Ds5.mp3",
-				"A5":"https://tonejs.github.io/examples/audio/salamander/A5.mp3","D#6":"https://tonejs.github.io/examples/audio/salamander/Ds6.mp3",
-				"A6":"https://tonejs.github.io/examples/audio/salamander/A6.mp3","D#7":"https://tonejs.github.io/examples/audio/salamander/Ds7.mp3"
-			}
+			const slmd = [
+				{"A2":"A2.mp3","D#3":"Ds3.mp3","A3":"A3.mp3","D#4":"Ds4.mp3","A4":"A4.mp3","D#5":"Ds5.mp3","A5":"A5.mp3","D#6":"Ds6.mp3","A6":"A6.mp3","D#7":"Ds7.mp3"},
+				"https://tonejs.github.io/examples/audio/salamander/"
+			];
 			function load() {
 				var h = location.hash.slice(1);
 				if(h){
@@ -98,10 +94,10 @@
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";
 				//instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
 				save();
-				synth = new Tone.Sampler(slmd,()=>{
+				synth = new Tone.Sampler(slmd[0],()=>{
 					kb.style.opacity="1";kb.style.pointerEvents="auto";
 					//instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
-				}).toDestination();
+				},slmd[1]).toDestination();
 			}
 			set();
 			var key = document.querySelectorAll('table div');
