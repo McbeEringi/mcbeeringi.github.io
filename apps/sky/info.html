@@ -10,6 +10,7 @@
 		<style>
 			:root{tab-size:4em;font-size:16px;}
 			pre{white-space:pre-wrap;font-family:'M PLUS Rounded 1c',sans-serif;}
+			img{width:100%;max-width:512px;}
 		</style>
 
 
@@ -17,9 +18,11 @@
 		<hr>
 		<h2>本日分</h2>
 		<pre id="today">loading…</pre>
+		<img id="today_">
 		<hr>
 		<h2>次回更新分</h2>
 		<pre id="next">loading…</pre>
+		<img id="next_">
 		<hr>
 		<pre>大キャンドル参考元: <a href="https://twitter.com/sky_tea11/status/1234038235149426689/photo/1">ティー様</a></pre>
 		<script>
@@ -51,20 +54,28 @@
 					["1F右","2F扉左","4F祠","6F奥"]
 				],
 			];
+			var img;
 			function main(date) {
 				var dt = date.getDate(),dy=date.getDay(),h=date.getHours(),c_pat_=c_pat(dt);
+				img = "img/"+c_pat_.join('')+".JPG";
 				return "大キャンドル:	"+c_dic[c_pat_[0]][0]+"\n		"+c_dic[c_pat_[0]][c_pat_[1]+1].join(", ")+
 					//"\nデイリー:	"+
 					"\nオフィス:	"+(dt%7==5?"ねこ":(dt%7==6?"宇宙":"特になし"));
 			}
+			var hbuf = null;
 			setTimeout(()=>setInterval(()=>{
 				var date = new Date();
 				time.textContent = "現在時刻: "+date.toLocaleString();
 				date.setMinutes(date.getMinutes()-420+date.getTimezoneOffset());
 				time.textContent += "\nサーバー時刻: "+date.toLocaleString();
-				today.innerText = main(date);
-				date.setDate(date.getDate()+1);
-				next.innerText = main(date);
+				if(hbuf!=date.getHours()){
+					hbuf = date.getHours();
+					today.innerText = main(date);
+					today_.src = img;
+					date.setDate(date.getDate()+1);
+					next.innerText = main(date);
+					next_.src = img;
+				}
 			},1000),1000-new Date().getMilliseconds());
 		</script>
 	</body>
