@@ -34,10 +34,10 @@
 			svg{position:absolute;bottom:18px;left:50%;transform:translate(-50%);filter:drop-shadow(0 0 2px #0008);}
 			/*config*/
 			#cfg{top:100%;width:100%;position:absolute;background:#444c;box-shadow:0 0 16px #444c;}
-			form{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;}
+			/*form{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;}
 			input[type=radio]{display:none;}
 			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#888;box-shadow:0 0 8px #888;position:relative;overflow:hidden;background-image:url(instr.png);background-size:300% auto;background-position:var(--bp);}
-			form input[type=radio]:checked+div{border:2px solid #fea;box-shadow:0 0 8px #fea;}
+			form input[type=radio]:checked+div{border:2px solid #fea;box-shadow:0 0 8px #fea;}*/
 			/*rotdisp*/
 			.rotdisp{margin:0 auto;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;touch-action:none;background:center no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='32'%3E%3Cpolygon points='0,16 16,32 20,32 6,18 154,18 140,32 144,32 160,16 144,0 140,0 154,14 6,14 20,0 16,0' fill='%23555a'%3E%3C/polygon%3E%3C/svg%3E");}
 			.rotdisp>*{position:relative;width:96px;height:96px;background:#555;border-radius:24px;margin:8px;box-shadow:0 0 8px #555;}
@@ -55,20 +55,17 @@
 			</table>
 		</div>
 		<svg height="16px" width="32px"><polygon points="0,16 16,0 32,16 16,10.7" stroke="#fff" fill="#fff8"></polygon></svg>
-		<div id="cfg"><!--
-			<form id="instr_" onchange="set();">
-				<label><input type="radio" name="instr" value="0" checked><div style="--bp:-64px -0px;"></div></label>
-				<label><input type="radio" name="instr" value="1"><div style="--bp:-0px -64px;"></div></label>
-				<label><input type="radio" name="instr" value="2"><div style="--bp:-64px -64px;"></div></label>
-				<label><input type="radio" name="instr" value="3"><div style="--bp:-128px -64px;"></div></label>
-				<label><input type="radio" name="instr" value="4"><div style="--bp:-128px -128px;"></div></label>
-				<label><input type="radio" name="instr" value="5"><div style="--bp:-0px -192px;"></div></label>
-				<label><input type="radio" name="instr" value="6"><div style="--bp:-64px -192px;"></div></label>
-				<label><input type="radio" name="instr" value="7"><div style="--bp:-128px -192px;"></div></label>
-				<label><input type="radio" name="instr" value="8"><div style="--bp:-0px -256px;"></div></label>
-				<label><input type="radio" name="instr" value="9"><div style="--bp:-64px -256px;"></div></label>
-			</form>-->
+		<div id="cfg">
 			<div class="rotdisp" id="sc_rot"><div><div id="sc_rotd"></div></div></div>
+			<!--<svg width="64px" height="64px">
+				<polygon points="9.5,13.5 9.5,50.5 39.5,50.5 39.5,13.5" stroke="#fea" stroke-width="3px" fill="#0000"></polygon>
+				<polygon points="24.5,13.5 24.5,50.5 54.5,50.5 54.5,13.5" stroke="#fea" stroke-width="3px" fill="#0000"></polygon>
+				<polygon points="20,15 20,36 29,36 29,15" fill="#fea"></polygon><polygon points="35,15 35,36 44,36 44,15" fill="#fea"></polygon>
+				</svg>
+			<svg width="64px" height="64px">
+				<polygon points="12,24 28,8 52,8 52,56 12,56" stroke="#fea" stroke-width="2px" fill="#0000"></polygon><polygon points="12,24 28,8 28,24" fill="#fea"></polygon>
+				<circle r="6" cx="32" cy="44" fill="#fea"/><polygon points="38,18 38,44 36,44 36,18" fill="#fea"></polygon>
+			</svg>-->
 			<br>
 			<div style="font-size:11px;">
 				powerd by <a href="https://github.com/Tonejs/Tone.js">Tone.js</a><br>
