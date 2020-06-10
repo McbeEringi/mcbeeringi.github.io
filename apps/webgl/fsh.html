@@ -32,9 +32,9 @@
 			</a>
 			<div class="box" id="fsh">precision mediump float;
 uniform float time;
-uniform vec2 resolution;
+uniform vec2 res;
 void main(){
-	vec2 p = gl_FragCoord.xy/resolution;
+	vec2 p = gl_FragCoord.xy/res;
 	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 }</div>
 		</div>
