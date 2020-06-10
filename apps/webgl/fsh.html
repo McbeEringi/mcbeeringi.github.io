@@ -51,7 +51,11 @@ void main(){
 		<h3>uniforms</h3>
 		<p style="user-select:text;-webkit-user-select:text;">
 			uniform float time;<br>
-			uniform vec2 resolution;<br>
+			uniform vec2 res;<br>
+			uniform vec2 tex0res;<br>
+			uniform vec2 tex1res;<br>
+			uniform vec2 tex2res;<br>
+			uniform vec2 tex3res;<br>
 			uniform sampler2D tex0;<br>
 			uniform sampler2D tex1;<br>
 			uniform sampler2D tex2;<br>
@@ -95,7 +99,7 @@ void main(){
 			tabSize: 2
 		});
 		fsh_e.on("input",()=>{clearTimeout(comp_timer);var comp_timer=setTimeout(compile,wait_.value,1);});
-		var imgurl=[];
+		var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]];
 		function read(_this){
 			var reader = new FileReader();
 			var d = document.getElementById(_this.id+"d").style;
@@ -203,8 +207,9 @@ void main(){
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//端数処理
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 				gl.bindTexture(gl.TEXTURE_2D, null);//バインド解除
+				imgres[i] = [img.naturalWidth,img.naturalHeight];
 				texture[i] = tex;
-				console.log("imgurl["+i+"] loaded");
+				console.log("imgurl["+i+"] loaded as tex",imgres[i]);
 			}
 			img.src = imgurl[i];
 		}
@@ -219,7 +224,11 @@ void main(){
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 			var uniform = [
 				gl.getUniformLocation(prg, "time"),
-				gl.getUniformLocation(prg, "resolution"),
+				gl.getUniformLocation(prg, "res"),
+				gl.getUniformLocation(prg, "tex0res"),
+				gl.getUniformLocation(prg, "tex1res"),
+				gl.getUniformLocation(prg, "tex2res"),
+				gl.getUniformLocation(prg, "tex3res"),
 				gl.getUniformLocation(prg, "tex0"),
 				gl.getUniformLocation(prg, "tex1"),
 				gl.getUniformLocation(prg, "tex2"),
@@ -227,19 +236,23 @@ void main(){
 			];
 			gl.uniform1f(uniform[0], t);
 			gl.uniform2fv(uniform[1], [c.width,c.height]);
+			gl.uniform2fv(uniform[2], imgres[0]);
+			gl.uniform2fv(uniform[3], imgres[1]);
+			gl.uniform2fv(uniform[4], imgres[2]);
+			gl.uniform2fv(uniform[5], imgres[3]);
 
 			gl.activeTexture(gl.TEXTURE0);
 			gl.bindTexture(gl.TEXTURE_2D, texture[0]);
-			gl.uniform1i(uniform[2], 0);
+			gl.uniform1i(uniform[6], 0);
 			gl.activeTexture(gl.TEXTURE1);
 			gl.bindTexture(gl.TEXTURE_2D, texture[1]);
-			gl.uniform1i(uniform[3], 1);
+			gl.uniform1i(uniform[7], 1);
 			gl.activeTexture(gl.TEXTURE2);
 			gl.bindTexture(gl.TEXTURE_2D, texture[2]);
-			gl.uniform1i(uniform[4], 2);
+			gl.uniform1i(uniform[8], 2);
 			gl.activeTexture(gl.TEXTURE3);
 			gl.bindTexture(gl.TEXTURE_2D, texture[3]);
-			gl.uniform1i(uniform[5], 3);
+			gl.uniform1i(uniform[9], 3);
 
 			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 			gl.flush();
