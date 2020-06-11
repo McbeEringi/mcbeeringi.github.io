@@ -85,19 +85,18 @@
 			}
 			load();
 			const save = ()=>{location.hash=[sc].join();console.log("saved")},
-			rotd = (s)=>{sc_rotd.style.transform="rotateZ("+sc*30+"deg)";if(s)save();};
-			rotd(0);
-			var key = document.querySelectorAll('table div');
+			rotd = ()=>sc_rotd.style.transform="rotateZ("+sc*30+"deg)";
+			rotd();
 			//https://tomari.org/main/java/oto.html
-			for(var i=0; i<key.length; i++){
-				key[i].addEventListener("touchstart",function(e){
+			document.querySelectorAll('#kb div').forEach((key)=>{
+				key.addEventListener("touchstart",function(e){
 					e.preventDefault();this.textContent="　";console.log(this.id);
 					piano.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
 					this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 				},false);
-				key[i].addEventListener("touchend",function(){this.classList.remove('on_');},false);
-				key[i].addEventListener("touchcancel",function(){this.classList.remove('on_');},false);
-				key[i].addEventListener("mousedown",function(){
+				key.addEventListener("touchend",function(){this.classList.remove('on_');},false);
+				key.addEventListener("touchcancel",function(){this.classList.remove('on_');},false);
+				key.addEventListener("mousedown",function(){
 					if(this.textContent=="　")this.textContent="";else{
 						console.log(this.id);
 						piano.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
@@ -105,14 +104,15 @@
 						setTimeout(()=>this.classList.remove('on_'),100);
 					}
 				},false);
-				key[i].addEventListener("animationend",function(){this.classList.remove('on');},false);
-			}
+				key.addEventListener("animationend",function(){this.classList.remove('on');},false);
+			});
+
 			sc_rot.children[0].ontouchstart = (e)=>{e.preventDefault;sc_rotd.textContent="　";scm=[true,sc,e.changedTouches[0].clientX,e.changedTouches[0].clientY];console.log("touch",scm);};
-			sc_rot.children[0].ontouchmove = (e)=>{e.preventDefault;if(scm[0]){sc=scm[1]+Math.floor((e.changedTouches[0].clientX-scm[2])*.05+.5);rotd(0);}};
-			sc_rot.children[0].ontouchend = (e)=>{if(scm[2]==e.changedTouches[0].clientX&&scm[3]==e.changedTouches[0].clientY)sc=0;rotd(1);scm[0]=false;console.log("touch_",sc);};
+			sc_rot.children[0].ontouchmove = (e)=>{e.preventDefault;if(scm[0]){sc=scm[1]+Math.floor((e.changedTouches[0].clientX-scm[2])*.05+.5);rotd();}};
+			sc_rot.children[0].ontouchend = (e)=>{if(scm[2]==e.changedTouches[0].clientX&&scm[3]==e.changedTouches[0].clientY)sc=0;rotd();save();scm[0]=false;console.log("touch_",sc);};
 			sc_rot.children[0].onmousedown = (e)=>{if(sc_rotd.textContent=="　")sc_rotd.textContent="";else{scm=[true,sc,e.clientX,e.clientY];console.log("mouse",scm);}};
-			window.onmousemove = (e)=>{if(scm[0]){sc=scm[1]+Math.floor((e.clientX-scm[2])*.05+.5);rotd(0);}};
-			window.onmouseup = (e)=>{if(scm[0]){if(scm[2]==e.clientX&&scm[3]==e.clientY)sc=0;rotd(1);scm[0]=false;console.log("mouse_",sc);}};
+			window.onmousemove = (e)=>{if(scm[0]){sc=scm[1]+Math.floor((e.clientX-scm[2])*.05+.5);rotd();}};
+			window.onmouseup = (e)=>{if(scm[0]){if(scm[2]==e.clientX&&scm[3]==e.clientY)sc=0;rotd();save();scm[0]=false;console.log("mouse_",sc);}};
 		</script>
 	</body>
 </html>
