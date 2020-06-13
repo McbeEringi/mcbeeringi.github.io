@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<title>Kuwahara_filter</title>
+		<title>McbeEringi kuwahara_filter</title>
 	</head>
 	<body>
 		<style>
@@ -15,7 +15,7 @@
 		<input type="file" id="file" oninput="read(this);"><br>
 		<img id="inp"><br>
 		<br>
-		box:<input type="num" id="size" value="8" onchange="if(this.value>0){compile();main();};"><br>
+		box:<input type="number" id="size" value="8" onchange="if(this.value>0){compile();main();};"><br>
 		<canvas id="canvas"></canvas><br>
 		<a id="out" download>download as .png</a>
 		<pre id="fsh"></pre>
