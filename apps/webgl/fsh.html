@@ -79,8 +79,8 @@ void main(){
 					<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;save();main();}else this.value=null"></label>
 				</div><br>
 				<div>
-					<label>compile wait(ms)<br>
-					<input type="number" id="wait_" value="1000" oninput="if(this.value<0)this.value=0"></label>
+					<label>save wait(ms)<br>
+					<input type="number" id="wait_" value="5000" oninput="if(this.value<0)this.value=0"></label>
 				</div><br>
 				<p align="center" style="margin:0;font-size:11px;">
 					powered by WebGL1.0 <br>
@@ -99,7 +99,11 @@ void main(){
 			useSoftTabs: false,
 			tabSize: 2
 		});
-		fsh_e.on("input",()=>{clearTimeout(comp_timer);var comp_timer=setTimeout(compile,wait_.value,1);});
+		var comp_timer,save_timer;
+		fsh_e.on("input",()=>{
+			clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
+			clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value);
+		});
 		var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]];
 		function read(_this){
 			var reader = new FileReader();
@@ -132,6 +136,7 @@ void main(){
 				"fps":fps_.value
 			}
 			location.hash = encodeURIComponent(JSON.stringify(data)).replace(/\(/g,"%28").replace(/\)/g,"%29");
+			console.log("saved");
 		}
 		function copy(str){
 			var tmp=document.createElement("div");
@@ -176,12 +181,11 @@ void main(){
 				return program;
 			}
 		}
-		function compile(s){
+		function compile(){
 			log.innerText = "";
 			prg = create_program(create_shader(0),create_shader(1));
-			if(!log.innerText&&s)save();
 		}
-		compile(0);
+		compile();
 		//attribute
 		var UV = gl.getAttribLocation(prg, "UV");
 		var uv_v = gl.createBuffer();
