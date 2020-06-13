@@ -17,7 +17,7 @@
 		selected↓ <br>
 		<img id="inp">
 		<hr>
-		box:<input type="number" id="size" value="8" onchange="if(this.value>0){compile();main();};"><br>
+		box:<input type="number" id="size" value="8" onchange="if(this.value>0){compile();main();location.hash=this.value;};"><br>
 		raw↓ <br>
 		<div class="box">
 			<canvas id="canvas"></canvas>
@@ -77,6 +77,7 @@ void main(){\n\
 \n\
 	gl_FragColor = diffuse;\n\
 }"];
+			if(location.hash)size.value=location.hash.slice(1);
 			var imgurl;
 			function read(_this){
 				var reader = new FileReader();
