@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Kuwahara_filter</title>
+	</head>
+	<body>
+		<style>
+			:root,input{background:#222;color:#ccc;font-size:11px;font-family:monospace;}
+			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
+			.out{width:100%;position:relative;}.out img{position:absolute;left:0;top:0;}
+		</style>
+
+
+		<input type="file" id="file" oninput="read(this);"><br>
+		<br>
+		size:<input type="num" id="size" value="8" onchange="if(this.value>0){compile();main();};"><br>
+		<img id="inp">
+		<div class="out">
+			<canvas id="canvas"></canvas>
+			<img id="diffuse" style="opacity:0;">
+		</div>
+		<pre id="fsh"></pre>
+		<pre id="log"></pre>
+		<script>
+		const fsh_ = ["precision mediump float;\n\
+uniform vec2 res;\n\
+uniform sampler2D tex;\n\
+\n\
+const int size = ",";\n\
+\n\
+#define p(fc) (gl_FragCoord.xy+fc)/res\n\
+#define s(x,y) texture2D(tex,p(vec2(x,y))).rgb\n\
+vec3 avg(int x,int y){\n\
+	vec3 s = vec3(0);\n\
+	for(int i=0;i<size;i++)for(int j=0;j<size;j++)\n\
+		s+=s(i*x,j*y);\n\
+	return s/float(size*size);\n\
+}\n\
+float var(vec3 avg,int x,int y){\n\
+	vec3 s = vec3(0);\n\
+	vec3 tmp;\n\
+	for(int i=0;i<size;i++)for(int j=0;j<size;j++){\n\
+		tmp=s(i*x,j*y)-avg;\n\
+		s+=tmp*tmp;\n\
+	}\n\
+	s/=float(size*size);\n\
+	return s.x+s.y+s.z;\n\
+}\n\
+void main(){\n\
+	vec2 p = p(0.);\n\
+	vec4 diffuse = texture2D(tex,p);\n\
+	float tmp;\n\
+\n\
+		vec3 avg_ = avg(1,1);\n\
+		diffuse.rgb = avg_;\n\
+		float var_ = var(avg_,1,1);\n\
+		\n\
+		avg_ = avg(1,-1);\n\
+		tmp = var(avg_,1,-1);\n\
+		diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));\n\
+		var_ = tmp;\n\
+		\n\
+		avg_ = avg(-1,1);\n\
+		tmp = var(avg_,-1,1);\n\
+		diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));\n\
+		var_ = tmp;\n\
+		\n\
+		avg_ = avg(-1,-1);\n\
+		tmp = var(avg_,-1,-1);\n\
+		diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));\n\
+		var_ = tmp;\n\
+\n\
+	gl_FragColor = diffuse;\n\
+}"];
+			var imgurl;
+			function read(_this){
+				var reader = new FileReader();
+				reader.addEventListener('load', ()=>{imgurl=reader.result;inp.src=imgurl;tex();}, false);
+				reader.addEventListener('error',()=>{log.innerText+="ERROR: texture loading failed"},false);
+				reader.readAsDataURL(_this.files[0]);
+				console.log("img loaded",imgurl,reader);
+			}
+
+			var c = document.getElementById("canvas");
+			c.width = 8192;c.height = 4096;
+			var gl = c.getContext("webgl") || c.getContext("experimental-webgl");
+			c.width = 0;c.height = 0;
+			gl.enable(gl.CULL_FACE);
+			gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
+			gl.enable(gl.DEPTH_TEST);
+			gl.depthFunc(gl.LEQUAL);
+			gl.enable(gl.BLEND);
+			gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
+			gl.getExtension("OES_standard_derivatives");
+			function create_shader(f){
+				if(f){var shader = gl.createShader(gl.FRAGMENT_SHADER);var src = fsh_.join(size.value);fsh.innerText = src;}
+				else{var shader = gl.createShader(gl.VERTEX_SHADER); var src = "attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}";}
+				gl.shaderSource(shader, "#define round(x) floor(x+.5)\n"+src);
+				gl.compileShader(shader);
+				if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))return shader;
+				else log.innerText += gl.getShaderInfoLog(shader);
+			}
+			function create_program(vsh, fsh){
+				var program = gl.createProgram();
+				gl.attachShader(program, vsh);
+				gl.attachShader(program, fsh);
+				gl.linkProgram(program);
+				log.innerText += gl.getProgramInfoLog(program);
+				if(gl.getProgramParameter(program, gl.LINK_STATUS)){
+					gl.useProgram(program);
+					return program;
+				}
+			}
+			function compile(){
+				log.innerText = "";
+				prg = create_program(create_shader(0),create_shader(1));
+			}
+			compile();
+			//attribute
+			var UV = gl.getAttribLocation(prg, "UV");
+			var uv_v = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, uv_v);
+			gl.enableVertexAttribArray(UV);
+			gl.vertexAttribPointer(UV, 2, gl.FLOAT, false, 0, 0);
+			gl.bindBuffer(gl.ARRAY_BUFFER, null);
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());//ibo
+				gl.bindBuffer(gl.ARRAY_BUFFER, uv_v);
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array([0,1,2, 3,2,1]), gl.STATIC_DRAW);
+			function main(){
+				gl.clearColor(0,0,0,0);
+				gl.clearDepth(1.);
+				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+				var uniform = [
+					gl.getUniformLocation(prg, "res"),
+					gl.getUniformLocation(prg, "tex")
+				];
+				gl.uniform2fv(uniform[0], [c.width,c.height]);
+
+				gl.activeTexture(gl.TEXTURE0);
+				gl.bindTexture(gl.TEXTURE_2D, texture);
+				gl.uniform1i(uniform[1], 0);
+
+				gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+				gl.flush();
+				console.log("flush");
+				setTimeout(()=>{diffuse.src=c.toDataURL();console.log("dataurl");},0);
+			}
+			//texture
+			var texture;
+			function tex(){
+				var img = new Image();
+				img.onload = function() {
+					var tex = gl.createTexture();
+					gl.bindTexture(gl.TEXTURE_2D, tex);//バインドセット
+					gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);//y反転
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);//読み込み
+					gl.generateMipmap(gl.TEXTURE_2D);//生成
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);//拡大縮小
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//端数処理
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+					gl.bindTexture(gl.TEXTURE_2D, null);//バインド解除
+					c.width = img.naturalWidth;c.height = img.naturalHeight;
+					texture = tex;
+					console.log("set as tex");
+					main();
+				}
+				img.src = imgurl;
+			}
+		</script>
+	</body>
+</html>
