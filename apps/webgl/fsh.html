@@ -16,7 +16,7 @@
 			}
 			_:lang(x)::-moz-placeholder,:root {image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;}
 			.flex{display:flex;justify-content:space-around;flex-wrap:wrap;align-items:flex-start;}
-			#diffuse{width:100%;max-width:640px;height:100%;object-fit:contain;}#log{width:100%;color:#f22;margin:0;word-wrap:break-word;}
+			#diffuse{width:100%;max-width:640px;height:100%;object-fit:contain;}#log{width:100%;color:#f55;margin:0;word-wrap:break-word;}
 			.box{width:300px;min-height:320px;height:50vh;flex-grow:1;display:block;border:1px solid #888;margin:2px;}
 			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
@@ -102,7 +102,7 @@ void main(){
 		var comp_timer,save_timer;
 		fsh_e.on("input",()=>{
 			clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
-			clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value);
+			clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
 		});
 		var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]];
 		function read(_this){
@@ -110,7 +110,7 @@ void main(){
 			var d = document.getElementById(_this.id+"d").style;
 			var num = parseInt(_this.id.slice(-1));
 			reader.addEventListener('load', ()=>{d.backgroundImage="url('"+reader.result+"')";imgurl[num]=reader.result;tex(num);}, false);
-			reader.addEventListener('error',()=>{d.backgroundImage="linear-gradient(#f0f,#f0f)";log.innerText+="ERROR: "+_this.id+" loading failed"},false);
+			reader.addEventListener('error',()=>{d.backgroundImage="linear-gradient(#f0f,#f0f)";log.innerText+="\nERROR: "+_this.id+" loading failed"},false);
 			reader.readAsDataURL(_this.files[0]);
 			console.log(_this.id,imgurl,reader);
 		}
@@ -129,14 +129,14 @@ void main(){
 			}
 		}
 		load();
-		function save() {
+		function save(s) {
 			var data = {
 				"fsh":fsh_e.getValue(),
 				"size":[w_.value,h_.value],
 				"fps":fps_.value
 			}
 			location.hash = encodeURIComponent(JSON.stringify(data)).replace(/\(/g,"%28").replace(/\)/g,"%29");
-			console.log("saved");
+			if(s)log.insertAdjacentHTML('beforeend',"\n<span style='color:#48f;'>auto saved.</span>");else console.log("saved");
 		}
 		function copy(str){
 			var tmp=document.createElement("div");
@@ -182,8 +182,9 @@ void main(){
 			}
 		}
 		function compile(){
-			log.innerText = "";
+			log.textContent = "";
 			prg = create_program(create_shader(0),create_shader(1));
+			if(log.textContent=="")log.insertAdjacentHTML('beforeend',"<span style='color:#6b4;'>compile succeeded.</span>");
 		}
 		compile();
 		//attribute
