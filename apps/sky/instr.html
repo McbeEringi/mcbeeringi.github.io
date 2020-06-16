@@ -21,11 +21,11 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
 		<style>
 			:root{user-select:none;-webkit-user-select:none;}body{margin:0;}
-			#fixed{position:fixed;width:100%;height:100%;background:linear-gradient(#0008,#0000 64px);}
+			#bg::before{width:100%;height:64px;content:"";position:absolute;background:linear-gradient(#0008,#0000);}
 			/*keyboard*/
-			#kb{touch-action:none;margin:0 auto;pointer-events:none;}td{width:83px;height:83px;}
+			#kb,#pkb{position:fixed;left:50%;transform:translateX(-50%);touch-action:none;margin:0 auto;pointer-events:none;}td{width:83px;height:83px;}
 			td div{width:70px;height:70px;background-color:#8888;border-radius:16px;box-shadow:0 0 10px #8888;position:relative;cursor:pointer;margin:0 auto;z-index:0;}
-			td div::before{content:"";display:block;position:absolute;width:70px;height:70px;animation:bob 1.2s ease-in-out 0s infinite alternate;background-image:url(button.png);background-size:210px auto;z-index:1;}
+			td div::before{content:"";display:block;position:absolute;width:70px;height:70px;animation:bob 1.2s ease-in-out 0s infinite alternate;background-image:url(instr.png);background-size:210px auto;z-index:1;}
 			td:nth-child(2n) div:not(.c)::before{background-position:-70px 0;}
 			td:nth-child(2n-1) div:not(.c)::before{background-position:-140px 0;}
 			td div.on_{transform:scale(.8,.8);}td div:not(.on_){transition:.1s;}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg);}
@@ -34,79 +34,132 @@
 			svg{position:absolute;bottom:18px;left:50%;transform:translate(-50%);filter:drop-shadow(0 0 2px #0008);}
 			/*config*/
 			#cfg{top:100%;width:100%;position:absolute;background:#444c;box-shadow:0 0 16px #444c;}
+			form{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;}
+			input[type=radio]{display:none;}
+			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#888;border:2px solid #0000;box-shadow:0 0 8px #888;position:relative;overflow:hidden;background-image:url(instr.png);background-size:300% auto;background-position:var(--bp);}
+			form input[type=radio]:checked+div{border-color:#fea;box-shadow:0 0 8px #fea;}
 			/*rotdisp*/
-			.rotdisp{margin:0 auto;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;touch-action:none;background:center no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='32'%3E%3Cpolygon points='0,16 16,32 20,32 6,18 154,18 140,32 144,32 160,16 144,0 140,0 154,14 6,14 20,0 16,0' fill='%23555a'%3E%3C/polygon%3E%3C/svg%3E");}
-			.rotdisp>*{position:relative;width:96px;height:96px;background:#555;border-radius:24px;margin:8px;box-shadow:0 0 8px #555;}
+			.rotdisp{margin:0 auto;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;touch-action:none;transition:.2s;background:center no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='32'%3E%3Cpolygon points='0,16 16,32 20,32 6,18 154,18 140,32 144,32 160,16 144,0 140,0 154,14 6,14 20,0 16,0' fill='%23555a'%3E%3C/polygon%3E%3C/svg%3E");}
+			.rotdisp>*{position:relative;width:96px;height:96px;background:#555;border-radius:24px;margin:6px;box-shadow:0 0 8px #555;}
 			.rotdisp>*::before{content:"";position:absolute;width:5px;height:5px;left:44px;top:3px;transform:rotateZ(45deg);background:#caf0f6;filter:drop-shadow(0 0 3px #caf0f6);}
 			.rotdisp>*>*{position:relative;margin:10.5px;width:72px;height:72px;box-shadow:0 0 3px #222,0 0 3px #222 inset;background:#555;border-radius:50%;transition:.2s;}
 			.rotdisp>*>*::before{content:"";position:absolute;width:6px;height:6px;left:33px;top:6px;transform:rotateZ(45deg);background:#caf0f6;filter:drop-shadow(0 0 3px #caf0f6);}
 		</style>
 
 
-		<div id="fixed">
-			<table id="kb">
-				<tr><td><div class="c" id="_-9"></div></td><td><div id="_-7"></div></td><td><div id="_-5"></div></td><td><div id="_-4"></div></td><td><div id="_-2"></div></td></tr>
-				<tr><td><div id="_0"></div></td><td><div id="_2"></div></td><td><div class="c" id="_3"></div></td><td><div id="_5"></div></td><td><div id="_7"></div></td></tr>
-				<tr><td><div id="_8"></div></td><td><div id="_10"></div></td><td><div id="_12"></div></td><td><div id="_14"></div></td><td><div class="c" id="_15"></div></td></tr>
-			</table>
-		</div>
+		<table id="kb">
+			<tr><td><div class="c" id="_-9"></div></td><td><div id="_-7"></div></td><td><div id="_-5"></div></td><td><div id="_-4"></div></td><td><div id="_-2"></div></td></tr>
+			<tr><td><div id="_0"></div></td><td><div id="_2"></div></td><td><div class="c" id="_3"></div></td><td><div id="_5"></div></td><td><div id="_7"></div></td></tr>
+			<tr><td><div id="_8"></div></td><td><div id="_10"></div></td><td><div id="_12"></div></td><td><div id="_14"></div></td><td><div class="c" id="_15"></div></td></tr>
+		</table>
+		<table id="pkb" style="display:none;">
+			<tr><td><div id="q-9"></div></td><td><div id="q-7"></div></td><td><div id="q-2"></div></td><td><div id="q0"></div></td></tr>
+			<tr><td><div id="a-9"></div></td><td><div id="a-7"></div></td><td><div id="a-2"></div></td><td><div id="a0"></div></td></tr>
+		</table>
 		<svg height="16px" width="32px"><polygon points="0,16 16,0 32,16 16,10.7" stroke="#fff" fill="#fff8"></polygon></svg>
 		<div id="cfg">
+			<form id="instr_" onchange="set();">
+				<label><input type="radio" name="instr" value="0" checked><div style="--bp:-64px -64px;"></div></label>
+				<label><input type="radio" name="instr" value="1"><div style="--bp:-128px -64px;"></div></label>
+				<label><input type="radio" name="instr" value="2"><div style="--bp:-0px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="3"><div style="--bp:-64px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="4"><div style="--bp:-128px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="5"><div style="--bp:-0px -192px;"></div></label>
+				<label><input type="radio" name="instr" value="6"><div style="--bp:-64px -192px;"></div></label>
+				<label><input type="radio" name="instr" value="7"><div style="--bp:-128px -192px;"></div></label>
+				<label><input type="radio" name="instr" value="8"><div style="--bp:-0px -256px;"></div></label>
+				<label><input type="radio" name="instr" value="9"><div style="--bp:-64px -256px;"></div></label>
+				<label><input type="radio" name="instr" value="10"><div style="--bp:-128px -256px;"></div></label>
+				<label><input type="radio" name="instr" value="11"><div style="--bp:-0px -320px;"></div></label>
+				<label><input type="radio" name="instr" value="12"><div style="--bp:-64px -320px;"></div></label>
+			</form>
 			<div class="rotdisp" id="sc_rot"><div><div id="sc_rotd"></div></div></div>
-			<!--<svg width="64px" height="64px">
-				<polygon points="9.5,13.5 9.5,50.5 39.5,50.5 39.5,13.5" stroke="#fea" stroke-width="3px" fill="#0000"></polygon>
-				<polygon points="24.5,13.5 24.5,50.5 54.5,50.5 54.5,13.5" stroke="#fea" stroke-width="3px" fill="#0000"></polygon>
-				<polygon points="20,15 20,36 29,36 29,15" fill="#fea"></polygon><polygon points="35,15 35,36 44,36 44,15" fill="#fea"></polygon>
-				</svg>
-			<svg width="64px" height="64px">
-				<polygon points="12,24 28,8 52,8 52,56 12,56" stroke="#fea" stroke-width="2px" fill="#0000"></polygon><polygon points="12,24 28,8 28,24" fill="#fea"></polygon>
-				<circle r="6" cx="32" cy="44" fill="#fea"/><polygon points="38,18 38,44 36,44 36,18" fill="#fea"></polygon>
-			</svg>-->
-			<br>
-			<div style="font-size:11px;">
-				powerd by <a href="https://github.com/Tonejs/Tone.js">Tone.js</a><br>
-				<a href="https://github.com/Tonejs/Tone.js/tree/dev/examples/audio/salamander">default sound</a>(under cc3.0) author: Alexander Holm
-			</div>
 		</div>
 		<script>
-			var sc=0,scm=[];
-			kb.style.opacity="0.2";kb.style.pointerEvents="none";
-			const piano = new Tone.Sampler(
-				{"A2":"A2.mp3","D#3":"Ds3.mp3","A3":"A3.mp3","D#4":"Ds4.mp3","A4":"A4.mp3","D#5":"Ds5.mp3","A5":"A5.mp3","D#6":"Ds6.mp3","A6":"A6.mp3","D#7":"Ds7.mp3"},
-				()=>{kb.style.opacity="1";kb.style.pointerEvents="auto";},"https://tonejs.github.io/examples/audio/salamander/"
-			).toDestination();
-
+		var sc=0,scm=[];
+			const stdli = {
+				/*"c#4":"cs4.mp3",*/"e4":"e4.mp3",/*"g4":"g4.mp3",*/"a#4":"as4.mp3",
+				/*"c5":"c5.mp3","d5":"d5.mp3","e5":"e5.mp3",*/"f5":"f5.mp3",/*"g5":"g5.mp3","a5":"a5.mp3",*/"b5":"b5.mp3",//"c6":"c6.mp3",
+				/*"c#6":"cs6.mp3",*/"e6":"e6.mp3",/*"g6":"g6.mp3",*/"a#6":"as6.mp3"
+			},blli = [
+				{"c4":"c4.mp3","d4":"d4.mp3","g4":"g4.mp3","a4":"a4.mp3"},
+				{"c4":"_c4.mp3","d4":"_d4.mp3","g4":"_g4.mp3","a4":"_a4.mp3"}
+			],instr_li = [
+				["harp/",{"d4":"d4.mp3","g4":"g4.mp3","c5":"c5.mp3","f#5":"fs5.mp3"}],
+				["percussion/",{"c4":"0.mp3","d4":"1.mp3","g4":"2.mp3","a4":"3.mp3"},{"c4":"4.mp3","d4":"5.mp3","g4":"6.mp3","a4":"7.mp3"}],
+				["contrabass/",stdli],//g4: 404
+				["horn/",stdli],
+				["piano/",{"d4":"d4.mp3","f4":"f4.mp3","b4":"b4.mp3","d5":"d5.mp3","f5":"f5.mp3","b5":"b5.mp3"}],
+				["bell1/"].concat(blli),["bell2/"].concat(blli),
+				["flute/",stdli],["quena/",stdli],["guitar/",stdli],["ukulele/",stdli],
+				["piano/",{"d4":"d5.mp3","f4":"f5.mp3","b4":"b5.mp3","d5":"d6.mp3","f#5":"fs6.mp3","a#5":"as6.mp3"}],
+				["glock/",stdli]
+			];
 			function load() {
 				var h = location.hash.slice(1);
 				if(h){
 					h = h.split(",");
 					if(h[0])sc=parseInt(h[0]);
+					if(h[1])instr_.instr[parseInt(h[1])].checked=true;
+					console.log("loaded");
 				}
 			}
 			load();
-			const save = ()=>{location.hash=[sc].join();console.log("saved")},
+			const save = ()=>{location.hash=[sc,instr_.instr.value].join();console.log("saved")},
 			rotd = ()=>sc_rotd.style.transform="rotateZ("+sc*30+"deg)";
 			rotd();
+			function set(){
+				kb.style.opacity="0.2";kb.style.pointerEvents="none";pkb.style.opacity="0.2";pkb.style.pointerEvents="none";
+				instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
+				save();
+				if(['1','5','6'].includes(instr_.instr.value)){pkb.style.display="block";kb.style.display="none";}else{kb.style.display="block";pkb.style.display="none";}
+				if(instr_.instr.value==1){sc_rot.style.opacity="0.2";sc_rot.style.pointerEvents="none";sc_rotd.style.transform="rotateZ(0deg)";}else{sc_rot.style.opacity="1";sc_rot.style.pointerEvents="auto";rotd();}
+				const il = instr_li[instr_.instr.value];
+				if(il[2])synth2 = new Tone.Sampler(il[2],()=>console.log("synth2"),"audio/"+il[0]).toDestination();
+				synth = new Tone.Sampler(il[1],()=>{
+					kb.style.opacity="1";kb.style.pointerEvents="auto";pkb.style.opacity="1";pkb.style.pointerEvents="auto";
+					instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
+					console.log(il);
+				},"audio/"+il[0]).toDestination();
+				//if(instr_.instr.value==6){const reverb=new Tone.Reverb({decay:2.5}).toDestination();synth.connect(reverb);synth2.connect(reverb);}
+			}
+			set();
 			//https://tomari.org/main/java/oto.html
-			document.querySelectorAll('#kb div').forEach((key)=>{
+			document.querySelectorAll('#kb div,#pkb tr:first-child div').forEach((key)=>{
 				key.addEventListener("touchstart",function(e){
 					e.preventDefault();this.textContent="　";console.log(this.id);
-					piano.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
+					synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
 					this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 				},false);
-				key.addEventListener("touchend",function(){this.classList.remove('on_');},false);
-				key.addEventListener("touchcancel",function(){this.classList.remove('on_');},false);
 				key.addEventListener("mousedown",function(){
 					if(this.textContent=="　")this.textContent="";else{
 						console.log(this.id);
-						piano.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+sc)/12));
+						synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
 						this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 						setTimeout(()=>this.classList.remove('on_'),100);
 					}
 				},false);
+			});
+			document.querySelectorAll('#pkb tr:last-child div').forEach((key)=>{
+				key.addEventListener("touchstart",function(e){
+					e.preventDefault();this.textContent="　";console.log(this.id);
+					synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+					this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
+				},false);
+				key.addEventListener("mousedown",function(){
+					if(this.textContent=="　")this.textContent="";else{
+						console.log(this.id);
+						synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+						this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
+						setTimeout(()=>this.classList.remove('on_'),100);
+					}
+				},false);
+			});
+			document.querySelectorAll('#kb div,#pkb div').forEach((key)=>{
+				key.addEventListener("touchend",function(){this.classList.remove('on_');},false);
+				key.addEventListener("touchcancel",function(){this.classList.remove('on_');},false);
 				key.addEventListener("animationend",function(){this.classList.remove('on');},false);
 			});
-
 			sc_rot.children[0].ontouchstart = (e)=>{e.preventDefault;sc_rotd.textContent="　";scm=[true,sc,e.changedTouches[0].clientX,e.changedTouches[0].clientY];console.log("touch",scm);};
 			sc_rot.children[0].ontouchmove = (e)=>{e.preventDefault;if(scm[0]){sc=scm[1]+Math.floor((e.changedTouches[0].clientX-scm[2])*.05+.5);rotd();}};
 			sc_rot.children[0].ontouchend = (e)=>{if(scm[2]==e.changedTouches[0].clientX&&scm[3]==e.changedTouches[0].clientY)sc=0;rotd();save();scm[0]=false;console.log("touch_",sc);};
