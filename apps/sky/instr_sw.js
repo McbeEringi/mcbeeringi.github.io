@@ -3,7 +3,11 @@ const STATIC_DATA = [
 	'instr.html',
 	'instr.png',
 	'sky_style.js',
-	'sky_style.css'
+	'sky_style.css',
+	'/audio/harp/d4.mp3',
+	'/audio/harp/g4.mp3',
+	'/audio/harp/c5.mp3',
+	'/audio/harp/fs5.mp3'
 ];
 
 self.addEventListener('install', function(e) {
@@ -16,7 +20,7 @@ self.addEventListener('install', function(e) {
 });
 self.addEventListener('activate', function(e){console.log('[ServiceWorker] Activate');});
 self.addEventListener('fetch', function(e) {
-	console.log('[ServiceWorker] Fetch'+e.request.url);
+	console.log(e.request.url);
 	e.respondWith(
 		caches.match(e.request).then(function(response) {
 			return response || fetch(e.request);
