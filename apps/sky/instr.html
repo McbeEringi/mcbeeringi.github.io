@@ -25,7 +25,7 @@
 			/*keyboard*/
 			#kb,#pkb{position:fixed;left:50%;transform:translateX(-50%);touch-action:none;margin:0 auto;pointer-events:none;}td{width:83px;height:83px;}
 			td div{width:70px;height:70px;background-color:#8888;border-radius:16px;box-shadow:0 0 10px #8888;position:relative;cursor:pointer;margin:0 auto;z-index:0;}
-			td div::before{content:"";display:block;position:absolute;width:70px;height:70px;animation:bob 1.2s ease-in-out 0s infinite alternate;background-image:url(instr.png);background-size:210px auto;z-index:1;}
+			td div::before{content:"";display:block;position:absolute;width:70px;height:70px;animation:bob 1.2s ease-in-out 0s infinite alternate;background-image:url(instr_.png);background-size:210px auto;z-index:1;}
 			td:nth-child(2n) div:not(.c)::before{background-position:-70px 0;}
 			td:nth-child(2n-1) div:not(.c)::before{background-position:-140px 0;}
 			td div.on_{transform:scale(.8,.8);}td div:not(.on_){transition:.1s;}td div.on::before, td div.on::after{animation:on .4s ease-in-out;transform:rotateY(0deg);}
@@ -36,7 +36,7 @@
 			#cfg{top:100%;width:100%;position:absolute;background:#444c;box-shadow:0 0 16px #444c;}
 			form{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;}
 			input[type=radio]{display:none;}
-			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#888;border:2px solid #0000;box-shadow:0 0 8px #888;position:relative;overflow:hidden;background-image:url(instr.png);background-size:300% auto;background-position:var(--bp);}
+			form div{width:64px;height:64px;margin:8px;border-radius:16px;background-color:#888;border:2px solid #0000;box-shadow:0 0 8px #888;position:relative;overflow:hidden;background-image:url(instr_.png);background-size:300% auto;background-position:var(--bp);}
 			form input[type=radio]:checked+div{border-color:#fea;box-shadow:0 0 8px #fea;}
 			/*rotdisp*/
 			.rotdisp{margin:0 auto;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;touch-action:none;transition:.2s;background:center no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='32'%3E%3Cpolygon points='0,16 16,32 20,32 6,18 154,18 140,32 144,32 160,16 144,0 140,0 154,14 6,14 20,0 16,0' fill='%23555a'%3E%3C/polygon%3E%3C/svg%3E");}
