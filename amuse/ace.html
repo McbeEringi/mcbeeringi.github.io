@@ -9,8 +9,7 @@
 		<div id="ed">void main(){
 	gl_FragColor = vec4(1,0,1,1);
 }</div>
-		<button onclick="alert(editor.getValue());location.hash=encodeURIComponent(editor.getValue());">alert</button>
-		<button onclick="copy(location.href);">copy</button>
+		<button onclick="alert(editor.getValue());">alert</button>
 		<script>
 		var editor = ace.edit("ed",{
 			showInvisibles: true,
@@ -23,19 +22,6 @@
 			useSoftTabs: false,
 			tabSize: 2
 		});
-		if(location.hash)editor.setValue(decodeURIComponent(location.hash.slice(1)),-1);
-		function copy(str){
-		        var tmp=document.createElement("div");
-			var pre=document.createElement("pre");
-			pre.style.webkitUserSelect="auto";pre.style.userSelect="auto";
-			tmp.appendChild(pre).textContent = str;
-			var s=tmp.style;s.position="fixed";s.right="200%";
-			document.body.appendChild(tmp);
-			document.getSelection().selectAllChildren(tmp);
-			var result=document.execCommand("copy");
-			document.body.removeChild(tmp);
-			return result;
-		}
 		</script>
 	</body>
 </html>
