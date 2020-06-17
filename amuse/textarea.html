@@ -12,7 +12,7 @@
 
 
 		<textarea id="ta"></textarea>
-		<button onclick="location.hash=encodeURIComponent(ta.value);copy(location.href);">save&amp;copy</button>
+		<button onclick="location.hash=encodeURIComponent(ta.value).replace(/\(/g,"%28").replace(/\)/g,"%29");copy(location.href);">save&amp;copy</button>
 		<script>
 			if(location.hash)ta.value=decodeURIComponent(location.hash.slice(1));
 			function copy(str){
