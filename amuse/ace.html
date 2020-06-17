@@ -9,7 +9,7 @@
 		<div id="ed">void main(){
 	gl_FragColor = vec4(1,0,1,1);
 }</div>
-		<button onclick="alert(editor.getValue())">alert</button>
+		<button onclick="alert(editor.getValue());location.hash=encodeURIComponent(editor.getValue());">alert</button>
 		<script>
 		var editor = ace.edit("ed",{
 			showInvisibles: true,
@@ -22,6 +22,7 @@
 			useSoftTabs: false,
 			tabSize: 2
 		});
+		if(location.hash)editor.setValue(decodeURIComponent(location.hash.slice(1)),-1);
 		</script>
 	</body>
 </html>
