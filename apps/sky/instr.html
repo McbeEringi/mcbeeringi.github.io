@@ -76,7 +76,7 @@
 			<div class="rotdisp" id="sc_rot"><div><div id="sc_rotd"></div></div></div>
 		</div>
 		<script>
-		var sc=0,scm=[];
+		var sc=0,scm=[],keymap_;
 			const stdli = {
 				/*"c#4":"cs4.mp3",*/"e4":"e4.mp3",/*"g4":"g4.mp3",*/"a#4":"as4.mp3",
 				/*"c5":"c5.mp3","d5":"d5.mp3","e5":"e5.mp3",*/"f5":"f5.mp3",/*"g5":"g5.mp3","a5":"a5.mp3",*/"b5":"b5.mp3",//"c6":"c6.mp3",
@@ -94,7 +94,14 @@
 				["flute/",stdli],["quena/",stdli],["guitar/",stdli],["ukulele/",stdli],
 				["piano/",{"d4":"d5.mp3","f4":"f5.mp3","b4":"b5.mp3","d5":"d6.mp3","f#5":"fs6.mp3","a#5":"as6.mp3"}],
 				["glock/",stdli]
-			];
+			],keymap = [{
+				"KeyR":"_-9","KeyT":"_-7","KeyY":"_-5","KeyU":"_-4","KeyI":"_-2",
+				"KeyF":"_0","KeyG":"_2","KeyH":"_3","KeyJ":"_5","KeyK":"_7",
+				"KeyC":"_8","KeyV":"_10","KeyB":"_12","KeyN":"_14","KeyM":"_15"
+			},{
+				"KeyR":"q-9","KeyT":"q-7","KeyY":"q-2","KeyU":"q0",
+				"KeyF":"a-9","KeyG":"a-7","KeyH":"a-2","KeyJ":"a0"
+			}];
 			function load() {
 				var h = location.hash.slice(1);
 				if(h){
@@ -112,7 +119,9 @@
 				kb.style.opacity="0.2";kb.style.pointerEvents="none";pkb.style.opacity="0.2";pkb.style.pointerEvents="none";
 				instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="0.2";e.style.pointerEvents="none"});
 				save();
-				if(['1','5','6'].includes(instr_.instr.value)){pkb.style.display="block";kb.style.display="none";}else{kb.style.display="block";pkb.style.display="none";}
+				//8keys
+				if(['1','5','6'].includes(instr_.instr.value)){pkb.style.display="block";kb.style.display="none";keymap_=keymap[1];}else{kb.style.display="block";pkb.style.display="none";keymap_=keymap[0];}
+				//percussion
 				if(instr_.instr.value==1){sc_rot.style.opacity="0.2";sc_rot.style.pointerEvents="none";sc_rotd.style.transform="rotateZ(0deg)";}else{sc_rot.style.opacity="1";sc_rot.style.pointerEvents="auto";rotd();}
 				const il = instr_li[instr_.instr.value];
 				if(il[2])synth2 = new Tone.Sampler(il[2],()=>console.log("synth2"),"audio/"+il[0]).toDestination();
@@ -159,6 +168,17 @@
 				key.addEventListener("touchend",function(){this.classList.remove('on_');},false);
 				key.addEventListener("touchcancel",function(){this.classList.remove('on_');},false);
 				key.addEventListener("animationend",function(){this.classList.remove('on');},false);
+			});
+			document.addEventListener('keydown',e=>{
+				if(keymap_[e.code])document.getElementById(keymap_[e.code]).dispatchEvent(new Event('mousedown'));
+				if(['ArrowUp','ArrowRight'].includes(e.code)){e.preventDefault();
+					if(e.shiftKey){instr_.instr[parseInt(instr_.instr.value)+1].checked=true;}else{sc++;rotd();}
+					save();
+				}
+				if(['ArrowDown','ArrowLeft'].includes(e.code)){e.preventDefault();
+					if(e.shiftKey){instr_.instr[parseInt(instr_.instr.value)-1].checked=true;}else{sc--;rotd();}
+					save();
+				}
 			});
 			sc_rot.children[0].ontouchstart = (e)=>{e.preventDefault;sc_rotd.textContent="　";scm=[true,sc,e.changedTouches[0].clientX,e.changedTouches[0].clientY];console.log("touch",scm);};
 			sc_rot.children[0].ontouchmove = (e)=>{e.preventDefault;if(scm[0]){sc=scm[1]+Math.floor((e.changedTouches[0].clientX-scm[2])*.05+.5);rotd();}};
