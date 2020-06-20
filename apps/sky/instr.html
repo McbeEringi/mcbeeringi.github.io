@@ -82,23 +82,16 @@
 		</div>
 		<script>
 		var sc=0,scm=[],keymap_;
-			const stdli = {
-				/*"c#4":"cs4.mp3",*/"e4":"e4.mp3",/*"g4":"g4.mp3",*/"a#4":"as4.mp3",
-				/*"c5":"c5.mp3","d5":"d5.mp3","e5":"e5.mp3",*/"f5":"f5.mp3",/*"g5":"g5.mp3","a5":"a5.mp3",*/"b5":"b5.mp3",//"c6":"c6.mp3",
-				/*"c#6":"cs6.mp3",*/"e6":"e6.mp3",/*"g6":"g6.mp3",*/"a#6":"as6.mp3"
-			},blli = [
+			const stdli = (x)=>{return JSON.parse('{"ds4":"ds'+(4+x)+'.mp3","a4":"a'+(4+x)+'.mp3","ds5":"ds'+(5+x)+'.mp3","a5":"a'+(5+x)+'.mp3"}');};
+			const blli = [
 				{"c4":"c4.mp3","d4":"d4.mp3","g4":"g4.mp3","a4":"a4.mp3"},
 				{"c4":"c4_.mp3","d4":"d4_.mp3","g4":"g4_.mp3","a4":"a4_.mp3"}
 			],instr_li = [
-				["harp/",{"d4":"d4.mp3","g4":"g4.mp3","c5":"c5.mp3","f#5":"fs5.mp3"}],
+				["harp/",stdli(-2)],
 				["percussion/",{"c4":"0.mp3","d4":"1.mp3","g4":"2.mp3","a4":"3.mp3"},{"c4":"4.mp3","d4":"5.mp3","g4":"6.mp3","a4":"7.mp3"}],
-				["contrabass/",stdli],//g4: 404
-				["horn/",stdli],
-				["piano/",{"d4":"d4.mp3","f4":"f4.mp3","b4":"b4.mp3","d5":"d5.mp3","f5":"f5.mp3","b5":"b5.mp3"}],
+				["contrabass/",stdli(-3)],["horn/",stdli(-3)],["piano/",stdli(-1)],
 				["bell1/"].concat(blli),["bell2/"].concat(blli),
-				["flute/",stdli],["quena/",stdli],["guitar/",stdli],["ukulele/",stdli],
-				["piano/",{"d4":"d5.mp3","f4":"f5.mp3","b4":"b5.mp3","d5":"d6.mp3","f#5":"fs6.mp3","a#5":"as6.mp3"}],
-				["glock/",stdli]
+				["flute/",stdli(-1)],["quena/",stdli(-1)],["guitar/",stdli(-2)],["ukulele/",stdli(-2)],["piano/",stdli(0)],["glock/",stdli(0)]
 			],keymap = [{
 				"KeyR":"_-9","KeyT":"_-7","KeyY":"_-5","KeyU":"_-4","KeyI":"_-2",
 				"KeyF":"_0","KeyG":"_2","KeyH":"_3","KeyJ":"_5","KeyK":"_7",
@@ -130,11 +123,14 @@
 				if(instr_.instr.value==1){sc_rot.style.opacity="0.2";sc_rot.style.pointerEvents="none";sc_rotd.style.transform="rotateZ(0deg)";}else{sc_rot.style.opacity="1";sc_rot.style.pointerEvents="auto";rotd();}
 				const il = instr_li[instr_.instr.value];
 				if(il[2])synth2 = new Tone.Sampler(il[2],()=>console.log("synth2"),"audio/"+il[0]).toDestination();
-				synth = new Tone.Sampler(il[1],()=>{
+				/*synth = new Tone.Sampler(il[1],()=>{
 					kb.style.opacity="1";kb.style.pointerEvents="auto";pkb.style.opacity="1";pkb.style.pointerEvents="auto";
 					instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
 					console.log(il);
-				},"audio/"+il[0]).toDestination();
+				},"audio/"+il[0]).toDestination();*/
+				synth = new Tone.Synth().toDestination();
+					kb.style.opacity="1";kb.style.pointerEvents="auto";pkb.style.opacity="1";pkb.style.pointerEvents="auto";
+					instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
 				//if(instr_.instr.value==6){const reverb=new Tone.Reverb({decay:2.5}).toDestination();synth.connect(reverb);synth2.connect(reverb);}
 			}
 			set();
@@ -142,13 +138,13 @@
 			document.querySelectorAll('#kb div,#pkb tr:first-child div').forEach((key)=>{
 				key.addEventListener("touchstart",function(e){
 					e.preventDefault();this.textContent="　";console.log(this.id);
-					synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+					synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12),'8n');
 					this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 				},false);
 				key.addEventListener("mousedown",function(){
 					if(this.textContent=="　")this.textContent="";else{
 						console.log(this.id);
-						synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+						synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12),'8n');
 						this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 						setTimeout(()=>this.classList.remove('on_'),100);
 					}
@@ -157,13 +153,13 @@
 			document.querySelectorAll('#pkb tr:last-child div').forEach((key)=>{
 				key.addEventListener("touchstart",function(e){
 					e.preventDefault();this.textContent="　";console.log(this.id);
-					synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+					synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12),'8n');
 					this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 				},false);
 				key.addEventListener("mousedown",function(){
 					if(this.textContent=="　")this.textContent="";else{
 						console.log(this.id);
-						synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+						synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12),'8n');
 						this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 						setTimeout(()=>this.classList.remove('on_'),100);
 					}
