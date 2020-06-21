@@ -16,7 +16,7 @@
 			}
 			_:lang(x)::-moz-placeholder,:root {image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;}
 			.flex{display:flex;justify-content:space-around;flex-wrap:wrap;align-items:flex-start;}
-			#diffuse{width:100%;max-width:640px;height:100%;object-fit:contain;}#log{width:100%;color:#f55;margin:0;word-wrap:break-word;}
+			#diffuse{width:100%;max-width:640px;height:100%;object-fit:contain;}pre{width:100%;margin:0;word-wrap:break-word;}#log{color:#f55;}
 			.box{width:300px;min-height:320px;height:50vh;flex-grow:1;display:block;border:1px solid #888;margin:2px;}
 			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
@@ -39,6 +39,7 @@ void main(){
 	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 }</div>
 		</div>
+		<pre id="stlog"></pre>
 		<pre id="log"></pre>
 		<div class="flex" style="max-width:800px;margin:0 auto;">
 			<div class="file" id="inp0d"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0</div>
@@ -219,11 +220,12 @@ void main(){
 			}
 			img.src = imgurl[i];
 		}
-		var t = 0;
-		var fps = fps_.value;
+		var t=0,fps=fps_.value,fpstm;
 		var prc;//二重起動防止
 		function main(){
 			clearTimeout(prc);
+			 stlog.textContent = Math.round(10000/(new Date()-fpstm))/10+" fps\n";
+			fpstm = new Date();
 			t+=1/fps;
 			gl.clearColor(0,0,0,0);
 			gl.clearDepth(1.);
@@ -262,6 +264,7 @@ void main(){
 
 			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 			gl.flush();
+			stlog.textContent += new Date(new Date()-fpstm).getMilliseconds()+" ms/frame";
 			diffuse.src = c.toDataURL();
 
 			prc =setTimeout(main, 1000/fps);
