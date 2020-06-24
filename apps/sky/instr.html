@@ -76,23 +76,23 @@
 				<label><input type="radio" name="instr" value="9"><div style="--bp:-64px -256px;"></div></label>
 				<!--<label><input type="radio" name="instr" value="10"><div style="--bp:-128px -256px;"></div></label>-->
 				<label><input type="radio" name="instr" value="11"><div style="--bp:-0px -320px;"></div></label>
-				<!--<label><input type="radio" name="instr" value="12"><div style="--bp:-64px -320px;"></div></label>-->
+				<label><input type="radio" name="instr" value="12"><div style="--bp:-64px -320px;"></div></label>
 			</form>
 			<div class="rotdisp" id="sc_rot"><div><div id="sc_rotd"></div></div></div>
-			<div style="float:right;margin:8px;" onclick="alert('Powerd by Tone.js\nAudio: GarageBand')">ⓘ</div>
+			<div style="float:right;margin:8px;" onclick="alert('Powerd by Tone.js\nAudio: GarageBand, Tone.js/Salamander')">ⓘ</div>
 		</div>
 		<script>
 		var sc=0,scm=[],keymap_;
-			const stdli = (x)=>{return JSON.parse('{"d#4":"ds'+(4+x)+'.mp3","a4":"a'+(4+x)+'.mp3","d#5":"ds'+(5+x)+'.mp3","a5":"a'+(5+x)+'.mp3"}');};
+			const stdli = (x)=>{return JSON.parse('{"d#4":"Ds'+(4+x)+'.mp3","a4":"A'+(4+x)+'.mp3","d#5":"Ds'+(5+x)+'.mp3","a5":"A'+(5+x)+'.mp3"}');};
 			const blli = [
 				{"c4":"c4.mp3","d4":"d4.mp3","g4":"g4.mp3","a4":"a4.mp3"},
 				{"c4":"c4_.mp3","d4":"d4_.mp3","g4":"g4_.mp3","a4":"a4_.mp3"}
 			],instr_li = [
-				["harp/",stdli(-2)],
-				["percussion/",{"c4":"0.mp3","d4":"1.mp3","g4":"2.mp3","a4":"3.mp3"},{"c4":"4.mp3","d4":"5.mp3","g4":"6.mp3","a4":"7.mp3"}],
-				["contrabass/",stdli(-3)],["horn/",stdli(-3)],["piano/",stdli(-1)],
-				["bell1/"].concat(blli),["bell2/"].concat(blli),
-				["flute/",stdli(-1)],["quena/",stdli(-1)],["guitar/",stdli(-2)],["ukulele/",stdli(-2)],["piano/",stdli(0)],["glock/",stdli(0)]
+				["audio/harp/",stdli(-2)],
+				["audio/percussion/",{"c4":"0.mp3","d4":"1.mp3","g4":"2.mp3","a4":"3.mp3"},{"c4":"4.mp3","d4":"5.mp3","g4":"6.mp3","a4":"7.mp3"}],
+				["audio/contrabass/",stdli(-3)],["audio/horn/",stdli(-3)],["https://tonejs.github.io/examples/audio/salamander/",stdli(-1)],
+				["audio/bell1/"].concat(blli),["audio/bell2/"].concat(blli),
+				["audio/flute/",stdli(-1)],["audio/quena/",stdli(-1)],["audio/guitar/",stdli(-2)],["audio/ukulele/",stdli(-2)],["https://tonejs.github.io/examples/audio/salamander/",stdli(0)],["audio/glock/",stdli(0)]
 			],keymap = [{
 				"KeyR":"_-9","KeyT":"_-7","KeyY":"_-5","KeyU":"_-4","KeyI":"_-2",
 				"KeyF":"_0","KeyG":"_2","KeyH":"_3","KeyJ":"_5","KeyK":"_7",
@@ -128,7 +128,7 @@
 					kb.style.opacity="1";kb.style.pointerEvents="auto";pkb.style.opacity="1";pkb.style.pointerEvents="auto";
 					instr_.querySelectorAll('label').forEach((e)=>{e.style.opacity="1";e.style.pointerEvents="auto"});
 					console.log(il);
-				},"audio/"+il[0]).toDestination();
+				},il[0]).toDestination();
 				//if(instr_.instr.value==6){const reverb=new Tone.Reverb({decay:2.5}).toDestination();synth.connect(reverb);synth2.connect(reverb);}
 			}
 			set();
