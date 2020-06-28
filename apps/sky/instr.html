@@ -24,6 +24,7 @@
 	<body>
 		<script src="sky_style.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 		<style>
 			:root{user-select:none;-webkit-user-select:none;}body{margin:0;}
 			#bg::before{width:100%;height:64px;content:"";position:absolute;background:linear-gradient(#0008,#0000);}
@@ -103,16 +104,15 @@
 				"KeyF":"a-9","KeyG":"a-7","KeyH":"a-2","KeyJ":"a0"
 			}];
 			function load() {
-				var h = location.hash.slice(1);
-				if(h){
-					h = h.split(",");
-					if(h[0])sc=parseInt(h[0]);
-					if(h[1])instr_.instr[parseInt(h[1])].checked=true;
+				var c = [Cookies.get('sc'),Cookies.get('instr')];
+				if(c){
+					if(c[0])sc=parseInt(c[0]);
+					if(c[1])instr_.instr[parseInt(c[1])].checked=true;
 					console.log("loaded");
 				}
 			}
 			load();
-			const save = ()=>{location.hash=[sc,instr_.instr.value].join();console.log("saved")},
+			const save = ()=>{Cookies.set('sc',sc,{expires:7,path:''});Cookies.set('instr',instr_.instr.value,{expires:7,path:''});console.log("saved")},
 			rotd = ()=>sc_rotd.style.transform="rotateZ("+sc*30+"deg)";
 			rotd();
 			function set(){
