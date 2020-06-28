@@ -138,13 +138,13 @@
 			document.querySelectorAll('#kb div,#pkb tr:first-child div').forEach((key)=>{
 				key.addEventListener("touchstart",function(e){
 					e.preventDefault();this.textContent="　";console.log(this.id);
-					synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+					synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(/*instr_.instr.value==1?0:*/sc))/12));
 					this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 				},false);
 				key.addEventListener("mousedown",function(){
 					if(this.textContent=="　")this.textContent="";else{
 						console.log(this.id);
-						synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+						synth.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(/*instr_.instr.value==1?0:*/sc))/12));
 						this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 						setTimeout(()=>this.classList.remove('on_'),100);
 					}
@@ -153,13 +153,13 @@
 			document.querySelectorAll('#pkb tr:last-child div').forEach((key)=>{
 				key.addEventListener("touchstart",function(e){
 					e.preventDefault();this.textContent="　";console.log(this.id);
-					synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+					synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(/*instr_.instr.value==1?0:*/sc))/12));
 					this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 				},false);
 				key.addEventListener("mousedown",function(){
 					if(this.textContent=="　")this.textContent="";else{
 						console.log(this.id);
-						synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(instr_.instr.value==1?0:sc))/12));
+						synth2.triggerAttackRelease(440*Math.pow(2,(parseInt(this.id.slice(1))+(/*instr_.instr.value==1?0:*/sc))/12));
 						this.classList.remove('on');void this.offsetWidth;this.classList.add('on_','on');
 						setTimeout(()=>this.classList.remove('on_'),100);
 					}
