@@ -124,7 +124,7 @@
 				//8keys
 				if(0/*['1','5','6'].includes(instr_.instr.value)*/){pkb.style.display="block";kb.style.display="none";keymap_=keymap[1];}else{kb.style.display="block";pkb.style.display="none";keymap_=keymap[0];}
 				//percussion
-				if(instr_.instr.value==1){sc_rot.style.opacity="0.2";sc_rot.style.pointerEvents="none";sc_rotd.style.transform="rotateZ(0deg)";}else{sc_rot.style.opacity="1";sc_rot.style.pointerEvents="auto";rotd();}
+				//if(instr_.instr.value==1){sc_rot.style.opacity="0.2";sc_rot.style.pointerEvents="none";sc_rotd.style.transform="rotateZ(0deg)";}else{sc_rot.style.opacity="1";sc_rot.style.pointerEvents="auto";rotd();}
 				const il = instr_li[instr_.instr.value];
 				if(il[2])synth2 = new Tone.Sampler(il[2],()=>console.log("synth2"),"audio/"+il[0]).toDestination();
 				synth = new Tone.Sampler(il[1],()=>{
