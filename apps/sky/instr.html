@@ -67,26 +67,26 @@
 			<form id="instr_" onchange="set();">
 				<label><input type="radio" name="instr" value="0" checked><div style="--bp:-64px -64px;"></div></label>
 				<!--<label><input type="radio" name="instr" value="1"><div style="--bp:-128px -64px;"></div></label>-->
-				<label><input type="radio" name="instr" value="2"><div style="--bp:-0px -128px;"></div></label>
-				<label><input type="radio" name="instr" value="3"><div style="--bp:-64px -128px;"></div></label>
-				<label><input type="radio" name="instr" value="4"><div style="--bp:-128px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="1"><div style="--bp:-0px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="2"><div style="--bp:-64px -128px;"></div></label>
+				<label><input type="radio" name="instr" value="3"><div style="--bp:-128px -128px;"></div></label>
 				<!--<label><input type="radio" name="instr" value="5"><div style="--bp:-0px -192px;"></div></label>
 				<label><input type="radio" name="instr" value="6"><div style="--bp:-64px -192px;"></div></label>-->
-				<label><input type="radio" name="instr" value="7"><div style="--bp:-128px -192px;"></div></label>
+				<label><input type="radio" name="instr" value="4"><div style="--bp:-128px -192px;"></div></label>
 				<!--<label><input type="radio" name="instr" value="8"><div style="--bp:-0px -256px;"></div></label>-->
-				<label><input type="radio" name="instr" value="9"><div style="--bp:-64px -256px;"></div></label>
+				<label><input type="radio" name="instr" value="5"><div style="--bp:-64px -256px;"></div></label>
 				<!--<label><input type="radio" name="instr" value="10"><div style="--bp:-128px -256px;"></div></label>-->
-				<label><input type="radio" name="instr" value="11"><div style="--bp:-0px -320px;"></div></label>
-				<label><input type="radio" name="instr" value="12"><div style="--bp:-64px -320px;"></div></label>
+				<label><input type="radio" name="instr" value="6"><div style="--bp:-0px -320px;"></div></label>
+				<label><input type="radio" name="instr" value="7"><div style="--bp:-64px -320px;"></div></label>
 			</form>
 			<div class="rotdisp" id="sc_rot"><div><div id="sc_rotd"></div></div></div>
-			<div style="float:right;margin:8px;" onclick="alert('Powerd by Tone.js\nAudio: GarageBand, Tone.js Salamander')">ⓘ</div>
+			<div style="float:right;margin:8px;" onclick="alert(info)">ⓘ</div>
 		</div>
 		<script>
 		var sc=0,scm=[],keymap_;
 			const stdli = (x)=>{return JSON.parse('{"d#4":"ds'+(4+x)+'.mp3","a4":"a'+(4+x)+'.mp3","d#5":"ds'+(5+x)+'.mp3","a5":"a'+(5+x)+'.mp3"}');};
 			const salm = (x)=>{return ["https://tonejs.github.io/examples/audio/salamander/",JSON.parse('{"d#4":"Ds'+(4+x)+'.mp3","a4":"A'+(4+x)+'.mp3","d#5":"Ds'+(5+x)+'.mp3","a5":"A'+(5+x)+'.mp3"}')];};
-			const blli = [
+			const info = "Powerd by Tone.js\nAudio: GarageBand, Tone.js Salamander\n\nThis page uses cookie to store instruments settings.\n\nauthor:@McbeEringi\nMIT License",blli = [
 				{"c4":"c4.mp3","d4":"d4.mp3","g4":"g4.mp3","a4":"a4.mp3"},
 				{"c4":"c4_.mp3","d4":"d4_.mp3","g4":"g4_.mp3","a4":"a4_.mp3"}
 			],instr_li = [
