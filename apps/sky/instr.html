@@ -107,7 +107,7 @@
 				var c = [Cookies.get('sc'),Cookies.get('instr')];
 				if(c){
 					if(c[0])sc=parseInt(c[0]);
-					if(c[1])try instr_.instr[parseInt(c[1])].checked=true;
+					if(c[1])try{instr_.instr[parseInt(c[1])].checked=true;}catch(e){console.log(e);}
 					console.log("loaded");
 				}
 			}
