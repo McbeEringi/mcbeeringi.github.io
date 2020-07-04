@@ -25,12 +25,12 @@
 			u.innerText = escape(s.innerText).replace(/%/g, '\\');
 			b.innerText = btoa(u.innerText);
 			z.innerText = btoa(zip_deflate(u.innerText));
-		">↓</button>
+		">　↓　</button>
 		<button type="button" onclick="
 			if(b.innerText)u.innerText = atob(b.innerText);
 			if(z.innerText)u.innerText = zip_inflate(atob(z.innerText));
 			s.innerText = unescape(u.innerText.replace(/\\/g, '%'));
-		">↑</button>
+		">　↑　</button>
 	</div>
 	<div class="col1">
 		<h3>Unicode</h3>
