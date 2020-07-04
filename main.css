@@ -83,7 +83,7 @@ textarea,input[type="text"],input[type="number"]{color:#eaf4fc;background-color:
 textarea::placeholder,input[type="text"]::placeholder,input[type="number"]::placeholder{color:#eaf4fc88;}
 textarea:focus,input[type="text"]:focus,input[type="number"]:focus{outline:none;border-bottom:2px solid #48f;transition:.3s;}
 
-button{cursor:pointer;background:#666;color:#fff;border:none;border-bottom:4px solid #555;border-radius:4px;font-size:16px;font-family:'M PLUS Rounded 1c',sans-serif;}
+button{cursor:pointer;background:#666;color:#fff;border:none;border-bottom:4px solid #555;border-radius:4px;font-size:20px;font-family:'M PLUS Rounded 1c',sans-serif;}
 button:hover{background:#48f;}button:active{background:#222;border-top:2px solid #0000;border-bottom:2px solid #0000;}
 
 iframe.gl{
