@@ -4,11 +4,9 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi howto-8</title>
-		<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
-		<link rel="stylesheet" type="text/css" href="../main.css">
 	</head>
 	<body>
-		<header id="H"></header>
+		<script src="../style.js"></script>
 		<p class="title">#8 空を描く(後編)</p>
 		<p align="center">もふもふしたい(？？)</p>
 		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
@@ -123,8 +121,6 @@ return mix(
 			是非考えてみてください <br>
 			次はちょっと休憩に太陽とか月とか描いていきましょうか…
 		</div>
-		<footer id="F"></footer>
-		<script src="../hf.js"></script>
-		<script>F.innerHTML = nav.outerHTML+F.innerHTML;</script>
+		<script>document.body.appendChild(nav);</script>
 	</body>
 </html>

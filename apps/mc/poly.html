@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<br>
-		<span class="button" id="run">run</span><br>
+		<span class="button" id="run">Run</span><br>
 		<pre id="log"></pre>
 		<br>
 		<div class="box">
@@ -63,7 +63,7 @@
 			</div>
 			<div id="outf">
 				<br>
-				<a id="fout">Press "run" to generate file</a>
+				<a id="fout">Press "Run" to generate file</a>
 			</div>
 		</div>
 		<script>
@@ -78,9 +78,9 @@
 							fout.href = "data:,"+encodeURI(diffuse);
 							fout.download = o+".geo.json";fout.textContent = 'save as "'+fout.download+'"';
 						}
-						run.textContent='done!';
+						run.textContent='Done!';run.style.background="#555";
 						run.onclick=()=>{main();}
-						setTimeout(()=>run.textContent='run',1000);
+						setTimeout(()=>run.textContent='Run',1000);
 					}
 					else{log.textContent+=m.data;}
 			});
@@ -93,7 +93,7 @@
 					"cffx":[vfx.textContent,vnfx.textContent,vtfx.textContent],
 					"fname":fname
 				});
-				run.textContent='・・・';
+				run.textContent='Please wait…';run.style.background="#333";
 				run.onclick=()=>{}
 			}
 			function read(_this) {

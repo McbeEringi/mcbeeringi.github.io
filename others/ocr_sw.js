@@ -1,6 +1,7 @@
 //https://qiita.com/masanarih0ri/items/0845f312cff5c8d0ec60
 const STATIC_DATA = [
 	'ocr.html',
+	'https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js',
 	'/img/test.png'
 ];
 

@@ -4,8 +4,6 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi AES_encrypter</title>
-	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="../main.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
 	<script>var reader = new FileReader();var name = "unknown";</script>
 	<style>
@@ -17,7 +15,7 @@
 	</style>
 </head>
 <body>
-	<header id="H"></header>
+	<script src="../style.js"></script>
 	<p class="title">AES_encrypter</p>
 
 	<p align=center>入力したファイルを指定した鍵でAES暗号化し, それを埋め込んだhtmlファイルを生成します</p>
@@ -33,8 +31,6 @@
 	<div class="col1">
 		<a class="button" id="dl" download="">download</a>
 	</div>
-	<footer id="F"></footer>
-	<script src="../hf.js"></script>
 	<script>
 		function file(_this) {
 			name=_this.value.split("\\").pop();
