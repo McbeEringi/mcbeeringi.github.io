@@ -1,5 +1,5 @@
-document.write('<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">');
-document.write('<link href="https://mcbeeringi.github.io/main.css" rel="stylesheet">');
+document.write('<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">\n\
+<link href="https://mcbeeringi.github.io/main.css" rel="stylesheet">');
 var header =  document.createElement('header');
 header.innerHTML = "\
 	<a href='https://mcbeeringi.github.io' class='left'>\
