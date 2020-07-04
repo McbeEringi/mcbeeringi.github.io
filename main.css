@@ -182,19 +182,21 @@ textarea {
 
 button {
 	cursor: pointer;
-	background: rgba(84, 121, 128, .8);
+	background: #666;
 	color: #fff;
-	border: 1px solid #eaf4fc;
+	border: none;
+	border-bottom:4px solid #222;border-radius:4px;
 	font-size: 3ex;
 	font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 
 button:hover {
-	background: rgba(81, 214, 211, .5);
+	background: #48f;
 }
 
 button:active {
-	background: rgba(133, 227, 225, .5);
+	background: #48f5;
+	border-top:2px solid #000;border-bottom:2px solid #000;
 }
 
 iframe.gl {
