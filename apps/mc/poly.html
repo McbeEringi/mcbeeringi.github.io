@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<br>
-		<span class="button" onclick="main();this.textContent='done!';setTimeout(()=>this.textContent='run',1000);">run</span><br>
+		<span class="button" id="run">run</span><br>
 		<pre id="log"></pre>
 		<br>
 		<div class="box">
@@ -68,8 +68,34 @@
 		</div>
 		<script>
 			var reader = new FileReader(), fname = "unknown";
-			const fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
-			const time = ()=>{var d=new Date();return d.getHours()+":"+d.getMinutes()+":"+(d.getSeconds()+d.getMilliseconds()*1e-3)+" ";}
+			const worker = new Worker('poly.js');
+			worker.addEventListener('message',(m) => {
+					console.log(m.data);
+					if(m.data.diffuse){
+						if(m.data.diffuse[1]){
+							var diffuse = m.data.diffuse[1],o = m.data.diffuse[0];
+							tout.value = diffuse;
+							fout.href = "data:,"+encodeURI(diffuse);
+							fout.download = o+".geo.json";fout.textContent = 'save as "'+fout.download+'"';
+						}
+						run.textContent='done!';
+						run.onclick=()=>{main();}
+						setTimeout(()=>run.textContent='run',1000);
+					}
+					else{log.textContent+=m.data;}
+			});
+			run.onclick=()=>{main();}
+			function main() {
+				log.textContent="";
+				worker.postMessage({
+					"s":[tinp.value,reader.result][inpm.m.value],
+					"frm":frm.checked?mname.value:"",
+					"cffx":[vfx.textContent,vnfx.textContent,vtfx.textContent],
+					"fname":fname
+				});
+				run.textContent='・・・';
+				run.onclick=()=>{}
+			}
 			function read(_this) {
 				fname=_this.files[0].name;
 				finpl.textContent="Drag & Drop or click to select";
@@ -78,57 +104,6 @@
 				reader.addEventListener("error",()=>finpl.textContent="Loading failed: "+fname,false);
 				reader.addEventListener("loadend",(x)=>console.log(x),false);
 				reader.readAsText(_this.files[0]);
-			}
-			function core(s,posf,nf,uvf) {
-				//log.textContent += time()+"[info] started…\n";
-				var o = s.match(/^o\s.+$/m);
-					if(o){o = o[0].replace(/\n/g,"").replace(/^o\s/,"");}
-					else{log.textContent += time()+"[info] o not found\n";o="poly"}
-				var pos = s.match(/^v\s.+$/gm);
-					if(!pos){log.textContent += time()+"[error] v not found\n";return;};
-					pos = pos.map(fx).map(v=>eval(vfx.textContent));
-				var n = s.match(/^vn\s.+$/gm);
-					if(n){n = n.map(fx);}
-					else{log.textContent += time()+"[info] vn not found\n";n=[[0,1,0]];}
-					n = n.map(vn=>eval(vnfx.textContent));
-				var uv = s.match(/^vt\s.+$/gm);
-					if(uv){uv = uv.map(fx);}
-					else{log.textContent += time()+"[info] vt not found\n";uv=[[0,0]];}
-					uv = uv.map(vt=>eval(vtfx.textContent));
-				var pol = s.match(/^f\s.+$/gm);
-					if(pol)pol = pol.map(str=>{str=str.replace(/\n/g,"").split(" ").map(x=>{x=x.split("/").map(x=>x?x-1:x);return [x[0]-posf,x[2]?x[2]-nf:0,x[1]?x[1]-uvf:0]}).slice(1);return [str[0],str[1],str[2],str[str[3]?3:0]]});
-					else{log.textContent += time()+"[info] f not found… '"+o+"' skipped\n";return ["",pos.length,n.length,uv.length];}
-				console.log(o,pos,uv,n,pol);
-				s =
-					'{"name":"'+o+'","pivot":[0,0,0]'+
-					',"poly_mesh":{"normalized_uvs":true,"positions":'+JSON.stringify(pos)+
-					',"normals":'+JSON.stringify(n)+',"uvs":'+JSON.stringify(uv)+
-					',"polys":'+JSON.stringify(pol)+'}},';
-				log.textContent += time()+"[info] '"+o+"' done\n"
-				return [s,pos.length,n.length,uv.length];
-			}
-			function main() {
-				log.textContent = time()+"[info] all convertions started\n";
-				var posf=0,nf=0,uvf=0,o=fname,diffuse="",tmp;
-				var s = [tinp.value,reader.result][inpm.m.value];
-				if(!s){log.textContent += time()+"[error] Input not found\n";return;}
-				if(s.match(/^o\s.+$/m))s = ("o\n#\n"+s).split(/\n(?=o)/).slice(1);
-				else s=[s];
-				console.log(s);
-				for(var i=0; i<s.length; i++) {
-					tmp = core(s[i],posf,nf,uvf);
-					if(tmp){diffuse+=tmp[0]; posf+=tmp[1]; nf+=tmp[2]; uvf+=tmp[3];}
-					else {return;}
-				}
-				diffuse = diffuse.slice(0,-1);
-				if(frm.checked){
-					o = mname.value;
-					diffuse = '{"format_version":"1.8.0","geometry.'+o+'":{"bones":['+diffuse+']}}';
-				}
-				tout.value = diffuse;
-				fout.href = "data:,"+encodeURI(diffuse);
-				fout.download = o+".geo.json";fout.textContent = 'save as "'+fout.download+'"';
-				log.textContent += time()+"[info] all convertions completed";
 			}
 			function copy(string) {
 				var tmp = document.createElement("div");
