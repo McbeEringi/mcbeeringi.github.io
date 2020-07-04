@@ -4,7 +4,7 @@ const STATIC_DATA = [
 	'https://cdnjs.cloudflare.com/ajax/libs/tone/14.5.45/Tone.js',
 	'https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js',
 	'instr.png',
-	'sky_main.js',
+	'sky_style.js',
 	'sky_style.css',
 	'/audio/harp/a2.mp3',
 	'/audio/harp/a3.mp3',
