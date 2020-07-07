@@ -16,16 +16,8 @@
 
 
 		<pre id="time">現在時刻: loading…<br>サーバー時刻: loading…</pre>
-		<h3>0.9.5で変わったようです<br>現在調査中につき写真のみの掲載となります</h3>
+		<h3>0.9.5で変わったようです<br>現在調査中です</h3>
 		<hr>
-		<div style="user-select:none;-webkit-user-select:none;">
-			<label><input type="checkbox">草原(3)▶︎<div>["入口左手前","丸石奥","鳥の塔右奥","洞窟入口"]<br><img src="img/00.JPG"><br><br>["入口右奥","丸石右","4島中央","神殿内"]<br><img src="img/01.JPG"><br><br>["入口左奥","鳥の塔中央","洞窟内","神殿前"]<br><img src="img/02.JPG"></div></label><br><br>
-			<label><input type="checkbox">雨林(3)▶︎<div>["入口右手前","開拓地船","川&蟹木","晴れ間池"]<br><img src="img/10.JPG"><br><br>["入口左奥","開拓地奥木","墓所中央","神殿後"]<br><img src="img/11.JPG"><br><br>["入口右奥","川&amp;蟹出口","墓所橋","晴れ間奥"]<br><img src="img/12.JPG"></div></label><br><br>
-			<label><input type="checkbox">峡谷(2)▶︎<div>["入口左","スケート橋","天球儀入口","ゴール左"]<br><img src="img/20.JPG"><br><br>["入口右奥","スケート氷","天球儀出口","ゴール右"]<br><img src="img/21.JPG"></div></label><br><br>
-			<label><input type="checkbox">捨て地(3)▶︎<div>["入口後ろ","祠出口","投石台手前","戦場砦右奥"]<br><img src="img/30.JPG"><br><br>["入口左奥","祠闇花","投石台中央","難破船後端"]<br><img src="img/31.JPG"><br><br>["入口右奥","投石台出口","難破船先端","戦場砦上"]<br><img src="img/32.JPG"></div></label><br><br>
-			<label><input type="checkbox">書庫(2)▶︎<div>["1F手前","1F奥","2F奥","6F手前"]<br><img src="img/40.JPG"><br><br>["1F右","2F扉左","4F祠","6F奥"]<br><img src="img/41.JPG"></div></label><br>
-		</div>
-		<hr><!--
 		<h2>本日分</h2>
 		<pre id="today">loading…</pre>
 		<img id="today_">
@@ -33,10 +25,19 @@
 		<h2>次回更新分</h2>
 		<pre id="next">loading…</pre>
 		<img id="next_">
-		<hr>-->
+		<hr>
+		<h2>パターン一覧</h2>
+		<div style="user-select:none;-webkit-user-select:none;">
+			<label><input type="checkbox">草原(3)▶︎<div>["入口左手前","丸石奥","鳥の塔右奥","洞窟入口"]<br><img src="img/00.JPG"><br><br>["入口右奥","丸石右","4島中央","神殿内"]<br><img src="img/01.JPG"><br><br>["入口左奥","鳥の塔中央","洞窟内","神殿前"]<br><img src="img/02.JPG"></div></label><br><br>
+			<label><input type="checkbox">雨林(3)▶︎<div>["入口右手前","開拓地船","川&蟹木","晴れ間池"]<br><img src="img/10.JPG"><br><br>["入口左奥","開拓地奥木","墓所中央","神殿後"]<br><img src="img/11.JPG"><br><br>["入口右奥","川&amp;蟹出口","墓所橋","晴れ間奥"]<br><img src="img/12.JPG"></div></label><br><br>
+			<label><input type="checkbox">峡谷(2)▶︎<div>["入口左","スケート橋","天球儀入口","ゴール左"]<br><img src="img/20.JPG"><br><br>["入口右奥","スケート氷","天球儀出口","ゴール右"]<br><img src="img/21.JPG"></div></label><br><br>
+			<label><input type="checkbox">捨て地(3)▶︎<div>["入口後ろ","祠出口","投石台手前","戦場砦右奥"]<br><img src="img/30.JPG"><br><br>["入口左奥","祠闇花","投石台中央","難破船後端"]<br><img src="img/31.JPG"><br><br>["入口右奥","投石台出口","難破船先端","戦場砦上"]<br><img src="img/32.JPG"></div></label><br><br>
+			<label><input type="checkbox">書庫(2)▶︎<div>["1F手前","1F奥","2F奥","6F手前"]<br><img src="img/40.JPG"><br><br>["1F右","2F扉左","4F祠","6F奥"]<br><img src="img/41.JPG"></div></label><br>
+		</div>
+		<hr>
 		<pre>大キャンドル参考元: <a href="https://twitter.com/sky_tea11/status/1234038235149426689/photo/1">ティー様</a></pre>
 		<script>
-			const c_pat = (x)=>[(x-1)%5,Math.floor(x/5)%[2,3,3,2,3][x%5]];
+			const c_pat = (x)=>[(x-1)%5,Math.floor(x/5+1)%[2,3,3,2,3][x%5]];
 			const c_dic =[
 				//https://twitter.com/sky_tea11/status/1234038235149426689/photo/1
 				//https://twitter.com/i/events/1176090791342567424
@@ -64,7 +65,7 @@
 					["1F右","2F扉左","4F祠","6F奥"]
 				],
 			];
-			//7月///4:31
+			//7月///4:31,5:4101,6:0210,7:1220
 			var img;
 			function main(date) {
 				var dt = date.getDate(),dy=date.getDay(),h=date.getHours(),c_pat_=c_pat(dt);
@@ -79,7 +80,7 @@
 				time.textContent = "現在時刻: "+date.toLocaleString();
 				date.setMinutes(date.getMinutes()-420+date.getTimezoneOffset());
 				time.textContent += "\nサーバー時刻: "+date.toLocaleString();
-				/*if(hbuf!=date.getHours()){
+				if(hbuf!=date.getHours()){
 					hbuf = date.getHours();
 					console.log("exe");
 					today.innerText = main(date);
@@ -87,7 +88,7 @@
 					date.setDate(date.getDate()+1);
 					next.innerText = main(date);
 					next_.src = img;
-				}*/
+				}
 			},1000),1000-new Date().getMilliseconds());
 		</script>
 	</body>
