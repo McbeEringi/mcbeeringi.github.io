@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi data_url</title>
-	<script>if(location.search)location.href=location.search.substring(1);else var reader=new FileReader(),name="unknown";</script>
+	<script>if(location.hash)location.href=location.hash.substring(1);else var reader=new FileReader(),name="unknown";</script>
 	<style>
 		.file{width:320px;height:180px;position:relative;border-radius:5px;border:1px solid #888;}
 		.file div{position:absolute;font-size:14px;top:calc(50% - 7px);width:100%;text-align:center;pointer-events:none;}
@@ -21,7 +21,7 @@
 	</div>
 	<div class="col2">
 		<h2>result</h2>
-		<button onclick="copy(out.value);">copy</button> <button onclick="copy('https://mcbeeringi.github.io/apps/dataurl.html?'+out.value);">copy as https</button><br><br>
+		<button onclick="copy(out.value);">copy</button> <button onclick="copy('https://mcbeeringi.github.io/apps/dataurl.html#'+out.value);">copy as https</button><br><br>
 		<textarea id="out" style="height:128px;"></textarea>
 	</div>
 	<script>
