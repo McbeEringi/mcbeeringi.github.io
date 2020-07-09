@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi data_url</title>
-	<script>var reader=new FileReader(),name="unknown";</script>
+	<script>if(location.hash)location.href=location.hash.substring(1);else var reader=new FileReader(),name="unknown";</script>
 	<style>
 		.file{width:320px;height:180px;position:relative;border-radius:5px;border:1px solid #888;}
 		.file div{position:absolute;font-size:14px;top:calc(50% - 7px);width:100%;text-align:center;pointer-events:none;}
@@ -25,7 +25,6 @@
 		<textarea id="out" style="height:128px;"></textarea>
 	</div>
 	<script>
-		if(location.hash)location.href=location.hash.substring(1);
 		function file(_this) {
 			name=_this.value.split("\\").pop();
 			label.textContent="読み込み中…";
