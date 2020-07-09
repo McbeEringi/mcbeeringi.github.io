@@ -22,7 +22,7 @@
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
 			.file{width:160px;height:120px;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
-			pre{white-space:pre-wrap;}
+			pre{white-space:pre-wrap;display: inline-block;}
 		</style>
 
 
@@ -39,7 +39,7 @@ void main(){
 	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 }</div>
 		</div>
-		<pre id="stlog"></pre>
+		<code id="fpslog"></code><code id="mslog" style="float:right;"></code>
 		<pre id="log"></pre>
 		<div class="flex" style="max-width:800px;margin:0 auto;">
 			<div class="file" id="inp0d"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0</div>
@@ -224,7 +224,8 @@ void main(){
 		var prc;//二重起動防止
 		function main(){
 			clearTimeout(prc);
-			 stlog.textContent = Math.round(10000/(new Date()-fpstm))/10+" fps\n";
+			if(Math.floor(new Date().getMilliseconds()*.010)!=Math.floor(new Date(fpstm).getMilliseconds()*.010))
+				fpslog.textContent = Math.round(10000/(new Date()-fpstm))/10+" fps\n";
 			fpstm = new Date();
 			t+=1/fps;
 			gl.clearColor(0,0,0,0);
@@ -264,7 +265,7 @@ void main(){
 
 			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 			gl.flush();
-			stlog.textContent += new Date(new Date()-fpstm).getMilliseconds()+" ms/frame";
+			mslog.textContent = new Date(new Date()-fpstm).getMilliseconds()+" ms/frame";
 			diffuse.src = c.toDataURL();
 
 			prc =setTimeout(main, 1000/fps);
