@@ -28,9 +28,9 @@
 
 		<canvas id="canvas" style="display:none;"></canvas><br>
 		<div class="flex">
-			<a id="dl" class="box" target="_blank" rel="noreferrer noopener">
-				<img id="diffuse" style="opacity:0;"><canvas id="preview"></canvas>
-			</a>
+			<div class="box">
+				<img id="diffuse" style="opacity:0;z-index:1;"><canvas id="preview" style="z-index:0;"></canvas>
+			</div>
 			<div class="box" id="fsh">precision mediump float;
 uniform float time;
 uniform vec2 res;
@@ -105,7 +105,7 @@ void main(){
 			clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
 			clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
 		});
-		var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]];
+		var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]],dftflag;
 		function read(_this){
 			var reader = new FileReader();
 			var d = document.getElementById(_this.id+"d").style;
@@ -115,12 +115,8 @@ void main(){
 			reader.readAsDataURL(_this.files[0]);
 			console.log(_this.id,imgurl,reader);
 		}
-		dl.onclick=()=>{
-			dl.href="data:text/html,<a href='"+diffuse.src+"'download id='a'></a>"+
-				unescape("%3Cscript%3Ea.click%28%29%3B%3C/script%3E");
-		}
-		diffuse.ontouchstart=()=>{dftflag=true;imgdl.src=canvas.toDataURL();}
-		diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else imgdl.src=canvas.toDataURL();;}
+		diffuse.ontouchstart=()=>{dftflag=true;diffuse.src=canvas.toDataURL();}
+		diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
 
 		function load() {
 			var data = location.hash.slice(1);
