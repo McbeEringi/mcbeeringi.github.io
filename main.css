@@ -94,6 +94,7 @@ iframe.gl{
 	border:0 solid;
 	border-radius:16px;
 	box-shadow:1px 1px 5px 1px #0008;
+	pointer-events:none;
 }
 
 pre,code{font-family:'menlo','M PLUS Rounded 1c',sans-serif;font-size:small;tab-size:2;}
