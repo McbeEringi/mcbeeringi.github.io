@@ -7,11 +7,11 @@
 	<body>
 		<style>
 			:root{font-family:sans-serif;background-color:#444;color:#fff;overflow:hidden;}
-			body{position:relative;margin:14px;}
-			div.window{background-color:#222;border-radius:4px;box-shadow:0 0 4px #0008,0 0 2px #fff8 inset;position:absolute;overflow:hidden;padding-bottom:14px;min-width:128px;min-height:32px;}
-			.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;font-size:14px;}
+			body{position:relative;margin:16px;}
+			div.window{background-color:#222;border-radius:4px;box-shadow:0 0 4px #0008,0 0 2px #fff8 inset;position:absolute;overflow:hidden;padding-bottom:16px;min-width:128px;min-height:32px;}
+			.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;font-size:16px;}
 			.hbar.grab{background:#8888;}
-			footer{position:absolute;bottom:0;right:0;width:14px;height:14px;}
+			footer{position:absolute;bottom:0;right:0;width:16px;height:16px;}
 			#log{margin:0;}
 		</style>
 
@@ -55,7 +55,7 @@
 
 				//footer bar pre post
 				var fbar = document.createElement('footer');
-				fbar.insertAdjacentHTML("beforeend",'<svg><polygon points="0,0 0,14 14,14 14,0" fill="#6668"></polygon><polygon points="0,14 14,14 14,0" fill="#8888"></polygon></svg>');
+				fbar.insertAdjacentHTML("beforeend",'<svg><polygon points="0,0 0,16 16,16 16,0" fill="#6668"></polygon><polygon points="0,16 16,16 16,0" fill="#8888"></polygon></svg>');
 				fbar.setAttribute('class','fbar');
 				fbar.ontouchstart=(m)=>{
 					tflag=true;
