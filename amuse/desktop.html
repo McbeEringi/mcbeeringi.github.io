@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<style>
-			:root{font-family:sans-serif;background-color:#444;color:#fff;}
+			:root{font-family:sans-serif;background-color:#444;color:#fff;overflow:hidden;}
 			body{position:relative;}
 			div.window{background-color:#222;border-radius:4px;box-shadow:0 0 4px #0008,0 0 2px #fff8 inset;position:absolute;overflow:hidden;padding-bottom:14px;min-width:128px;min-height:32px;}
 			header{background:#6668;color:#fff;text-shadow:0 0 2px #444;user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;}
@@ -26,6 +26,7 @@
 		<pre id="log"></pre>
 		<script>
 			var windows = document.body.querySelectorAll("div.window"),hbf=[],hcr=[],tflag=false;
+			const cstyle=window.getComputedStyle(document.body),cmargin=Number(cstyle.margin.replace("px","")),cfontSize=Number(cstyle.fontSize.replace("px",""));
 			console.log(windows);
 			windows.forEach((e,i)=>{
 				var hbar = document.createElement('header');
@@ -38,10 +39,8 @@
 					hcr=[e,i];console.log("tdown",hbf[i]);
 					document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
 				}
-				hbar.ontouchend=()=>{
-					hbar.classList.remove('grab');
-					document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";
-				}
+				hbar.ontouchend=()=>{hbar.classList.remove('grab');document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";}
+				hbar.ontouchcancel=()=>{hbar.classList.remove('grab');document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";}
 				hbar.onmousedown=(m)=>{
 					if(tflag)tflag=false;
 					else{
@@ -51,10 +50,7 @@
 						document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
 					}
 				}
-				hbar.onmouseup=()=>{
-					hbar.classList.remove('grab');
-					document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";
-				}
+				hbar.onmouseup=()=>{hbar.classList.remove('grab');document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";}
 				e.insertBefore(hbar,e.firstChild);
 
 				var fbar = document.createElement('footer');
@@ -65,15 +61,15 @@
 				if(hcr[0].firstChild.classList.contains("grab")){
 					m.preventDefault();
 					console.log("tmove");
-					hcr[0].style.left=Math.min(Math.max(hbf[hcr[1]][0]+m.changedTouches[0].clientX-hbf[hcr[1]][1],0),document.body.clientWidth)+"px";
-					hcr[0].style.top=Math.min(Math.max(hbf[hcr[1]][2]+m.changedTouches[0].clientY-hbf[hcr[1]][3],0),window.innerHeight-32)+"px";
+					hcr[0].style.left=Math.min(Math.max(hbf[hcr[1]][0]+m.changedTouches[0].clientX-hbf[hcr[1]][1],-Number(window.getComputedStyle(hcr[0]).width.replace("px",""))),window.innerWidth-cmargin*2)+"px";
+					hcr[0].style.top=Math.min(Math.max(hbf[hcr[1]][2]+m.changedTouches[0].clientY-hbf[hcr[1]][3],-cmargin),window.innerHeight-cmargin*2-cfontSize)+"px";
 				}
 			}
 			window.onmousemove=(m)=>{
 				if(hcr[0].firstChild.classList.contains("grab")){
 					console.log("mmove");
-					hcr[0].style.left=Math.min(Math.max(hbf[hcr[1]][0]+m.clientX-hbf[hcr[1]][1],0),document.body.clientWidth)+"px";
-					hcr[0].style.top=Math.min(Math.max(hbf[hcr[1]][2]+m.clientY-hbf[hcr[1]][3],0),window.innerHeight-32)+"px";
+					hcr[0].style.left=Math.min(Math.max(hbf[hcr[1]][0]+m.clientX-hbf[hcr[1]][1],-Number(window.getComputedStyle(hcr[0]).width.replace("px",""))),window.innerWidth-cmargin*2)+"px";
+					hcr[0].style.top=Math.min(Math.max(hbf[hcr[1]][2]+m.clientY-hbf[hcr[1]][3],-cmargin),window.innerHeight-cmargin*2-cfontSize)+"px";
 				}
 			}
 
