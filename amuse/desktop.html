@@ -73,8 +73,8 @@
 				e.appendChild(fbar);
 
 				//front controll
-				e.ontouchstart=()=>{if(wcr[0]!=e)document.body.querySelectorAll("div.window")[0].appendChild(e);}
-				e.onmousedown=()=>{if(wcr[0]!=e)document.body.querySelectorAll("div.window")[0].appendChild(e);}
+				e.ontouchstart=()=>{if(wcr[3]!=i){wcr[3]=i;document.body.querySelectorAll("div.window")[0].appendChild(e);}}
+				e.onmousedown=()=>{if(wcr[3]!=i){wcr[3]=i;document.body.querySelectorAll("div.window")[0].appendChild(e);}}
 			});
 			const onpost=()=>{if(wcr[0]){wcr[0].firstChild.classList.remove('grab');wcr[0].lastChild.classList.remove('grab');}document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";}
 			window.ontouchend=()=>{onpost();};window.ontouchcancel=()=>{onpost();};window.onmouseup=()=>{onpost();};
