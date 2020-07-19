@@ -82,13 +82,13 @@
 				if(!e.classList.contains('pfixed')){
 				hbar.ontouchstart=(m)=>{
 						tflag=true;hbar.classList.add('grab');
-						wtmp[i]=[e.style.left?pxnum(e.style.left):0,m.changedTouches[0].clientX,e.style.top?pxnum(e.style.top):0,m.changedTouches[0].clientY];
+						wtmp[i]=[pxnum(window.getComputedStyle(e).left),m.changedTouches[0].clientX,pxnum(window.getComputedStyle(e).top),m.changedTouches[0].clientY];
 						wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
 					}
 					hbar.onmousedown=(m)=>{
 						if(tflag)tflag=false;else{
 							hbar.classList.add('grab');
-							wtmp[i]=[e.style.left?pxnum(e.style.left):0,m.clientX,e.style.top?pxnum(e.style.top):0,m.clientY];
+							wtmp[i]=[pxnum(window.getComputedStyle(e).left),m.clientX,pxnum(window.getComputedStyle(e).top),m.clientY];
 							wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
 						}
 					}
