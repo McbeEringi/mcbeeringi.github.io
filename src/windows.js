@@ -12,7 +12,7 @@ window.addEventListener("load",()=>{
 	const pxnum=(x)=>Number(x.replace("px",""));
 	document.body.querySelectorAll("div.window>div").forEach((e,i)=>{
 		//header bar pre post
-		var hbar = document.createElement('header');
+		var hbar=document.createElement('header');
 		hbar.setAttribute('class','hbar');
 		hbar.insertAdjacentHTML("beforeend",e.getAttribute("name"));
 		if(!e.classList.contains('pfixed')){
@@ -31,7 +31,7 @@ window.addEventListener("load",()=>{
 		}
 		e.insertBefore(hbar,e.firstChild);
 		//footer bar pre post
-		var fbar = document.createElement('footer');
+		var fbar=document.createElement('footer');
 		fbar.setAttribute('class','fbar');
 		if(!e.classList.contains('sfixed')){
 			fbar.insertAdjacentHTML("beforeend",'<svg><polygon points="0,0 0,16 16,16 16,0" fill="#6668"></polygon><polygon points="0,16 16,16 16,0" fill="#8888"></polygon></svg>');
@@ -57,7 +57,7 @@ window.addEventListener("load",()=>{
 	window.ontouchend=()=>onpost();window.ontouchcancel=()=>onpost();window.onmouseup=()=>onpost();
 	window.ontouchmove=(e)=>{
 		if(wcr[0]){
-			var winst = window.getComputedStyle(wcr[0].parentNode);
+			var winst=window.getComputedStyle(wcr[0].parentNode);
 			if(wcr[0].firstChild.classList.contains("grab")){//move
 				e.preventDefault();wcr[0].dispatchEvent(custom_e[1]);
 				wcr[0].style.left=Math.min(Math.max(wtmp[wcr[1]][0]+e.changedTouches[0].clientX-wtmp[wcr[1]][1],-pxnum(window.getComputedStyle(wcr[0]).width)+16),pxnum(winst.width)-16)+"px";
@@ -71,7 +71,7 @@ window.addEventListener("load",()=>{
 	}
 	window.onmousemove=(e)=>{
 		if(wcr[0]){
-			var winst = window.getComputedStyle(wcr[0].parentNode);
+			var winst=window.getComputedStyle(wcr[0].parentNode);
 			if(wcr[0].firstChild.classList.contains("grab")){//move
 				wcr[0].dispatchEvent(custom_e[1]);
 				wcr[0].style.left=Math.min(Math.max(wtmp[wcr[1]][0]+e.clientX-wtmp[wcr[1]][1],-pxnum(window.getComputedStyle(wcr[0]).width)+16),pxnum(winst.width)-16)+"px";
