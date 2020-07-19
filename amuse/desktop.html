@@ -10,9 +10,10 @@
 			body{position:relative;margin:16px;}
 			div.window>div{background-color:#222;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;padding-bottom:16px;min-width:128px;min-height:32px;}
 			div.window>div:last-child{filter:none;}
-			.hbar,.fbar{user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;}
-			.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;font-size:16px;}.fbar{position:absolute;bottom:0;right:0;width:16px;height:16px;}
+			.hbar,.fbar{user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;cursor:move;}
+			.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;font-size:16px;}.fbar{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:nwse-resize;}
 			.hbar.grab,.fbar.grab{background:#8888;}
+			.pfixed>.hbar{background:#8668;cursor:default;}
 			#log{margin:0;}
 		</style>
 
@@ -26,6 +27,14 @@
 				<textarea>中身はただのhtml
 右下ドラッグでリサイズ</textarea>
 			</div>
+			<div name="test3" class="sfixed" style="top:60px;left:50px;width:200px;height:150px;">
+				リサイズ禁止 <br>
+				class="sfixed"
+			</div>
+			<div name="test4" class="pfixed" style="top:240px;width:200px;height:150px;">
+				移動禁止 <br>
+				class="pfixed"
+			</div>
 		</div>
 
 		<pre id="log"></pre>
@@ -35,36 +44,41 @@
 			document.body.querySelectorAll("div.window>div").forEach((e,i)=>{
 				//header bar pre post
 				var hbar = document.createElement('header');
-				hbar.insertAdjacentHTML("beforeend",e.getAttribute("name"));
 				hbar.setAttribute('class','hbar');
+				hbar.insertAdjacentHTML("beforeend",e.getAttribute("name"));
+				if(!e.classList.contains('pfixed')){
 				hbar.ontouchstart=(m)=>{
-					tflag=true;hbar.classList.add('grab');
-					wtmp[i]=[e.style.left?Number(e.style.left.replace("px","")):0,m.changedTouches[0].clientX,e.style.top?Number(e.style.top.replace("px","")):0,m.changedTouches[0].clientY];
-					wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
-				}
-				hbar.onmousedown=(m)=>{
-					if(tflag)tflag=false;else{
-						hbar.classList.add('grab');
-						wtmp[i]=[e.style.left?Number(e.style.left.replace("px","")):0,m.clientX,e.style.top?Number(e.style.top.replace("px","")):0,m.clientY];
+						tflag=true;hbar.classList.add('grab');
+						wtmp[i]=[e.style.left?Number(e.style.left.replace("px","")):0,m.changedTouches[0].clientX,e.style.top?Number(e.style.top.replace("px","")):0,m.changedTouches[0].clientY];
 						wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
+					}
+					hbar.onmousedown=(m)=>{
+						if(tflag)tflag=false;else{
+							hbar.classList.add('grab');
+							wtmp[i]=[e.style.left?Number(e.style.left.replace("px","")):0,m.clientX,e.style.top?Number(e.style.top.replace("px","")):0,m.clientY];
+							wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
+						}
 					}
 				}
 				e.insertBefore(hbar,e.firstChild);
 
 				//footer bar pre post
+
 				var fbar = document.createElement('footer');
-				fbar.insertAdjacentHTML("beforeend",'<svg><polygon points="0,0 0,16 16,16 16,0" fill="#6668"></polygon><polygon points="0,16 16,16 16,0" fill="#8888"></polygon></svg>');
 				fbar.setAttribute('class','fbar');
-				fbar.ontouchstart=(m)=>{
-					tflag=true;fbar.classList.add('grab');
-					wtmp[i]=[Number(window.getComputedStyle(e).width.replace("px","")),m.changedTouches[0].clientX,Number(window.getComputedStyle(e).height.replace("px","")),m.changedTouches[0].clientY];
-					wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
-				}
-				fbar.onmousedown=(m)=>{
-					if(tflag)tflag=false;else{
-						fbar.classList.add('grab');
-						wtmp[i]=[Number(window.getComputedStyle(e).width.replace("px","")),m.clientX,Number(window.getComputedStyle(e).height.replace("px","")),m.clientY];
+				if(!e.classList.contains('sfixed')){
+					fbar.insertAdjacentHTML("beforeend",'<svg><polygon points="0,0 0,16 16,16 16,0" fill="#6668"></polygon><polygon points="0,16 16,16 16,0" fill="#8888"></polygon></svg>');
+					fbar.ontouchstart=(m)=>{
+						tflag=true;fbar.classList.add('grab');
+						wtmp[i]=[Number(window.getComputedStyle(e).width.replace("px","")),m.changedTouches[0].clientX,Number(window.getComputedStyle(e).height.replace("px","")),m.changedTouches[0].clientY];
 						wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
+					}
+					fbar.onmousedown=(m)=>{
+						if(tflag)tflag=false;else{
+							fbar.classList.add('grab');
+							wtmp[i]=[Number(window.getComputedStyle(e).width.replace("px","")),m.clientX,Number(window.getComputedStyle(e).height.replace("px","")),m.clientY];
+							wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";
+						}
 					}
 				}
 				e.appendChild(fbar);
