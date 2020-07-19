@@ -120,7 +120,7 @@
 				e.onmousedown=()=>{if(wcr[3]!=i){wcr[3]=i;e.parentNode.appendChild(e);}}
 			});
 			const onpost=()=>{if(wcr[0]){wcr[0].firstChild.classList.remove('grab');wcr[0].lastChild.classList.remove('grab');wcr[0]=null;}document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";}
-			window.ontouchend=()=>{onpost();};window.ontouchcancel=()=>{onpost();};window.onmouseup=()=>{onpost();};
+			window.ontouchend=()=>onpost();window.ontouchcancel=()=>onpost();window.onmouseup=()=>onpost();
 			window.ontouchmove=(e)=>{
 				if(wcr[0]){
 					var winst = window.getComputedStyle(wcr[0].parentNode);
