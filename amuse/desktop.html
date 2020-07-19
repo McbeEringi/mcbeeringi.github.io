@@ -8,7 +8,7 @@
 	<body>
 		<style>
 			:root{font-family:sans-serif;background-color:#444;color:#fff;overflow:hidden;}body{position:relative;margin:16px;}
-			div.window>div{background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:34px;}div.window>div:last-child{filter:none;}
+			div.window>div{background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:36px;}div.window>div:last-child{filter:none;}
 			div.window.dark>div{background-color:#222;color:#fff;}div.window>div.transparent{background-color:#0000;}
 			.hbar,.fbar{user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;cursor:move;}
 			.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;font-size:16px;}.fbar>svg{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:nwse-resize;}
@@ -118,7 +118,7 @@
 					if(wcr[0].firstChild.classList.contains("grab")){//move
 						e.preventDefault();
 						wcr[0].style.left=Math.min(Math.max(wtmp[wcr[1]][0]+e.changedTouches[0].clientX-wtmp[wcr[1]][1],-Number(window.getComputedStyle(wcr[0]).width.replace("px",""))),window.innerWidth-cmargin*2)+"px";
-						wcr[0].style.top=Math.min(Math.max(wtmp[wcr[1]][2]+e.changedTouches[0].clientY-wtmp[wcr[1]][3],-cmargin),window.innerHeight-cmargin-16)+"px";
+						wcr[0].style.top=Math.min(Math.max(wtmp[wcr[1]][2]+e.changedTouches[0].clientY-wtmp[wcr[1]][3],-cmargin),window.innerHeight-cmargin-Number(window.getComputedStyle(wcr[0].firstChild).height.replace("px","")))+"px";
 					}else if(wcr[0].lastChild.classList.contains("grab")){//resize
 						e.preventDefault();
 						wcr[0].style.width=wtmp[wcr[1]][0]+e.changedTouches[0].clientX-wtmp[wcr[1]][1]+"px";
@@ -129,7 +129,8 @@
 				if(wcr[0])
 					if(wcr[0].firstChild.classList.contains("grab")){//move
 						wcr[0].style.left=Math.min(Math.max(wtmp[wcr[1]][0]+e.clientX-wtmp[wcr[1]][1],-Number(window.getComputedStyle(wcr[0]).width.replace("px",""))),window.innerWidth-cmargin*2)+"px";
-						wcr[0].style.top=Math.min(Math.max(wtmp[wcr[1]][2]+e.clientY-wtmp[wcr[1]][3],-cmargin),window.innerHeight-cmargin-16)+"px";
+						console.log(wcr[0].firstChild.style.height)
+						wcr[0].style.top=Math.min(Math.max(wtmp[wcr[1]][2]+e.clientY-wtmp[wcr[1]][3],-cmargin),window.innerHeight-cmargin-Number(window.getComputedStyle(wcr[0].firstChild).height.replace("px","")))+"px";
 					}else if(wcr[0].lastChild.classList.contains("grab")){//resize
 						wcr[0].style.width=wtmp[wcr[1]][0]+e.clientX-wtmp[wcr[1]][1]+"px";
 						wcr[0].style.height=wtmp[wcr[1]][2]+e.clientY-wtmp[wcr[1]][3]+"px";
