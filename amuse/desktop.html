@@ -4,65 +4,73 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>desktop</title>
-	</head>
-	<body>
 		<style>
-			:root{font-family:sans-serif;background-color:#444;color:#fff;overflow:hidden;}body{position:relative;margin:16px;}
-			div.window>div{background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:36px;}div.window>div:last-child{filter:none;}
-			div.window.dark>div{background-color:#222;color:#fff;}div.window>div.transparent{background-color:#0000;}
+			div.window{position:relative;width:100vw;height:100vh;width:1920px;height:1080px;overflow:hidden;pointer-events:none;}
+			div.window>div{pointer-events:auto;background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:36px;}
+			div.window>div:last-child{filter:none;}div.window.dark>div{background-color:#222;color:#fff;}div.window>div.transparent{background-color:#0000;}
 			.hbar,.fbar{user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;cursor:move;}
 			.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;font-size:16px;}.fbar>svg{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:nwse-resize;}
-			.hbar.grab,.fbar.grab{background:#8888;}
-			.pfixed>.hbar{background:#8668;cursor:default;}
-			#log{margin:0;}
+			.hbar.grab,.fbar.grab{background:#8888;}.pfixed>.hbar{background:#8668;cursor:default;}
 		</style>
+	</head>
 
-		<div class="window dark">
-			<div name="a window" style="top:20px;left:0px;width:200px;height:150px;">
-				pcみたいな <br>
-				ウィンドウ操作が <br>
-				できるやつ <br>
-				ダークモードは親のdivに <br>
-				class="dark"
-			</div>
-			<div name="textarea" style="top:95px;left:210px;width:200px;height:150px;">
-				上のバーの名前はname属性 <br>
-				name="textarea" <br>
-				<textarea>中身はただのhtml
-右下ドラッグでリサイズ</textarea>
-			</div>
-			<div name="サイズ" class="sfixed" style="top:180px;left:0px;width:200px;height:150px;">
-				サイズ固定 <br>
-				class="sfixed"
-			</div>
-			<div name="位置" class="pfixed" style="top:255px;left:210px;width:200px;height:150px;">
-				位置固定 <br>
-				class="pfixed"
-			</div>
-			<div name="透過ウィンドウだよ!" class="transparent" style="top:340px;left:0px;width:200px;height:150px;">
-				透過ウィンドウ <br>
-				class="transparent"
-			</div>
-			<div name="test4" class="pfixed sfixed transparent" style="top:415px;left:210px;width:200px;height:150px;">
-				複数組み合わせも可能<br>
-				位置固定 サイズ固定 透過ウィンドウ <br>
-				class="pfixed sfixed transparent"
-			</div>
-		</div>
-		<div class="window">
-			<div name="最前面グループ" style="top:500px;left:0px;width:200px;height:150px;">
-				div.window毎に独立しているので <br>
-				それごと分ければ <br>
-				テーマ変えたり <br>
-				常時最前面表示とかも可能
-			</div>
-			<div name="最前面グループ" style="top:575px;left:210px;width:200px;height:150px;">
-				グループで最前面も可能 <br>
-			</div>
-		</div>
+	<body>
+		<style>
+			:root{font-family:sans-serif;background-color:#444;color:#fff;}
+			div.window{border:1px solid #888;}
+			#w{position:relative;}
+			#w>.window{position:absolute;top:0;left:0;}
+		</style>
 
 
 		<pre id="log"></pre>
+		<div id="w">
+			<div class="window dark">
+				<div name="a window" style="top:20px;left:0px;width:200px;height:150px;">
+					pcみたいな <br>
+					ウィンドウ操作が <br>
+					できるやつ <br>
+					ダークモードは親のdivに <br>
+					class="dark"
+				</div>
+				<div name="textarea" style="top:95px;left:210px;width:200px;height:150px;">
+					上のバーの名前はname属性 <br>
+					name="textarea" <br>
+					<textarea>中身はただのhtml
+右下ドラッグでリサイズ</textarea>
+				</div>
+				<div name="サイズ" class="sfixed" style="top:180px;left:0px;width:200px;height:150px;">
+					サイズ固定 <br>
+					class="sfixed"
+				</div>
+				<div name="位置" class="pfixed" style="top:255px;left:210px;width:200px;height:150px;">
+					位置固定 <br>
+					class="pfixed"
+				</div>
+				<div name="透過ウィンドウだよ!" class="transparent" style="top:340px;left:0px;width:200px;height:150px;">
+					透過ウィンドウ <br>
+					class="transparent"
+				</div>
+				<div name="test4" class="pfixed sfixed transparent" style="top:415px;left:210px;width:200px;height:150px;">
+					複数組み合わせも可能<br>
+					位置固定 サイズ固定 透過ウィンドウ <br>
+					class="pfixed sfixed transparent"
+				</div>
+			</div>
+			<div class="window" style="width:960px;height:540px;">
+				<div name="最前面グループ" style="top:20px;left:420px;width:200px;height:150px;">
+					div.window毎に独立しているので <br>
+					それごと分ければ <br>
+					テーマ変えたり可動域変えたり <br>
+					常時最前面表示とかも可能
+				</div>
+				<div name="最前面グループ" style="top:180px;left:420px;width:200px;height:150px;">
+					グループで最前面も可能 <br>
+				</div>
+			</div>
+		</div>
+
+
 		<script>
 			var wtmp=[],wcr=[],tflag=false;
 			const cmargin=Number(window.getComputedStyle(document.body).margin.replace("px",""));
@@ -114,27 +122,30 @@
 			const onpost=()=>{if(wcr[0]){wcr[0].firstChild.classList.remove('grab');wcr[0].lastChild.classList.remove('grab');wcr[0]=null;}document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";}
 			window.ontouchend=()=>{onpost();};window.ontouchcancel=()=>{onpost();};window.onmouseup=()=>{onpost();};
 			window.ontouchmove=(e)=>{
-				if(wcr[0])
+				if(wcr[0]){
+					var winst = window.getComputedStyle(wcr[0].parentNode);
 					if(wcr[0].firstChild.classList.contains("grab")){//move
 						e.preventDefault();
-						wcr[0].style.left=Math.min(Math.max(wtmp[wcr[1]][0]+e.changedTouches[0].clientX-wtmp[wcr[1]][1],-Number(window.getComputedStyle(wcr[0]).width.replace("px",""))),window.innerWidth-cmargin*2)+"px";
-						wcr[0].style.top=Math.min(Math.max(wtmp[wcr[1]][2]+e.changedTouches[0].clientY-wtmp[wcr[1]][3],-cmargin),window.innerHeight-cmargin-Number(window.getComputedStyle(wcr[0].firstChild).height.replace("px","")))+"px";
+						wcr[0].style.left=Math.min(Math.max(wtmp[wcr[1]][0]+e.changedTouches[0].clientX-wtmp[wcr[1]][1],-Number(window.getComputedStyle(wcr[0]).width.replace("px",""))+16),Number(winst.width.replace("px",""))-16)+"px";
+						wcr[0].style.top=Math.min(Math.max(wtmp[wcr[1]][2]+e.changedTouches[0].clientY-wtmp[wcr[1]][3],0),Number(winst.height.replace("px",""))-Number(window.getComputedStyle(wcr[0].firstChild).height.replace("px","")))+"px";
 					}else if(wcr[0].lastChild.classList.contains("grab")){//resize
 						e.preventDefault();
 						wcr[0].style.width=wtmp[wcr[1]][0]+e.changedTouches[0].clientX-wtmp[wcr[1]][1]+"px";
 						wcr[0].style.height=wtmp[wcr[1]][2]+e.changedTouches[0].clientY-wtmp[wcr[1]][3]+"px";
 					}
+				}
 			}
 			window.onmousemove=(e)=>{
-				if(wcr[0])
+				if(wcr[0]){
+					var winst = window.getComputedStyle(wcr[0].parentNode);
 					if(wcr[0].firstChild.classList.contains("grab")){//move
-						wcr[0].style.left=Math.min(Math.max(wtmp[wcr[1]][0]+e.clientX-wtmp[wcr[1]][1],-Number(window.getComputedStyle(wcr[0]).width.replace("px",""))),window.innerWidth-cmargin*2)+"px";
-						console.log(wcr[0].firstChild.style.height)
-						wcr[0].style.top=Math.min(Math.max(wtmp[wcr[1]][2]+e.clientY-wtmp[wcr[1]][3],-cmargin),window.innerHeight-cmargin-Number(window.getComputedStyle(wcr[0].firstChild).height.replace("px","")))+"px";
+						wcr[0].style.left=Math.min(Math.max(wtmp[wcr[1]][0]+e.clientX-wtmp[wcr[1]][1],-Number(window.getComputedStyle(wcr[0]).width.replace("px",""))+16),Number(winst.width.replace("px",""))-16)+"px";
+						wcr[0].style.top=Math.min(Math.max(wtmp[wcr[1]][2]+e.clientY-wtmp[wcr[1]][3],0),Number(winst.height.replace("px",""))-Number(window.getComputedStyle(wcr[0].firstChild).height.replace("px","")))+"px";
 					}else if(wcr[0].lastChild.classList.contains("grab")){//resize
 						wcr[0].style.width=wtmp[wcr[1]][0]+e.clientX-wtmp[wcr[1]][1]+"px";
 						wcr[0].style.height=wtmp[wcr[1]][2]+e.clientY-wtmp[wcr[1]][3]+"px";
 					}
+				}
 			}
 
 			log.innerText = "welcome to html desktop!";
