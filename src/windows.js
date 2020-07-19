@@ -1,3 +1,10 @@
+/*
+ * made by @McbeEringi cc0
+ * last modified 2020/7/19
+ *
+ * see https://mcbeeringi.github.io/amuse/desktop.html about usage
+ */
+
 document.write('<style>div.window{position:relative;width:100vw;height:100vh;width:1920px;height:1080px;overflow:hidden;pointer-events:none;}div.window>div{pointer-events:auto;background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:36px;}div.window>div:last-child{filter:none;}div.window.dark>div{background-color:#222;color:#fff;}div.window>div.transparent{background-color:#0000;}.hbar,.fbar{user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;cursor:move;}.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;font-size:16px;}.fbar>svg{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:nwse-resize;}.hbar.grab,.fbar.grab{background:#8888;}.pfixed>.hbar{background:#8668;cursor:default;}</style>');
 
 window.onload=()=>{
