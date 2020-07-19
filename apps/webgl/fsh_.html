@@ -14,7 +14,7 @@
 			:root,input,a{font-family:menlo,sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;user-select:none;-webkit-user-select:none;}
 			body{margin:0;}
 			#diffuse,#preview{width:100%;height:calc(100% - 16px);object-fit:contain;position:absolute;}
-			.fbar>svg{z-index:2;}
+			.fbar>svg{z-index:6;}
 			pre{width:100%;margin:0;word-wrap:break-word;white-space:pre-wrap;display:inline-block;}#log{color:#f55;}
 			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
 			input{user-select:auto;-webkit-user-select:auto;background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
@@ -30,7 +30,7 @@
 				<img id="diffuse" style="opacity:0;z-index:1;"><canvas id="preview" style="z-index:0;"></canvas>
 			</div>
 			<div name="fsh editor" style="top:336px;width:320px;height:320px;">
-				<div id="fsh" style="height:calc(100% - 32px);">precision mediump float;
+				<div id="fsh">precision mediump float;
 uniform float time;
 uniform vec2 res;
 void main(){
@@ -88,6 +88,7 @@ void main(){
 
 
 		<script>
+		window.addEventListener("load",()=>{fsh.style.height="calc(100% - "+window.getComputedStyle(fsh.parentNode.firstChild).height+")";fsh_e.resize();},false);
 		var fsh_e = ace.edit("fsh",{
 			showInvisibles: true,
 			theme: "ace/theme/monokai",
