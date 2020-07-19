@@ -17,6 +17,9 @@
 
 
 		<div id="w">
+			<div style="height:540px;position:relative;overflow:hidden;">
+				<pre id="log" style="margin:0;position:absolute;bottom:0;">example</pre>
+			</div>
 			<div class="window dark">
 				<div name="a window" style="top:20px;left:0px;width:200px;height:150px;">
 					pcみたいな <br>
@@ -61,5 +64,11 @@
 				</div>
 			</div>
 		</div>
+
+		<script>
+		document.body.querySelectorAll("div.window>div").forEach((e,i)=>{
+			['hbar_pre','hbar_on','fbar_pre','fbar_on','bar_post','on_front'].map(x=>e.addEventListener(x,()=>log.innerText+="\n"+e.getAttribute("name")+": "+x,false))
+		});
+		</script>
 	</body>
 </html>
