@@ -93,6 +93,7 @@ void main(){
 			theme: "ace/theme/monokai",
 			mode: "ace/mode/glsl",
 			fontSize: 12,
+			//wrap: true,
 			useSoftTabs: false,
 			tabSize: 2
 		});
@@ -101,6 +102,7 @@ void main(){
 			clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
 			clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
 		});
+		fsh.parentNode.addEventListener('fbar_on',()=>fsh_e.resize(),false);
 		var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]],dftflag;
 		function read(_this){
 			var reader = new FileReader();
