@@ -7,10 +7,9 @@
 	</head>
 	<body>
 		<style>
-			:root{font-family:sans-serif;background-color:#444;color:#fff;overflow:hidden;}
-			body{position:relative;margin:16px;}
-			div.window>div{background-color:#222;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;padding-bottom:16px;min-width:128px;min-height:32px;}
-			div.window>div:last-child{filter:none;}
+			:root{font-family:sans-serif;background-color:#444;color:#fff;overflow:hidden;}body{position:relative;margin:16px;}
+			div.window>div{background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:34px;}div.window>div:last-child{filter:none;}
+			div.window.dark>div{background-color:#222;color:#fff;}div.window>div.transparent{background-color:#0000;}
 			.hbar,.fbar{user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;cursor:move;}
 			.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;font-size:16px;}.fbar>svg{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:nwse-resize;}
 			.hbar.grab,.fbar.grab{background:#8888;}
@@ -18,23 +17,32 @@
 			#log{margin:0;}
 		</style>
 
-		<div class="window">
-			<div name="test" style="top:60px;left:50px;width:200px;height:150px;">
+		<div class="window dark">
+			<div name="test" style="top:20px;left:0px;width:200px;height:150px;">
 				pcみたいな <br>
-				ウィンドウの操作が <br>
+				ウィンドウ操作が <br>
 				できるやつ
 			</div>
-			<div name="test2" style="top:240px;left:200px;width:200px;height:150px;">
+			<div name="test2" style="top:95px;left:210px;width:200px;height:150px;">
 				<textarea>中身はただのhtml
 右下ドラッグでリサイズ</textarea>
 			</div>
-			<div name="test3" class="sfixed" style="top:60px;left:50px;width:200px;height:150px;">
+			<div name="test3" class="sfixed" style="top:180px;left:0px;width:200px;height:150px;">
 				サイズ固定 <br>
 				class="sfixed"
 			</div>
-			<div name="test4" class="pfixed" style="top:240px;width:200px;height:150px;">
+			<div name="test4" class="pfixed" style="top:255px;left:210px;width:200px;height:150px;">
 				位置固定 <br>
 				class="pfixed"
+			</div>
+			<div name="test5" class="transparent" style="top:340px;left:0px;width:200px;height:150px;">
+				透過ウィンドウ <br>
+				class="transparent"
+			</div>
+			<div name="test4" class="pfixed sfixed transparent" style="top:415px;left:210px;width:200px;height:150px;">
+				複数組み合わせも可能<br>
+				位置固定 サイズ固定 透過ウィンドウ <br>
+				class="pfixed sfixed transparent"
 			</div>
 		</div>
 
@@ -84,8 +92,8 @@
 				e.appendChild(fbar);
 
 				//front controll
-				e.ontouchstart=()=>{if(wcr[3]!=i){wcr[3]=i;document.body.querySelectorAll("div.window")[0].appendChild(e);}}
-				e.onmousedown=()=>{if(wcr[3]!=i){wcr[3]=i;document.body.querySelectorAll("div.window")[0].appendChild(e);}}
+				e.ontouchstart=()=>{if(wcr[3]!=i){wcr[3]=i;e.parentNode.appendChild(e);}}
+				e.onmousedown=()=>{if(wcr[3]!=i){wcr[3]=i;e.parentNode.appendChild(e);}}
 			});
 			const onpost=()=>{if(wcr[0]){wcr[0].firstChild.classList.remove('grab');wcr[0].lastChild.classList.remove('grab');wcr[0]=null;}document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";}
 			window.ontouchend=()=>{onpost();};window.ontouchcancel=()=>{onpost();};window.onmouseup=()=>{onpost();};
