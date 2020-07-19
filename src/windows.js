@@ -19,13 +19,13 @@ window.addEventListener("load",()=>{
 			hbar.ontouchstart=(m)=>{
 				tflag=true;hbar.classList.add('grab');
 				wtmp[i]=[pxnum(window.getComputedStyle(e).left),m.changedTouches[0].clientX,pxnum(window.getComputedStyle(e).top),m.changedTouches[0].clientY];
-				wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";e.dispatchEvent(custom_e[0]);
+				wcr=[e,i,wcr[2]];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";e.dispatchEvent(custom_e[0]);
 			}
 			hbar.onmousedown=(m)=>{
 				if(tflag)tflag=false;else{
 					hbar.classList.add('grab');
 					wtmp[i]=[pxnum(window.getComputedStyle(e).left),m.clientX,pxnum(window.getComputedStyle(e).top),m.clientY];
-					wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";e.dispatchEvent(custom_e[0]);
+					wcr=[e,i,wcr[2]];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";e.dispatchEvent(custom_e[0]);
 				}
 			}
 		}
@@ -38,20 +38,20 @@ window.addEventListener("load",()=>{
 			fbar.ontouchstart=(m)=>{
 				tflag=true;fbar.classList.add('grab');
 				wtmp[i]=[pxnum(window.getComputedStyle(e).width),m.changedTouches[0].clientX,pxnum(window.getComputedStyle(e).height),m.changedTouches[0].clientY];
-				wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";e.dispatchEvent(custom_e[2]);
+				wcr=[e,i,wcr[2]];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";e.dispatchEvent(custom_e[2]);
 			}
 			fbar.onmousedown=(m)=>{
 				if(tflag)tflag=false;else{
 					fbar.classList.add('grab');
 					wtmp[i]=[pxnum(window.getComputedStyle(e).width),m.clientX,pxnum(window.getComputedStyle(e).height),m.clientY];
-					wcr=[e,i];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";e.dispatchEvent(custom_e[2]);
+					wcr=[e,i,wcr[2]];document.body.style.userSelect="none";document.body.style.WebkitUserSelect="none";e.dispatchEvent(custom_e[2]);
 				}
 			}
 		}
 		e.appendChild(fbar);
 		//front controll
-		e.ontouchstart=()=>{if(wcr[3]!=i){wcr[3]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
-		e.onmousedown=()=>{if(wcr[3]!=i){wcr[3]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
+		e.ontouchstart=()=>{if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
+		e.onmousedown=()=>{console.log(wcr,i);if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
 	});
 	const onpost=()=>{if(wcr[0]){wcr[0].firstChild.classList.remove('grab');wcr[0].lastChild.classList.remove('grab');wcr[0].dispatchEvent(custom_e[4]);wcr[0]=null;}document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";}
 	window.ontouchend=()=>onpost();window.ontouchcancel=()=>onpost();window.onmouseup=()=>onpost();
