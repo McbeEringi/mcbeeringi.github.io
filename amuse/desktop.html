@@ -18,24 +18,28 @@
 		</style>
 
 		<div class="window dark">
-			<div name="test" style="top:20px;left:0px;width:200px;height:150px;">
+			<div name="a window" style="top:20px;left:0px;width:200px;height:150px;">
 				pcみたいな <br>
 				ウィンドウ操作が <br>
-				できるやつ
+				できるやつ <br>
+				ダークモードは親のdivに <br>
+				class="dark"
 			</div>
-			<div name="test2" style="top:95px;left:210px;width:200px;height:150px;">
+			<div name="textarea" style="top:95px;left:210px;width:200px;height:150px;">
+				上のバーの名前はname属性 <br>
+				name="textarea" <br>
 				<textarea>中身はただのhtml
 右下ドラッグでリサイズ</textarea>
 			</div>
-			<div name="test3" class="sfixed" style="top:180px;left:0px;width:200px;height:150px;">
+			<div name="サイズ" class="sfixed" style="top:180px;left:0px;width:200px;height:150px;">
 				サイズ固定 <br>
 				class="sfixed"
 			</div>
-			<div name="test4" class="pfixed" style="top:255px;left:210px;width:200px;height:150px;">
+			<div name="位置" class="pfixed" style="top:255px;left:210px;width:200px;height:150px;">
 				位置固定 <br>
 				class="pfixed"
 			</div>
-			<div name="test5" class="transparent" style="top:340px;left:0px;width:200px;height:150px;">
+			<div name="透過ウィンドウだよ!" class="transparent" style="top:340px;left:0px;width:200px;height:150px;">
 				透過ウィンドウ <br>
 				class="transparent"
 			</div>
@@ -45,6 +49,18 @@
 				class="pfixed sfixed transparent"
 			</div>
 		</div>
+		<div class="window">
+			<div name="最前面グループ" style="top:500px;left:0px;width:200px;height:150px;">
+				div.window毎に独立しているので <br>
+				それごと分ければ <br>
+				テーマ変えたり <br>
+				常時最前面表示とかも可能
+			</div>
+			<div name="最前面グループ" style="top:575px;left:210px;width:200px;height:150px;">
+				グループで最前面も可能 <br>
+			</div>
+		</div>
+
 
 		<pre id="log"></pre>
 		<script>
