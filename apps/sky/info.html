@@ -16,7 +16,14 @@
 
 
 		<pre id="time">現在時刻: loading…<br>サーバー時刻: loading…</pre>
-		<h2>🤔🤔🤔🤔🤔</h2>
+		<hr>
+		<h2>本日分</h2>
+		<pre id="today">loading…</pre>
+		<img id="today_">
+		<hr>
+		<h2>次回更新分</h2>
+		<pre id="next">loading…</pre>
+		<img id="next_">
 		<hr>
 		<h2>パターン一覧</h2>
 		<div style="user-select:none;-webkit-user-select:none;">
@@ -27,18 +34,11 @@
 			<label><input type="checkbox">書庫(2)▶︎<div>["1F手前","1F奥","2F奥","6F手前"]<br><img src="img/40.JPG"><br><br>["1F右","2F扉左","4F祠","6F奥"]<br><img src="img/41.JPG"></div></label><br>
 		</div>
 		<hr>
-		<h2>本日分</h2>
-		<pre id="today">loading…</pre>
-		<img id="today_"> <img id="today2_">
-		<hr>
-		<h2>次回更新分</h2>
-		<pre id="next">loading…</pre>
-		<img id="next_"> <img id="next2_">
-		<hr>
 		<pre>大キャンドル参考元: <a href="https://twitter.com/sky_tea11/status/1234038235149426689/photo/1">ティー様</a></pre>
 		<script>
 			const c_pat = (x)=>[(x-1)%5,Math.floor((x-1)/5)%[2,3,3,2,3][x%5]];
-			const c_pat2 = (x)=>[[(x-1)%5,(Math.floor((x-1)/5)+Math.floor((x-2)/5)+1)%[2,3,3,2,3][x%5]],[x%5,(Math.floor((x-1)/5)+Math.floor(x/5))%[3,3,2,3,2][x%5]]];
+			//		const c_pat2 = (x)=>[[(x-1)%5,(Math.floor((x-1)/5)+Math.floor((x-2)/5)+1)%[2,3,3,2,3][x%5]],[x%5,(Math.floor((x-1)/5)+Math.floor(x/5))%[3,3,2,3,2][x%5]]];
+			//		//7月///(1:0010,2:1120,3:2130,)4:31(40),5:4101,6:0210?,7:12?20,8:2132,9:3040,10:4101?,11:(01)11,12:1020,13:2131,14:3240,15:4100,16:0212,17:1120
 			const c_dic =[
 				//https://twitter.com/sky_tea11/status/1234038235149426689/photo/1
 				//https://twitter.com/i/events/1176090791342567424
@@ -66,14 +66,11 @@
 					["1F右","2F扉左","4F祠","6F奥"]
 				],
 			];
-			//7月///(1:0010,2:1120,3:2130,)4:31(40),5:4101,6:0210?,7:12?20,8:2132,9:3040,10:4101?,11:(01)11,12:1020,13:2131,14:3240,15:4100,16:0212,17:1120
 			var img=[];
 			function main(date) {
-				var dt = date.getDate(),dy=date.getDay(),h=date.getHours(),c_pat_=c_pat2(dt);
-				img = ["img/"+c_pat_[0].join('')+".JPG","img/"+c_pat_[1].join('')+".JPG"];
-				return  "大キャンドル:	"+c_dic[c_pat_[0][0]][0]+"\n		"+c_dic[c_pat_[0][0]][c_pat_[0][1]+1].join(", ")+
-					"\n		"+c_dic[c_pat_[1][0]][0]+
-					"\n		"+c_dic[c_pat_[1][0]][c_pat_[1][1]+1].join(", ")+
+				var dt = date.getDate(),dy=date.getDay(),h=date.getHours(),c_pat_=c_pat(dt);
+				img = "img/"+c_pat_.join('')+".JPG";
+				return  "大キャンドル:	"+c_dic[c_pat_[0]][0]+"\n		"+c_dic[c_pat_[0]][c_pat_[1]+1].join(", ")+
 					//"大キャンドル:	"+c_dic[c_pat_[0]][0]+"\n		"+c_dic[c_pat_[0]][c_pat_[1]+1].join(", ")+
 					//"\nデイリー:	"+
 					"\n\nオフィス:	"+(dt%7==5?"ねこ":(dt%7==6?"宇宙":"特になし"));
@@ -88,10 +85,10 @@
 					hbuf = date.getHours();
 					console.log("exe");
 					today.innerText = main(date);
-					today_.src = img[0];today2_.src = img[1];
+					today_.src = img;
 					date.setDate(date.getDate()+1);
 					next.innerText = main(date);
-					next_.src = img[0];next2_.src = img[1];
+					next_.src = img;
 				}
 			},1000),1000-new Date().getMilliseconds());
 		</script>
