@@ -149,8 +149,8 @@ void main(){
 			return result;
 		}
 		const resize=(c,prv,gl,w,h)=>{
-			if(c.width!=w)c.width=w;if(c.height!=h)c.height=h;
-			prv.height=prv.width*h/w;
+			if(c.width!=w){c.width=w;prv.width=w;}
+			if(c.height!=h){c.height=h;prv.height=h;}
 			gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
 		}
 
