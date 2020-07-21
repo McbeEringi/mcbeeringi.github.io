@@ -1,5 +1,7 @@
 document.write('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet" />');
-document.write('<link rel="stylesheet" href="sky_style.css" rel="stylesheet" />');
+document.write('<style>:root{font-family:"M PLUS Rounded 1c",sans-serif;background:#222;color:#fff;text-shadow:0 0 4px #222;word-wrap:break-word;}\
+#bg{position:fixed;top:0;left:0;z-index:-16;width:100vw;height:100vh;}\
+a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}</style>');
 const e_bg =  document.createElement('div');
 e_bg.setAttribute('id','bg');
 document.body.appendChild(e_bg);
