@@ -46,8 +46,9 @@ void main(){
 			<div class="file" id="inp2d"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2</div>
 			<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
 		</div>
-		<div class="button" style="float:right;margin:1ex 0;" onclick="if(copy(location.href)){this.textContent='copied!';setTimeout(()=>this.textContent='copy url',1000);}">
-			copy url
+		<div style="float:right;margin:16px;text-align:center;">
+			<div class="button" onclick="if(copy(location.href)){this.textContent='copied!';setTimeout(()=>this.textContent='copy url',1000);}">copy url</div><br>
+			<div class="button" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html')">new UI</div>
 		</div>
 		<h3>uniforms</h3>
 		<p style="user-select:text;-webkit-user-select:text;">
