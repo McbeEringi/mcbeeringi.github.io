@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-	<meta charset="UTF-8">
-	<title>FILENAME</title>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+	<meta charset='UTF-8'><title>FILENAME</title>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js'></script>
+	<script>const data={"name":"example","hash":"","enc":""};</script>
 </head>
 <body>
-	<h1>FILENAME</h1>
-	key: <input id="key" onchange="main()"><br>
-	<span id="log">パスワードを入力してください</span><br>
+	<h1 id='h1'>FILENAME</h1>
+	key: <input id='key' onchange='main()'><br>
+	<span id='log'>input password and press enter</span><br>
 	↓<br>
-	<a download="FILENAME" id="dl" href="javascript:void(0);">download</a>
+	<a id='opn' href='javascript:void(0);'>open</a><br>
+	<a download='FILENAME' id='dl' href='javascript:void(0);'>download</a>
 	<script>
-		var data = ["はっしゅ","Crypto.jsを使ったAES暗号化ページだよ!"];
-		function main(){
-			if(CryptoJS.MD5(key.value).toString()==data[0]){
-				log.innerText = "認証完了";
-				dl.href = CryptoJS.AES.decrypt(data[1],key.value).toString(CryptoJS.enc.Utf8);
+		document.title=data.name;h1.innerText=data.name;dl.download=data.name;
+		const main=()=>{
+			if(CryptoJS.MD5(key.value).toString()==data.hash){
+				opn.href=CryptoJS.AES.decrypt(data.enc,key.value).toString(CryptoJS.enc.Utf8);
+				dl.href=opn.href;log.innerText='validated :)';
 			}else{
-				log.innerText = "パスワードが間違っています";
-				dl.href = "javascript:void(0);";
+				dl.href='javascript:void(0);';log.innerText='illegal password :(';
 			}
 		}
 	</script>
