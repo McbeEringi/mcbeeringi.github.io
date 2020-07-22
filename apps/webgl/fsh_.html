@@ -13,11 +13,12 @@
 			body{margin:0;}
 			#diffuse,#preview,#canvas{width:100%;height:calc(100% - 16px);object-fit:contain;position:absolute;}
 			.fbar>svg{z-index:6;}
-			pre{width:100%;margin:0;word-wrap:break-word;white-space:pre-wrap;display:inline-block;}#log{color:#f55;}
 			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;text-align:center;margin:16px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
 			input{user-select:auto;-webkit-user-select:auto;background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
 			.file{width:160px;height:120px;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
+			pre{width:100%;margin:0;word-wrap:break-word;white-space:pre-wrap;display:inline-block;}#log{color:#f55;}
+			.unilog{user-select:none;-webkit-user-select:none;color:#aaa;}
 		</style>
 
 
@@ -71,12 +72,12 @@ void main(){
 			</div>
 			<div name="uniforms" class="sfixed" style="top:452px;left:514px;">
 				<p style="user-select:text;-webkit-user-select:text;margin:0;">
-					uniform float time;<br>
+					uniform float time; <span id="timelog" class="unilog"></span> <br>
 					uniform vec2 res;<br>
-					uniform vec2 tex0res;<br>
-					uniform vec2 tex1res;<br>
-					uniform vec2 tex2res;<br>
-					uniform vec2 tex3res;<br>
+					uniform vec2 tex0res; <span id="0reslog" class="unilog"></span> <br>
+					uniform vec2 tex1res; <span id="1reslog" class="unilog"></span> <br>
+					uniform vec2 tex2res; <span id="2reslog" class="unilog"></span> <br>
+					uniform vec2 tex3res; <span id="3reslog" class="unilog"></span> <br>
 					uniform sampler2D tex0;<br>
 					uniform sampler2D tex1;<br>
 					uniform sampler2D tex2;<br>

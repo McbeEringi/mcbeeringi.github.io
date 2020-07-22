@@ -111,6 +111,7 @@ function tex(i){
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 		gl.bindTexture(gl.TEXTURE_2D, null);//バインド解除
 		imgres[i] = [img.naturalWidth,img.naturalHeight];
+		document.getElementById(i+"reslog").textContent=imgres[i].join(", ");
 		texture[i] = tex;
 		console.log("imgurl["+i+"] loaded as tex",imgres[i]);
 	}
@@ -122,6 +123,7 @@ function main(){
 	clearTimeout(prc);
 	if(Math.floor(new Date().getMilliseconds()*.010)!=Math.floor(new Date(fpstm).getMilliseconds()*.010))
 		fpslog.textContent = Math.round(10000/(new Date()-fpstm))/10+" fps\n";
+	timelog.textContent = Math.floor(t*100)/100;
 	fpstm = new Date();
 	t+=1/fps;
 	gl.clearColor(0,0,0,0);
