@@ -1,5 +1,5 @@
 var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]],dftflag;
-function read(_this){
+const read=(_this)=>{
 	var reader = new FileReader();
 	var d = document.getElementById(_this.id+"d").style;
 	var num = parseInt(_this.id.slice(-1));
@@ -11,7 +11,7 @@ function read(_this){
 diffuse.ontouchstart=()=>{dftflag=true;diffuse.src=canvas.toDataURL();}
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
 
-function load() {
+const load=()=>{
 	var data = location.hash.slice(1);
 	if(data){
 		data=JSON.parse(decodeURIComponent(data.replace(/%28/g,"(").replace(/%29/g,")")));
@@ -21,7 +21,7 @@ function load() {
 	}
 }
 load();
-function save(s) {
+const save=(s)=>{
 	var data = {
 		"fsh":fsh_e.getValue(),
 		"size":[w_.value,h_.value],
@@ -30,7 +30,7 @@ function save(s) {
 	location.hash = encodeURIComponent(JSON.stringify(data)).replace(/\(/g,"%28").replace(/\)/g,"%29");
 	if(s)log.insertAdjacentHTML('beforeend',"\n<span style='color:#48f;'>auto saved.</span>");else console.log("saved");
 }
-function copy(str){
+const copy=(str)=>{
 	var tmp=document.createElement("div");
 	var pre=document.createElement("pre");
 	pre.style.webkitUserSelect="auto";pre.style.userSelect="auto";
@@ -50,6 +50,7 @@ const resize=(c,prv,gl,w,h)=>{
 
 var c = document.getElementById("canvas"),prv = document.getElementById("preview");
 var gl = c.getContext("webgl") || c.getContext("experimental-webgl"),prvctx = prv.getContext("2d");
+prvctx.imageSmoothingEnabled = false;
 resize(c,prv,gl,w_.value,h_.value);
 gl.enable(gl.CULL_FACE);
 gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
@@ -161,7 +162,6 @@ function main(){
 	gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 	gl.flush();
 	mslog.textContent = new Date(new Date()-fpstm).getMilliseconds()+" ms/frame";
-	prvctx.imageSmoothingEnabled = false;
 	prvctx.drawImage(c,0,0,prv.width,prv.height);
 
 	prc = setTimeout(main, 1000/fps);
