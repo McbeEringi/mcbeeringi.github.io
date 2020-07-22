@@ -18,12 +18,8 @@
 
 	<p align=center>入力したファイルを指定した鍵でAES暗号化し, それを埋め込んだhtmlファイルを生成します</p>
 	<div class="col1">
+		<label>key: <input id="key" type="text"></label><br>※メモすることをお勧めします<br><br>
 		<div class="file"><input type="file" id="inp" onchange="file(this)"><div id="label">D&D又はクリックして選択</div></div>
-	</div>
-	<div class="col2">↓<br></div>
-	<div class="col1">
-		<label>key: <input id="key" type="text"></label><br>※メモすることをお勧めします<br>
-		<span class="button" onclick="main();">generate</span><br>
 	</div>
 	<div class="col2">↓<br></div>
 	<div class="col1">
@@ -33,7 +29,7 @@
 		function file(_this) {
 			name=_this.value.split("\\").pop();
 			label.textContent="読み込み中…";
-			reader.addEventListener("load", ()=>label.textContent=name?"選択されたファイル: "+name:"D&D又はクリックして選択", false);
+			reader.addEventListener("load", ()=>{label.textContent=name?"選択されたファイル: "+name:"D&D又はクリックして選択";main();}, false);
 			reader.readAsDataURL(_this.files[0]);
 		}
 		function main(){
