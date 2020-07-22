@@ -51,7 +51,7 @@ window.addEventListener("load",()=>{
 		e.appendChild(fbar);
 		//front controll
 		e.ontouchstart=()=>{if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
-		e.onmousedown=()=>{console.log(wcr,i);if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
+		e.onmousedown=()=>{if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
 	});
 	const onpost=()=>{if(wcr[0]){wcr[0].firstChild.classList.remove('grab');wcr[0].lastChild.classList.remove('grab');wcr[0].dispatchEvent(custom_e[4]);wcr[0]=null;}document.body.style.userSelect="auto";document.body.style.WebkitUserSelect="auto";}
 	window.ontouchend=()=>onpost();window.ontouchcancel=()=>onpost();window.onmouseup=()=>onpost();

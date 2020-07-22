@@ -11,7 +11,7 @@
 		<style>
 			:root,input,a{font-family:menlo,sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;user-select:none;-webkit-user-select:none;}
 			body{margin:0;}
-			#diffuse,#preview{width:100%;height:calc(100% - 16px);object-fit:contain;position:absolute;}
+			#diffuse,#preview,#canvas{width:100%;height:calc(100% - 16px);object-fit:contain;position:absolute;}
 			.fbar>svg{z-index:6;}
 			pre{width:100%;margin:0;word-wrap:break-word;white-space:pre-wrap;display:inline-block;}#log{color:#f55;}
 			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;text-align:center;margin:16px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
@@ -21,11 +21,11 @@
 		</style>
 
 
+		</canvas><canvas id="canvas" style="display:none;"></canvas>
 		<h2>fsh sandbox</h2>
-		<canvas id="canvas" style="display:none;"></canvas>
 		<div class="window dark" style="border:2px solid #888;">
 			<div name="diffuse" style="width:320px;height:320px;">
-				<img id="diffuse" style="opacity:0;z-index:1;"><canvas id="preview" style="z-index:0;"></canvas>
+				<img id="diffuse" style="opacity:0;z-index:1;"><canvas id="preview" style="z-index:0;">
 			</div>
 			<div name="fsh editor" style="top:336px;width:320px;height:320px;">
 				<div id="fsh">precision mediump float;
@@ -57,7 +57,7 @@ void main(){
 				<div class="file" id="inp2d"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2</div>
 				<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
 			</div>
-			<div name="config" class="sfixed" style="top:196px;left:514px;height:300px;">
+			<div name="config" class="sfixed" style="top:196px;left:514px;height:240px;">
 				<label>img size<br>
 				<input type="number" id="w_" value="16" oninput="if(this.value>0){resize(c,prv,gl,this.value,h_.value);save();}else this.value=null" style="width:4em">
 				</label>*
@@ -66,13 +66,10 @@ void main(){
 				<label>fps<br>
 				<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;save();main();}else this.value=null" style="width:8em"></label>
 				<br><br><hr>
-				<label>pixelated<input type="checkbox" id="pxl_" oninput="save();" style="float:right;"></label><br>
-				<span style="color:#888;">(may cause lag)</span>
-				<br><hr>
 				<label>save wait(ms)<br>
 				<input type="number" id="wait_" value="5000" oninput="if(this.value<0)this.value=0" style="width:8em"></label>
 			</div>
-			<div name="uniforms" class="sfixed" style="top:512px;left:514px;">
+			<div name="uniforms" class="sfixed" style="top:452px;left:514px;">
 				<p style="user-select:text;-webkit-user-select:text;margin:0;">
 					uniform float time;<br>
 					uniform vec2 res;<br>
