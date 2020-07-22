@@ -12,12 +12,14 @@ diffuse.ontouchstart=()=>{dftflag=true;diffuse.src=canvas.toDataURL();}
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
 
 const load=()=>{
+	pxl_.checked=true;
 	var data = location.hash.slice(1);
 	if(data){
 		data=JSON.parse(decodeURIComponent(data.replace(/%28/g,"(").replace(/%29/g,")")));
 		fsh_e.setValue(unescape(data.fsh),-1);
 		if(data.size){w_.value = data.size[0];h_.value = data.size[1];}
 		if(data.fps)fps_.value = data.fps;
+		if(data.pxl)pxl_.checked = data.pxl;
 	}
 }
 load();
@@ -25,7 +27,8 @@ const save=(s)=>{
 	var data = {
 		"fsh":fsh_e.getValue(),
 		"size":[w_.value,h_.value],
-		"fps":fps_.value
+		"fps":fps_.value,
+		"pxl":pxl_.checked
 	}
 	location.hash = encodeURIComponent(JSON.stringify(data)).replace(/\(/g,"%28").replace(/\)/g,"%29");
 	if(s)log.insertAdjacentHTML('beforeend',"\n<span style='color:#48f;'>auto saved.</span>");else console.log("saved");
