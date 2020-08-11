@@ -66,7 +66,7 @@ lang{
 .col1{background-color:#444;}
 .col2{background-color:#333;}
 
-.pad4>*{width:24%;min-width:150px;flex-grow:1;text-align:center;}
+.pad4>*{width:24%;min-width:150px;flex-grow:1;}
 .pad4 img{width:20vw;min-width:120px;}
 
 .pad3>*{width:33%;min-width:80px;flex-grow:1;}
