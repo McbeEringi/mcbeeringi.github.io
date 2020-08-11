@@ -48,8 +48,9 @@ lang{
 .brief{font-size:1.3ex;margin:0.5ex;text-align:center;}
 
 /*div*/
-.left,.right{display:flex;align-items:center;flex-wrap:wrap;}
+.left,.right,.ct{display:flex;align-items:center;}
 .right{justify-content:flex-end;}
+.ct{justify-content:space-around;}
 
 .flex{display:flex;justify-content:space-between;flex-wrap:wrap;align-items:flex-start;}
 
