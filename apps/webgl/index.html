@@ -10,8 +10,7 @@
 		<script type="text/javascript" src="../../src/deflate.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js"></script>
 		<script type="text/javascript" src="models.js"></script>
-		<script type="text/javascript" src="url_fx.js"></script>
-		<script type="text/javascript" src="sh_fx.js"></script>
+		<script type="text/javascript" src="index_fx.js"></script>
 		<link rel="stylesheet" href="../../menu.css">
 		<link rel="stylesheet" href="../../toggle.css">
 		<style>
@@ -196,8 +195,8 @@ void main(){
 			var c_os = document.getElementById("c_os").value;
 			var c_os_;
 			var texture = [];
-			tex("TEXTURE_0/diffuse.png",0);
-			tex("TEXTURE_1.png",1);
+			tex("tex/TEXTURE_0.png",0);
+			tex("tex/TEXTURE_1.png",1);
 			var prc;//二重起動防止
 			function main(){
 				clearTimeout(prc);
