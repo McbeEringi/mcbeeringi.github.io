@@ -105,7 +105,7 @@ function tex(i){
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);//y反転
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);//読み込み
 		try{gl.generateMipmap(gl.TEXTURE_2D);}//ミップマップ生成
-		catch(){
+		catch(e){
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);//拡大縮小
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//端数処理
