@@ -81,7 +81,7 @@ function create_program(vsh, fsh){
 function compile(){
 	log.textContent = "";
 	prg = create_program(create_shader(0),create_shader(1));
-	if(log.textContent=="")log.insertAdjacentHTML('beforeend',"<span style='color:#6b4;'>compile succeeded.</span>");
+	if(!/\w/.test(log.textContent))log.insertAdjacentHTML('beforeend',"<span style='color:#6b4;'>compile succeeded.</span>");
 }
 compile();
 //attribute
