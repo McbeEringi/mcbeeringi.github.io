@@ -82,6 +82,8 @@
 float r = .8;<span style="color:#777">//半径</span>
 vec3 n = normalize(vec3(p,sqrt(r*r-d*d)));</pre>
 				最初に半径rの球を計算してからnoemalizeで単位化しています <br>
+				<a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/normalize.xhtml">公式のリファレンス</a><br>
+
 				球の外側をstep関数でカットして <br>
 				xyz成分をそれぞれrgbとして表示するとこんな感じになります <br>
 				いわゆる法線マップですね <br>
