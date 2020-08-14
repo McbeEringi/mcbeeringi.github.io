@@ -9,8 +9,8 @@ header.innerHTML = "\
 	<nav class='right' style='margin-right:1%;flex-grow: 1;'>\
 		<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE 2G</a>\
 		<a href='https://mcbeeringi.github.io/java-jajp'>java ja_JP</a>\
-		<a href='https://mcbeeringi.github.io/others'>Others</a>\
-		<a href='https://mcbeeringi.github.io/how'>HowTo</a>\
+		<a href='https://mcbeeringi.github.io/sky'>Sky</a>\
+		<a href='https://mcbeeringi.github.io/apps'>Apps</a>\
 		<lang onClick=\"window.open('https://translate.google.com/translate?sl=ja&tl=en&u='+location.href)\"></lang>\
 	</nav>\
 ";
