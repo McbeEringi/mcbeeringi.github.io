@@ -133,6 +133,7 @@ function main(){
 	gl.clearColor(0,0,0,0);
 	gl.clearDepth(1.);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	prvctx.clearRect(0, 0, prv.width, prv.height);
 	var uniform = [
 		gl.getUniformLocation(prg, "time"),
 		gl.getUniformLocation(prg, "res"),
