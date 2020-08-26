@@ -25,6 +25,7 @@
 		<br>
 		<a id="dl" download href="">……</a><br>
 		<div id="disp"></div>
+		<img id="img" style="width:50vw;">
 
 		<script>
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
@@ -35,8 +36,9 @@
 			set();
 			function render(){
 				document.body.style.background='#0000';
-				html2canvas(document.getElementById("disp")).then(c=>{
+				html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>{
 					dl.href=c.toDataURL();
+					img.src=dl.href;
 					dl.download=`glyph_${men.value}.png`;
 					dl.innerText=`download as ${dl.download}`;
 				});
