@@ -38,9 +38,9 @@
 				document.body.style.background='#0000';
 				html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>{
 					dl.href=c.toDataURL();
-					img.src=dl.href;
 					dl.download=`glyph_${men.value}.png`;
 					dl.innerText=`download as ${dl.download}`;
+					img.src=dl.href;
 				});
 				document.body.style.background='#222';
 			}
