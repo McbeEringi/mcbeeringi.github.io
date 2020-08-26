@@ -95,7 +95,7 @@ window.addEventListener('load',()=>{
 		}
 	}
 },false);
-function save(){
-	//wjs_pos[1]=
-	//document.cookie=`wpos=${JSON.stringify(wjs_pos[1])};max-age=604800;path=${location.pathname};`;
-}
+/*function wjs_save(){
+	wjs_pos[1]=
+	document.cookie=`wpos=${JSON.stringify(wjs_pos[1])};max-age=604800;path=${location.pathname};`;
+}*/
