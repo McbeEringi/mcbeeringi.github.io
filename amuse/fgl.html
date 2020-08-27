@@ -4,7 +4,6 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>fakegl</title>
 		<style>
-			html{font-family: "sans-serif";}
 			p{overflow:hidden;position:relative;margin:0;bottom:0px;}
 			.flex{display:flex;overflow:hidden;}
 		</style>
@@ -26,21 +25,15 @@
 			function gl(x,y){
 				return smoothstep(-.3,.3,smoothstep(0,1,x)-y);
 			}
-			function main() {
-				var x=0; var y=1; var s=0; var out;
-				var res = document.getElementById("res").value;
+			function main(){
+				var x=0,y=1,s=0,out;
 				document.getElementById("canvas").innerHTML ="";
-				var css =100/res;
-				css = "style='width:"+css+"vmin;height:"+css+"vmin;font-size:"+css+"vmin'";
-				for(; y>0; y-=1/res){
+				var size =100/res.value;
+				for(; y>0; y-=1/res.value){
 					out=""; x=0;
-					for(; x<1; x+=1/res){
+					for(; x<1; x+=1/res.value){
 						s=gl(x,y);
-						if(s<.25)out+="<p "+css+">░░</p>";
-						else if(s<.5) out+="<p "+css+">▒▒</p>";
-						else if(s<.75) out+="<p "+css+">▓▓</p>";
-						else out+="<p "+css+">██</p>";
-						s=0;
+						out+=`<div style="width:${size}vmin;height:${size}vmin;background:rgba(0,0,0,${s})"></div>`;
 					}
 					document.getElementById("canvas").innerHTML += "<div class='flex'>"+out+"</div>";
 				}
