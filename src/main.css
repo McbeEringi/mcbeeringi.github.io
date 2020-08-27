@@ -18,9 +18,9 @@ img.img_s{width:100%;max-width:256px;}
 	margin:0;
 	padding:2em 2%;
 	font-size:calc(5vw + 20px);
-	background-image:linear-gradient(0deg,#aacf53bb,#928c3688),url("img/tateshina.jpg");
-	/*background-image:linear-gradient(0deg,#83ccd288,#c0c6c944),url("img/winter.jpg");
-	background-image:linear-gradient(0deg,#f2a0a188,#fdeff244),url("img/spring.jpg");*/
+	background-image:linear-gradient(0deg,#aacf53bb,#928c3688),url("../img/tateshina.jpg");
+	/*background-image:linear-gradient(0deg,#83ccd288,#c0c6c944),url("../img/winter.jpg");
+	background-image:linear-gradient(0deg,#f2a0a188,#fdeff244),url("../img/spring.jpg");*/
 	background-size:cover;
 	background-position:center;
 	text-align:center;
