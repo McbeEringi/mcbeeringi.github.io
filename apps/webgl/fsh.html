@@ -6,19 +6,15 @@
 		<title>McbeEringi fsh</title>
 	</head>
 	<body>
-		<link rel="stylesheet" href="../../src/menu.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js"></script>
+		<script src="../../src/windows.js"></script>
 		<style>
-			:root,input{
-				--pos:fixed;--menu_h:320px;--bg_col:#666c;
-				font-family:menlo,sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;user-select:none;-webkit-user-select:none;
-			}
-			_:lang(x)::-moz-placeholder,:root {image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;}
-			.flex{display:flex;justify-content:space-around;flex-wrap:wrap;align-items:flex-start;}
-			#diffuse,#preview{width:100%;max-width:640px;height:100%;object-fit:contain;position:absolute;}
-			.box{width:300px;min-height:320px;height:50vh;flex-grow:1;display:block;border:1px solid #888;margin:2px;position:relative;}
-			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
-			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
+			:root,input,a{font-family:menlo,sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;user-select:none;-webkit-user-select:none;}
+			body{margin:0;}
+			#diffuse,#preview,#canvas{width:100%;height:calc(100% - 16px);object-fit:contain;position:absolute;}
+			.fbar>svg{z-index:6;}
+			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;text-align:center;margin:16px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
+			input{user-select:auto;-webkit-user-select:auto;background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
 			.file{width:160px;height:120px;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
 			pre{width:100%;margin:0;word-wrap:break-word;white-space:pre-wrap;display:inline-block;}#log{color:#f55;}
@@ -26,78 +22,80 @@
 		</style>
 
 
-		<canvas id="canvas" style="display:none;"></canvas><br>
-		<div class="flex">
-			<div class="box">
-				<img id="diffuse" style="opacity:0;z-index:1;"><canvas id="preview" style="z-index:0;"></canvas>
+		</canvas><canvas id="canvas" style="display:none;"></canvas>
+		<h2>fsh sandbox</h2>
+		<div class="window dark" style="border:2px solid #888;">
+			<div name="diffuse" style="width:320px;height:320px;" data-winid="d">
+				<img id="diffuse" style="opacity:0;z-index:1;"><canvas id="preview" style="z-index:0;">
 			</div>
-			<div class="box" id="fsh">precision mediump float;
+			<div name="fsh editor" style="top:336px;width:320px;height:320px;" data-winid="e">
+				<div id="fsh">precision mediump float;
 uniform float time;
 uniform vec2 res;
 void main(){
 	vec2 p = gl_FragCoord.xy/res;
 	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 }</div>
-		</div>
-		<code id="fpslog"></code><code id="mslog" style="float:right;"></code>
-		<pre id="log"></pre>
-		<div class="flex" style="max-width:800px;margin:0 auto;">
-			<div class="file" id="inp0d"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0</div>
-			<div class="file" id="inp1d"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1</div>
-			<div class="file" id="inp2d"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2</div>
-			<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
-		</div>
-		<div style="float:right;margin:16px;text-align:center;">
-			<div class="button" onclick="if(copy(location.href)){this.textContent='copied!';setTimeout(()=>this.textContent='copy url',1000);}">copy url</div><br>
-			<div class="button" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html')">new UI</div>
-		</div>
-		<h3>uniforms</h3>
-		<p style="user-select:text;-webkit-user-select:text;">
-			uniform float time; <span id="timelog" class="unilog"></span> <br>
-			uniform vec2 res;<br>
-			uniform vec2 tex0res; <span id="0reslog" class="unilog"></span> <br>
-			uniform vec2 tex1res; <span id="1reslog" class="unilog"></span> <br>
-			uniform vec2 tex2res; <span id="2reslog" class="unilog"></span> <br>
-			uniform vec2 tex3res; <span id="3reslog" class="unilog"></span> <br>
-			uniform sampler2D tex0;<br>
-			uniform sampler2D tex1;<br>
-			uniform sampler2D tex2;<br>
-			uniform sampler2D tex3;
-		</p>
-		<div class="menu">
-			<input type="checkbox" id="menu">
-			<label for="menu"></label>
-			<div><div></div></div>
-			<div>
-				<h3>Config</h3>
-				<div>
-					img size<br>
-					<input type="number" id="w_" value="16" oninput="if(this.value>0){resize(c,prv,gl,this.value,h_.value);save();}else this.value=null" style="width:4em">
-					*
-					<input type="number" id="h_" value="16" oninput="if(this.value>0){resize(c,prv,gl,w_.value,this.value);save();}else this.value=null" style="width:4em">
-				</div><br>
-				<div>
-					<label>fps<br>
-					<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;save();main();}else this.value=null" style="width:8em"></label>
-				</div><br>
-				<div>
-					<label>save wait(ms)<br>
-					<input type="number" id="wait_" value="5000" oninput="if(this.value<0)this.value=0" style="width:8em"></label>
-				</div><br>
-				<p align="center" style="margin:0;font-size:11px;">
+			</div>
+			<div name="info" class="sfixed" style="top:672px;" data-winid="i">
+				<div class="button" onclick="if(copy(location.href)){this.textContent='copied!';setTimeout(()=>this.textContent='export as url',1000);}">export as url</div>
+				<div class="button" onclick="wjs_reset();">reset window pos</div>
+				<div class="button" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html')">old UI</div>
+				<p align="center" style="margin:16px;font-size:13px;">
 					powered by WebGL1.0 <br>
 					special thanks to <a href="https://wgld.org" target="_blank">wgld.org</a> <br>
 					<a href="https://twitter.com/mcbeeringi" target="_blank">@McbeEringi</a>.｡:+*
 				</p>
+
+			</div>
+			<div name="log" style="left:336px;width:320px;height:180px;" data-winid="l">
+				<code id="fpslog" style="float:left;"></code>
+				<code id="mslog" style="float:right;"></code>
+				<pre id="log"></pre>
+			</div>
+			<div name="textures" class="sfixed" style="top:196px;left:336px;" data-winid="t">
+				<div class="file" id="inp0d"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0</div>
+				<div class="file" id="inp1d"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1</div>
+				<div class="file" id="inp2d"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2</div>
+				<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
+			</div>
+			<div name="config" class="sfixed" style="top:196px;left:514px;height:240px;" data-winid="c">
+				<label>img size<br>
+				<input type="number" id="w_" value="16" oninput="if(this.value>0){resize(c,prv,gl,this.value,h_.value);save();}else this.value=null" style="width:4em">
+				</label>*
+				<input type="number" id="h_" value="16" oninput="if(this.value>0){resize(c,prv,gl,w_.value,this.value);save();}else this.value=null" style="width:4em">
+				<br><br><hr>
+				<label>fps<br>
+				<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;save();main();}else this.value=null" style="width:8em"></label>
+				<br><br><hr>
+				<label>save wait(ms)<br>
+				<input type="number" id="wait_" value="5000" oninput="if(this.value<0)this.value=0" style="width:8em"></label>
+			</div>
+			<div name="uniforms" class="sfixed" style="top:452px;left:514px;" data-winid="u">
+				<p style="user-select:text;-webkit-user-select:text;margin:0;">
+					uniform float time; <span id="timelog" class="unilog"></span> <br>
+					uniform vec2 res;<br>
+					uniform vec2 tex0res; <span id="0reslog" class="unilog"></span> <br>
+					uniform vec2 tex1res; <span id="1reslog" class="unilog"></span> <br>
+					uniform vec2 tex2res; <span id="2reslog" class="unilog"></span> <br>
+					uniform vec2 tex3res; <span id="3reslog" class="unilog"></span> <br>
+					uniform sampler2D tex0;<br>
+					uniform sampler2D tex1;<br>
+					uniform sampler2D tex2;<br>
+					uniform sampler2D tex3;
+				</p>
 			</div>
 		</div>
+
+
 		<script>
+			window.addEventListener("load",()=>{fsh.style.height="calc(100% - "+window.getComputedStyle(fsh.parentNode.firstChild).height+")";fsh_e.resize();},false);
 			var fsh_e = ace.edit("fsh",{
 				showInvisibles: true,
 				theme: "ace/theme/monokai",
 				mode: "ace/mode/glsl",
 				fontSize: 12,
-				wrap: true,
+				//wrap: true,
 				useSoftTabs: false,
 				tabSize: 2
 			});
@@ -106,6 +104,7 @@ void main(){
 				clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
 				clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
 			});
+			fsh.parentNode.addEventListener('fbar_on',()=>fsh_e.resize(),false);
 		</script>
 		<script src="fsh_core.js"></script>
 	</body>
