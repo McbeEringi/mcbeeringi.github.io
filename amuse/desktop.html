@@ -35,7 +35,7 @@
 右下ドラッグでリサイズ</textarea><br>
 					data-winid=""設定で自動保存
 				</div>
-				<div name="サイズ" class="sfixed" style="top:180px;left:0px;width:200px;height:150px;">
+				<div name="サイズ" class="sfixed" style="top:180px;left:0px;width:200px;height:150px;" data-winid="2">
 					サイズ固定 <br>
 					class="sfixed"
 				</div>
@@ -43,7 +43,7 @@
 					位置固定 <br>
 					class="pfixed"
 				</div>
-				<div name="透過ウィンドウだよ!" class="transparent" style="top:340px;left:0px;width:200px;height:150px;">
+				<div name="透過ウィンドウだよ!" class="transparent" style="top:340px;left:0px;width:200px;height:150px;" data-winid="3">
 					透過ウィンドウ <br>
 					class="transparent"
 				</div>
@@ -54,14 +54,15 @@
 				</div>
 			</div>
 			<div class="window" style="width:960px;height:540px;">
-				<div name="最前面グループ" style="top:20px;left:420px;width:300px;height:150px;">
+				<div name="最前面グループ" style="top:20px;left:420px;width:300px;height:150px;" data-winid="4">
 					div.window毎に独立しているので <br>
 					それごと分ければ <br>
 					テーマ変えたり可動域変えたり <br>
 					常時最前面表示とかも可能
 				</div>
-				<div name="最前面グループ" style="top:180px;left:420px;width:200px;height:150px;">
+				<div name="最前面グループ" style="top:180px;left:420px;width:200px;height:150px;" data-winid="5">
 					グループで最前面も可能 <br>
+					<button onclick="wjs_reset();">wjs_reset();でウィンドウを元に戻す</button>
 				</div>
 			</div>
 		</div>
