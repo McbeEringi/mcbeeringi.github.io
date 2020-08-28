@@ -1,6 +1,6 @@
 /*
- * made by @McbeEringi cc0
- * last modified 2020/8/26
+ * made by @McbeEringi MIT
+ * last modified 2020/8/28
  *
  * example : https://mcbeeringi.github.io/amuse/desktop.html
  */
@@ -109,7 +109,4 @@ window.addEventListener('load',()=>{
 	document.addEventListener('beforeunload',()=>{wjs_save();})
 },false);
 function wjs_save(){document.cookie=`wjspos=${encodeURIComponent(JSON.stringify(wjs_pos[1]))};max-age=604800;path=${location.pathname}`;return 'saved'}
-function wjs_reset(){
-	document.body.querySelectorAll('div.window>div').forEach((e,i)=>{if(e.dataset.winid)[e.style.top,e.style.left,e.style.width,e.style.height]=wjs_pos[0][e.dataset.winid];});
-	wjs_pos[1]={};wjs_save();
-}
+function wjs_reset(){document.body.querySelectorAll('div.window>div').forEach((e,i)=>{if(e.dataset.winid)[e.style.top,e.style.left,e.style.width,e.style.height]=wjs_pos[0][e.dataset.winid];});wjs_pos[1]={};wjs_save();}
