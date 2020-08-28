@@ -25,10 +25,10 @@
 		</canvas><canvas id="canvas" style="display:none;"></canvas>
 		<h2>fsh sandbox</h2>
 		<div class="window dark" style="border:2px solid #888;">
-			<div name="diffuse" style="width:320px;height:320px;">
+			<div name="diffuse" style="width:320px;height:320px;" data-winid="d">
 				<img id="diffuse" style="opacity:0;z-index:1;"><canvas id="preview" style="z-index:0;">
 			</div>
-			<div name="fsh editor" style="top:336px;width:320px;height:320px;">
+			<div name="fsh editor" style="top:336px;width:320px;height:320px;" data-winid="e">
 				<div id="fsh">precision mediump float;
 uniform float time;
 uniform vec2 res;
@@ -37,8 +37,9 @@ void main(){
 	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 }</div>
 			</div>
-			<div name="info" class="sfixed" style="top:672px;">
+			<div name="info" class="sfixed" style="top:672px;" data-winid="i">
 				<div class="button" onclick="if(copy(location.href)){this.textContent='copied!';setTimeout(()=>this.textContent='export as url',1000);}">export as url</div>
+				<div class="button" onclick="wjs_reset();">reset window pos</div>
 				<div class="button" onclick="location.href=location.href.replace('/fsh_.html','/fsh.html')">old UI</div>
 				<p align="center" style="margin:16px;font-size:13px;">
 					powered by WebGL1.0 <br>
@@ -47,18 +48,18 @@ void main(){
 				</p>
 
 			</div>
-			<div name="log" style="left:336px;width:320px;height:180px;">
+			<div name="log" style="left:336px;width:320px;height:180px;" data-winid="l">
 				<code id="fpslog" style="float:left;"></code>
 				<code id="mslog" style="float:right;"></code>
 				<pre id="log"></pre>
 			</div>
-			<div name="textures" class="sfixed" style="top:196px;left:336px;">
+			<div name="textures" class="sfixed" style="top:196px;left:336px;" data-winid="t">
 				<div class="file" id="inp0d"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0</div>
 				<div class="file" id="inp1d"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1</div>
 				<div class="file" id="inp2d"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2</div>
 				<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
 			</div>
-			<div name="config" class="sfixed" style="top:196px;left:514px;height:240px;">
+			<div name="config" class="sfixed" style="top:196px;left:514px;height:240px;" data-winid="c">
 				<label>img size<br>
 				<input type="number" id="w_" value="16" oninput="if(this.value>0){resize(c,prv,gl,this.value,h_.value);save();}else this.value=null" style="width:4em">
 				</label>*
@@ -70,7 +71,7 @@ void main(){
 				<label>save wait(ms)<br>
 				<input type="number" id="wait_" value="5000" oninput="if(this.value<0)this.value=0" style="width:8em"></label>
 			</div>
-			<div name="uniforms" class="sfixed" style="top:452px;left:514px;">
+			<div name="uniforms" class="sfixed" style="top:452px;left:514px;" data-winid="u">
 				<p style="user-select:text;-webkit-user-select:text;margin:0;">
 					uniform float time; <span id="timelog" class="unilog"></span> <br>
 					uniform vec2 res;<br>
