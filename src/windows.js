@@ -19,9 +19,18 @@ var wjs_pos=[{},{}];
 window.addEventListener('load',()=>{
 	var wtmp=[],wcr=[],tflag=false,custom_e=['hbar_pre','hbar_on','fbar_pre','fbar_on','bar_post','on_front'].map(x=>new Event(x));
 	const pxnum=(x)=>Number(x.replace('px',''));
+	//load data from cookie
+	var cpair=decodeURIComponent(document.cookie).split(';'),carg={};
+	for(var i=0;cpair[i];i++){var kv=cpair[i].split("=");carg[kv[0]]=kv[1];}
+	if(carg.wjspos)wjs_pos[1]=JSON.parse(carg.wjspos);
+	console.log('windows.js',wjs_pos[1]);
+
 	document.body.querySelectorAll('div.window>div').forEach((e,i)=>{
-		//save default position
-		//wjs_pos[0]=
+		//cache default pos  //recover pos
+		if(e.dataset.winid){
+			wjs_pos[0][e.dataset.winid]=[e.style.top,e.style.left,e.style.width,e.style.height];
+			if(wjs_pos[1][e.dataset.winid])[e.style.top,e.style.left,e.style.width,e.style.height]=wjs_pos[1][e.dataset.winid];
+		}
 		//header bar pre post
 		var hbar=document.createElement('header');
 		hbar.setAttribute('class','hbar');
@@ -63,8 +72,10 @@ window.addEventListener('load',()=>{
 		//front controll
 		e.ontouchstart=()=>{if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
 		e.onmousedown=()=>{if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
-	});
-	const onpost=()=>{if(wcr[0]){wcr[0].firstChild.classList.remove('grab');wcr[0].lastChild.classList.remove('grab');wcr[0].dispatchEvent(custom_e[4]);wcr[0]=null;}document.body.style.userSelect='auto';document.body.style.WebkitUserSelect='auto';}
+	});//console.log(wjs_pos);
+	const onpost=()=>{if(wcr[0]){wcr[0].firstChild.classList.remove('grab');wcr[0].lastChild.classList.remove('grab');wcr[0].dispatchEvent(custom_e[4]);
+		if(wcr[0].dataset.winid)wjs_pos[1][wcr[0].dataset.winid]=[wcr[0].style.top,wcr[0].style.left,wcr[0].style.width,wcr[0].style.height];wcr[0]=null;wjs_save();}
+		document.body.style.userSelect='auto';document.body.style.WebkitUserSelect='auto';}
 	window.ontouchend=()=>onpost();window.ontouchcancel=()=>onpost();window.onmouseup=()=>onpost();
 	window.ontouchmove=(e)=>{
 		if(wcr[0]){
@@ -94,8 +105,11 @@ window.addEventListener('load',()=>{
 			}
 		}
 	}
+	document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden')wjs_save();})
+	document.addEventListener('beforeunload',()=>{wjs_save();})
 },false);
-/*function wjs_save(){
-	wjs_pos[1]=
-	document.cookie=`wpos=${JSON.stringify(wjs_pos[1])};max-age=604800;path=${location.pathname};`;
-}*/
+function wjs_save(){document.cookie=`wjspos=${encodeURIComponent(JSON.stringify(wjs_pos[1]))};max-age=604800;path=${location.pathname}`;return 'saved'}
+function wjs_reset(){
+	document.body.querySelectorAll('div.window>div').forEach((e,i)=>{if(e.dataset.winid)[e.style.top,e.style.left,e.style.width,e.style.height]=wjs_pos[0][e.dataset.winid];});
+	wjs_pos[1]={};wjs_save();
+}
