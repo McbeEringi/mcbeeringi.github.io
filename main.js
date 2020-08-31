@@ -14,19 +14,12 @@ header.insertAdjacentHTML('beforeend',`
 			<a href="https://mcbeeringi.github.io/apps">Apps</a>
 			<lang onClick="window.open('https://translate.google.com/translate?sl=ja&tl=en&u='+location.href)"></lang>
 		</div>
-		<input type="checkbox" id="hnavmcb">
-		<div id="hnavm">
-			<a href="https://mcbeeringi.github.io/esbe-2g">ESBE 2G</a>
-			<a href="https://mcbeeringi.github.io/java-jajp">java ja_JP</a>
-			<a href="https://mcbeeringi.github.io/sky">Sky</a>
-			<a href="https://mcbeeringi.github.io/apps">Apps</a>
-			<lang onClick="window.open('https://translate.google.com/translate?sl=ja&tl=en&u='+location.href)"></lang>
-		</div>
-		<label id="hnavml" for="hnavmcb"></label>
+		<input type="checkbox" id="hnavmcb"><div id="hnavm"></div><label id="hnavml" for="hnavmcb"></label>
 	</nav>
 `);
 //header.setAttribute('id','H');
 document.body.appendChild(header);
+hnavm.insertAdjacentHTML('beforeend',hnavd.innerHTML);
 var footer = document.createElement('footer');
 footer.insertAdjacentHTML('beforeend',`
 	<div class="text">
