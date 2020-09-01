@@ -125,9 +125,10 @@ var t=0,fps=fps_.value,fpstm;
 var prc;//二重起動防止
 function main(){
 	clearTimeout(prc);
-	if(Math.floor(new Date().getMilliseconds()*.010)!=Math.floor(new Date(fpstm).getMilliseconds()*.010))
-		fpslog.textContent = Math.round(10000/(new Date()-fpstm))/10+" fps\n";
-	timelog.textContent = Math.floor(t*100)/100;
+	fpstm=new Date()-fpstm;
+	if(new Date().getMilliseconds()%5==0)
+		fpslog.textContent = Math.round(10000/fpstm)/10+" fps\n";
+	timelog.textContent = Math.floor(fpstm*100)/100;
 	fpstm = new Date();
 	t+=1/fps;
 	gl.clearColor(0,0,0,0);
