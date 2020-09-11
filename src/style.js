@@ -22,13 +22,11 @@ document.body.appendChild(header);
 hnavm.insertAdjacentHTML('beforeend',hnavd.innerHTML);
 var footer = document.createElement('footer');
 footer.insertAdjacentHTML('beforeend',`
-	<div class="text">
-		<p>© 2018~ <a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*</p>
-		<p>
-			<a href="https://www.youtube.com/channel/UC7KFkUaWgpmdHViToV1wCAA">YouTube</a>
-			<a href="https://github.com/mcbeeringi">GitHub</a>
-		</p>
-	</div>
+	© 2018~ @McbeEringi.｡:+*<br><br>
+	<a href="https://twitter.com/mcbeeringi">Twitter</a>
+	<a href="https://www.youtube.com/channel/UC7KFkUaWgpmdHViToV1wCAA">YouTube</a>
+	<a href="https://github.com/mcbeeringi">GitHub</a>
 `);
 //footer.setAttribute('id','F');
 window.onload=()=>document.body.appendChild(footer);
+document.querySelectorAll('a').forEach(e=>e.addEventListener('touchstart',()=>{},false));

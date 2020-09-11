@@ -1,16 +1,13 @@
 /*@font-face{font-family:"tsa";src:url(tsa.woff2);}*/
-body{
-	background-color:rgb(84,121,128);color:#eaf4fc;
-	font-family:'M PLUS Rounded 1c',sans-serif;
-	word-wrap:break-word;margin:0;image-rendering:pixelated;
-}
-a:link,a:visited{color:#ccc;}a:hover,a:active{color:#fff;}
+:root{background-color:rgb(84,121,128);color:#eaf4fc;font-family:'M PLUS Rounded 1c',sans-serif;word-wrap:break-word;image-rendering:pixelated;}
+body{margin:0;}a{color:#eaf4fc;transition:.2s;}
+a:link{filter:drop-shadow(0 0 4px #48f);}a:hover{filter:drop-shadow(0 0 2px #acf);}a:active{filter:drop-shadow(0 0 4px #f44);}a:visited{filter:drop-shadow(0 0 4px #428);}
 
 /*header*/
 lang{display:inline-block;width:16px;height:16px;margin:4px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='7' cx='8' cy='8' style='fill:transparent;stroke:%23ccc;stroke-width:1'/%3E%3Cellipse cx='8' cy='8' rx='4' ry='7' style='fill:transparent;stroke:%23ccc;stroke-width:1'/%3E%3Cpath d='M8,1 L8,15 M2,4 L14,4 M1,8 L15,8 M2,12 L14,12' style='stroke:%23ccc;stroke-width:1'/%3E%3C/svg%3E");}
 lang:hover{filter:brightness(2);}
 header{font-family:'Lato';background-color:#444;z-index:10;position:fixed;top:0;left:0;width:100%;height:48px;display:flex;align-items:center;justify-content:space-between;}header a{text-decoration:none;}
-header>a{font-size:130%;font-weight:bold;white-space:nowrap;}header>a::before{content:"";display:inline-block;width:32px;height:32px;background:url("https://mcbeeringi.github.io/img/6x6.png");background-size:100%;}
+header>a{height:48px;display:block;white-space:nowrap;line-height:48px;font-size:130%;font-weight:bold;}header>a::before{content:"";display:inline-block;width:32px;height:32px;margin:8px 2px;background:url("https://mcbeeringi.github.io/img/6x6.png");background-size:100%;vertical-align:bottom;}
 /*nav*/
 #hnavd{margin-right:8px;}#hnavd *{vertical-align:middle;margin:4px;}#hnavmcb{display:none;}
 #hnavm{background:#555;display:none;position:absolute;top:48px;right:-100%;opacity:0;transition:.3s;padding:8px 16px;}
@@ -25,6 +22,8 @@ header>a{font-size:130%;font-weight:bold;white-space:nowrap;}header>a::before{co
 	/*background-image:linear-gradient(0deg,#83ccd288,#c0c6c944),url("../img/winter.jpg");
 	background-image:linear-gradient(0deg,#f2a0a188,#fdeff244),url("../img/spring.jpg");*/
 }
+/*footer*/
+footer{text-align:center;padding:1em;}
 
 .stuff{background:#444;--bgimg:url("https://mcbeeringi.github.io/img/6x6_.png");}@media(max-width:600px){.stuff{text-align:center;}}
 .stuff>div{display:inline-block;width:172px;padding:4px;margin:6px;vertical-align:top;font-size:80%;}
