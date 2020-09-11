@@ -29,4 +29,4 @@ footer.insertAdjacentHTML('beforeend',`
 `);
 //footer.setAttribute('id','F');
 window.onload=()=>document.body.appendChild(footer);
-document.querySelectorAll('a').forEach(e=>e.addEventListener('touchstart',()=>{},false));
+document.querySelectorAll('a').forEach(e=>{if(e.ontouchstart==undefined)e.ontouchstart=()=>{};});
