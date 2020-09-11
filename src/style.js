@@ -28,7 +28,7 @@ footer.insertAdjacentHTML('beforeend',`
 	<a href="https://github.com/mcbeeringi">GitHub</a>
 `);
 //footer.setAttribute('id','F');
-window.addEventListner('readystatechange',x=>{if(x.target.readyState=='interactive'){
+document.addEventListener('readystatechange',x=>{if(x.target.readyState=='interactive'){
 	document.body.appendChild(footer);
 	document.querySelectorAll('a').forEach(e=>{if(e.ontouchstart==undefined)e.ontouchstart=()=>{};});
 }},false);
