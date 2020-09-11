@@ -1,8 +1,8 @@
 /*@font-face{font-family:"tsa";src:url(tsa.woff2);}*/
 :root{background-color:rgb(84,121,128);color:#eaf4fc;font-family:'M PLUS Rounded 1c',sans-serif;word-wrap:break-word;image-rendering:pixelated;}
 body{margin:0;}a{color:#eaf4fc;transition:.2s;}
-a:link{filter:drop-shadow(0 0 4px #48f);}a:hover{color:#48f;filter:drop-shadow(0 0 2px #ccc);}
-a:visited{filter:drop-shadow(0 0 4px #84f);}a:visited:hover{color:#84f;filter:drop-shadow(0 0 4px #ccc);}
+a:link{filter:drop-shadow(0 0 4px #48f);}a:hover{color:#acf;filter:drop-shadow(0 0 2px #8af);}
+a:visited{filter:drop-shadow(0 0 4px #84f);}a:visited:hover{color:#caf;filter:drop-shadow(0 0 4px #a8f);}
 
 /*header*/
 lang{display:inline-block;width:16px;height:16px;margin:4px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='7' cx='8' cy='8' style='fill:transparent;stroke:%23ccc;stroke-width:1'/%3E%3Cellipse cx='8' cy='8' rx='4' ry='7' style='fill:transparent;stroke:%23ccc;stroke-width:1'/%3E%3Cpath d='M8,1 L8,15 M2,4 L14,4 M1,8 L15,8 M2,12 L14,12' style='stroke:%23ccc;stroke-width:1'/%3E%3C/svg%3E");}
