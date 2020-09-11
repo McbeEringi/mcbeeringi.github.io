@@ -2,7 +2,7 @@
 body{
 	background-color:rgb(84,121,128);color:#eaf4fc;
 	font-family:'M PLUS Rounded 1c',sans-serif;
-	word-wrap:break-word;margin:0;
+	word-wrap:break-word;margin:0;image-rendering:pixelated;
 }
 a:link,a:visited{color:#ccc;}a:hover,a:active{color:#fff;}
 
@@ -26,7 +26,7 @@ header>a{font-size:130%;font-weight:bold;white-space:nowrap;}header>a::before{co
 	background-image:linear-gradient(0deg,#f2a0a188,#fdeff244),url("../img/spring.jpg");*/
 }
 
-.stuff{background:#444;--bgimg:url("https://mcbeeringi.github.io/img/6x6.png");}
+.stuff{background:#444;--bgimg:url("https://mcbeeringi.github.io/img/6x6_.png");}
 .stuff>div{display:inline-block;width:172px;padding:4px;margin:6px;vertical-align:top;font-size:80%;}
 .stuff>div>a{display:inline-block;width:100%;transition:.2s;font-size:120%;}.stuff>div>a:hover{transform:scale(1.02);background:#fff1;}
 .stuff>div>a::before{content:"";display:block;height:150px;background:var(--bgimg);background-size:contain;background-position:center;background-repeat:no-repeat;}
