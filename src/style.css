@@ -1,6 +1,6 @@
 /*@font-face{font-family:"tsa";src:url(tsa.woff2);}*/
 :root{background-color:#547980;color:#eaf4fc;font-family:'M PLUS Rounded 1c',sans-serif;word-wrap:break-word;image-rendering:pixelated;}
-body{margin:0;}a{color:#eaf4fc;transition:.2s;}*:not(a){text-shadow:0 0 4px #000c;}
+body{margin:0;}a{color:#eaf4fc;transition:.2s;}*:not(a){text-shadow:0 0 4px #000c;}a img{pointer-events:none;}
 a:link{filter:drop-shadow(0 0 4px #48f);}a:link:hover{color:#acf;filter:drop-shadow(0 0 2px #8af);}
 a:visited{filter:drop-shadow(0 0 4px #84f);}a:visited:hover{color:#caf;filter:drop-shadow(0 0 4px #a8f);}
 @media(max-width:512px){li a{display:block;height:24px;padding:12px 0;margin:8px auto;background:#8884;}}
