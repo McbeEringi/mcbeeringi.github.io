@@ -26,11 +26,13 @@ footer{text-align:center;padding:1em;}
 }.title+p{text-align:center;}
 
 /*parts*/
-.col1{background-color:#444;}.col2{background-color:#333;}
+.col1,.col2{overflow-y:hidden;padding:16px 8px;}.col1{background-color:#444;}.col2{background-color:#333;}
 .stuff{--bgimg:url("https://mcbeeringi.github.io/img/6x6_.png");}@media(max-width:600px){.stuff{text-align:center;}}
 .stuff>div{display:inline-block;width:172px;padding:4px;margin:6px;vertical-align:top;font-size:80%;}
 .stuff>div>a{display:inline-block;width:100%;transition:.2s;font-size:120%;}.stuff>div>a:hover{transform:scale(1.02);background:#fff1;}
 .stuff>div>a::before{content:"";display:block;height:150px;background:var(--bgimg);background-size:contain;background-position:center;background-repeat:no-repeat;}
+.pad{display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;}.pad img{width:100%;max-width:160px;border-radius:10%;}.pad.l img{max-width:192px;}
+.pad>*{text-align:center;width:0;margin:8px;flex-grow:1;min-width:128px;}
 
 /*form*/
 textarea{width:90%;max-width:100%;min-width:50%;}
