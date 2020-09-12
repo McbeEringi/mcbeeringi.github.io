@@ -3,7 +3,7 @@
 const cacheName='ocr_cache',STATIC_DATA=[
 	'ocr.html',
 	'https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js',
-	'img/test.png'
+	'ocr_/test.png'
 ];
 
 self.addEventListener('install',(e)=>{
