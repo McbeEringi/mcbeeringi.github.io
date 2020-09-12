@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi AES_encrypter</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+	<script src="../src/style.js" defer></script>
 	<script>var reader = new FileReader();var name = "unknown";</script>
 	<style>
 		.file{width:320px;height:180px;position:relative;border-radius:5px;border:1px solid #888;display:inline-block;}
@@ -13,10 +14,7 @@
 	</style>
 </head>
 <body>
-	<script src="../main.js"></script>
-	<p class="title">AES_encrypter</p>
-
-	<p align=center>入力したファイルを指定した鍵でAES暗号化し, それを埋め込んだhtmlファイルを生成します</p>
+	<div class="title">AES_encrypter</div><p>入力したファイルを指定した鍵でAES暗号化し, それを埋め込んだhtmlファイルを生成します</p>
 	<div class="col1">
 		<label>key: <input id="key" type="text"></label><br>※メモすることをお勧めします
 	</div>
