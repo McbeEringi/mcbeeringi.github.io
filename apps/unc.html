@@ -5,8 +5,9 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi unicode_converter</title>
-	<script type="text/javascript" src="../src/inflate.js">// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
-	<script type="text/javascript" src="../src/deflate.js"></script>
+	<script src="../src/inflate.js" defer>// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
+	<script src="../src/deflate.js" defer></script>
+	<script src="../src/style.js" defer></script>
 	<style>
 		h3,p{margin:0;}
 		.box{width:100%;min-height:100px;border:solid 1px #fff;color:#fff;font-family:menlo;user-select:all;-webkit-userselect:all;}
@@ -14,8 +15,7 @@
 </head>
 
 <body>
-	<script src="../main.js"></script>
-	<p class="title">unicode converter</p>
+	<div class="title">unicode converter</div>
 	<div class="col1">
 		<h3>String</h3>
 		<div class="box" id="s" contenteditable="true"></div>
@@ -36,12 +36,12 @@
 		<h3>Unicode</h3>
 		<div class="box" id="u" contenteditable="true"></div><br>
 		<p>おまけ</p>
-		<div class="flex">
-			<div style="width:49%;">
+		<div class="pad">
+			<div>
 				<h3>Base64</h3>
 				<div class="box" id="b" contenteditable="true"></div>
 			</div>
-			<div style="width:49%;">
+			<div>
 				<h3>ZIP(Base64 encoded)</h3>
 				<div class="box" id="z" contenteditable="true"></div>
 			</div>
