@@ -9,9 +9,9 @@
 		<meta name="apple-mobile-web-app-title" content="OCR">
 		<link rel="apple-touch-icon" href="corn.png">
 		<!--sw-->
-		<link rel="manifest" href="ocr_manifest.json">
+		<link rel="manifest" href="ocrmf.json">
 		<script>
-			if ('serviceWorker' in navigator){navigator.serviceWorker.register('ocr_sw.js').then((reg) => {console.log('Service worker registered.', reg);});}
+			if('serviceWorker'in navigator)window.addEventListener('load',()=>{navigator.serviceWorker.register('ocrsw.js').then((reg)=>{console.log('[ServiceWorker] Registered',reg);});});
 		</script>
 
 		<script src="https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js"></script>
