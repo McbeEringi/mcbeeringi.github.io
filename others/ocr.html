@@ -33,49 +33,17 @@
 		</script>
 		<style>
 			:root{
-				user-select:none;
-				-webkit-user-select:none;
-				background-color: #222;
-				color: #fff;
-				font-family:sans-serif;
-				word-wrap: break-word;
+				user-select:none;-webkit-user-select:none;
+				background-color:#222;color:#fff;
+				font-family:sans-serif;word-wrap:break-word;
 			}
-			.flex{
-				display: flex;
-				flex-wrap: wrap;
-				align-items: flex-start;
-				justify-content: center;
-			}
-			.flex *{margin: 3px;}
-			.file{
-				width: 100%;
-				height: 100%;
-				position: relative;
-			}
-			.file div, #pinfo{
-				position: absolute;
-				font-size: 14px;
-				top: calc(50% - 7px);
-				width: 100%;
-				text-align: center;
-				pointer-events: none;
-			}
-			.file input[type=file]{
-				cursor: pointer;
-				margin: 0;
-				width: 100%;
-				height: 100%;
-				opacity: 0;
-			}
-			#photo{
-				position: absolute;
-				width: 100%;
-				height: 100%;
-			}
-			#img{
-				width: 45%;
-				min-width: 320px;
-			}
+			.flex{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;}
+			.flex *{margin:3px;}
+			.file{width:100%;height:100%;position:relative;}
+			.file div,#pinfo{position:absolute;font-size:14px;top:calc(50% - 7px);width:100%;text-align:center;pointer-events:none;}
+			.file input[type=file]{cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
+			#photo{position:absolute;width:100%;height:100%;}
+			#img{width:45%;min-width:320px;}
 			.bar{width:100%;height:10px;background-color:#eee;border-radius:5px;}
 			.bar *{margin:0;width:0;height:10px;border-radius:5px;background-color:#38f;}
 			.ratio {/* https://qiita.com/ryounagaoka/items/a98f59347ed758743b8d */
@@ -89,22 +57,18 @@
 			}
 			.ratio:before {
 				content:"";
-				display: block;
-				padding-top: 56.25%;/*ratio*/
+				display:block;
+				padding-top:56.25%;/*ratio*/
 			}
 			.ratio * {
-				margin: 0;
-				position: absolute;
-				top: 0;
-				left: 0;
-				bottom: 0;
-				right: 0;
+				margin:0;position:absolute;
+				top:0;left:0;bottom:0;right:0;
 			}
 		</style>
 	</head>
 	<body>
 		<div id="load" style="text-align:center;padding-top:50vh;position:relative;top:-150px;">
-			<img src="corn_192.png" style="width:100px;">
+			<img src="corn_192.png" style="width:100px;" alt="icon">
 			<h1>OCR!</h1>
 			<h2>Powered by Tesseract.js</h2>
 			<p>Please wait…</p>
@@ -149,12 +113,12 @@
 					r = false;
 					msg.innerText = "Please wait…"
 					Tesseract.recognize(_this,"jpn+eng",{
-						logger:(m) => {
+						logger:(m)=>{
 							console.log(m);
 							msg.innerText=m.status+"…";
 							bar.style.width = m.progress*100+"%";
 						}}).then(
-							({data:{text}}) => {
+							({data:{text}})=>{
 								msg.textContent="Done!";
 								s.textContent=text;
 								r = true;
@@ -164,9 +128,7 @@
 			}
 			function cam() {
 				var constrains = {video:true,audio:false,video:{facingMode:{exact:"environment"}}};
-				navigator.mediaDevices
-					.getUserMedia(constrains)
-					.then((v)=>{
+				navigator.mediaDevices.getUserMedia(constrains).then((v)=>{
 						photo.srcObject = v;
 						photo.play();
 					})
