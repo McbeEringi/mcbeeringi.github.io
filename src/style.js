@@ -23,6 +23,7 @@ footer.insertAdjacentHTML('beforeend',`
 `);
 document.body.appendChild(footer);
 document.querySelectorAll('a').forEach(e=>{if(e.ontouchstart==undefined)e.ontouchstart=()=>{};});
+document.querySelectorAll('.stuff img,.pad img').forEach(e=>e.width="512px");
 document.body.insertAdjacentHTML('afterbegin',`<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
 <style>
 </style>
