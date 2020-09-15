@@ -127,7 +127,7 @@ function main(){
 	clearTimeout(prc);
 	fpstm=new Date()-fpstm;
 	if(new Date().getMilliseconds()%5==0)fpslog.textContent = Math.round(10000/fpstm)/10+" fps";
-	timelog.textContent = Math.floor(fpstm*100)/100;
+	timelog.textContent = Math.floor(t*100)/100;
 	fpstm = new Date();
 	t+=1/fps;
 	gl.clearColor(0,0,0,0);
