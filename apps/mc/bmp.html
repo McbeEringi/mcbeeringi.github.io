@@ -11,24 +11,32 @@
 			#disp{width:512px;height:512px;box-shadow:0 0 0 1px #888;overflow:hidden;}
 			#disp>p{display:inline-block;width:6.25%;height:6.25%;margin:0;vertical-align:top;overflow:hidden;position:relative;}
 			p span{position:absolute;bottom:0;}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
-			@font-face {font-family:"custom";src:url(custom.ttf)format("truetype");}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;}
 			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 		</style>
+		<style id="fstyle"></style>
 		<script src="../../src/html2canvas.min.js"></script>
 
 
 		<label><span>img:</span><input type="number" value="512" onchange="i_s(this.value);render();">px²</label><br>
 		<label><span>size:</span><input type="number" value="24" oninput="f_s(this.value);render();">px</label><br>
-		<label><span>font:</span><input value="sans-serif" onchange="document.body.style.fontFamily=this.value;render();"></label><span style="float:right;">"custom" = custom.ttf</span><br>
+		<label><span>font:</span><input id="fontf"value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="read(this)" accept=".ttf,.otf,.woff,.woff2"><br>
 		<label><span>block:</span><input id="men" value="00" onchange="set();render();"></label><br>
 		<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
+
 		<br>
 		<a id="dl" download href="">……</a><br>
 		<div id="disp"></div>
 		<img id="img" style="width:50vw;">
 
 		<script>
+			var reader = new FileReader(), fname = "unknown";
+			function read(_this) {
+				var fname=_this.files[0].name;fname=[fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1),fname.slice((fname.lastIndexOf('.')-1>>>0)+2)];
+				const format={"ttf":"truetype","otf":"opentype","woff":"woff","woff2":"woff2"};
+				fstyle.textContent=`@font-face{font-family:"${fname[0]}";src:url(${URL.createObjectURL(_this.files[0])})format("${format[fname[1]]}");}`;
+				fontf.value=fname[0];document.body.style.fontFamily=fname[0]+',sans-serif';render();
+			}
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
 			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';}
 			const	f_s=x=>disp.querySelectorAll('p span').forEach(e=>e.style.fontSize=`${x}px`);
