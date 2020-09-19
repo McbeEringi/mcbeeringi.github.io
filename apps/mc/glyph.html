@@ -19,7 +19,7 @@
 
 
 		<label><span>img:</span><input type="number" value="512" onchange="i_s(this.value);render();">px²</label><br>
-		<label><span>size:</span><input type="number" value="24" oninput="f_s(this.value);render();">px</label><br>
+		<label><span>size:</span><input type="number" value="24" oninput="f_s(this.value);"onchange="render();">px</label><br>
 		<label><span>font:</span><input id="fontf"value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="read(this)" accept=".ttf,.otf,.woff,.woff2"><br>
 		<label><span>block:</span><input id="men" value="00" onchange="set();render();"></label><br>
 		<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
