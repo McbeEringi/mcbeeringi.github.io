@@ -20,7 +20,7 @@
 
 		<label><span>img:</span><input type="number" value="512" onchange="i_s(this.value);render();">px²</label><br>
 		<label><span>size:</span><input type="number" value="24" oninput="f_s(this.value);"onchange="render();">px</label><br>
-		<label><span>font:</span><input id="fontf"value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="read(this)" accept=".ttf,.otf,.woff,.woff2"><br>
+		<label><span>font:</span><input id="fontf"value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
 		<label><span>block:</span><input id="men" value="00" onchange="set();render();"></label><br>
 		<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
 
@@ -30,21 +30,20 @@
 		<img id="img" style="width:50vmin;">
 
 		<script>
-			var reader = new FileReader(), fname = "unknown";
-			function read(_this) {
-				var fname=_this.files[0].name;fname=[fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1),fname.slice((fname.lastIndexOf('.')-1>>>0)+2)];
-				const format={"ttf":"truetype","otf":"opentype","woff":"woff","woff2":"woff2"};
-				fstyle.textContent=`@font-face{font-family:"${fname[0]}";src:url(${URL.createObjectURL(_this.files[0])})format("${format[fname[1]]}");}`;
-				fontf.value=fname[0];document.body.style.fontFamily=fname[0]+',sans-serif';render();
-			}
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
 			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';}
 			const	f_s=x=>disp.querySelectorAll('p span').forEach(e=>e.style.fontSize=`${x}px`);
 			f_s(24)
+			const f_r=(f)=>{
+				var fname=f.files[0].name;fname=[fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1),fname.slice((fname.lastIndexOf('.')-1>>>0)+2)];
+				const format={"ttf":"truetype","otf":"opentype","woff":"woff","woff2":"woff2"};
+				fstyle.textContent=`@font-face{font-family:"${fname[0]}";src:url(${URL.createObjectURL(f.files[0])})format("${format[fname[1]]}");}`;
+				fontf.value=fname[0];document.body.style.fontFamily=fname[0]+',sans-serif';render();
+			}
 			const debug=(x)=>disp.querySelectorAll('#disp>p').forEach(e=>e.style.boxShadow=x?'0 0 1px #fff4':'');
 			const set=()=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(men.value,16)*0x100+Number(i)));
 			set();
-			function render(){
+			const render=()=>{
 				document.body.style.background='#0000';
 				html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>{
 					dl.href=c.toDataURL();
