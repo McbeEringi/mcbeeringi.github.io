@@ -9,8 +9,8 @@
 		<style>
 			:root{color:#fff;font-family:sans-serif;image-rendering:pixelated;}
 			#disp{box-shadow:0 0 0 1px #888;overflow:hidden;display:flex;flex-wrap:wrap;}
-			#disp>p{width:6.25%;height:6.25%;margin:0;padding:0;vertical-align:top;overflow:hidden;position:relative;}
-			p span{}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
+			#disp>p{width:6.25%;height:6.25%;margin:0;padding:0;vertical-align:top;overflow:hidden;position:relative;vertical-align:text-bottom;}
+			p span{vertical-align:text-bottom;}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;}
 			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 		</style>
@@ -33,7 +33,7 @@
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
 			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';}
 			i_s(512)
-			const	f_s=x=>disp.querySelectorAll('p span').forEach(e=>e.style.fontSize=`${x}px`);
+			const	f_s=x=>disp.querySelectorAll('p').forEach(e=>{e.style.fontSize=`${x}px`;e.style.lineHeight=`${x}px`});
 			f_s(24)
 			const f_r=f=>{
 				var fname=f.files[0].name;fname=[fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1),fname.slice((fname.lastIndexOf('.')-1>>>0)+2)];
