@@ -44,7 +44,6 @@
 				log.innerText = fixed;log.href = fixed;
 				setTimeout(()=>location.href=fixed, 5000);
 			}else{
-				/*
 				const dict=[
 					[/others\/gl/i,"apps/webgl/index"],[/apps\/fsh/i,"apps/webgl/fsh"],
 					[/others\/aes/i,"apps/aes"],[/others\/col/i,"apps/col"],
@@ -54,12 +53,13 @@
 					[/others\/arch/i,"apps/mc/arch"],[/others\/poly/i,"apps/mc/poly"],
 					[/others\/sky/i,"sky"],[/apps\/sky/i,"sky"]
 				];
-				dict.map(x=>fixed.replace(x[0],x[1]));
-				*/
+				dict.map(x=>fixed=fixed.replace(x[0],x[1]));
+				/*
 				fixed = fixed.replace(/others\/gl/i,"apps/webgl/index").replace(/apps\/fsh/i,"apps/webgl/fsh");
 				fixed = fixed.replace(/others\/aes/i,"apps/aes").replace(/others\/col/i,"apps/col").replace(/others\/unicode/i,"apps/unc").replace(/others\/sosu-/i,"apps/sosu-").replace(/others\/calpis/i,"apps/calpis");
 				fixed = fixed.replace(/others\/bmp/i,"apps/mc/glyph").replace(/apps\/mc\/bmp/i,"apps/mc/glyph").replace(/others\/arch/i,"apps/mc/arch").replace(/others\/poly/i,"apps/mc/poly");
 				fixed = fixed.replace(/others\/sky/i,"sky/index").replace(/apps\/sky/i,"sky");
+				*/
 				log.innerText = fixed;log.href = fixed;
 				if(location.href==fixed){
 					pre.style.display="none";
