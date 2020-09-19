@@ -10,7 +10,7 @@
 			:root{color:#fff;font-family:sans-serif;image-rendering:pixelated;}
 			#disp{box-shadow:0 0 0 1px #888;overflow:hidden;display:flex;flex-wrap:wrap;}
 			#disp>p{width:6.25%;height:6.25%;margin:0;padding:0;vertical-align:top;overflow:hidden;position:relative;}
-			p span{position:absolute;bottom:0;}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
+			p span{}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;}
 			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 		</style>
@@ -41,7 +41,7 @@
 				fstyle.textContent=`@font-face{font-family:"${fname[0]}";src:url(${URL.createObjectURL(f.files[0])})format("${format[fname[1]]}");}`;
 				fontf.value=fname[0];document.body.style.fontFamily=fname[0]+',sans-serif';render();
 			}
-			const debug=x=>disp.querySelectorAll('#disp>p').forEach(e=>e.style.boxShadow=x?'0 0 1px #fff4':'');
+			const debug=x=>disp.querySelectorAll('#disp>p').forEach(e=>{e.style.boxShadow=x?'0 0 1px #fff4':'';e.style.textDecoration=x?'underline #fff8':'';});
 			const set=()=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(men.value,16)*0x100+Number(i)));
 			set();
 			const render=()=>{
