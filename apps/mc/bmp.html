@@ -33,7 +33,7 @@
 			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';}
 			const	f_s=x=>disp.querySelectorAll('p span').forEach(e=>e.style.fontSize=`${x}px`);
 			f_s(24)
-			const grid=(x)=>disp.querySelectorAll('#disp>p').forEach(e=>e.style.boxShadow=x?'0 0 0 1px #fff4':'');
+			const grid=(x)=>disp.querySelectorAll('#disp>p').forEach(e=>e.style.boxShadow=x?'0 0 1px #fff4':'');
 			const set=()=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(men.value,16)*0x100+Number(i)));
 			set();
 			function render(){
