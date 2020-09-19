@@ -10,7 +10,7 @@
 			:root{color:#fff;font-family:sans-serif;image-rendering:pixelated;}
 			#disp{box-shadow:0 0 0 1px #888;overflow:hidden;display:flex;flex-wrap:wrap;}
 			#disp>p{width:6.25%;height:6.25%;margin:0;padding:0;vertical-align:top;overflow:hidden;position:relative;vertical-align:text-bottom;}
-			p span{vertical-align:text-bottom;}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
+			p span{}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;}
 			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 		</style>
@@ -19,7 +19,7 @@
 
 
 		<label><span>img:</span><input type="number" value="512" onchange="i_s(this.value);render();">px²</label><br>
-		<label><span>size:</span><input type="number" value="24" oninput="f_s(this.value);"onchange="render();">px</label><br>
+		<label><span>size:</span><input type="number" value="32" oninput="f_s(this.value);"onchange="render();">px</label><br>
 		<label><span>font:</span><input id="fontf"value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
 		<label><span>block:</span><input id="men" value="00" onchange="set();render();"></label><br>
 		<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
@@ -33,8 +33,8 @@
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
 			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';}
 			i_s(512)
-			const	f_s=x=>disp.querySelectorAll('p').forEach(e=>{e.style.fontSize=`${x}px`;e.style.lineHeight=`${x}px`});
-			f_s(24)
+			const	f_s=x=>disp.querySelectorAll('p').forEach(e=>{e.style.fontSize=`${x}px`;e.style.lineHeight=`${x}px`;});
+			f_s(32)
 			const f_r=f=>{
 				var fname=f.files[0].name;fname=[fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1),fname.slice((fname.lastIndexOf('.')-1>>>0)+2)];
 				const format={"ttf":"truetype","otf":"opentype","woff":"woff","woff2":"woff2"};
