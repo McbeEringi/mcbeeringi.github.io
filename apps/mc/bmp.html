@@ -20,6 +20,7 @@
 
 		<label><span>img:</span><input type="number" value="512" onchange="i_s(this.value);render();">px²</label><br>
 		<label><span>size:</span><input type="number" value="24" oninput="f_s(this.value);render();">px</label><br>
+		<label><span>grid:</span><input type="checkbox" onchange="grid(this.checked)"></label><br>
 		<label><span>font:</span><input value="sans-serif" onchange="document.body.style.fontFamily=this.value;render();"></label><span style="float:right;">"custom" = custom.ttf</span><br>
 		<label><span>block:</span><input id="men" value="00" onchange="set();render();"></label><br>
 		<br>
@@ -30,9 +31,10 @@
 		<script>
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
 			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';}
-			const	f_s=x=>disp.querySelectorAll('p span').forEach((e,i)=>{e.style.fontSize=`${x}px`;});
+			const	f_s=x=>disp.querySelectorAll('p span').forEach(e=>e.style.fontSize=`${x}px`);
 			f_s(24)
-			const set=()=>disp.querySelectorAll('p span').forEach((e,i)=>{e.textContent=String.fromCodePoint(parseInt(men.value,16)*0x100+Number(i));});
+			const grid=(x)=>disp.querySelectorAll('#disp>p').forEach(e=>e.style.boxShadow=x?'0 0 0 1px #fff8':'');
+			const set=()=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(men.value,16)*0x100+Number(i)));
 			set();
 			function render(){
 				document.body.style.background='#0000';
