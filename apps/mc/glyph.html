@@ -68,7 +68,7 @@
 			/////export
 			const exp=()=>{
 				log.textContent='';pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Please wait…';configp.style.opacity=0.2;configp.style.pointerEvents='none';
-				const exppost=()=>zip.generateAsync({type:"blob"},d=>{pbar1.value=d.percent;plog.textContent=d.percent.toFixed(4)+'%';}).then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;configp.style.opacity=1;configp.style.pointerEvents='auto';});
+				const exppost=()=>zip.generateAsync({type:"blob"},d=>{pbar1.value=d.percent;plog.textContent=d.percent.toFixed(2)+'%';}).then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;configp.style.opacity=1;configp.style.pointerEvents='auto';});
 				var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2));
 				var arr_=[],zip=new JSZip(),fontFolder=zip.folder("font");
 				const expmain=()=>{
@@ -78,9 +78,9 @@
 						html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>c.toBlob(b=>{
 							fontFolder.file(`glyph_${x}.png`,b);
 							if(x=='00')fontFolder.file('default8.png',b);
-							pbar0.value++;
+							plog.textContent=`${('00'+(++pbar0.value)).slice(-3)} / 256   ${x}`;
 							console.log(x);
-							if(i==arr.length-1){if(arr_.length){arr=arr_;arr_=[];log.textContent+=' fix\n';expmain();}else{log.textContent+='\nok.';exppost();}}
+							if(i==arr.length-1){if(arr_.length){arr=arr_;arr_=[];log.textContent+='fix\n';expmain();}else{log.textContent+='ok.';exppost();}}
 						})).catch(e=>{arr_.push(x);log.textContent+=x+' ';});
 					});
 					set(men.value);
