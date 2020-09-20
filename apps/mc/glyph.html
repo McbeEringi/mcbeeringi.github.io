@@ -70,7 +70,7 @@
 					set(x);
 					html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>c.toBlob(b=>{
 						fontFolder.file(`glyph_${x}.png`,b);
-						if(x='00')fontFolder.file('default8.png',b);
+						if(x=='00')fontFolder.file('default8.png',b);
 						pbar0.value=parseInt(x,16)+1;
 						console.log(x);
 						if(x=='FF')zip.generateAsync({type:"blob"},d=>pbar1.value=d.percent).then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;});
