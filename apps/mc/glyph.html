@@ -14,7 +14,7 @@
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;}
 			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 			.clear_fix::after{content:"";clear:both;display:block;}
-			progress{width:calc(100vw - 16px);}
+			progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}
 		</style>
 		<style id="fstyle"></style>
 		<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
@@ -32,6 +32,7 @@
 		<button onclick="exp();" id="expb">export bmp</button><br>
 		<progress value="0" max="256" id="pbar0"></progress><br>
 		<progress value="0" max="100" id="pbar1"></progress><br>
+		<pre id="plog"></pre>
 		<pre id="log"></pre>
 		<br>
 		<a id="dl" download href="">……</a><br>
@@ -66,23 +67,26 @@
 
 			/////export
 			const exp=()=>{
-				log.textContent='';
-				pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Please wait…';configp.opacity=0.2;configp.pointerEvents='none';
-				const post=()=>{expb.textContent='export bmp';expb.disabled=false;configp.opacity=1;configp.pointerEvents='auto';};
-				var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)),zip=new JSZip(),fontFolder=zip.folder("font");
-				console.log(arr);
-				arr.map((x,i)=>{
-					set(x);
-					html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>c.toBlob(b=>{
-						fontFolder.file(`glyph_${x}.png`,b);
-						if(x=='00')fontFolder.file('default8.png',b);
-						pbar0.value=parseInt(x,16)+1;
-						console.log(x);
-						if(x=='FF')zip.generateAsync({type:"blob"},d=>pbar1.value=d.percent).then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);post();});
-					})).catch(e=>log.textContent+=`glyph_${x}.png export failed.\n\t${e}\n`);
-				});
-				expb.textContent='Running…';
-				set(men.value);
+				log.textContent='';pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Please wait…';configp.style.opacity=0.2;configp.style.pointerEvents='none';
+				const exppost=()=>zip.generateAsync({type:"blob"},d=>{pbar1.value=d.percent;plog.textContent=d.percent.toFixed(4)+'%';}).then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;configp.style.opacity=1;configp.style.pointerEvents='auto';});
+				var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2));
+				var arr_=[],zip=new JSZip(),fontFolder=zip.folder("font");
+				const expmain=()=>{
+					console.log(arr);
+					arr.map((x,i)=>{
+						set(x);
+						html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>c.toBlob(b=>{
+							fontFolder.file(`glyph_${x}.png`,b);
+							if(x=='00')fontFolder.file('default8.png',b);
+							pbar0.value++;
+							console.log(x);
+							if(i==arr.length-1){if(arr_.length){arr=arr_;arr_=[];log.textContent+=' fix\n';expmain();}else{log.textContent+='\nok.';exppost();}}
+						})).catch(e=>{arr_.push(x);log.textContent+=x+' ';});
+					});
+					set(men.value);
+					expb.textContent='Running…';
+				};
+				expmain();
 			};
 
 		</script>
