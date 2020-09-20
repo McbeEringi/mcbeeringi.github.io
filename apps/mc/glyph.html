@@ -20,11 +20,13 @@
 		<script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
 
-		<label><span>img:</span><input type="number" value="512" onchange="i_s(this.value);render();">px²</label><br>
-		<label><span>size:</span><input type="number" value="32" oninput="f_s(this.value);"onchange="render();">px</label><br>
-		<label><span>font:</span><input id="fontf"value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
-		<label><span>block:</span><input id="men" value="00" onchange="set(this.value);render();"></label><br>
-		<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
+		<div id="configp">
+			<label><span>img:</span><input type="number" value="512" onchange="i_s(this.value);render();">px²</label><br>
+			<label><span>size:</span><input type="number" value="32" oninput="f_s(this.value);"onchange="render();">px</label><br>
+			<label><span>font:</span><input id="fontf"value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
+			<label><span>block:</span><input id="men" value="00" onchange="set(this.value);render();"></label><br>
+			<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
+		</div>
 		<br>
 		<button onclick="exp();" id="expb">export bmp</button><br>
 		<progress value="0" max="256" id="pbar0"></progress><br>
@@ -62,8 +64,8 @@
 
 			/////export
 			const exp=()=>{
-				pbar0.value=0;pbar1.value=0;
-				expb.disabled=true;expb.textContent='Please wait…';
+				pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Please wait…';configp.opacity=0.2;configp.pointerEvents='none';
+				const post=()=>{expb.textContent='export bmp';expb.disabled=false;configp.opacity=1;configp.pointerEvents='auto';};
 				var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)),zip=new JSZip(),fontFolder=zip.folder("font");
 				console.log(arr);
 				arr.map((x,i)=>{
@@ -73,8 +75,8 @@
 						if(x=='00')fontFolder.file('default8.png',b);
 						pbar0.value=parseInt(x,16)+1;
 						console.log(x);
-						if(x=='FF')zip.generateAsync({type:"blob"},d=>pbar1.value=d.percent).then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;});
-					}));
+						if(x=='FF')zip.generateAsync({type:"blob"},d=>pbar1.value=d.percent).then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);post();});
+					}));//.catch(e=>{alert(e);post();});
 				});
 				expb.textContent='Running…';
 				set(men.value);
