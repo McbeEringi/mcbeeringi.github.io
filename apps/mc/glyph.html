@@ -7,29 +7,35 @@
 	</head>
 	<body>
 		<style>
-			:root{color:#fff;font-family:sans-serif;image-rendering:pixelated;}
+			:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:pixelated;}
 			#disp{box-shadow:0 0 0 1px #888;overflow:hidden;display:flex;flex-wrap:wrap;}
 			#disp>p{width:6.25%;height:6.25%;margin:0;padding:0;vertical-align:top;overflow:hidden;position:relative;vertical-align:text-bottom;}
 			p span{}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;}
 			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
+			.clear_fix::after{content:"";clear:both;display:block;}
 		</style>
 		<style id="fstyle"></style>
 		<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
-
+		<script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
 
 		<label><span>img:</span><input type="number" value="512" onchange="i_s(this.value);render();">px²</label><br>
 		<label><span>size:</span><input type="number" value="32" oninput="f_s(this.value);"onchange="render();">px</label><br>
 		<label><span>font:</span><input id="fontf"value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
-		<label><span>block:</span><input id="men" value="00" onchange="set();render();"></label><br>
+		<label><span>block:</span><input id="men" value="00" onchange="set(this.value);render();"></label><br>
 		<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
-
+		<br>
+		<button onclick="exp();" id="expb">export bmp</button><br>
+		<progress value="0" max="256" id="pbar0"></progress><br>
+		<progress value="0" max="100" id="pbar1"></progress><br>
 		<br>
 		<a id="dl" download href="">……</a><br>
 		<div id="disp"></div>
 		<img id="img" style="width:50vmin;">
 
 		<script>
+			/////core
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
 			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';}
 			i_s(512)
@@ -42,19 +48,37 @@
 				fontf.value=fname[0];document.body.style.fontFamily=fname[0]+',sans-serif';render();
 			}
 			const debug=x=>disp.querySelectorAll('#disp>p').forEach(e=>{e.style.boxShadow=x?'0 0 1px #fff4':'';e.style.textDecoration=x?'underline #fff8':'';});
-			const set=()=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(men.value,16)*0x100+Number(i)));
-			set();
+			const set=x=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(x,16)*0x100+Number(i)));
+			set(men.value);
 			const render=()=>{
-				document.body.style.background='#0000';
 				html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>{
 					dl.href=c.toDataURL();
 					dl.download=`glyph_${men.value}.png`;
 					dl.innerText=`download as ${dl.download}`;
 					img.src=dl.href;
 				});
-				document.body.style.background='#222';
 			}
 			render();
+
+			/////export
+			const exp=()=>{
+				pbar0.value=0;pbar1.value=0;
+				expb.disabled=true;expb.textContent='Please wait…';
+				var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)),zip=new JSZip(),fontFolder=zip.folder("font");
+				console.log(arr);
+				arr.map((x,i)=>{
+					set(x);
+					html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>c.toBlob(b=>{
+						fontFolder.file(`glyph_${x}.png`,b);
+						if(x='00')fontFolder.file('default8.png',b);
+						pbar0.value=parseInt(x,16)+1;
+						console.log(x);
+						if(x=='FF')zip.generateAsync({type:"blob"},d=>pbar1.value=d.percent).then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;});
+					}));
+				});
+				expb.textContent='Running…';
+			};
+
 		</script>
 	</body>
 </html>
