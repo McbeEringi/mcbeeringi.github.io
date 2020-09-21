@@ -59,7 +59,7 @@
 			const set=x=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(x,16)*0x100+Number(i)));
 			set(men.value);
 			const render=()=>{
-				html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>{
+				html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scrollX":0,"scrollY":-window.pageYOffset}).then(c=>{
 					dl.href=c.toDataURL();
 					dl.download=`glyph_${men.value}.png`;
 					dl.innerText=`download as ${dl.download}`;
