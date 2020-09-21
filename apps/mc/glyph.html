@@ -23,9 +23,9 @@
 		<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
 
 		<div id="configp">
-			<label><span>img:</span><input type="number" value="512" onchange="i_s(this.value);render();"><span id="dpr"></span> px²</label><br>
-			<label><span>size:</span><input type="number" value="32" oninput="f_s(this.value);"onchange="render();">px</label><br>
-			<label><span>font:</span><input id="fontf"value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
+			<label><span>img:</span><input id="img_s" type="number" value="512" onchange="i_s(this.value);render();"><span id="dpr"></span> px²</label><br>
+			<label><span>size:</span><input id="font_s" type="number" value="32" oninput="f_s(this.value);"onchange="render();">px</label><br>
+			<label><span>font:</span><input id="font_f" value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
 			<label><span>block:</span><input id="men" value="00" onchange="set(this.value);render();"></label><br>
 			<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
 		</div>
@@ -46,14 +46,14 @@
 			/////base
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
 			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';}
-			i_s(512)
+			i_s(img_s.value);
 			const	f_s=x=>disp.querySelectorAll('p').forEach(e=>{e.style.fontSize=`${x}px`;e.style.lineHeight=`${x}px`;});
-			f_s(32)
+			f_s(font_s.value);
 			const f_r=f=>{
 				var fname=f.files[0].name;fname=[fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1),fname.slice((fname.lastIndexOf('.')-1>>>0)+2)];
 				const format={"ttf":"truetype","otf":"opentype","woff":"woff","woff2":"woff2"};
 				fstyle.textContent=`@font-face{font-family:"${fname[0]}";src:url(${URL.createObjectURL(f.files[0])})format("${format[fname[1]]}");}`;
-				fontf.value=fname[0];document.body.style.fontFamily=fname[0]+',sans-serif';render();
+				font_f.value=fname[0];document.body.style.fontFamily=fname[0]+',sans-serif';render();
 			}
 			const debug=x=>disp.querySelectorAll('#disp>p').forEach(e=>{e.style.boxShadow=x?'0 0 1px #fff4':'';e.style.textDecoration=x?'underline #fff8':'';});
 			const set=x=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(x,16)*0x100+Number(i)));
@@ -78,7 +78,7 @@
 					console.groupEnd();
 					set(men.value);configp.style.opacity=1;configp.style.pointerEvents='auto';
 					zip.generateAsync({type:"blob"},d=>{pbar1.value=d.percent;log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;})
-						.then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;})
+						.then(c=>{console.log('done');saveAs(c,`${font_f.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;})
 				};
 				const expmain=()=>{
 					console.group();console.log(arr);
