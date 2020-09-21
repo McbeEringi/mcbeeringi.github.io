@@ -10,7 +10,7 @@
 			:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:pixelated;}
 			#disp{box-shadow:0 0 0 1px #888;overflow:hidden;display:flex;flex-wrap:wrap;}
 			#disp>p{width:6.25%;height:6.25%;margin:0;padding:0;vertical-align:top;overflow:hidden;position:relative;vertical-align:text-bottom;}
-			p span{}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
+			p span{margin:0;padding:0;}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;}
 			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 			.clear_fix::after{content:"";clear:both;display:block;}
@@ -76,7 +76,7 @@
 				console.group();console.log(arr);
 				arr.map((x,i)=>requestIdleCallback(()=>{
 					set(x);
-					html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scrollX":0,"scrollY":-window.pageYOffset}).then(c=>c.toBlob(b=>{
+					html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scale":1,"scrollX":0,"scrollY":-window.pageYOffset}).then(c=>c.toBlob(b=>{
 						fontFolder.file(`glyph_${x}.png`,b);
 						if(x=='00')fontFolder.file('default8.png',b);
 						log.textContent=`step 1/2 rendering… ${(++pbar0.value/arrl*100).toFixed(2)}%   ( ${('00'+pbar0.value).slice(-3)} / ${arrl}  ${x} )`;
