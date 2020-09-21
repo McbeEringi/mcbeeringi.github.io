@@ -14,7 +14,7 @@
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;}
 			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 			.clear_fix::after{content:"";clear:both;display:block;}
-			progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}
+			progress{width:80vmin;}pre{line-height:14px;font-size:12px;margin:0;}
 		</style>
 		<style id="fstyle"></style>
 		<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
@@ -74,18 +74,16 @@
 				var arr_=[],zip=new JSZip(),fontFolder=zip.folder("font");
 				const expmain=()=>{
 					console.group();console.log(arr);
-					arr.map((x,i)=>{
+					arr.map((x,i)=>requestIdleCallback(()=>{
 						set(x);
-						requestIdleCallback(()=>{
-							html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>c.toBlob(b=>{
-								fontFolder.file(`glyph_${x}.png`,b);
-								if(x=='00')fontFolder.file('default8.png',b);
-								plog.textContent=`step 1/2 rendering… ${(++pbar0.value/2.56).toFixed(2)}%   ( ${('00'+pbar0.value).slice(-3)} / 256  ${x} )`;
-								console.log(x);
-								if(i==arr.length-1){console.groupEnd();if(arr_.length){arr=arr_;arr_=[];log.textContent+='fix\n';expmain();}else{log.textContent+='rendering done.';exppost();}}
-							})).catch(e=>{arr_.push(x);log.textContent+=x+' ';});
-						});
-					});
+						html2canvas(document.getElementById("disp"),{"backgroundColor":null}).then(c=>c.toBlob(b=>{
+							fontFolder.file(`glyph_${x}.png`,b);
+							if(x=='00')fontFolder.file('default8.png',b);
+							plog.textContent=`step 1/2 rendering… ${(++pbar0.value/2.56).toFixed(2)}%   ( ${('00'+pbar0.value).slice(-3)} / 256  ${x} )`;
+							console.log(x);
+							if(i==arr.length-1){console.groupEnd();if(arr_.length){arr=arr_;arr_=[];log.textContent+='fix\n';expmain();}else{log.textContent+='rendering done.';exppost();}}
+						})).catch(e=>{arr_.push(x);log.textContent+=x+' ';});
+					}));
 					set(men.value);
 					expb.textContent='Running…';
 				};
