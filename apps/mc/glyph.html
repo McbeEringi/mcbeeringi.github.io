@@ -70,26 +70,30 @@
 
 			/////export
 			const exp=(blist)=>{
-				log.textContent='';pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Running…';configp.style.opacity=0.2;configp.style.pointerEvents='none';
+				elog.textContent='';pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Running…';configp.style.opacity=0.2;configp.style.pointerEvents='none';
 				var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2));
 				if(blist)arr=arr.filter(x=>!(blist.split(',').includes(x)));
-				var zip=new JSZip(),fontFolder=zip.folder("font"),arrl=arr.length;pbar0.max=arrl;
-				console.group();console.log(arr);
-				arr.map((x,i)=>requestIdleCallback(()=>{
-					set(x);
-					html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scrollX":0,"scrollY":-window.pageYOffset}).then(c=>c.toBlob(b=>{
-						fontFolder.file(`glyph_${x}.png`,b);
-						if(x=='00')fontFolder.file('default8.png',b);
-						log.textContent=`step 1/2 rendering… ${(++pbar0.value/arrl*100).toFixed(2)}%   ( ${('00'+pbar0.value).slice(-3)} / ${arrl}  ${x} )`;
-						console.log(x);
-						if(i==arr.length-1){
-							console.groupEnd();
-							set(men.value);configp.style.opacity=1;configp.style.pointerEvents='auto';
-							zip.generateAsync({type:"blob"},d=>{pbar1.value=d.percent;log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;})
-								.then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;})
-						}
-					})).catch(e=>elog.textContent+=`glyph_${x}.png rendering failed.\n`);
-				}));
+				var arr_=[],zip=new JSZip(),fontFolder=zip.folder("font"),arrl=arr.length;pbar0.max=arrl;
+				const exppost=()=>{
+					console.groupEnd();
+					set(men.value);configp.style.opacity=1;configp.style.pointerEvents='auto';
+					zip.generateAsync({type:"blob"},d=>{pbar1.value=d.percent;log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;})
+						.then(c=>{console.log('done');saveAs(c,`${fontf.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;})
+				};
+				const expmain=()=>{
+					console.group();console.log(arr);
+					arr.map((x,i)=>requestIdleCallback(()=>{
+						set(x);
+						html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scrollX":0,"scrollY":-window.pageYOffset}).then(c=>c.toBlob(b=>{
+							fontFolder.file(`glyph_${x}.png`,b);
+							if(x=='00')fontFolder.file('default8.png',b);
+							log.textContent=`step 1/2 rendering… ${(++pbar0.value/arrl*100).toFixed(2)}%   ( ${('00'+pbar0.value).slice(-3)} / ${arrl}  ${x} )`;
+							console.log(x);
+							if(i==arr.length-1){if(arr_.length){arr=arr_;arr_=[];elog.textContent=' fix…\n';expmain();}else{elog.textContent='rendering done.';exppost();}}
+						})).catch(e=>{arr_.push(x);elog.textContent+=`${x} `;});
+					}));
+				}
+				expmain();
 			};
 
 		</script>
