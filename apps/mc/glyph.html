@@ -75,7 +75,7 @@
 				console.group();console.log(arr);
 				arr.map((x,i)=>requestIdleCallback(()=>{
 					set(x);
-					html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scrollX":0,"scrollY":0}).then(c=>c.toBlob(b=>{
+					html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scrollX":0,"scrollY":-window.pageYOffset}).then(c=>c.toBlob(b=>{
 						fontFolder.file(`glyph_${x}.png`,b);
 						if(x=='00')fontFolder.file('default8.png',b);
 						log.textContent=`step 1/2 rendering… ${(++pbar0.value/arrl*100).toFixed(2)}%   ( ${('00'+pbar0.value).slice(-3)} / ${arrl}  ${x} )`;
