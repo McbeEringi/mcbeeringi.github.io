@@ -8,9 +8,10 @@
 	<body>
 		<style>
 			:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:pixelated;}
+			#picon{background:#222;color:#fff;width:128px;height:128px;line-height:128px;text-align:center;font-size:80px;position:fixed;top:-128px;}
 			#disp{box-shadow:0 0 0 1px #888;overflow:hidden;display:flex;flex-wrap:wrap;}
 			#disp>p{width:6.25%;height:6.25%;margin:0;padding:0;vertical-align:top;overflow:hidden;position:relative;vertical-align:text-bottom;}
-			p span{margin:0;padding:0;}label span:not(#dpr){display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
+			p span{margin:0;padding:0;}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}a{background:#888;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;}
 			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 			.clear_fix::after{content:"";clear:both;display:block;}
@@ -21,16 +22,21 @@
 		<script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
 		<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
+		<script src="https://mcbeeringi.github.io/apps/mc/mcmf.js"></script>
 
+		<div id="picon">Aa</div>
 		<div id="configp">
-			<label><span>img:</span><input id="img_s" type="number" value="512" onchange="i_s(this.value);render();"><span id="dpr"></span> px²</label><br>
+			<label><span>img:</span><input id="img_s" type="number" value="512" onchange="i_s(this.value);render();"><i id="dpr"></i> px²</label><br>
 			<label><span>size:</span><input id="font_s" type="number" value="32" oninput="f_s(this.value);"onchange="render();">px</label><br>
 			<label><span>font:</span><input id="font_f" value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
 			<label><span>block:</span><input id="men" value="00" onchange="set(this.value);render();"></label><br>
 			<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
+			<br>
+			<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
+			<label>list:<input id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
+			<label>mcpack:<input type="checkbox" id="expmcpack"> (export as mcpack)</label><br>
 		</div>
-		<br>
-		<button onclick="exp(expl.value);" id="expb">export bmp</button> black list: <input id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"><br>
+		<button onclick="exp(expl.value,expmode.checked,expmcpack.checked);" id="expb">export</button> <br>
 		<progress value="0" id="pbar0"></progress><br>
 		<progress value="0" id="pbar1" max="100"></progress><br>
 		<pre id="log"></pre><pre id="log_"></pre>
@@ -68,20 +74,26 @@
 			render();
 
 			/////export
-			const exp=(blist,mode)=>{
-				log_.textContent='';pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Running…';configp.style.opacity=0.2;configp.style.pointerEvents='none';
-				var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2));
+			const exp=(blist,mode,mcpack)=>{
+				var arr;log_.textContent='';pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Running…';configp.style.opacity=0.2;configp.style.pointerEvents='none';
 				if(blist){
 					blist = blist.split(',').map(x=>x.split('~')).map(x=>{if(x[1])return [...Array(parseInt(x[1],16)-parseInt(x,16)+1).keys()].map(y=>(y+parseInt(x[0],16)).toString(16).toUpperCase());else return x;}).join(',').split(',');
 					console.log(blist);
-					if(mode)arr=blist;else arr=arr.filter(x=>!(blist.includes(x)));
+					if(mode)arr=blist;else arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)).filter(x=>!(blist.includes(x)));
 				}
 				var arr_=[],zip=new JSZip(),fontFolder=zip.folder("font"),arrl=arr.length;pbar0.max=arrl;
-				const exppost=()=>{
-					console.groupEnd();
-					set(men.value);configp.style.opacity=1;configp.style.pointerEvents='auto';
+				const exppost=expn=>{
 					zip.generateAsync({type:"blob"},d=>{pbar1.value=d.percent;log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;})
-						.then(c=>{console.log('done');saveAs(c,`${font_f.value}_bmp.zip`);expb.textContent='export bmp';expb.disabled=false;})
+						.then(c=>{log_.textContent+='packaging done.\n';saveAs(c,expn);expb.textContent='export';expb.disabled=false;console.log('done');})
+				};
+				const pexppost=()=>{
+					zip.file('manifest.json',simple_mcmf(`n${font_f.value}; dfont resource pack.\nmcbeeringi.github.io/apps/glyph.html; v[0,0,1]; tresources`));
+					log_.textContent+='manifest.json done.\n';
+					html2canvas(document.getElementById("picon"),{"scale":1,"scrollX":0,"scrollY":0}).then(c=>c.toBlob(b=>{
+						zip.file('pack_icon.png',b);
+						log_.textContent+='pack_icon.png done.\n';
+						exppost(`${font_f.value}_resource.mcpack`);
+					}));
 				};
 				const expmain=()=>{
 					console.group();console.log(arr);
@@ -92,7 +104,7 @@
 							if(x=='00')fontFolder.file('default8.png',b);
 							log.textContent=`step 1/2 rendering… ${(++pbar0.value/arrl*100).toFixed(2)}%   ( ${('00'+pbar0.value).slice(-3)} / ${arrl}  ${x} )`;
 							console.log(x);
-							if(i==arr.length-1){if(arr_.length){arr=arr_;arr_=[];log_.textContent=' fix…\n';expmain();}else{log_.textContent+='rendering done.';exppost();}}
+							if(i==arr.length-1){if(arr_.length){arr=arr_;arr_=[];log_.textContent=' fix…\n';expmain();}else{log_.textContent+='rendering done.\n';console.groupEnd();set(men.value);configp.style.opacity=1;configp.style.pointerEvents='auto';if(mcpack)pexppost();else exppost(`${font_f.value}_bmp.zip`);}}
 						})).catch(e=>{arr_.push(x);log_.textContent+=`${x} `;});
 					}));
 				}
