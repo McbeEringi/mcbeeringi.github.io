@@ -68,13 +68,13 @@
 			render();
 
 			/////export
-			const exp=(blist)=>{
+			const exp=(blist,mode)=>{
 				log_.textContent='';pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Running…';configp.style.opacity=0.2;configp.style.pointerEvents='none';
 				var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2));
 				if(blist){
 					blist = blist.split(',').map(x=>x.split('~')).map(x=>{if(x[1])return [...Array(parseInt(x[1],16)-parseInt(x,16)+1).keys()].map(y=>(y+parseInt(x[0],16)).toString(16).toUpperCase());else return x;}).join(',').split(',');
 					console.log(blist);
-					arr = arr.filter(x=>!(blist.includes(x)));
+					if(mode)arr=blist;else arr=arr.filter(x=>!(blist.includes(x)));
 				}
 				var arr_=[],zip=new JSZip(),fontFolder=zip.folder("font"),arrl=arr.length;pbar0.max=arrl;
 				const exppost=()=>{
