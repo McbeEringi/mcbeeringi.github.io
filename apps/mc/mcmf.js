@@ -3,7 +3,7 @@ const uuidgen=()=>'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split('').map(e=>{switc
 const simple_mcmf=x=>{
 	var r={},h={},m={},tmp={};
 	switch(typeof x){
-		case'string':x.split('; ').map(c=>tmp[c.substr(0,1)]=c.substr(1));tmp.v=JSON.parse(tmp.v);tmp.m=JSON.parse(tmp.m);break;
+		case'string':x.split('; ').map(c=>tmp[c.substr(0,1)]=c.substr(1));tmp.v=JSON.parse(tmp.v);if(tmp.m)tmp.m=JSON.parse(tmp.m);break;
 		case'object':break;
 	}
 	console.log(tmp)
