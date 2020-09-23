@@ -5,74 +5,53 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi arch_calc</title>
-	<script src="../../src/style.js" defer></script>
-	<style>canvas{background:#222;color:#fff;width:100%;image-rendering:crisp-edges;}</style>
 </head>
 <body>
-	<div class="title">Arch Calc</div><p>アーチを描くツール 建築かなんかにどぞ</p>
-	<div class="col1">
-		<h2>input</h2>
-		<p>
-			幅　　：<input type="number" id="w" value="16" oninput="graph();">
-			<input type="range" value="16" min="4" max="64" step="1" oninput="w.value=this.value;graph();"><br>
-			高さ　：<input type="number" id="h" value="4" oninput="graph();">
-			<input type="range" value="4" min="2" max="32" step="1" oninput="h.value=this.value;graph();"><br>
-			解像度：<input type="number" id="r" value="32" oninput="graph();">
-			<input type="range" value="32" min="1" max="128" step="1" oninput="r.value=this.value;graph();">(px/block)
-		</p>
+	<style>
+		:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:crisp-edges;}body{margin:8px;}.box{background-color:#333;padding:4px;overflow:scroll;}h1,h2{margin:4px;}
+		canvas{position:fixed;top:0;transform:translateX(calc(-100% - 8px));}img{width:100%;}
+		input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;user-select:auto;-webkit-user-select:auto;}
+		input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
+	</style>
+
+	<h1>arch_calc</h1>
+	<div class="box">
+		width: <input type="number" id="w" value="16" oninput="graph();">
+		<input type="range" value="16" min="4" max="64" step="1" oninput="w.value=this.value;graph();"><br>
+		height: <input type="number" id="h" value="4" oninput="graph();">
+		<input type="range" value="4" min="2" max="32" step="1" oninput="h.value=this.value;graph();"><br>
+		resolution: <input type="number" id="r" value="32" oninput="graph();">
+		<input type="range" value="32" min="1" max="128" step="1" oninput="r.value=this.value;graph();">(px/block)<br>
 	</div>
-	<div class="col2" style="padding:2%;">
-		<h3>円</h3>
-		<div style="overflow: scroll;-webkit-overflow-scrolling: touch;">
-			<canvas id="cir">jsがoffになっている,またはブラウザが対応していないようです…</canvas>
-		</div>
-		<h3>放物線(工事中)</h3>
-		<div style="overflow: scroll;-webkit-overflow-scrolling: touch;">
-			<canvas id="par">jsがoffになっている,またはブラウザが対応していないようです…</canvas>
-		</div>
-	</div>
+	<br>
+	<canvas id="cir">jsがoffになっている,またはブラウザが対応していないようです…</canvas>
+	<img id="img" src="">
 	<script>
-		window.onload = ()=>{graph();}
+		window.onload=()=>graph();
 		function graph(){
 			var res = document.getElementById("r").value*1;
 			var cir = document.getElementById("cir");
-			var par = document.getElementById("par");
 			var w = document.getElementById("w").value*res;
 			var h = document.getElementById("h").value*res;
 			var w2 = w*.5;
 			cir.width=w;cir.height=h;
-			par.width=w;par.height=h;
-			if (cir.getContext) {
-				var cir_c = cir.getContext('2d');
-				ruler(cir_c,res,h,w);
-				//弧
-				cir_c.beginPath();cir_c.strokeStyle = "#ff8";
-				var r = (w2*w2+h*h)/(2*h);
-				cir_c.arc(w2,r,r,0,Math.PI,true);
-				cir_c.stroke();
-				//=*=*=
-
-				var par_c = par.getContext('2d');
-				ruler(par_c,res,h,w);
-				//=*=*=
-				par_c.beginPath();
-				par_c.strokeStyle = "#ff8";
-				par_c.moveTo(0,h);
-				for (var i = 0; i < 64; i++) {
-					par_c.lineTo(w,0);
-				}
-				par_c.stroke();
-			}
+			var cir_c = cir.getContext('2d');
+			ruler(cir_c,res,h,w);
+			cir_c.beginPath();cir_c.strokeStyle = "#ff8";
+			var r = (w2*w2+h*h)/(2*h);
+			cir_c.arc(w2,r,r,0,Math.PI,true);
+			cir_c.stroke();
+			img.src=cir.toDataURL();
 		}
-		function ruler(c,res,h,w) {
+		function ruler(c,res,h,w){
 			//ハーフ
 			c.beginPath();c.strokeStyle = "#448";
-			c.moveTo(0,res*.5);for (var i = res*.5; i < h; i+=res) {c.lineTo(w,i);c.moveTo(0,i+res);}
+			c.moveTo(0,res*.5);for(var i=res*.5;i<h;i+=res){c.lineTo(w,i);c.moveTo(0,i+res);}
 			c.stroke();
 			//罫線
 			c.beginPath();c.strokeStyle = "#aaa";
-			c.moveTo(res,0);for (var i = res; i < w; i+=res) {c.lineTo(i,h);c.moveTo(i+res,0);}
-			c.moveTo(0,res);for (var i = res; i < h; i+=res) {c.lineTo(w,i);c.moveTo(0,i+res);}
+			c.moveTo(res,0);for(var i=res;i<w;i+=res){c.lineTo(i,h);c.moveTo(i+res,0);}
+			c.moveTo(0,res);for(var i=res;i<h;i+=res){c.lineTo(w,i);c.moveTo(0,i+res);}
 			c.stroke();
 		}
 	</script>
