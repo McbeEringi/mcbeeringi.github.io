@@ -33,8 +33,6 @@
 				<label><span>img:</span><input id="img_s" type="number" value="512" onchange="i_s(this.value);render();"><i id="dpr"></i> px²</label><br>
 				<label><span>size:</span><input id="font_s" type="number" value="32" oninput="f_s(this.value);render();">px</label><br>
 				<label><span>font:</span><input id="font_f" value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
-				<label><span>block:</span><input id="men" value="00" onchange="set(this.value);render();"></label><br>
-				<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
 				<a id="dl" download href="" ontouchstart="">……</a><br>
 				<br>
 				<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
@@ -50,6 +48,8 @@
 		<br>
 		<div class="box">
 			<h2>preview</h2>
+			<label><span>block:</span><input id="men" value="00" onchange="set(this.value);render();"></label><br>
+			<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
 			<div id="disp"></div>
 		</div>
 		<!--<img id="img" style="width:50vmin;">-->
