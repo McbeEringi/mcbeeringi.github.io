@@ -21,7 +21,7 @@
 		height: <input type="number" id="h" value="4" oninput="graph();">
 		<input type="range" value="4" min="2" max="32" step="1" oninput="h.value=this.value;graph();"><br>
 		resolution: <input type="number" id="r" value="32" oninput="graph();">
-		<input type="range" value="32" min="1" max="128" step="1" oninput="r.value=this.value;graph();">(px/block)<br>
+		<input type="range" value="64" min="1" max="128" step="1" oninput="r.value=this.value;graph();">(px/block)<br>
 	</div>
 	<br>
 	<canvas id="cir">jsがoffになっている,またはブラウザが対応していないようです…</canvas>
@@ -30,7 +30,6 @@
 		window.onload=()=>graph();
 		function graph(){
 			var res = document.getElementById("r").value*1;
-			var cir = document.getElementById("cir");
 			var w = document.getElementById("w").value*res;
 			var h = document.getElementById("h").value*res;
 			var w2 = w*.5;
@@ -41,7 +40,7 @@
 			var r = (w2*w2+h*h)/(2*h);
 			cir_c.arc(w2,r,r,0,Math.PI,true);
 			cir_c.stroke();
-			img.src=cir.toDataURL();
+			cir.toBlob(b=>img.src=URL.createObjectURL(b));
 		}
 		function ruler(c,res,h,w){
 			//ハーフ
