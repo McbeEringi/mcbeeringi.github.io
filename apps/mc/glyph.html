@@ -55,7 +55,7 @@
 		<!--<img id="img" style="width:50vmin;">-->
 
 		<script>
-			window.scrollTo(0,0);
+			window.onload=()=>window.scrollTo(0,0);
 			dpr.textContent='*'+window.devicePixelRatio;
 			/////base
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
