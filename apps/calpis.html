@@ -1,51 +1,48 @@
 <!DOCTYPE html>
 <html lang="jp">
-
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi calpis_calc</title>
 	<script src="../src/style.js" defer></script>
 </head>
-
 <body>
+	<style>
+		input{width:4em;}.r{text-align:right;}
+		input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{display:none;}
+		input[type="number"]{-moz-appearance:textfield;}
+	</style>
 	<div class="title">🥛Calpis Calc🥛</div><p>カルピス原液を適量入れた時に、コップの底が見えなくなる角度を計算します<br>
 		美味しく作る目安程度に使ってください</p>
-	<div class="col1 left" style="padding:5px;">
-		<img src="img/calpis.jpg" alt="calpis図解" style="width:50%;max-width:200px;">
-		<p style="margin-left:10px">角θを求めます</p>
+	<div class="col1">
+		<img src="calpis.jpg" alt="calpis図解" style="width:50%;max-width:200px;"><br>
+		角θを求めます
 	</div>
 	<div class="col2">
 		<h2>input</h2>
-		<p>
-			<input type="text" id="h" placeholder="希釈後液面高さ"><br>
-			<input type="text" id="d" placeholder="コップ底面直径">
-		</p>
-		<br>
+		<form oninput="calpis(h_.value,d_.value,m_.value);">
+			液面 : 直径 =
+			<input type="number" id="h_" value="1" class="r" min="0"> : <input type="number" id="d_" value="1" min="0"><br>
+			<label><input type="number" id="m_" value="5" class="r" min="1">倍希釈</label>
+		</form>
 	</div>
-	<div class="col1" style="padding:2%;">
-		<button type="button" onclick="calpis();">calculate</button>
-	</div>
-	<div class="col2" id="r">
+	<div class="col1">
 		<h2>result</h2>
-		<p id="out"></p><br>
+		<p id="out" style="transform-origin:left;"></p><br>
 	</div>
 	<script>
-		function calpis() {
-			var h = document.getElementById("h").value;
-			var d = document.getElementById("d").value;
-			h *= 2 / 5;
-			var diffuse = Math.asin(h / Math.sqrt(h * h + d * d)) * 180 / Math.PI;
-			if (diffuse) {
-				document.getElementById("r").style.transform = "rotate("+-diffuse+"deg)";
+		function calpis(h,d,m) {
+			var diffuse = (Math.atan2(h*2/m,d)*180/Math.acos(-1)).toFixed(2);
+			if(diffuse){
+				out.style.transform = `rotate(${-diffuse}deg)`;
 				diffuse += "°";
-			} else {
-				document.getElementById("r").style.transform = "rotate(0deg)";
+			}else{
+				out.style.transform = "rotate(0deg)";
 				diffuse = "??";
 			}
-			document.getElementById("out").innerHTML = diffuse;
+			out.textContent = diffuse;
 		}
+		calpis(h_.value,d_.value,m_.value);
 	</script>
 </body>
-
 </html>
