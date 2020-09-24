@@ -9,12 +9,12 @@
 <script>
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
-	 log.textComtent=JSON.stringify(e);
+	 log.textContent=JSON.stringify(e);
 	});
 };
 const ormain=()=>{
 	window.addEventListener('deviceorientation',e=>{
-	 log_.textComtent=`${e.absolute} alpha:${e.alpha} beta:${e.beta} gamma:${e.gamma}`;
+	 log_.textContent=`${e.absolute} alpha:${e.alpha} beta:${e.beta} gamma:${e.gamma}`;
 	});
 };
 const reqp=()=>{
