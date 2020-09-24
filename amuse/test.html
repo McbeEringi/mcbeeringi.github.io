@@ -9,7 +9,7 @@
 <script>
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
-	 log.textContent=`motion\nx:${e.acceleration.x.toFixed(2)}\ny:${e.acceleration.y.toFixed(2)}\nz:${e.acceleration.z.toFixed(2)}\n_`;
+	 log.textContent=`motion\nx:${('__'+e.acceleration.x.toFixed(2)).slice(-5)}\ny:${('__'+e.acceleration.y.toFixed(2)).slice(-5)}\nz:${('__'+e.acceleration.z.toFixed(2)).slice(-5)}\n_`;
 	});
 };
 const ormain=()=>{
