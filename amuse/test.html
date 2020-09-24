@@ -9,12 +9,12 @@
 <script>
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
-	 log.textContent=`motion\nx:${e.acceleration.x}\ny:${e.acceleration.y}\nz:${e.acceleration.z}\n_`;
+	 log.textContent=`motion\nx:${e.acceleration.x.toFixed(2)}\ny:${e.acceleration.y.toFixed(2)}\nz:${e.acceleration.z.toFixed(2)}\n_`;
 	});
 };
 const ormain=()=>{
 	window.addEventListener('deviceorientation',e=>{
-	 log_.textContent=`orientation\n${e.absolute}\nalpha:${e.alpha}\nbeta:${e.beta}\ngamma:${e.gamma}`;
+	 log_.textContent=`orientation\n${e.absolute}\nalpha:${e.alpha.toFixed(2)}\nbeta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
 	});
 };
 const reqp=()=>{
