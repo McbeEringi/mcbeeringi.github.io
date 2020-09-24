@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<button id="butt">run</button>
+<pre id="log"></pre><pre id="log_"></pre>
+<script>
+const momain=()=>{
+	window.addEventListener('devicemotion',e=>{
+	 log.textComtent=JSON.stringify(e);
+	});
+};
+const ormain=()=>{
+	window.addEventListener('deviceorientation',e=>{
+	 log_.textComtent=`${e.absolute} alpha:${e.alpha} beta:${e.beta} gamma:${e.gamma}`;
+	});
+};
+const reqp=()=>{
+	if(DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission=='function')
+		DeviceMotionEvent.requestPermission()
+			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
+	else momain();
+	if(DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission=='function')
+		DeviceOrientationEvent.requestPermission()
+		.then(p=>{if(p=='granted')ormain();else alert('permisson denied');}).catch(e=>alert(e));
+	else ormain();
+};
+
+butt.onclick=reqp;
+</script>
+</body>
+</html>
