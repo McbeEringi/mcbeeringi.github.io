@@ -30,7 +30,6 @@
 		<pre id="a_log"></pre><canvas id="canvas"></canvas>
 	</div>
 </div>
-<button id="butt">run</button>
 
 <script>
 canvas.width=1024;canvas.height=1024;
@@ -84,9 +83,10 @@ const reqp=()=>{
 		DeviceOrientationAbsoluteEvent.requestPermission()
 		.then(p=>{if(p=='granted')oramain();else alert('permisson denied');}).catch(e=>alert(e));
 	else oramain();
+	document.body.onclick=()=>{};
 };
 
-butt.onclick=reqp;
+document.body.onclick=reqp;
 </script>
 </body>
 </html>
