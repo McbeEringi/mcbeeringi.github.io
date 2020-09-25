@@ -11,7 +11,7 @@
 	.rotw{perspective:1000px;width:512px;height:512px;border:1px solid;position:relative;}
 	#rot{transform-style:preserve-3d;width:100%;height:100%;position:absolute;top:0;left:0;border:1px solid #fff8;border-radius:50%;text-align:center;}
 	#rot>div{width:256px;height:256px;position:absolute;top:128px;left:128px;border-radius:8px;}
-	#o_log{margin:4px;}
+	#o_log{margin:8px;text-align:right;}
 
 	.cvw{width:512px;height:512px;border:solid 1px;position:relative;}
 	canvas{width:100%;height:100%;}#a_log{line-height:170px;text-align:right;position:absolute;top:0;right:0;color:#fff4;}
@@ -19,11 +19,10 @@
 
 <div class="clear_fix">
 	<div class="rotw">
-		<pre id="o_log"></pre>
 		<div id="rot">
 			↑
 			<div style="background:#f884;transform:rotateY(90deg);"></div>
-			<div style="background:#8f84;"></div>
+			<div style="background:#8f84;"><pre id="o_log"></pre></div>
 			<div style="background:#88f4;transform:rotateX(90deg);"></div>
 		</div>
 	</div>
