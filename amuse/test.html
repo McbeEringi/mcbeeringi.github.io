@@ -20,6 +20,11 @@ const ormain=()=>{
 	 log_.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
 	});
 };
+const oramain=()=>{
+	window.addEventListener('deviceorientationabsolute',e=>{
+	 log_.textContent=`orientationabs : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
+	});
+};
 const reqp=()=>{
 	if(DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
@@ -29,6 +34,10 @@ const reqp=()=>{
 		DeviceOrientationEvent.requestPermission()
 		.then(p=>{if(p=='granted')ormain();else alert('permisson denied');}).catch(e=>alert(e));
 	else ormain();
+	if(DeviceOrientationAbsoluteEvent && typeof DeviceOrientationAbsoluteEvent.requestPermission=='function')
+		DeviceOrientationAbsoluteEvent.requestPermission()
+		.then(p=>{if(p=='granted')oramain();else alert('permisson denied');}).catch(e=>alert(e));
+	else oramain();
 };
 
 butt.onclick=reqp;
