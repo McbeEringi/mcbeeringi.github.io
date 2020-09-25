@@ -10,7 +10,7 @@
 	.rotw{perspective:1000px;width:512px;height:512px;border:1px solid;position:relative;}
 	#rot{transform-style:preserve-3d;width:100%;height:100%;position:absolute;top:0;left:0;border:1px solid #fff8;border-radius:50%;text-align:center;}
 	#rot>div{width:256px;height:256px;position:absolute;top:128px;left:128px;border-radius:8px;}
-	.cvw{width:512px;height:512px;border:1px solid;}
+	.cvw{width:512px;height:512px;box-shadow:0 0 0 1px #fff;}
 	canvas{width:90%;height:512px;}#alog{margin:0;width:10%;height:100%;line-height:170px;text-align:right;}
 </style>
 
@@ -53,7 +53,7 @@ const loop=()=>{
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
 		mo_a=e.acceleration;
-		a_log.textContent=`x:${mo_a.x.toFixed(2)}\ny:${mo_a.y.toFixed(2)}\nz:${mo_a.z.toFixed(2)}}`;
+		a_log.textContent=`${mo_a.x.toFixed(2)}\n${mo_a.y.toFixed(2)}\n${mo_a.z.toFixed(2)}`;
 		log.textContent=`motion : ${e.interval}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
 R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.rotationRate.beta.toFixed(2)).slice(-6)}\ngamma:${('_ '+e.rotationRate.gamma.toFixed(2)).slice(-6)}`;
