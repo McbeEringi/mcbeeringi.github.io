@@ -25,10 +25,14 @@
 <script>
 canvas.width=1024;canvas.height=1024;
 var ctx=canvas.getContext('2d');
-const loop=(x,y,z)=>{
+const loop=(a)=>{
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.drawImage(img,-1,0);
-	ctx.fillRect(1000,512+Math.sin(t)*200,2,2);
+	ctx.fillRect(1000,170+a.x*100,2,2);
+	ctx.fillRect(1000,341,2,2);
+	ctx.fillRect(1000,512+a.y*100,2,2);
+	ctx.fillRect(1000,683,2,2);
+	ctx.fillRect(1000,854+a.z*100,2,2);
 	img.src=canvas.toDataURL();
 	//requestAnimationFrame(loop);
 };
@@ -38,7 +42,7 @@ const momain=()=>{
 A\nx:${('_ '+e.acceleration.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.acceleration.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.acceleration.z.toFixed(2)).slice(-6)}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
 R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.rotationRate.beta.toFixed(2)).slice(-6)}\ngamma:${('_ '+e.rotationRate.gamma.toFixed(2)).slice(-6)}`;
-		loop(e.acceleration.x);
+		loop(e.acceleration);
 	});
 };
 const ormain=()=>{
