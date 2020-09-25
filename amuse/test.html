@@ -24,25 +24,27 @@
 <pre id="log"></pre><pre id="log2"></pre>
 <script>
 canvas.width=1024;canvas.height=1024;
-var ctx=canvas.getContext('2d');
-const loop=(a)=>{
+var ctx=canvas.getContext('2d'),mo_a={"x":0,"y":0,"z":0};
+const loop=()=>{
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.drawImage(img,-1,0);
-	ctx.fillRect(1000,170+a.x*100,2,2);
+	ctx.fillStyle='#000';
+	ctx.fillRect(1000,170+mo_a.x*47.5,2,2);
+	ctx.fillRect(1000,512+mo_a.y*47.5,2,2);
+	ctx.fillRect(1000,854+mo_a.z*47.5,2,2);
+	ctx.fillStyle='#0001';
 	ctx.fillRect(1000,341,2,2);
-	ctx.fillRect(1000,512+a.y*100,2,2);
 	ctx.fillRect(1000,683,2,2);
-	ctx.fillRect(1000,854+a.z*100,2,2);
 	img.src=canvas.toDataURL();
-	//requestAnimationFrame(loop);
-};
+	requestAnimationFrame(loop);
+};loop();
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
 		log.textContent=`motion : ${e.interval}
 A\nx:${('_ '+e.acceleration.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.acceleration.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.acceleration.z.toFixed(2)).slice(-6)}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
 R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.rotationRate.beta.toFixed(2)).slice(-6)}\ngamma:${('_ '+e.rotationRate.gamma.toFixed(2)).slice(-6)}`;
-		loop(e.acceleration);
+		mo_a=e.acceleration;
 	});
 };
 const ormain=()=>{
