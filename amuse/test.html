@@ -5,11 +5,12 @@
 </head>
 <body>
 <style>
-	.rotw{perspective:1000px;width:512px;height:512px;border:1px solid #000;float:left;}
-	#rot{transform-style:preserve-3d;width:100%;height:100%;position:relative;border:1px solid #0008;border-radius:50%;text-align:center;}
+	.rotw{perspective:1000px;width:512px;height:512px;border:1px solid #000;float:left;position:relative;}
+	#rot{transform-style:preserve-3d;width:100%;height:100%;position:absolute;top:0;left:0;border:1px solid #0008;border-radius:50%;text-align:center;}
 	#rot>div{width:256px;height:256px;position:absolute;top:128px;left:128px;border-radius:8px;}
 </style>
 <div class="rotw">
+	<pre id="log1"></pre>
 	<div id="rot">
 		↑
 		<div style="background:#f884;transform:rotateY(90deg);"></div>
@@ -18,7 +19,7 @@
 	</div>
 </div>
 <button id="butt">run</button>
-<pre id="log"></pre><pre id="log_"></pre>
+<pre id="log"></pre><pre id="log2"></pre>
 <script>
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
@@ -30,13 +31,13 @@ R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.ro
 };
 const ormain=()=>{
 	window.addEventListener('deviceorientation',e=>{
-	 log_.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
+	 log1.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
 	 rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${e.alpha}deg)`;
 	});
 };
 const oramain=()=>{
 	window.addEventListener('deviceorientationabsolute',e=>{
-	 log_.textContent=`orientationabs\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
+	 log2.textContent=`orientationabs\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
 	});
 };
 const reqp=()=>{
