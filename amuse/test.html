@@ -37,7 +37,7 @@ const loop=()=>{
 	ctx.fillRect(1000,683,2,2);
 	img.src=canvas.toDataURL();
 	setTimeout(loop,50);//requestAnimationFrame(loop);
-};
+};loop();
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
 		log.textContent=`motion : ${e.interval}
@@ -71,7 +71,6 @@ const reqp=()=>{
 		DeviceOrientationAbsoluteEvent.requestPermission()
 		.then(p=>{if(p=='granted')oramain();else alert('permisson denied');}).catch(e=>alert(e));
 	else oramain();
-	loop();
 };
 
 butt.onclick=reqp;
