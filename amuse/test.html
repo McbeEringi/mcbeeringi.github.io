@@ -5,8 +5,9 @@
 </head>
 <body>
 <style>
-	.rotw{perspective:1000px;width:512px;height:512px;border:1px solid #000;float:left;position:relative;}
-	#rot{transform-style:preserve-3d;width:100%;height:100%;position:absolute;top:0;left:0;border:1px solid #0008;border-radius:50%;text-align:center;}
+:root{background:#222;color:#fff;}
+	.rotw{perspective:1000px;width:512px;height:512px;border:1px solid #fff;float:left;position:relative;}
+	#rot{transform-style:preserve-3d;width:100%;height:100%;position:absolute;top:0;left:0;border:1px solid #fff8;border-radius:50%;text-align:center;}
 	#rot>div{width:256px;height:256px;position:absolute;top:128px;left:128px;border-radius:8px;}
 	canvas{width:512px;height:512px;border:1px solid}
 </style>
@@ -28,11 +29,19 @@ var ctx=canvas.getContext('2d'),mo_a={"x":0,"y":0,"z":0};
 const loop=()=>{
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.drawImage(img,-1,0);
-	ctx.fillStyle='#000';
+	ctx.fillStyle='#f008';
+	ctx.fillRect(1000,170,2,2);
+	ctx.fillStyle='#f00';
 	ctx.fillRect(1000,170+mo_a.x*47.5,2,2);
+	ctx.fillStyle='#0f08';
+	ctx.fillRect(1000,512,2,2);
+	ctx.fillStyle='#0f0';
 	ctx.fillRect(1000,512+mo_a.y*47.5,2,2);
+	ctx.fillStyle='#88f8';
+	ctx.fillRect(1000,854,2,2);
+	ctx.fillStyle='#88f';
 	ctx.fillRect(1000,854+mo_a.z*47.5,2,2);
-	ctx.fillStyle='#0001';
+	ctx.fillStyle='#fff2';
 	ctx.fillRect(1000,341,2,2);
 	ctx.fillRect(1000,683,2,2);
 	img.src=canvas.toDataURL();
