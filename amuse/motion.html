@@ -71,6 +71,7 @@ const oramain=()=>{
 	});
 };
 const reqp=()=>{
+	document.body.onclick=()=>{};
 	if(typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
 			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
@@ -83,7 +84,6 @@ const reqp=()=>{
 		DeviceOrientationAbsoluteEvent.requestPermission()
 		.then(p=>{if(p=='granted')oramain();else alert('permisson denied');}).catch(e=>alert(e));
 	else oramain();
-	document.body.onclick=()=>{};
 };
 
 document.body.onclick=reqp;
