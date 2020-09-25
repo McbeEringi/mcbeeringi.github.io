@@ -5,6 +5,15 @@
 </head>
 <body>
 <button id="butt">run</button>
+<style>
+	#rot{transform-style:preserve-3d;perspective:1000px;width:512px;height:512px;position:relative;border:1px solid #000;}
+	#rot>div{width:256px;height:256px;position:absolute;top:128px;left:128px;}
+</style>
+<div id="rot">
+	<div style="background:#f884;transform:rotateY(90deg);"></div>
+	<div style="background:#8f84;"></div>
+	<div style="background:#88f4;transform:rotateX(90deg);"></div>
+</div>
 <pre id="log"></pre><pre id="log_"></pre>
 <script>
 const momain=()=>{
@@ -18,6 +27,7 @@ R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.ro
 const ormain=()=>{
 	window.addEventListener('deviceorientation',e=>{
 	 log_.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
+	 rot.style.transform=`rotateX(${e.gamma}deg)rotateY(${e.beta}deg)rotateZ(${e.alpha}deg)`;
 	});
 };
 const oramain=()=>{
