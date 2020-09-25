@@ -71,7 +71,7 @@ const oramain=()=>{
 	});
 };
 const reqp=()=>{
-	document.body.onclick=()=>{};
+	window.onclick=()=>{};
 	if(typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
 			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
@@ -86,7 +86,7 @@ const reqp=()=>{
 	else oramain();
 };
 
-document.body.onclick=reqp;
+window.onclick=reqp;
 </script>
 </body>
 </html>
