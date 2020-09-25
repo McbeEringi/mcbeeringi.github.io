@@ -57,15 +57,15 @@ const oramain=()=>{
 	});
 };
 const reqp=()=>{
-	if(DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission=='function')
+	if(typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
 			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
 	else momain();
-	if(DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission=='function')
+	if(typeof DeviceOrientationEvent.requestPermission=='function')
 		DeviceOrientationEvent.requestPermission()
 		.then(p=>{if(p=='granted')ormain();else alert('permisson denied');}).catch(e=>alert(e));
 	else ormain();
-	if(DeviceOrientationAbsoluteEvent && typeof DeviceOrientationAbsoluteEvent.requestPermission=='function')
+	if(typeof DeviceOrientationAbsoluteEvent.requestPermission=='function')
 		DeviceOrientationAbsoluteEvent.requestPermission()
 		.then(p=>{if(p=='granted')oramain();else alert('permisson denied');}).catch(e=>alert(e));
 	else oramain();
