@@ -36,7 +36,7 @@ const loop=()=>{
 	ctx.fillRect(1000,341,2,2);
 	ctx.fillRect(1000,683,2,2);
 	img.src=canvas.toDataURL();
-	requestAnimationFrame(loop);
+	setTimeout(loop,50);//requestAnimationFrame(loop);
 };loop();
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
