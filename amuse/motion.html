@@ -6,17 +6,15 @@
 <body>
 <style>
 	:root{background:#222;color:#fff;}
-	.clear_fix::after{content:"";clear:both;display:block;}.clear_fix>*{float:left;}
-	log{margin:4px;}
+	log{margin:4px;}#contentWrapper>*{display:inline-block;vertical-align:top;width:512px;height:512px;border:solid 1px;position:relative;}
 
-	.rotw{perspective:1000px;width:512px;height:512px;border:1px solid;position:relative;}
+	.rotw{perspective:1000px;}
 	#rot{transform-style:preserve-3d;width:100%;height:100%;position:absolute;top:0;left:0;border:1px solid #fff8;border-radius:50%;text-align:center;}
 	#rot>div{width:256px;height:256px;position:absolute;top:128px;left:128px;border-radius:8px;}
-	.cvw{width:512px;height:512px;border:solid 1px;position:relative;}
 	canvas{width:100%;height:100%;}#a_log{line-height:170px;text-align:right;position:absolute;top:0;right:0;color:#fff4;}
 </style>
 
-<div class="clear_fix">
+<div id="contentWrapper">
 	<div class="rotw">
 		<pre id="o_log"></pre>
 		<div id="rot">
@@ -26,7 +24,7 @@
 			<div style="background:#88f4;transform:rotateX(90deg);"></div>
 		</div>
 	</div>
-	<div class="cvw">
+	<div>
 		<pre id="a_log"></pre><canvas id="canvas"></canvas>
 	</div>
 </div>
@@ -71,7 +69,7 @@ const oramain=()=>{
 	});
 };
 const reqp=()=>{
-	window.onclick=()=>{};
+	contentWrapper.onclick=()=>{};
 	if(typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
 			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
@@ -86,7 +84,7 @@ const reqp=()=>{
 	else oramain();
 };
 
-window.onclick=reqp;
+contentWrapper.onclick=reqp;
 </script>
 </body>
 </html>
