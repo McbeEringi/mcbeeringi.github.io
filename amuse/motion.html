@@ -16,7 +16,7 @@
 
 <div class="clear_fix">
 	<div class="rotw">
-		<pre id="log1"></pre>
+		<pre id="o_log"></pre>
 		<div id="rot">
 			↑
 			<div style="background:#f884;transform:rotateY(90deg);"></div>
@@ -61,7 +61,7 @@ R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.ro
 };
 const ormain=()=>{
 	window.addEventListener('deviceorientation',e=>{
-		log1.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
+		o_log.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
 		rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${e.alpha}deg)`;
 	});
 };
