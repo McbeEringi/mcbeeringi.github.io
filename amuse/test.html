@@ -9,7 +9,7 @@
 <script>
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
-	 log.textContent=`motion
+	 log.textContent=`motion : ${e.interval}
 A\nx:${('_ '+e.acceleration.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.acceleration.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.acceleration.z.toFixed(2)).slice(-6)}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
 R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.rotationRate.beta.toFixed(2)).slice(-6)}\ngamma:${('_ '+e.rotationRate.gamma.toFixed(2)).slice(-6)}`;
@@ -17,7 +17,7 @@ R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.ro
 };
 const ormain=()=>{
 	window.addEventListener('deviceorientation',e=>{
-	 log_.textContent=`orientation\n${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
+	 log_.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
 	});
 };
 const reqp=()=>{
