@@ -38,11 +38,11 @@ const render=()=>{
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.putImageData(imgd,-1,0);
 	ctx.fillStyle='#f002';ctx.fillRect(1023,170,2,2);
-	ctx.fillStyle='#f00'; ctx.fillRect(1023,170+mo_a.x*47.5,2,2);
+	ctx.fillStyle='#f00'; ctx.fillRect(1023,170-mo_a.x*47.5,2,2);
 	ctx.fillStyle='#0f02';ctx.fillRect(1023,512,2,2);
-	ctx.fillStyle='#0f0'; ctx.fillRect(1023,512+mo_a.y*47.5,2,2);
+	ctx.fillStyle='#0f0'; ctx.fillRect(1023,512-mo_a.y*47.5,2,2);
 	ctx.fillStyle='#88f2';ctx.fillRect(1023,854,2,2);
-	ctx.fillStyle='#88f'; ctx.fillRect(1023,854+mo_a.z*47.5,2,2);
+	ctx.fillStyle='#88f'; ctx.fillRect(1023,854-mo_a.z*47.5,2,2);
 	ctx.fillStyle='#fff2';
 	ctx.fillRect(1023,341,2,2);
 	ctx.fillRect(1023,683,2,2);
