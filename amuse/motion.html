@@ -52,7 +52,7 @@ const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
 		mo_a=e.acceleration;render();
 		at=[mo_a.x,mo_a.y,mo_a.z].map(x=>x*e.interval);
-		v=v.map((n,i)=>n+at[i]);log2.textContent=v.join('\n);
+		v=v.map((n,i)=>n+at[i]);log2.textContent=v.join('\n');
 		a_log.textContent=`${mo_a.x.toFixed(2)}\n${mo_a.y.toFixed(2)}\n${mo_a.z.toFixed(2)}`;
 		log.textContent=`motion : ${e.interval}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
