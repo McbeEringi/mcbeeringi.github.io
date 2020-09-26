@@ -33,7 +33,7 @@
 canvas.width=1024;canvas.height=1024;
 var ctx=canvas.getContext('2d'),mo_a={"x":0,"y":0,"z":0},imgd;
 ctx.imageSmoothingEnabled=false;
-const loop=()=>{
+const render=()=>{
 	imgd=ctx.getImageData(0,0,canvas.width,canvas.height);
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.putImageData(imgd,-1,0);
@@ -46,11 +46,11 @@ const loop=()=>{
 	ctx.fillStyle='#fff2';
 	ctx.fillRect(1023,341,2,2);
 	ctx.fillRect(1023,683,2,2);
-	requestAnimationFrame(loop);
+	//requestAnimationFrame(render);
 };
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
-		mo_a=e.acceleration;
+		mo_a=e.acceleration;render();
 		a_log.textContent=`${mo_a.x.toFixed(2)}\n${mo_a.y.toFixed(2)}\n${mo_a.z.toFixed(2)}`;
 		log.textContent=`motion : ${e.interval}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
@@ -70,7 +70,7 @@ const oramain=()=>{
 };
 const reqp=()=>{
 	contentWrapper.onclick=()=>{};
-	loop();
+	render();
 	if(typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
 			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
