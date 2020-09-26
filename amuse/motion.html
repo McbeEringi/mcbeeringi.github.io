@@ -70,7 +70,6 @@ const oramain=()=>{
 };
 const reqp=()=>{
 	contentWrapper.onclick=()=>{};
-	render();
 	if(typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
 			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
