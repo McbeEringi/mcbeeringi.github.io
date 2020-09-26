@@ -31,7 +31,7 @@
 
 <script>
 canvas.width=1024;canvas.height=1024;
-var ctx=canvas.getContext('2d'),mo_a={"x":0,"y":0,"z":0},imgd;
+var ctx=canvas.getContext('2d'),mo_a={"x":0,"y":0,"z":0},imgd,adt,v=[0,0,0];
 ctx.imageSmoothingEnabled=false;
 const render=()=>{
 	imgd=ctx.getImageData(0,0,canvas.width,canvas.height);
@@ -51,6 +51,7 @@ const render=()=>{
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
 		mo_a=e.acceleration;render();
+		adt=[mo_a.x,mo_a.y,mo_a.z].map(x=>x*e.interval);v=v.map((x,i)=>x+adt[i]);log2.textContent=v.map(x=>(x*3.6).toFixed(2)).join('\n');
 		a_log.textContent=`${mo_a.x.toFixed(2)}\n${mo_a.y.toFixed(2)}\n${mo_a.z.toFixed(2)}`;
 		log.textContent=`motion : ${e.interval}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
