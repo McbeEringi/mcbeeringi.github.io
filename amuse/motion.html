@@ -64,13 +64,18 @@ const ormain=()=>{
 		rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${e.alpha}deg)`;
 	});
 };
-/*const oramain=()=>{
-	window.addEventListener('deviceorientationabsolute',e=>{
-		log2.textContent=`orientationabs\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
-	});
-};*/
 const reqp=()=>{
 	contentWrapper.onclick=()=>{};
+	navigator.geolocation.watchPosition(g=>{
+		log2.textContent=`GPS : ${g.timestamp}
+ lat: ${g.coords.latitude}
+long: ${g.coords.longitude}
+( ${g.coords.accuracy} )
+ alt: ${g.coords.altitude}
+( ${g.coords.altitudeAccuracy} )
+head: ${g.coords.heading}
+ spd: ${g.coords.speed}`;
+},e=>log2.textContent=e.message;);
 	if(typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
 			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
@@ -79,10 +84,6 @@ const reqp=()=>{
 		DeviceOrientationEvent.requestPermission()
 		.then(p=>{if(p=='granted')ormain();else alert('permisson denied');}).catch(e=>alert(e));
 	else ormain();
-	/*if(typeof DeviceOrientationAbsoluteEvent.requestPermission=='function')
-		DeviceOrientationAbsoluteEvent.requestPermission()
-		.then(p=>{if(p=='granted')oramain();else alert('permisson denied');}).catch(e=>alert(e));
-	else oramain();*/
 };
 
 contentWrapper.onclick=reqp;
