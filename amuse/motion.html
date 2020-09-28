@@ -67,7 +67,7 @@ const ormain=()=>{
 const reqp=()=>{
 	contentWrapper.onclick=()=>{};
 	navigator.geolocation.watchPosition(g=>{
-		log2.textContent=`GPS : ${g.timestamp}
+		log2.textContent=`GPS : ${new Date(g.timestamp).toString()}
  lat: ${g.coords.latitude}°
 long: ${g.coords.longitude}°
 ( ±${g.coords.accuracy}m )
