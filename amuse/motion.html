@@ -68,13 +68,13 @@ const reqp=()=>{
 	contentWrapper.onclick=()=>{};
 	navigator.geolocation.watchPosition(g=>{
 		log2.textContent=`GPS : ${g.timestamp}
- lat: ${g.coords.latitude}
-long: ${g.coords.longitude}
-( ${g.coords.accuracy} )
- alt: ${g.coords.altitude}
-( ${g.coords.altitudeAccuracy} )
-head: ${g.coords.heading}
- spd: ${g.coords.speed}`;
+ lat: ${g.coords.latitude}°
+long: ${g.coords.longitude}°
+( ±${g.coords.accuracy}m )
+ alt: ${g.coords.altitude}m
+( ±${g.coords.altitudeAccuracy}m )
+head: ${g.coords.heading}°
+ spd: ${Number(g.coords.speed)*3.6}km/h`;
 	},e=>log2.textContent=e.message);
 	if(typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
