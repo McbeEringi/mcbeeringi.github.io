@@ -75,7 +75,7 @@ long: ${g.coords.longitude}
 ( ${g.coords.altitudeAccuracy} )
 head: ${g.coords.heading}
  spd: ${g.coords.speed}`;
-},e=>log2.textContent=e.message;);
+	},e=>log2.textContent=e.message);
 	if(typeof DeviceMotionEvent.requestPermission=='function')
 		DeviceMotionEvent.requestPermission()
 			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
