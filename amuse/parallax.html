@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
+	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+		<meta charset="utf-8">
+		<title>parallax</title>
+	</head>
+	<body>
+		<style>
+			:root{background:#222 url(../img/noise5.png);color:#fff;}
+			html,body,#wrapper{height:100%;}
+			#wrapper{overflow-y:scroll;overflow-x:hidden;perspective:100px;}
+			#wrapper>*{width:100%;height:256px;text-align:center;background:#fff8 url(../img/noise5.png);}
+		</style>
+		<div id="wrapper">
+			<div>0</div>
+			<div style="transform:translateZ(-60px)scale(1.6);">-60</div>
+			<div>0</div>
+			<div style="transform:translateZ(20px)scale(0.8);">20</div>
+			<div>0</div>
+			<div style="transform:translateZ(-40px)scale(1.4);">-40</div>
+			<div>0</div>
+			<div style="transform:translateZ(40px)scale(0.6);">40</div>
+			<div>0</div>
+			<div style="transform:translateZ(-20px)scale(1.2);">-20</div>
+			<div>0</div>
+			<div style="transform:translateZ(60px)scale(0.4);">60</div>
+			<div>0</div>
+		</div>
+	</body>
+</html>
