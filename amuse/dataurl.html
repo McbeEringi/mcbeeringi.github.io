@@ -7,7 +7,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi data_url</title>
-	<script>var reader=new FileReader(),name="unknown";</script>
+	<script>if(location.hash)window.open(location.hash.substring(1),'_blank');else var reader=new FileReader(),name="unknown";</script>
 	<style>
 		:root,textarea{background:#222;color:#fff;}
 		.file{width:320px;height:180px;position:relative;border-radius:5px;border:1px solid #888;}
@@ -20,7 +20,6 @@
 	copy: <button onclick="copy(out.value);">raw</button> <button onclick="copy(location.href+'#'+out.value);">wrapped</button><br><br>
 	<textarea id="out" style="width:100%;height:128px;"></textarea>
 	<script>
-		if(location.hash)location.href=location.hash.substring(1);
 		function file(_this) {
 			name=_this.value.split("\\").pop();
 			label.textContent="読み込み中…";
