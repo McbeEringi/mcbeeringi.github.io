@@ -67,6 +67,14 @@ const ormain=()=>{
 };
 const reqp=()=>{
 	contentWrapper.onclick=()=>{};
+	if(typeof DeviceMotionEvent.requestPermission=='function')
+		DeviceMotionEvent.requestPermission()
+			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
+	else momain();
+	if(typeof DeviceOrientationEvent.requestPermission=='function')
+		DeviceOrientationEvent.requestPermission()
+		.then(p=>{if(p=='granted')ormain();else alert('permisson denied');}).catch(e=>alert(e));
+	else ormain();
 	navigator.geolocation.watchPosition(g=>{
 		var ts=new Date(g.timestamp);
 		log2.textContent=`GPS : ${('00'+ts.getHours()).slice(-2)}:${('00'+ts.getMinutes()).slice(-2)} ${ts.getSeconds()}.${('000'+ts.getMilliseconds()).slice(-3)}
@@ -78,14 +86,6 @@ alt: ${g.coords.altitude}m
 head: ${g.coords.heading}°
 spd: ${Number(g.coords.speed)*3.6}km/h`;
 	},e=>log2.textContent=e.message);
-	if(typeof DeviceMotionEvent.requestPermission=='function')
-		DeviceMotionEvent.requestPermission()
-			.then(p=>{if(p=='granted')momain();else alert('permisson denied');}).catch(e=>alert(e));
-	else momain();
-	if(typeof DeviceOrientationEvent.requestPermission=='function')
-		DeviceOrientationEvent.requestPermission()
-		.then(p=>{if(p=='granted')ormain();else alert('permisson denied');}).catch(e=>alert(e));
-	else ormain();
 };
 
 contentWrapper.onclick=reqp;
