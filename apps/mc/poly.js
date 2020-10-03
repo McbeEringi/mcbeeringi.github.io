@@ -1,5 +1,5 @@
 const fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
-const time = ()=>{var d=new Date();return d.getHours()+":"+d.getMinutes()+":"+(d.getSeconds()+d.getMilliseconds()/1e3)+" ";}
+const time = ()=>{var d=new Date();return `${('0'+d.getHours()).slice(-2)}:${('0'+d.getMinutes()).slice(-2)}:${('0'+(d.getSeconds()+d.getMilliseconds()/1e3).toFixed(3)).slice(-6)}`;}
 function core(s,posf,nf,uvf,i,cffx) {
 	console.log("core()");
 	//log.textContent += time()+"[info] started…\n";
