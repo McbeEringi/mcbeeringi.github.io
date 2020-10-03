@@ -4,7 +4,7 @@ function core(s,posf,nf,uvf,i,cffx) {
 	console.log("core()");
 	//log.textContent += time()+"[info] started…\n";
 	var o = s.match(/^o\s.+$/m);
-		if(o){o = o[0].replace(/\n/g,"").replace(/^o\s/,"");}
+		if(o){o = encodeURIComponent(o[0].replace(/\n/g,"").replace(/^o\s/,""));}
 		else{self.postMessage(time()+"[info] o not found\n");o="poly"+i;}
 	var pos = s.match(/^v\s.+$/gm);
 		if(!pos){self.postMessage(time()+"[error] v not found\n");return;}
