@@ -26,10 +26,6 @@ function core(s,posf,nf,uvf,i,cffx){
 		else{self.postMessage(`${time()}[info] f not found… '${o}' skipped\n`);return ["",pos.length,n.length,uv.length];}
 	console.log(o,pos,uv,n,pol);
 	s = `{"name":"${o}","pivot":[0,0,0],"poly_mesh":{"normalized_uvs":true,"positions":${JSON.stringify(pos)},"normals":${JSON.stringify(n)},"uvs":${JSON.stringify(uv)},"polys":${JSON.stringify(pol)}}},\n`;
-		/*'{"name":"'+o+'","pivot":[0,0,0]'+
-		',"poly_mesh":{"normalized_uvs":true,"positions":'+JSON.stringify(pos)+
-		',"normals":'+JSON.stringify(n)+',"uvs":'+JSON.stringify(uv)+
-		',"polys":'+JSON.stringify(pol)+'}},';*/
 	self.postMessage(`${time()}[info] '${o}' done	material:[${m[0]}]\n`);
 	return [s,pos.length,n.length,uv.length];
 }
@@ -50,7 +46,7 @@ function main(data){
 	diffuse = diffuse.slice(0,-2);
 	if(frm){
 		o = frm;
-		diffuse = `{"format_version":"1.8.0","geometry.${o}":{"bones":[\n${diffuse}]}}`;//'{"format_version":"1.8.0","geometry.'+o+'":{"bones":['+diffuse+']}}';
+		diffuse = `{"format_version":"1.8.0","geometry.${o}":{"bones":[\n${diffuse}]}}`;
 	}
 	self.postMessage(time()+"[info] all convertions completed");
 	return [o,diffuse];
