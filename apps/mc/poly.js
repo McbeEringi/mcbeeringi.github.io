@@ -1,10 +1,12 @@
 const fx = str=>str.replace(/\n/g,"").split(" ").map(x=>x.replace(/0+$/g,"")).slice(1).map(x=>Number(x));
 const time = ()=>{var d=new Date();return `${('0'+d.getHours()).slice(-2)}:${('0'+d.getMinutes()).slice(-2)}:${('0'+(d.getSeconds()+d.getMilliseconds()/1e3).toFixed(3)).slice(-6)}`;};
-var m='';
+var m=['',''];
 function core(s,posf,nf,uvf,i,cffx){
 	console.log("core()");
 	//log.textContent += time()+"[info] started…\n";
-	var tmpm = s.match(/^usemtl\s.+$/gm);if(tmpm)m = tmpm.filter((x,i,a)=>a.indexOf(x)==i).map(x=>x.replace(/\n/g,"").replace(/^usemtl\s/,""));
+	m[0]=m[1];
+	var tmpm = s.match(/^usemtl\s.+$/gm);
+		if(tmpm){tmpm = tmpm.map(x=>x.replace(/\n/g,"").replace(/^usemtl\s/,""));m=[tmpm.filter((x,i,a)=>a.indexOf(x)==i),tmpm.pop()];}
 	var o = s.match(/^o\s.+$/m);
 		if(o){o = o[0].replace(/\n/g,"").replace(/^o\s/,"");}
 		else{self.postMessage(time()+"[info] o not found\n");o="poly"+i;}
@@ -28,7 +30,7 @@ function core(s,posf,nf,uvf,i,cffx){
 		',"poly_mesh":{"normalized_uvs":true,"positions":'+JSON.stringify(pos)+
 		',"normals":'+JSON.stringify(n)+',"uvs":'+JSON.stringify(uv)+
 		',"polys":'+JSON.stringify(pol)+'}},';*/
-	self.postMessage(`${time()}[info] '${o}' done	material:[${m}]\n`);
+	self.postMessage(`${time()}[info] '${o}' done	material:[${m[0]}]\n`);
 	return [s,pos.length,n.length,uv.length];
 }
 function main(data){
