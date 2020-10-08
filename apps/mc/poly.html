@@ -7,46 +7,34 @@
 		<meta charset="utf-8">
 		<title>McbeEringi obj2mcbe</title>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
-		<style media="screen">
-			:root,textarea,input{background-color:#222;color:#fff;font-family:menlo,monospace;font-size:13px;}
-			h1,h2{margin:2px;}a:link{color:#48f}.box{background-color:#333;padding:4px;}
-			textarea{background-color:#0000;line-height:14px;min-height:92px;max-height:448px;width:calc(100% - 8px);overflow:scroll;resize:vertical;}
-			#log{line-height:14px;max-height:448px;overflow:scroll;background-color:#333;}
-			.inp{background-color:#0000;display:inline-block;border:none;border-bottom:2px solid #888;border-radius:0;min-width:18em;max-width:100%;margin-bottom:8px;outline:none;transition:.2s;}
-			.inp:focus{border-bottom-color:#48fc;}
-			.button{background-color:#555;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;display:inline-block;}
-			.button:active{background-color:#48fc;}
-			.file{max-width:320px;height:90px;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;}
-			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
-			.file div{position:absolute;top:50%;transform:translateY(-50%);text-align:center;width:100%;pointer-events:none;}
-		</style>
 	</head>
 	<body>
+		<style>
+			:root,textarea,input{background-color:#222;color:#fff;font-family:menlo,monospace;font-size:13px;}.box{background-color:#333;padding:4px;}
+			a:link,a:visited{color:#aef;}a:link:hover{color:#8af;}a:link:active{color:#48f;}h1,h2{margin:4px;}
+			textarea{background-color:#0000;line-height:14px;min-height:92px;max-height:448px;width:calc(100% - 8px);overflow:scroll;resize:vertical;}
+			#log{line-height:14px;max-height:448px;overflow:scroll;background-color:#333;}
+			input{background-color:#0000;display:inline-block;border:none;border-bottom:2px solid #888;border-radius:0;min-width:18em;max-width:100%;outline:none;transition:.2s;}
+			input:focus{border-bottom-color:#48fc;}
+			.button{background-color:#555;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;display:inline-block;}
+			.button:active{background-color:#48fc;}
+		</style>
+
+
 		<h1>obj2mcbe</h1>
 		<br>
 		<div class="box">
 			<h2>.obj</h2>
-			<span style="float:right;">16^3=1block</span>
-
-			<form id="inpm" onchange="inpt.style.display=['block','none'][this.m.value];inpf.style.display=['none','block'][this.m.value];">
-				<label><input type="radio" name="m" value="1" checked>file</label><br>
-				<label><input type="radio" name="m" value="0">text</label>
-			</form>
-			<div id="inpt" style="display:none;">
-				<textarea id="tinp"></textarea>
-			</div>
-			<div id="inpf">
-				<br>
-				<div class="file"><input type="file" id="finp" onchange="read(this)"><div id="finpl">Drag & Drop or click to select</div></div>
-			</div>
-			Must be Tris or Quads
+			16^3=1block<br>
+			Must be Tris or Quads<br>
+			<input type="file" id="finp" onchange="read(this)"><span id="finpl"></span>
 		</div>
 		<br>
 		<div class="box">
 			<h2>settings</h2>
-			position:<span contenteditable="true" class="inp" id="vfx">[v[2],v[1],v[0]];</span><br>
-			<span style="color:#0000">__</span>normal:<span contenteditable="true" class="inp" id="vnfx">[vn[0],vn[1],vn[2]];</span><br>
-			<span style="color:#0000">__</span>tex_uv:<span contenteditable="true" class="inp" id="vtfx">[vt[0],vt[1]];</span><br>
+			<span style="display:inline-block;width:6em;text-align:right;">position:</span><input type="text" id="vfx" value="[v[2],v[1],v[0]];"><br>
+			<span style="display:inline-block;width:6em;text-align:right;">normal:</span><input type="text" id="vnfx" value="[vn[0],vn[1],vn[2]];"><br>
+			<span style="display:inline-block;width:6em;text-align:right;">tex_uv:</span><input type="text" id="vtfx" value="[vt[0],vt[1]];"><br>
 			<br>
 			<label>format(1.8.0):<input type="checkbox" id="frm" onchange="frmc.style.display=this.checked?'block':'none';outtitle.textContent=this.checked?'mcbe geometry':'mcbe bones(poly_mesh)'"></label><br>
 			<div id="frmc" style="display:none;">
@@ -55,7 +43,6 @@
 		</div>
 		<br>
 		<span class="button" id="run">Run</span><br>
-		<pre id="log"></pre>
 		<br>
 		<div class="box">
 			<h2 id="outtitle">mcbe bones(poly_mesh)</h2>
@@ -65,67 +52,56 @@
 			</form>
 			<div id="outt" style="display:none;">
 				<textarea id="tout"></textarea><br>
-				<span class="button" onclick="if(copy(tout.value))this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);">copy</span>
+				<span class="button" onclick="navigator.clipboard.writeText(tout.value).then(()=>{this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);});">copy</span>
 			</div>
 			<div id="outf">
 				<br>
-				<a id="fout">Press "Run" to generate file</a>
+				<a id="fout">Press "Run" to generate converted file</a>
 			</div>
+			<a id="logdl">　</a>
 		</div>
+		<br>
+		<pre id="log"></pre>
+
 		<script>
-			var reader = new FileReader(), fname = "unknown";
-			const worker = new Worker('poly.js');
-			worker.addEventListener('message',(m) => {
+			var reader=new FileReader(),fname='unknown';
+			const worker=new Worker('poly.js'),
+			main=()=>{
+				log.textContent='';
+				worker.postMessage({
+					"s":reader.result,
+					"frm":frm.checked?mname.value:'',
+					"cffx":[vfx.value,vnfx.value,vtfx.value],
+					"fname":fname
+				});
+				run.textContent='Please wait…';run.style.background='#333';
+				run.onclick=()=>{}
+			},
+			read=_this=>{
+				fname=_this.files[0].name;
+				finpl.textContent='Drag & Drop or click to select';
+				reader.addEventListener('progress',x=>finpl.textContent=x.loaded/x.total+'% loaded…',false);
+				reader.addEventListener('load',x=>finpl.textContent=(x.total>=1e9?Math.round(x.total/1e7)/1e2+'GB':(x.total>=1e6?Math.round(x.total/1e4)/1e2+'MB':(x.total>=1e3?Math.round(x.total/1e1)/1e2+'KB':x.total+'byte'))),false);
+				reader.addEventListener('error',e=>finpl.textContent=e,false);
+				reader.addEventListener('loadend',x=>console.log(x),false);
+				reader.readAsText(_this.files[0]);
+			};
+			worker.addEventListener('message',m=>{
 					console.log(m.data);
 					if(m.data.diffuse){
 						if(m.data.diffuse[1]){
 							var diffuse = m.data.diffuse[1],o = m.data.diffuse[0];
 							tout.value = diffuse;
-							fout.href = "data:,"+encodeURI(diffuse);
-							fout.download = o+".geo.json";fout.textContent = 'save as "'+fout.download+'"';
+							fout.href = 'data:,'+encodeURI(diffuse);fout.download = o+'.geo.json';fout.textContent = `save as "${fout.download}"`;
+							logdl.href = 'data:,'+encodeURI(log.textContent);logdl.download = o+'.log';logdl.textContent = `save log`;
 						}
-						run.textContent='Done!';run.style.background="#555";
-						run.onclick=()=>{main();}
+						run.textContent='Done!';run.style.background='#555';
+						run.onclick=main;
 						setTimeout(()=>run.textContent='Run',1000);
 					}
 					else{log.textContent+=m.data;}
 			});
-			run.onclick=()=>{main();}
-			function main() {
-				log.textContent="";
-				worker.postMessage({
-					"s":[tinp.value,reader.result][inpm.m.value],
-					"frm":frm.checked?mname.value:"",
-					"cffx":[vfx.textContent,vnfx.textContent,vtfx.textContent],
-					"fname":fname
-				});
-				run.textContent='Please wait…';run.style.background="#333";
-				run.onclick=()=>{}
-			}
-			function read(_this) {
-				fname=_this.files[0].name;
-				finpl.textContent="Drag & Drop or click to select";
-				reader.addEventListener("progress",(x)=>finpl.textContent=x.loaded/x.total+"% loaded…",false);
-				reader.addEventListener("load",(x)=>finpl.textContent=fname+" "+(x.total>=1e9?Math.round(x.total/1e7)/1e2+"GB":(x.total>=1e6?Math.round(x.total/1e4)/1e2+"MB":(x.total>=1e3?Math.round(x.total/1e1)/1e2+"KB":x.total+"byte"))),false);
-				reader.addEventListener("error",()=>finpl.textContent="Loading failed: "+fname,false);
-				reader.addEventListener("loadend",(x)=>console.log(x),false);
-				reader.readAsText(_this.files[0]);
-			}
-			function copy(string) {
-				var tmp = document.createElement("div");
-				var pre = document.createElement("pre");
-				pre.style.webkitUserSelect = "auto";
-				pre.style.userSelect = "auto";
-				tmp.appendChild(pre).textContent = string;
-				var s = tmp.style;
-				s.position = "fixed";
-				s.right = "200%";
-				document.body.appendChild(tmp);
-				document.getSelection().selectAllChildren(tmp);
-				var result = document.execCommand("copy");
-				document.body.removeChild(tmp);
-				return result;
-			}
+			run.onclick=main;
 		</script>
 	</body>
 </html>
