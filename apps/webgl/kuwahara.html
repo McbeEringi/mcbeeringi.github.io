@@ -23,74 +23,79 @@
 		<img id="inp">
 		<hr>
 		box:<input type="number" id="size" value="8" onchange="if(this.value>0){compile();main();}"><br>
-		raw↓ <br>
-		<div class="box">
-			<canvas id="canvas"></canvas>
-		</div>
+		<section style="display:none;">
+			raw↓ <br>
+			<div class="box">
+				<canvas id="canvas"></canvas>
+			</div>
+		</section>
 		png↓ <br>
 		<img id="out"><br>
 		<hr>
 		<pre id="log"></pre>
 		<pre id="fsh"></pre>
 		<script>
-		const fsh_ = ["precision mediump float;\n\
-uniform vec2 res;\n\
-uniform sampler2D tex;\n\
-\n\
-const int size = ",";\n\
-\n\
-#define p(fc) (gl_FragCoord.xy+fc)/res\n\
-#define s(x,y) texture2D(tex,p(vec2(x,y))).rgb\n\
-vec3 avg(int x,int y){\n\
-	vec3 s = vec3(0);\n\
-	for(int i=0;i<size;i++)for(int j=0;j<size;j++)\n\
-		s+=s(i*x,j*y);\n\
-	return s/float(size*size);\n\
-}\n\
-float var(vec3 avg,int x,int y){\n\
-	vec3 s = vec3(0);\n\
-	vec3 tmp;\n\
-	for(int i=0;i<size;i++)for(int j=0;j<size;j++){\n\
-		tmp=s(i*x,j*y)-avg;\n\
-		s+=tmp*tmp;\n\
-	}\n\
-	s/=float(size*size);\n\
-	return s.x+s.y+s.z;\n\
-}\n\
-void main(){\n\
-	vec2 p = p(0.);\n\
-	vec4 diffuse = texture2D(tex,p);\n\
-	float tmp;\n\
-\n\
-	vec3 avg_ = avg(1,1);\n\
-	diffuse.rgb = avg_;\n\
-	float var_ = var(avg_,1,1);\n\
-	\n\
-	avg_ = avg(1,-1);\n\
-	tmp = var(avg_,1,-1);\n\
-	diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));\n\
-	var_ = tmp;\n\
-	\n\
-	avg_ = avg(-1,1);\n\
-	tmp = var(avg_,-1,1);\n\
-	diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));\n\
-	var_ = tmp;\n\
-	\n\
-	avg_ = avg(-1,-1);\n\
-	tmp = var(avg_,-1,-1);\n\
-	diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));\n\
-	var_ = tmp;\n\
-\n\
-	gl_FragColor = diffuse;\n\
-}"];
+		const fsh_ = [`precision mediump float;
+uniform vec2 res;
+uniform sampler2D tex;
+
+const int size = `,`;
+
+#define p(fc) (gl_FragCoord.xy+fc)/res
+#define s(x,y) texture2D(tex,p(vec2(x,y))).rgb
+vec3 avg(int x,int y){
+	vec3 s = vec3(0);
+	for(int i=0;i<size;i++)for(int j=0;j<size;j++)
+		s+=s(i*x,j*y);
+	return s/float(size*size);
+}
+float var(vec3 avg,int x,int y){
+	vec3 s = vec3(0);
+	vec3 tmp;
+	for(int i=0;i<size;i++)for(int j=0;j<size;j++){
+		tmp=s(i*x,j*y)-avg;
+		s+=tmp*tmp;
+	}
+	s/=float(size*size);
+	return s.x+s.y+s.z;
+}
+void main(){
+	vec2 p = p(0.);
+	vec4 diffuse = texture2D(tex,p);
+	float tmp;
+
+	vec3 avg_ = avg(1,1);
+	diffuse.rgb = avg_;
+	float var_ = var(avg_,1,1);
+
+	avg_ = avg(1,-1);
+	tmp = var(avg_,1,-1);
+	diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));
+	var_ = tmp;
+
+	avg_ = avg(-1,1);
+	tmp = var(avg_,-1,1);
+	diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));
+	var_ = tmp;
+
+	avg_ = avg(-1,-1);
+	tmp = var(avg_,-1,-1);
+	diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));
+	var_ = tmp;
+
+	gl_FragColor = diffuse;
+}`];
 			if(location.hash)size.value=location.hash.slice(1);
 			var imgurl;
 			function read(_this){
-				var reader = new FileReader();
+				/*var reader = new FileReader();
 				reader.addEventListener('load', ()=>{imgurl=reader.result;inp.src=imgurl;tex();}, false);
 				reader.addEventListener('error',()=>{log.innerText+="ERROR: texture loading failed"},false);
 				reader.readAsDataURL(_this.files[0]);
-				console.log("img loaded",imgurl,reader);
+				console.log("img loaded",imgurl,reader);*/
+				imgurl=URL.createObjectURL(_this.files[0]);
+				console.log("img loaded",imgurl);
+				inp.src=imgurl;tex();
 			}
 			const resize=(c,gl,w,h)=>{
 				if(c.width!=w)c.width=w;
@@ -160,8 +165,7 @@ void main(){\n\
 				gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 				gl.flush();
 				console.log("flush");
-				out.src=c.toDataURL();
-				console.log("dataurl");
+				c.toBlob(b=>out.src=URL.createObjectURL(b));
 			}
 			//texture
 			var texture;
