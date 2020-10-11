@@ -10,27 +10,17 @@
 	</head>
 	<body>
 		<style>
-			:root,input{background:#222;color:#ccc;font-size:11px;font-family:monospace;image-rendering:pixelated;}input{max-width:100%;}
+			:root,input{background:#222;color:#fff;font-family:monospace;image-rendering:pixelated;}input{max-width:100%;}pre{font-size:11px;color:#aaa;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
-			img{width:100%;min-width:256px;}a{color:#aef;}pre{white-space:pre-wrap;}#log{color:#f00;}
-			.box{width:100%;overflow:scroll;-webkit-overflow-scrolling:touch;transform:translateZ(0);}
+			img{width:50%;min-width:256px;margin:0;display:inline-block;}a{color:#aef;}pre{white-space:pre-wrap;}#log{color:#f00;}
 		</style>
 
 
 		<h1>kuwahara_filter</h1>
-		<input type="file" id="file" accept="image/*" onchange="read(this);"><br>
-		selected↓ <br>
-		<img id="inp">
+		<input type="file" id="file" accept="image/*" onchange="read(this);">
+		<span style="white-space:nowrap;">box:<input type="number" id="size" value="8" onchange="if(this.value>0){compile();main();}"></span>
 		<hr>
-		box:<input type="number" id="size" value="8" onchange="if(this.value>0){compile();main();}"><br>
-		<section style="display:none;">
-			raw↓ <br>
-			<div class="box">
-				<canvas id="canvas"></canvas>
-			</div>
-		</section>
-		png↓ <br>
-		<img id="out"><br>
+		<img id="inp" alt="selected"><img id="out" alt="diffuse"><canvas id="canvas" style="display:none;"></canvas>
 		<hr>
 		<pre id="log"></pre>
 		<pre id="fsh"></pre>
