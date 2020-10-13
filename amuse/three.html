@@ -7,7 +7,7 @@
 	<body>
 		<script src="https://threejs.org/build/three.min.js"></script>
 		<style>
-			body{margin:0;overflow:hidden;}canvas{background:#0008;}
+			html,body{margin:0;overflow:hidden;}canvas{background:#0008;}
 		</style>
 		<canvas id="canvas"></canvas>
 		<script>
@@ -66,10 +66,12 @@
 				scene.add(a[i]);
 			})
 
-			window.addEventListener('mousemove',e=>{
-				light.position.x=(e.clientX-c_width*.5)*px2cv;
-				light.position.y=(-e.clientY+c_height*.5)*px2cv;
-			});
+			const move=(x,y)=>{
+				light.position.x=(x-c_width*.5)*px2cv;
+				light.position.y=(-y+c_height*.5)*px2cv;
+			}
+			window.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
+			window.addEventListener('touchmove',e=>move(e.changedTouches[0].clientX,e.changedTouches[0].clientY));
 
 			const tick=()=>{
 				requestAnimationFrame(tick);
