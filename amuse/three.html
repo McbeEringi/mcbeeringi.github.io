@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<script src="https://threejs.org/build/three.min.js"></script>
+		<style>
+			body{margin:0;overflow:hidden;}canvas{background:#0008;}
+		</style>
+		<canvas id="canvas"></canvas>
+		<script>
+			const c_width=window.innerWidth,c_height=window.innerHeight;
+
+			const renderer = new THREE.WebGLRenderer({
+				alpha:true,
+				canvas: document.querySelector("#canvas")
+			});
+			renderer.setSize(c_width, c_height);
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.shadowMap.enabled = true;
+
+			const scene = new THREE.Scene();
+
+			const camera = new THREE.PerspectiveCamera(70,c_width/c_height,.1,100);
+			camera.position.set(0, 0, 10);
+			//camera.lookAt(new THREE.Vector3(0, 0, 0));
+			const px2cv=camera.position.z*Math.tan(camera.fov*.5*Math.PI/180)*2/c_width;
+
+			const light = new THREE.PointLight('#fff');
+			light.position.set(0,0,camera.position.z);
+			light.castShadow = true;
+			scene.add(light);
+
+			const geo=[
+				new THREE.BoxGeometry(2,2,2),
+				new THREE.PlaneGeometry(20,20)
+			],mtr=[
+				new THREE.MeshStandardMaterial({
+					color: '#8af',
+					metalness:1,
+					roughness:.7
+				}),
+				new THREE.MeshStandardMaterial({
+					color: '#aaa',
+					metalness:0,
+					roughness:.7
+				})
+			],pos=[
+				[0,0,0],
+				[0,0,-5]
+			],rot=[
+				[0,0,0]
+			],
+			mesh=[[0,0,0,0],[1,1,1,0]];
+
+			mesh.map((x,i,a)=>{
+				a[i]=new THREE.Mesh(geo[x[0]],mtr[x[1]]);
+				a[i].position.set(pos[x[2]][0],pos[x[2]][1],pos[x[2]][2]);
+				a[i].rotation.set(rot[x[3]][0],rot[x[3]][1],rot[x[3]][2]);
+				a[i].receiveShadow = true;a[i].castShadow = true;
+				scene.add(a[i]);
+			})
+
+			window.addEventListener('mousemove',e=>{
+				light.position.x=(e.clientX-c_width*.5)*px2cv;
+				light.position.y=(-e.clientY+c_height*.5)*px2cv;
+			});
+
+			const tick=()=>{
+				requestAnimationFrame(tick);
+				mesh[0].rotation.x += .005;
+				mesh[0].rotation.y += .005;
+				mesh[0].rotation.z += .005;
+				renderer.render(scene, camera);
+			};
+			tick();
+		</script>
+	</body>
+</html>
