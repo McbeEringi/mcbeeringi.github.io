@@ -26,7 +26,7 @@
 		<pre id="fsh"></pre>
 		<script>
 		'use strict'
-		var fsh_ = `precision mediump float;
+		const fsh_ = `precision mediump float;
 uniform vec2 res;
 uniform sampler2D tex;
 
@@ -46,19 +46,19 @@ void main(){
 	vec3 apm = avg(1,-1);
 	vec3 amp = avg(-1,1);
 	vec3 amm = avg(-1,-1);
-	
+
 	float vpp = var(app,1,1);
 	float vpm = var(app,1,-1);
 	float vmp = var(app,-1,1);
 	float vmm = var(app,-1,-1);
 	float vmin = min(min(vpp,vpm),min(vmp,vmm));
-	
+
 	vec4 diffuse = texture2D(tex,gl_FragCoord.xy/res);
 	diffuse.rgb = mix(diffuse.rgb,app,step(vpp,vmin));
 	diffuse.rgb = mix(diffuse.rgb,apm,step(vpm,vmin));
 	diffuse.rgb = mix(diffuse.rgb,amp,step(vmp,vmin));
 	diffuse.rgb = mix(diffuse.rgb,amm,step(vmm,vmin));
-	
+
 	gl_FragColor = diffuse;
 }`;
 			var imgurl;
