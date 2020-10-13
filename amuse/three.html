@@ -53,12 +53,11 @@
 					color:'#8af',
 					envMap:textureCube,
 					metalness:1,
-					roughness:.2
+					roughness:.1
 				}),
 				new THREE.MeshStandardMaterial({
 					color:'#222',
-					blending: THREE.AdditiveBlending,
-					roughness:.5
+					blending: THREE.AdditiveBlending
 				})
 			],mesh=[];
 
@@ -77,10 +76,14 @@
 			mesh[1].position.set(0,0,-20);
 			mesh[1].receiveShadow = true;mesh[1].castShadow = true;
 			scene.add(mesh[1]);
+
 			mesh[2]=new THREE.Mesh(geo[3],mtr[0]);
-			mesh[2].position.set(-5,-5,-5);
-			mesh[2].receiveShadow = true;mesh[2].castShadow = true;
-			scene.add(mesh[2]);
+			mesh[2].position.set(0,-10,-5);
+			mesh[2].castShadow = true;
+			mesh[3] = new THREE.Group();
+	    mesh[3].position.set(0,0,0);
+	    scene.add(mesh[3]);
+			mesh[3].add(mesh[2]);
 
 			const move=(x,y)=>{
 				light.position.x=(x-c_width*.5)*px2cv;
@@ -93,6 +96,8 @@
 				requestAnimationFrame(tick);
 				mesh[0].rotation.x += .01;
 				mesh[0].rotation.y += .01;
+				mesh[3].rotation.z -= .01;
+
 				renderer.render(scene, camera);
 			};
 			tick();
