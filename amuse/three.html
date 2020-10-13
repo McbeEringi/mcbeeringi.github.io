@@ -15,11 +15,12 @@
 
 			const renderer = new THREE.WebGLRenderer({
 				alpha:true,
+				powerPreference:'low-power',
 				canvas: document.querySelector("#canvas")
 			});
-			renderer.setSize(c_width, c_height);
+			renderer.setSize(c_width,c_height);
 			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.shadowMap.enabled = true;
+			renderer.shadowMap.enabled=true;
 
 			const scene = new THREE.Scene();
 
@@ -30,7 +31,9 @@
 
 			const light = new THREE.PointLight('#fff');
 			light.position.set(0,0,camera.position.z);
-			light.castShadow = true;
+			light.castShadow=true;
+			light.shadow.mapSize.width=1024;
+			light.shadow.mapSize.height=1024;
 			scene.add(light);
 
 			const geo=[
@@ -38,12 +41,12 @@
 				new THREE.PlaneGeometry(20,20)
 			],mtr=[
 				new THREE.MeshStandardMaterial({
-					color: '#8af',
+					color:'#8af',
 					metalness:1,
 					roughness:.7
 				}),
 				new THREE.MeshStandardMaterial({
-					color: '#aaa',
+					color:'#aaa',
 					metalness:0,
 					roughness:.7
 				})
