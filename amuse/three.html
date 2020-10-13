@@ -23,6 +23,13 @@
 			renderer.shadowMap.enabled=true;
 
 			const scene = new THREE.Scene();
+			const textureCube = new THREE.CubeTextureLoader().setPath('img/').load([
+				'panorama_1.jpg','panorama_3.jpg',
+				'panorama_4.jpg','panorama_5.jpg',
+				'panorama_0.jpg','panorama_2.jpg',
+			]);
+			textureCube.mapping = THREE.CubeReflectionMapping;
+			scene.background=textureCube;
 
 			const camera = new THREE.PerspectiveCamera(70,c_width/c_height,.1,100);
 			camera.position.set(0, 0, 10);
@@ -30,7 +37,7 @@
 			const px2cv=camera.position.z*Math.tan(camera.fov*.5*Math.PI/180)*2/c_width;
 
 			const light = new THREE.PointLight('#fff');
-			light.position.set(0,0,camera.position.z);
+			light.position.set(2,2,camera.position.z);
 			light.castShadow=true;
 			light.shadow.mapSize.width=1024;
 			light.shadow.mapSize.height=1024;
@@ -38,31 +45,40 @@
 
 			const geo=[
 				new THREE.BoxGeometry(.3,.3,.3),
-				new THREE.PlaneGeometry(100,100)
+				null,
+				new THREE.PlaneGeometry(100,100),
+				new THREE.SphereGeometry( 2, 16, 16 )
 			],mtr=[
 				new THREE.MeshStandardMaterial({
 					color:'#8af',
+					envMap:textureCube,
 					metalness:1,
-					roughness:.7
+					roughness:.2
 				}),
 				new THREE.MeshStandardMaterial({
-					color:'#aaa',
-					roughness:.7
+					color:'#222',
+					blending: THREE.AdditiveBlending,
+					roughness:.5
 				})
 			],mesh=[];
 
-			geo[2]=new THREE.Geometry(),cell=2;
-			for(let i=cell*-.5;i<=cell*.5;i++)
-				for(let j=cell*-.5;j<=cell*.5;j++)
-					for(let k=cell*-.5;k<=cell*.5;k++)
-						geo[2].merge(geo[0],new THREE.Matrix4().makeTranslation(i,j,k).lookAt(new THREE.Vector3(i,j,k),new THREE.Vector3(0,0,0),new THREE.Vector3(0,1,0)));
-			mesh[0]=new THREE.Mesh(geo[2],mtr[0]);
+			geo[1]=new THREE.Geometry(),cell=3;
+			cell=(cell-1)*.5
+			for(let i=-cell;i<=cell;i++)
+				for(let j=-cell;j<=cell;j++)
+					for(let k=-cell;k<=cell;k++)
+						geo[1].merge(geo[0],new THREE.Matrix4().makeTranslation(i,j,k).lookAt(new THREE.Vector3(i,j,k),new THREE.Vector3(0,0,0),new THREE.Vector3(0,1,0)));
+			mesh[0]=new THREE.Mesh(geo[1],mtr[0]);
 			mesh[0].position.set(0,0,0);
 			mesh[0].receiveShadow = true;mesh[0].castShadow = true;
 			scene.add(mesh[0]);
 
-			mesh[2]=new THREE.Mesh(geo[1],mtr[1]);
-			mesh[2].position.set(0,0,-20);
+			mesh[1]=new THREE.Mesh(geo[2],mtr[1]);
+			mesh[1].position.set(0,0,-20);
+			mesh[1].receiveShadow = true;mesh[1].castShadow = true;
+			scene.add(mesh[1]);
+			mesh[2]=new THREE.Mesh(geo[3],mtr[0]);
+			mesh[2].position.set(-5,-5,-5);
 			mesh[2].receiveShadow = true;mesh[2].castShadow = true;
 			scene.add(mesh[2]);
 
@@ -75,9 +91,8 @@
 
 			const tick=()=>{
 				requestAnimationFrame(tick);
-				mesh[0].rotation.x += .005;
-				mesh[0].rotation.y += .005;
-				mesh[0].rotation.z += .005;
+				mesh[0].rotation.x += .01;
+				mesh[0].rotation.y += .01;
 				renderer.render(scene, camera);
 			};
 			tick();
