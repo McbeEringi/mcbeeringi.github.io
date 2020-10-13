@@ -56,8 +56,8 @@ resize(c,prv,gl,w_.value,h_.value);
 //gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
 //gl.enable(gl.DEPTH_TEST);
 //gl.depthFunc(gl.LEQUAL);
-//gl.enable(gl.BLEND);
-//gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
+gl.enable(gl.BLEND);
+gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
 gl.getExtension("OES_standard_derivatives");
 function create_shader(f){
 	if(f){var shader = gl.createShader(gl.FRAGMENT_SHADER);var src = fsh_e.getValue();}
