@@ -52,12 +52,12 @@ var c = document.getElementById("canvas"),prv = document.getElementById("preview
 var gl = c.getContext("webgl") || c.getContext("experimental-webgl"),prvctx = prv.getContext("2d");
 prvctx.imageSmoothingEnabled = false;
 resize(c,prv,gl,w_.value,h_.value);
-gl.enable(gl.CULL_FACE);
-gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
-gl.enable(gl.DEPTH_TEST);
-gl.depthFunc(gl.LEQUAL);
-gl.enable(gl.BLEND);
-gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
+//gl.enable(gl.CULL_FACE);
+//gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
+//gl.enable(gl.DEPTH_TEST);
+//gl.depthFunc(gl.LEQUAL);
+//gl.enable(gl.BLEND);
+//gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
 gl.getExtension("OES_standard_derivatives");
 function create_shader(f){
 	if(f){var shader = gl.createShader(gl.FRAGMENT_SHADER);var src = fsh_e.getValue();}
@@ -132,7 +132,7 @@ function main(){
 	t+=1/fps;
 	gl.clearColor(0,0,0,0);
 	gl.clearDepth(1.);
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT/* | gl.DEPTH_BUFFER_BIT*/);
 	prvctx.clearRect(0,0,prv.width,prv.height);
 	var uniform = [
 		gl.getUniformLocation(prg, "time"),
