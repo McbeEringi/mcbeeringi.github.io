@@ -37,7 +37,7 @@
 			scene.add(light);
 
 			const geo=[
-				new THREE.BoxGeometry(2,2,2),
+				new THREE.BoxGeometry(.3,.3,.3),
 				new THREE.PlaneGeometry(100,100)
 			],mtr=[
 				new THREE.MeshStandardMaterial({
@@ -47,24 +47,24 @@
 				}),
 				new THREE.MeshStandardMaterial({
 					color:'#aaa',
-					metalness:0,
 					roughness:.7
 				})
-			],pos=[
-				[0,0,0],
-				[0,0,-20]
-			],rot=[
-				[0,0,0]
-			],
-			mesh=[[0,0,0,0],[1,1,1,0]];
+			],mesh=[];
 
-			mesh.map((x,i,a)=>{
-				a[i]=new THREE.Mesh(geo[x[0]],mtr[x[1]]);
-				a[i].position.set(pos[x[2]][0],pos[x[2]][1],pos[x[2]][2]);
-				a[i].rotation.set(rot[x[3]][0],rot[x[3]][1],rot[x[3]][2]);
-				a[i].receiveShadow = true;a[i].castShadow = true;
-				scene.add(a[i]);
-			})
+			geo[2]=new THREE.Geometry(),cell=2;
+			for(let i=cell*-.5;i<=cell*.5;i++)
+				for(let j=cell*-.5;j<=cell*.5;j++)
+					for(let k=cell*-.5;k<=cell*.5;k++)
+						geo[2].merge(geo[0],new THREE.Matrix4().makeTranslation(i,j,k).lookAt(new THREE.Vector3(i,j,k),new THREE.Vector3(0,0,0),new THREE.Vector3(0,1,0)));
+			mesh[0]=new THREE.Mesh(geo[2],mtr[0]);
+			mesh[0].position.set(0,0,0);
+			mesh[0].receiveShadow = true;mesh[0].castShadow = true;
+			scene.add(mesh[0]);
+
+			mesh[2]=new THREE.Mesh(geo[1],mtr[1]);
+			mesh[2].position.set(0,0,-20);
+			mesh[2].receiveShadow = true;mesh[2].castShadow = true;
+			scene.add(mesh[2]);
 
 			const move=(x,y)=>{
 				light.position.x=(x-c_width*.5)*px2cv;
