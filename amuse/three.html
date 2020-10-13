@@ -94,9 +94,10 @@
 
 			const tick=()=>{
 				requestAnimationFrame(tick);
-				mesh[0].rotation.x += .01;
-				mesh[0].rotation.y += .01;
-				mesh[3].rotation.z -= .002;
+				var sec = performance.now()*.001;
+				mesh[0].rotation.x = sec*.5;
+				mesh[0].rotation.y = sec*.5;
+				mesh[3].rotation.z = -sec*.1;
 
 				renderer.render(scene, camera);
 			};
