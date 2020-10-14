@@ -1,12 +1,9 @@
 var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]],dftflag;
-const read=(_this)=>{
-	var reader = new FileReader();
-	var d = document.getElementById(_this.id+"d").style;
-	var num = parseInt(_this.id.slice(-1));
-	reader.addEventListener('load', ()=>{d.backgroundImage="url('"+reader.result+"')";imgurl[num]=reader.result;tex(num);}, false);
-	reader.addEventListener('error',()=>{d.backgroundImage="linear-gradient(#f0f,#f0f)";log.innerText+="\nERROR: "+_this.id+" loading failed"},false);
-	reader.readAsDataURL(_this.files[0]);
-	console.log(_this.id,imgurl,reader);
+const read=x=>{
+	var num = parseInt(x.id.slice(-1));
+	imgurl[num]=URL.createObjectURL(x.files[0]);
+	document.getElementById(x.id+'d').style.backgroundImage=`url(${imgurl[num]})`;
+	tex(num);
 }
 diffuse.ontouchstart=()=>{dftflag=true;diffuse.src=canvas.toDataURL();}
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
@@ -121,6 +118,7 @@ function tex(i){
 	}
 	img.src = imgurl[i];
 }
+
 var t=0,fps=fps_.value,fpstm;
 var prc;//二重起動防止
 function main(){
@@ -134,6 +132,7 @@ function main(){
 	gl.clearDepth(1.);
 	gl.clear(gl.COLOR_BUFFER_BIT/* | gl.DEPTH_BUFFER_BIT*/);
 	prvctx.clearRect(0,0,prv.width,prv.height);
+
 	var uniform = [
 		gl.getUniformLocation(prg, "time"),
 		gl.getUniformLocation(prg, "res"),
