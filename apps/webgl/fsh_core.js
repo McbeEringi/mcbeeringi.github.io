@@ -1,6 +1,6 @@
 var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]],dftflag;
 const read=x=>{
-	var num = parseInt(x.id.slice(-1));
+	var num=parseInt(x.id.slice(-1));
 	imgurl[num]=URL.createObjectURL(x.files[0]);
 	document.getElementById(x.id+'d').style.backgroundImage=`url(${imgurl[num]})`;
 	tex(num);
@@ -49,6 +49,8 @@ var c = document.getElementById("canvas"),prv = document.getElementById("preview
 var gl = c.getContext("webgl") || c.getContext("experimental-webgl"),prvctx = prv.getContext("2d");
 prvctx.imageSmoothingEnabled = false;
 resize(c,prv,gl,w_.value,h_.value);
+gl.clearColor(0,0,0,0);
+gl.clearDepth(1);
 //gl.enable(gl.CULL_FACE);
 //gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
 //gl.enable(gl.DEPTH_TEST);
@@ -128,10 +130,6 @@ function main(){
 	timelog.textContent = Math.floor(t*100)/100;
 	fpstm = new Date();
 	t+=1/fps;
-	gl.clearColor(0,0,0,0);
-	gl.clearDepth(1.);
-	gl.clear(gl.COLOR_BUFFER_BIT/* | gl.DEPTH_BUFFER_BIT*/);
-	prvctx.clearRect(0,0,prv.width,prv.height);
 
 	var uniform = [
 		gl.getUniformLocation(prg, "time"),
@@ -165,6 +163,8 @@ function main(){
 	gl.bindTexture(gl.TEXTURE_2D, texture[3]);
 	gl.uniform1i(uniform[9], 3);
 
+	gl.clear(gl.COLOR_BUFFER_BIT/* | gl.DEPTH_BUFFER_BIT*/);
+	prvctx.clearRect(0,0,prv.width,prv.height);
 	gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 	gl.flush();
 	mslog.textContent = new Date(new Date()-fpstm).getMilliseconds()+" ms/frame";
