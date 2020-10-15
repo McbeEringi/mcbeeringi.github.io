@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="https://wgld.org/j/minMatrix.js" charset="utf-8"></script>
+		<script src="../src/webgl.js" charset="utf-8"></script>
+	</head>
+	<body>
+		<canvas id="canvas" width="1600" height="900" style="width:100%;"></canvas>
+		<pre id="log"></pre>
+		<script>
+			var ctx = WebGL.setup(canvas,true);
+			var glprg = WebGL.compile(ctx,
+				'attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
+				'precision mediump float;void main(){gl_FragColor=vec4(0,.5,1,1);}'
+			);
+			WebGL.attributes(ctx,glprg,[
+				{name:'UV',data:[-1,-1, 1,-1, -1,1, 1,1],length:2}
+			],[0,1,2, 3,2,1]);
+			const loop=()=>{
+				requestAnimationFrame(loop);
+				WebGL.draw(ctx);
+				log.innerText=WebGL.log;
+			};loop();
+		</script>
+	</body>
+</html>
