@@ -47,12 +47,11 @@ const WebGL={
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
 			gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE/*gl.FLOAT*/,img);
 			var nw=img.naturalWidth,nh=img.naturalHeight;
-			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
 			if(((nw&(nw-1))==0)&&((nh&(nh-1))==0))
-				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_NEAREST);
 				gl.generateMipmap(gl.TEXTURE_2D);
 			else{
 				console.log('mipmap canceled');
+				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
