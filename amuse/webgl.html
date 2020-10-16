@@ -10,10 +10,11 @@
 		<canvas id="canvas" width="1600" height="900" style="width:100%;"></canvas>
 		<pre id="log"></pre>
 		<script>
+			var t = new Date();
 			var gl = WebGL.setup(canvas,true);
 			var prg = WebGL.compile(gl,
 				'attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
-				'precision mediump float;void main(){gl_FragColor=vec4(0,.5,1,1);}'
+				'precision mediump float;uniform float time;uniform vec2 res;void main(){vec2 p=gl_FragCoord.xy/res;gl_FragColor=vec4(p,sin(time)*.5+.5,1);}'
 			);
 			WebGL.attributes(gl,prg,[
 				{name:'UV',data:[-1,-1, 1,-1, -1,1, 1,1],length:2}
@@ -21,7 +22,7 @@
 			const loop=()=>{
 				requestAnimationFrame(loop);
 				WebGL.uniforms(gl,prg,[
-					{name:'time',type:'1f',data:[1]},
+					{name:'time',type:'1f',data:[((new Date()-t)*.001).toFixed(3)]},
 					{name:'res',type:'2f',data:[gl.canvas.width,gl.canvas.height]}
 				]);
 				WebGL.draw(gl);
