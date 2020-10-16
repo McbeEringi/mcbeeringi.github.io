@@ -77,8 +77,23 @@ const WebGL={
 		gl.ilength=index.length;
 		console.log(atts);
 	},
-	uniforms:function(){
-
+	uniforms:function(gl,prg,unis){//type:[1i,1f,2i,2f,3i,3f,4i,4f,mat2,mat3,mat4]
+		var texi=0;
+		unis.forEach(x=>{
+			if(Number(x.type.substr(0,1))){
+				gl[`uniform${x.type}v`](gl.getUniformLocation(prg,x.name),x.data);
+			}else{
+				var test=x.type.substr(0,3);
+				if(test=='mat'){
+					gl[`uniformMatrix${x.type.substr(3,1)}fv`](gl.getUniformLocation(prg,x.name),false,x.data);
+				}else if(test=='tex'){
+					gl.activeTexture(gl['TEXTURE'+texi]);
+					gl.bindTexture(gl.TEXTURE_2D,x.data);
+					gl.uniform1i(gl.getUniformLocation(prg,x.name),texi);
+					texi++;
+				}else console.log('err',x);
+			}
+		});
 	},
 	draw:function(gl,l){
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
