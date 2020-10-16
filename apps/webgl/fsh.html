@@ -53,7 +53,7 @@ void main(){
 			</div>
 			<div name="log" style="left:336px;width:320px;height:180px;" data-winid="l">
 				<code id="fpslog" style="float:left;"></code>
-				<code id="mslog" style="float:right;"></code>
+				<!--<code id="mslog" style="float:right;"></code>-->
 				<pre id="log"></pre>
 			</div>
 			<div name="textures" class="sfixed" style="top:196px;left:336px;" data-winid="t">
@@ -109,6 +109,7 @@ void main(){
 			});
 			fsh.parentNode.addEventListener('fbar_on',()=>fsh_e.resize(),false);
 		</script>
+		<script src="../../src/webgl.js"></script>
 		<script src="fsh_core.js"></script>
 	</body>
 </html>
