@@ -77,7 +77,7 @@ const WebGL={
 		gl.ilength=index.length;
 		console.log(atts);
 	},
-	uniforms:function(gl,prg,unis){//type:[1i,1f,2i,2f,3i,3f,4i,4f,mat2,mat3,mat4]
+	uniforms:function(gl,prg,unis){//type:[1i,1f,2i,2f,3i,3f,4i,4f,mat2,mat3,mat4,tex]
 		var texi=0;
 		unis.forEach(x=>{
 			if(Number(x.type.substr(0,1))){
