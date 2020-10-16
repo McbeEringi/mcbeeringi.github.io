@@ -20,6 +20,10 @@
 			],[0,1,2, 3,2,1]);
 			const loop=()=>{
 				requestAnimationFrame(loop);
+				WebGL.uniforms(gl,prg,[
+					{name:'time',type:'1f',data:[1]},
+					{name:'res',type:'2f',data:[gl.canvas.width,gl.canvas.height]}
+				]);
 				WebGL.draw(gl);
 				log.innerText=WebGL.log;
 			};loop();
