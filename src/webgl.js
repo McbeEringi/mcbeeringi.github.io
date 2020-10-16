@@ -6,8 +6,7 @@ const WebGL={
 		gl.enable(gl.CULL_FACE);gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
 		gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearDepth(1);
 		gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE);
-		gl.enable(gl.DITHER);
-		//if(gl.getExtension('OES_standard_derivatives'))console.log('OES_standard_derivatives');
+		if(gl.getExtension('OES_standard_derivatives'))console.log('OES_standard_derivatives');
 		//if(gl.getExtension('OES_texture_float_linear'))console.log('OES_texture_float_linear');
 		console.log(gl);
 		return gl;
