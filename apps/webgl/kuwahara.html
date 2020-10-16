@@ -158,6 +158,34 @@ void main(){
 				}
 				img.src = imgurl;
 			}
+			/*
+			void main(){
+				vec2 p = p(0.);
+				vec4 diffuse = texture2D(tex,p);
+				float tmp;
+
+				vec3 avg_ = avg(1,1);
+				diffuse.rgb = avg_;
+				float var_ = var(avg_,1,1);
+
+				avg_ = avg(1,-1);
+				tmp = var(avg_,1,-1);
+				diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));
+				var_ = tmp;
+
+				avg_ = avg(-1,1);
+				tmp = var(avg_,-1,1);
+				diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));
+				var_ = tmp;
+
+				avg_ = avg(-1,-1);
+				tmp = var(avg_,-1,-1);
+				diffuse.rgb = mix(diffuse.rgb,avg_,step(tmp,var_));
+				var_ = tmp;
+
+				gl_FragColor = diffuse;
+			}
+			*/
 		</script>
 	</body>
 </html>

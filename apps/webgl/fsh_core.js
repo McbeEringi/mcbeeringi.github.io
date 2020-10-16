@@ -1,9 +1,8 @@
-var imgurl=[],imgres=[[0,0],[0,0],[0,0],[0,0]],dftflag;
+var imgres=[,,,],dftflag;
 const read=x=>{
-	var num=parseInt(x.id.slice(-1));
-	imgurl[num]=URL.createObjectURL(x.files[0]);
-	document.getElementById(x.id+'d').style.backgroundImage=`url(${imgurl[num]})`;
-	tex(num);
+	var url=URL.createObjectURL(x.files[0]);
+	document.getElementById(x.id+'d').style.backgroundImage=`url(${url})`;
+	tex(parseInt(x.id.slice(-1)),url);
 }
 diffuse.ontouchstart=()=>{dftflag=true;diffuse.src=canvas.toDataURL();}
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
@@ -27,147 +26,56 @@ const save=(s)=>{
 	location.hash = encodeURIComponent(JSON.stringify(data)).replace(/\(/g,"%28").replace(/\)/g,"%29");
 	if(s)log.insertAdjacentHTML('beforeend',"\n<span style='color:#48f;'>auto saved.</span>");else console.log("saved");
 }
-const copy=(str)=>{
-	var tmp=document.createElement("div");
-	var pre=document.createElement("pre");
-	pre.style.webkitUserSelect="auto";pre.style.userSelect="auto";
-	tmp.appendChild(pre).textContent = str;
-	var s=tmp.style;s.position="fixed";s.right="200%";
-	document.body.appendChild(tmp);
-	document.getSelection().selectAllChildren(tmp);
-	var result=document.execCommand("copy");
-	document.body.removeChild(tmp);
-	return result;
-}
+const copy=x=>{navigator.clipboard.writeText(x).catch(e=>console.log(e));return x;}
 const resize=(c,prv,gl,w,h)=>{
-	if(c.width!=w){c.width=w;prv.width=w;}
-	if(c.height!=h){c.height=h;prv.height=h;}
+	c.width=w;prv.width=w;c.height=h;prv.height=h;
 	gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
 }
 
-var c = document.getElementById("canvas"),prv = document.getElementById("preview");
-var gl = c.getContext("webgl") || c.getContext("experimental-webgl"),prvctx = prv.getContext("2d");
-prvctx.imageSmoothingEnabled = false;
+var c = document.getElementById("canvas"),gl = WebGL.setup(c,true,true);
+var prv = document.getElementById("preview"),prvctx = prv.getContext("2d");prvctx.imageSmoothingEnabled = false;
 resize(c,prv,gl,w_.value,h_.value);
-gl.clearColor(0,0,0,0);
-gl.clearDepth(1);
-//gl.enable(gl.CULL_FACE);
-//gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
-//gl.enable(gl.DEPTH_TEST);
-//gl.depthFunc(gl.LEQUAL);
-gl.enable(gl.BLEND);
-gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
-gl.getExtension("OES_standard_derivatives");
-function create_shader(f){
-	if(f){var shader = gl.createShader(gl.FRAGMENT_SHADER);var src = fsh_e.getValue();}
-	else{var shader = gl.createShader(gl.VERTEX_SHADER); var src = "attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}";}
-	gl.shaderSource(shader, "#extension GL_OES_standard_derivatives : enable\n#define round(x) floor(x+.5)\n"+src);
-	gl.compileShader(shader);
-	if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))return shader;
-	else log.innerText += gl.getShaderInfoLog(shader);
-}
-function create_program(vsh, fsh){
-	var program = gl.createProgram();
-	gl.attachShader(program, vsh);
-	gl.attachShader(program, fsh);
-	gl.linkProgram(program);
-	log.innerText += gl.getProgramInfoLog(program);
-	if(gl.getProgramParameter(program, gl.LINK_STATUS)){
-		gl.useProgram(program);
-		return program;
-	}
-}
+var prg;
+
 function compile(){
-	log.textContent = "";
-	prg = create_program(create_shader(0),create_shader(1));
-	if(!/\w/.test(log.textContent))log.insertAdjacentHTML('beforeend',"<span style='color:#6b4;'>compile succeeded.</span>");
+	log.textContent='';
+	prg = WebGL.compile(gl,'attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',fsh_e.getValue());
+	if(!WebGL.log)log.insertAdjacentHTML('beforeend','<span style="color:#6b4;">compile succeeded.</span>');
+	else log.insertAdjacentHTML('beforeend',WebGL.log);
 }
 compile();
-//attribute
-var UV = gl.getAttribLocation(prg, "UV");
-var uv_v = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, uv_v);
-gl.enableVertexAttribArray(UV);
-gl.vertexAttribPointer(UV, 2, gl.FLOAT, false, 0, 0);
-gl.bindBuffer(gl.ARRAY_BUFFER, null);
-gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());//ibo
-	gl.bindBuffer(gl.ARRAY_BUFFER, uv_v);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array([0,1,2, 3,2,1]), gl.STATIC_DRAW);
-//texture
-var texture = [];
-function tex(i){
-	var img = new Image();
-	img.onload = function() {
-		var tex = gl.createTexture();
-		gl.bindTexture(gl.TEXTURE_2D, tex);//バインドセット
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);//y反転
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);//読み込み
-		if(((img.naturalWidth&(img.naturalWidth-1))==0)&&((img.naturalHeight&(img.naturalHeight-1))==0))
-			gl.generateMipmap(gl.TEXTURE_2D);//ミップマップ生成
-		else{
-			console.log("mipmap canceled");
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);//拡大縮小
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//端数処理
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		}
-		gl.bindTexture(gl.TEXTURE_2D, null);//バインド解除
-		imgres[i] = [img.naturalWidth,img.naturalHeight];
-		document.getElementById(i+"reslog").textContent=imgres[i].join(", ");
-		texture[i] = tex;
-		console.log("imgurl["+i+"] loaded as tex",imgres[i]);
-	}
-	img.src = imgurl[i];
-}
 
-var t=0,fps=fps_.value,fpstm;
-var prc;//二重起動防止
+WebGL.attributes(gl,prg,[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1]);
+//texture
+var texture=[];
+function tex(i,url){
+	WebGL.texture(gl,url,x=>{
+		texture[i]=x;
+		console.log(i+" loaded as tex",x);
+		imgres[i]=[x.width,x.height];
+		document.getElementById(i+"reslog").textContent=imgres[i].join(", ");
+	});
+}
+var t0=new Date(),t,fps=fps_.value,fpstm,prc;//二重起動防止
 function main(){
 	clearTimeout(prc);
 	fpstm=new Date()-fpstm;
-	if(new Date().getMilliseconds()%5==0)fpslog.textContent = Math.round(10000/fpstm)/10+" fps";
-	timelog.textContent = Math.floor(t*100)/100;
-	fpstm = new Date();
-	t+=1/fps;
+	fpslog.textContent = (1000/fpstm).toFixed(1)+' fps';
+	fpstm=new Date();
+	t=((fpstm-t0)*.001).toFixed(3);
+	timelog.textContent = t;
 
-	var uniform = [
-		gl.getUniformLocation(prg, "time"),
-		gl.getUniformLocation(prg, "res"),
-		gl.getUniformLocation(prg, "tex0res"),
-		gl.getUniformLocation(prg, "tex1res"),
-		gl.getUniformLocation(prg, "tex2res"),
-		gl.getUniformLocation(prg, "tex3res"),
-		gl.getUniformLocation(prg, "tex0"),
-		gl.getUniformLocation(prg, "tex1"),
-		gl.getUniformLocation(prg, "tex2"),
-		gl.getUniformLocation(prg, "tex3")
-	];
-	gl.uniform1f(uniform[0], t);
-	gl.uniform2fv(uniform[1], [c.width,c.height]);
-	gl.uniform2fv(uniform[2], imgres[0]);
-	gl.uniform2fv(uniform[3], imgres[1]);
-	gl.uniform2fv(uniform[4], imgres[2]);
-	gl.uniform2fv(uniform[5], imgres[3]);
+	WebGL.uniforms(gl,prg,[
+		{name:'time',type:'1f',data:Number(t)},
+		{name:'res',type:'2f',data:[c.width,c.height]},
+		{name:'tex0',type:'tex',useRes:true,data:texture[0]},
+		{name:'tex1',type:'tex',useRes:true,data:texture[1]},
+		{name:'tex2',type:'tex',useRes:true,data:texture[2]},
+		{name:'tex3',type:'tex',useRes:true,data:texture[3]},
+	]);
 
-	gl.activeTexture(gl.TEXTURE0);
-	gl.bindTexture(gl.TEXTURE_2D, texture[0]);
-	gl.uniform1i(uniform[6], 0);
-	gl.activeTexture(gl.TEXTURE1);
-	gl.bindTexture(gl.TEXTURE_2D, texture[1]);
-	gl.uniform1i(uniform[7], 1);
-	gl.activeTexture(gl.TEXTURE2);
-	gl.bindTexture(gl.TEXTURE_2D, texture[2]);
-	gl.uniform1i(uniform[8], 2);
-	gl.activeTexture(gl.TEXTURE3);
-	gl.bindTexture(gl.TEXTURE_2D, texture[3]);
-	gl.uniform1i(uniform[9], 3);
-
-	gl.clear(gl.COLOR_BUFFER_BIT/* | gl.DEPTH_BUFFER_BIT*/);
 	prvctx.clearRect(0,0,prv.width,prv.height);
-	gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
-	gl.flush();
-	mslog.textContent = new Date(new Date()-fpstm).getMilliseconds()+" ms/frame";
+	WebGL.draw(gl);
 	prvctx.drawImage(c,0,0,prv.width,prv.height);
 
 	prc = setTimeout(main, 1000/fps);

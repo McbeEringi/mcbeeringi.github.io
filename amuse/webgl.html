@@ -14,16 +14,29 @@
 			var gl = WebGL.setup(canvas,true);
 			var prg = WebGL.compile(gl,
 				'attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
-				'precision mediump float;uniform float time;uniform vec2 res;void main(){vec2 p=gl_FragCoord.xy/res;gl_FragColor=vec4(p,sin(time)*.5+.5,1);}'
+				`precision mediump float;
+				uniform float time;
+				uniform vec2 res;
+				uniform sampler2D tex0;
+				uniform sampler2D tex1;
+				void main(){
+					vec2 p=gl_FragCoord.xy/res;
+					vec4 diffuse=texture2D(tex0,p)+texture2D(tex1,p);
+					gl_FragColor=vec4(p,sin(time)*.5+.5,1)*diffuse*.5;
+				}`
 			);
 			WebGL.attributes(gl,prg,[
 				{name:'UV',data:[-1,-1, 1,-1, -1,1, 1,1],length:2}
 			],[0,1,2, 3,2,1]);
+			var tex=['img/panorama_0.jpg','img/panorama_1.jpg'];
+			tex.forEach((x,i)=>WebGL.texture(gl,x,y=>tex[i]=y));
 			const loop=()=>{
 				requestAnimationFrame(loop);
 				WebGL.uniforms(gl,prg,[
 					{name:'time',type:'1f',data:[((new Date()-t)*.001).toFixed(3)]},
-					{name:'res',type:'2f',data:[gl.canvas.width,gl.canvas.height]}
+					{name:'res',type:'2f',data:[gl.canvas.width,gl.canvas.height]},
+					{name:'tex0',type:'tex',data:tex[0]},
+					{name:'tex1',type:'tex',data:tex[1]},
 				]);
 				WebGL.draw(gl);
 				log.innerText=WebGL.log;

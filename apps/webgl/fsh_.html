@@ -42,7 +42,7 @@ void main(){
 	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 }</div>
 		</div>
-		<code id="fpslog"></code><code id="mslog" style="float:right;"></code>
+		<code id="fpslog"></code><!--<code id="mslog" style="float:right;"></code>-->
 		<pre id="log"></pre>
 		<div class="flex" style="max-width:800px;margin:0 auto;">
 			<div class="file" id="inp0d"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0</div>
@@ -110,6 +110,7 @@ void main(){
 				clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
 			});
 		</script>
+		<script src="../../src/webgl.js"></script>
 		<script src="fsh_core.js"></script>
 	</body>
 </html>

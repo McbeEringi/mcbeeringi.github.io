@@ -1,10 +1,11 @@
+'use strict'
 const WebGL={
 	log:'',
-	setup:function(c,tr){
+	setup:function(c,tr,m){
 		var gl=c.getContext('webgl')||c.getContext('experimental-webgl');
 		gl.clearColor(0,0,0,tr?0:1);
-		gl.enable(gl.CULL_FACE);gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
-		gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearDepth(1);
+		if(!m){gl.enable(gl.CULL_FACE);gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
+		gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearDepth(1);}
 		gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE);
 		if(gl.getExtension('OES_standard_derivatives'))console.log('OES_standard_derivatives');
 		//if(gl.getExtension('OES_texture_float_linear'))console.log('OES_texture_float_linear');
@@ -39,7 +40,7 @@ const WebGL={
 		this.log='';
 		return this.createProgram(gl,this.createShader(gl,0,vsh),this.createShader(gl,1,fsh));//prg
 	},
-	createTexture:function(gl,url){
+	texture:function(gl,url,callback,i=0){
 		var img=new Image();
 		img.onload=()=>{
 			var tex=gl.createTexture();
@@ -58,7 +59,7 @@ const WebGL={
 			}
 			gl.bindTexture(gl.TEXTURE_2D,null);
 			console.log(tex);
-			return {texture:tex,width:nw,height:nh};
+			callback({texture:tex,width:nw,height:nh},i);
 		}
 		img.src=url;
 	},
@@ -78,22 +79,23 @@ const WebGL={
 		console.log(atts);
 	},
 	uniforms:function(gl,prg,unis){//type:[1i,1f,2i,2f,3i,3f,4i,4f,mat2,mat3,mat4,tex]
-		var texi=0;
-		unis.forEach(x=>{
+		var texi=0,loc;
+		unis.forEach(x=>{if(x.data){
 			if(Number(x.type.substr(0,1))){
-				gl[`uniform${x.type}v`](gl.getUniformLocation(prg,x.name),x.data);
+				gl[`uniform${x.type}v`](gl.getUniformLocation(prg,x.name),(typeof x.data=='number')?[x.data]:x.data);
 			}else{
 				var test=x.type.substr(0,3);
 				if(test=='mat'){
 					gl[`uniformMatrix${x.type.substr(3,1)}fv`](gl.getUniformLocation(prg,x.name),false,x.data);
 				}else if(test=='tex'){
 					gl.activeTexture(gl['TEXTURE'+texi]);
-					gl.bindTexture(gl.TEXTURE_2D,x.data);
+					gl.bindTexture(gl.TEXTURE_2D,x.data.texture);
 					gl.uniform1i(gl.getUniformLocation(prg,x.name),texi);
+					if(x.useRes)gl.uniform2fv(gl.getUniformLocation(prg,x.name+'res'),[x.data.width,x.data.height]);
 					texi++;
 				}else console.log('err',x);
 			}
-		});
+		}});
 	},
 	draw:function(gl,l){
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -101,4 +103,3 @@ const WebGL={
 		gl.flush();
 	}
 }
-Array.prototype.textures=function(gl,urls){return urls.map(function(x){return WebGL.createTexture(gl,x);})};
