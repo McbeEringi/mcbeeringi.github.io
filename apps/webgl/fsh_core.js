@@ -68,10 +68,10 @@ function main(){
 	WebGL.uniforms(gl,prg,[
 		{name:'time',type:'1f',data:Number(t)},
 		{name:'res',type:'2f',data:[c.width,c.height]},
-		{name:'tex0',type:'tex',useRes:true,data:texture[0]},
-		{name:'tex1',type:'tex',useRes:true,data:texture[1]},
-		{name:'tex2',type:'tex',useRes:true,data:texture[2]},
-		{name:'tex3',type:'tex',useRes:true,data:texture[3]},
+		{name:'tex0',type:'tex',rname:'tex0res',data:texture[0]},
+		{name:'tex1',type:'tex',rname:'tex1res',data:texture[1]},
+		{name:'tex2',type:'tex',rname:'tex2res',data:texture[2]},
+		{name:'tex3',type:'tex',rname:'tex3res',data:texture[3]},
 	]);
 
 	prvctx.clearRect(0,0,prv.width,prv.height);
