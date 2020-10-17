@@ -91,7 +91,7 @@ const WebGL={
 					gl.activeTexture(gl['TEXTURE'+texi]);
 					gl.bindTexture(gl.TEXTURE_2D,x.data.texture);
 					gl.uniform1i(gl.getUniformLocation(prg,x.name),texi);
-					if(x.useRes)gl.uniform2fv(gl.getUniformLocation(prg,x.name+'res'),[x.data.width,x.data.height]);
+					if(x.rname)gl.uniform2fv(gl.getUniformLocation(prg,x.rname),[x.data.width,x.data.height]);
 					texi++;
 				}else console.log('err',x);
 			}
