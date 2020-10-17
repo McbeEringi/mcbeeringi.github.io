@@ -64,8 +64,8 @@ const WebGL={
 		img.src=url;
 	},
 	attributes:function(gl,prg,atts,index){
-		var aloc = atts.map(x=>gl.getAttribLocation(prg,x.name));
-		var vbo = atts.map(()=>gl.createBuffer());
+		var aloc=atts.map(x=>gl.getAttribLocation(prg,x.name));
+		var vbo=atts.map(()=>gl.createBuffer());
 		atts.forEach((x,i)=>{
 			gl.bindBuffer(gl.ARRAY_BUFFER,vbo[i]);
 			gl.enableVertexAttribArray(aloc[i]);
