@@ -19,7 +19,7 @@
 			if('serviceWorker'in navigator)window.addEventListener('load',()=>{navigator.serviceWorker.register('ocrsw.js').then((reg)=>{console.log('[ServiceWorker] Registered',reg);});});
 		</script>
 
-		<script src="https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js"></script>
+		<script src="https://unpkg.com/tesseract.js"></script>
 		<script>
 			var reader = new FileReader();
 			var r = true;

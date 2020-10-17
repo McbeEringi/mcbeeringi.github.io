@@ -1,8 +1,8 @@
 //https://developer.mozilla.org/ja/docs/Web/Progressive_web_apps/Offline_Service_workers
 //https://developers.google.com/web/fundamentals/primers/service-workers?hl=ja
-const cacheName='ocr_cache',STATIC_DATA=[
+const cacheName='ocr_cache0',STATIC_DATA=[
 	'ocr.html',
-	'https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js',
+	'https://unpkg.com/tesseract.js',
 	'ocr_/test.png'
 ];
 
