@@ -20,14 +20,30 @@
 			<pre id="log"></pre>
 		</div>
 		<textarea id="fsh">precision mediump float;
-uniform float time;
+uniform highp float time;
 uniform vec2 res;
+uniform sampler2D noise;
 uniform sampler2D tex0;
-uniform sampler2D tex1;
+mat2 rot(float t){return mat2(cos(t),-sin(t),sin(t),cos(t));}
+vec3 img(sampler2D tex,vec2 p,vec3 r){
+	p=(p-.5)*rot(r.y);
+	vec2 rt=vec2(0,-r.x);
+	mat2 r120=mat2(-.5,-.866,.866,-.5);
+	mat2 rz=rot(r.z);
+	vec2 pr=p+rt;rt*=r120;
+	vec2 pg=p+rt;rt*=r120;
+	vec2 pb=p+rt;
+	return vec3(
+		texture2D(tex,pr*rz+.5).r,
+		texture2D(tex,pg*rz+.5).g,
+		texture2D(tex,pb*rz+.5).b
+	);
+}
 void main(){
 	vec2 p=gl_FragCoord.xy/res;
-	vec4 diffuse=texture2D(tex0,p)+texture2D(tex1,p);
-	gl_FragColor=vec4(p,sin(time)*.5+.5,1)*diffuse*.5;
+	vec3 diffuse=img(tex0,p,vec3(sin(time)*.1,time*.25,-time*.25));
+	diffuse=pow(diffuse,sin(time+vec3(0,2.1,4.2))*.25+.5);
+	gl_FragColor=vec4(diffuse,1);
 }</textarea><br>
 
 		<script>
@@ -43,11 +59,10 @@ void main(){
 			fshe.on("input",()=>{clearTimeout(cpt);cpt=setTimeout(()=>prg=WebGL.compile(gl,vsh,fshe.getValue()),500);});
 
 			var t=new Date(),gl=WebGL.setup(canvas,true),prg=WebGL.compile(gl,vsh,'void main(){gl_FragColor=vec4(0);}');
-			prg=WebGL.compile(gl,vsh,fshe.getValue());
 			WebGL.attributes(gl,prg,[
 				{name:'UV',data:[-1,-1, 1,-1, -1,1, 1,1],length:2}
 			],[0,1,2, 3,2,1]);
-			var tex=['img/noise.png','img/panorama_0.jpg','img/panorama_1.jpg'];
+			var tex=['img/noise.png','../img/tateshina.png'];
 			tex.forEach((x,i)=>WebGL.texture(gl,x,y=>tex[i]=y));
 			const loop=()=>{
 				requestAnimationFrame(loop);
@@ -56,11 +71,11 @@ void main(){
 					{name:'time',type:'1f',data:[((new Date()-t)*.001).toFixed(3)]},
 					{name:'res',type:'2f',data:[gl.canvas.width,gl.canvas.height]},
 					{name:'noise',type:'tex',rname:'noiseres',data:tex[0]},
-					{name:'tex0',type:'tex',data:tex[1]},
-					{name:'tex1',type:'tex',data:tex[2]},
+					{name:'tex0',type:'tex',data:tex[1]}
 				]);
 				WebGL.draw(gl);
 			};loop();
+			prg=WebGL.compile(gl,vsh,fshe.getValue());
 		</script>
 	</body>
 </html>
