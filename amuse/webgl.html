@@ -25,7 +25,7 @@ uniform vec2 res;
 uniform sampler2D noise;
 uniform sampler2D tex0;
 mat2 rot(float t){return mat2(cos(t),-sin(t),sin(t),cos(t));}
-vec3 img(sampler2D tex,vec2 p,vec3 r){
+vec3 img(sampler2D tex,vec2 p,vec3 r){//r = vec3(radius,rot,rot per col)
 	p=(p-.5)*rot(r.y);
 	vec2 rt=vec2(0,-r.x);
 	mat2 r120=mat2(-.5,-.866,.866,-.5);
