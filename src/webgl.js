@@ -47,8 +47,6 @@ const WebGL={
 			gl.bindTexture(gl.TEXTURE_2D,tex);
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
 			gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE/*gl.FLOAT*/,img);
-			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
 			var nw=img.naturalWidth,nh=img.naturalHeight;
 			if(((nw&(nw-1))==0)&&((nh&(nh-1))==0))
 				gl.generateMipmap(gl.TEXTURE_2D);
@@ -57,6 +55,8 @@ const WebGL={
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
 			}
+			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
 			gl.bindTexture(gl.TEXTURE_2D,null);
 			console.log(tex);
 			callback({texture:tex,width:nw,height:nh},i);
