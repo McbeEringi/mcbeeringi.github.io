@@ -3,28 +3,47 @@
 	<head>
 		<meta charset="utf-8">
 		<title></title>
-		<script src="https://wgld.org/j/minMatrix.js" charset="utf-8"></script>
-		<script src="../src/webgl.js" charset="utf-8"></script>
 	</head>
 	<body>
-		<canvas id="canvas" width="1600" height="900" style="width:100%;"></canvas>
-		<pre id="log"></pre>
+		<script src="https://wgld.org/j/minMatrix.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-glsl.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.min.js"></script>
+		<script src="../src/webgl.js"></script>
+		<style>
+			:root{background:#222;color:#fff;}body{margin:0;}#log{position:absolute;z-index:1;margin:4px;background:#0008;color:#f44;}#canvas{z-index:-1;float:left;width:100%;}
+			.clear_fix::after{content:"";clear:both;display:block;}
+			.wrapper{width:100%;position:relative;}.ace_editor{margin:0;}
+		</style>
+		<div class="wrapper clear_fix">
+			<canvas id="canvas" width="1600" height="900"></canvas>
+			<pre id="log"></pre>
+		</div>
+		<textarea id="fsh">precision mediump float;
+uniform float time;
+uniform vec2 res;
+uniform sampler2D tex0;
+uniform sampler2D tex1;
+void main(){
+	vec2 p=gl_FragCoord.xy/res;
+	vec4 diffuse=texture2D(tex0,p)+texture2D(tex1,p);
+	gl_FragColor=vec4(p,sin(time)*.5+.5,1)*diffuse*.5;
+}</textarea><br>
+
 		<script>
-			var t = new Date();
-			var gl = WebGL.setup(canvas,true);
-			var prg = WebGL.compile(gl,
-				'attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
-				`precision mediump float;
-				uniform float time;
-				uniform vec2 res;
-				uniform sampler2D tex0;
-				uniform sampler2D tex1;
-				void main(){
-					vec2 p=gl_FragCoord.xy/res;
-					vec4 diffuse=texture2D(tex0,p)+texture2D(tex1,p);
-					gl_FragColor=vec4(p,sin(time)*.5+.5,1)*diffuse*.5;
-				}`
-			);
+			var fshe = ace.edit('fsh',{
+				//readOnly: true,
+				showInvisibles:true,
+				theme:'ace/theme/monokai',
+				mode:'ace/mode/glsl',
+				minLines:16,maxLines:32,
+				fontSize:11,tabSize:2,
+				wrap:true,useSoftTabs:false
+			}),vsh='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',cpt;
+			fshe.on("input",()=>{clearTimeout(cpt);cpt=setTimeout(()=>prg=WebGL.compile(gl,vsh,fshe.getValue()),500);});
+
+			var t=new Date(),gl=WebGL.setup(canvas,true),prg=WebGL.compile(gl,vsh,'void main(){gl_FragColor=vec4(0);}');
+			prg=WebGL.compile(gl,vsh,fshe.getValue());
 			WebGL.attributes(gl,prg,[
 				{name:'UV',data:[-1,-1, 1,-1, -1,1, 1,1],length:2}
 			],[0,1,2, 3,2,1]);
@@ -32,6 +51,7 @@
 			tex.forEach((x,i)=>WebGL.texture(gl,x,y=>tex[i]=y));
 			const loop=()=>{
 				requestAnimationFrame(loop);
+				log.innerText=WebGL.log;
 				WebGL.uniforms(gl,prg,[
 					{name:'time',type:'1f',data:[((new Date()-t)*.001).toFixed(3)]},
 					{name:'res',type:'2f',data:[gl.canvas.width,gl.canvas.height]},
@@ -39,7 +59,6 @@
 					{name:'tex1',type:'tex',data:tex[1]},
 				]);
 				WebGL.draw(gl);
-				log.innerText=WebGL.log;
 			};loop();
 		</script>
 	</body>
