@@ -22,9 +22,9 @@
 		<img id="inp" alt="selected">
 		<hr>
 		<label style="white-space:nowrap;">box:<input type="number" id="size" value="8" onchange="if(this.value>0){compile();main();}"></label><br>
-		<br>
-		pow2 only <br>
-		<form id="texpi" onchange="tex();">
+		<form id="texpi" onchange="tex();" style="display:none;">
+			<br>
+			pow2 only <br>
 			<label><input type="radio" name="texpi" value="0" checked>REPEAT</label><br>
 			<label><input type="radio" name="texpi" value="1">CLAMP_TO_EDGE</label><br>
 			<label><input type="radio" name="texpi" value="2">MIRRORED_REPEAT</label><br>
@@ -156,13 +156,15 @@ void main(){
 						gl.generateMipmap(gl.TEXTURE_2D);//ミップマップ生成
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl[['REPEAT','CLAMP_TO_EDGE','MIRRORED_REPEAT',][texpi.texpi.value]]);//端数処理
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl[['REPEAT','CLAMP_TO_EDGE','MIRRORED_REPEAT',][texpi.texpi.value]]);
+						texpi.style.display='block';
 					}else{
 						console.log('mipmap canceled');
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);//拡大縮小
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//端数処理
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-					}
+						texpi.style.display='none';
+		}
 					gl.bindTexture(gl.TEXTURE_2D, null);//バインド解除
 					resize(c,gl,img.naturalWidth,img.naturalHeight);
 					texture = tex;
