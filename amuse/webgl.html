@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>webgl.js example</title>
-		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
 	</head>
 	<body>
 		<script src="https://wgld.org/j/minMatrix.js"></script>
@@ -12,11 +12,11 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.min.js"></script>
 		<script src="../src/webgl.js"></script>
 		<style>
-			:root{background:#222;color:#fff;}body{margin:0;}#log{position:absolute;z-index:1;margin:4px;background:#0008;color:#f44;}#canvas{z-index:-1;float:left;width:100%;}
+			:root{background:#222;color:#fff;}body{margin:0;}#log{z-index:2;margin:4px;background:#0008;color:#f44;position:absolute;top:0}#canvas{z-index:-1;width:100%;}
 			.clear_fix::after{content:"";clear:both;display:block;}
-			.wrapper{width:100%;position:relative;overflow:scroll;}.ace_editor{margin:0;}
+			.wrapper{position:relative;}.ace_editor{height:100px;margin:0;}
 		</style>
-		<div class="wrapper clear_fix">
+		<div class="wrapper">
 			<canvas id="canvas" width="1600" height="900"></canvas>
 			<pre id="log"></pre>
 		</div>
@@ -45,7 +45,7 @@ void main(){
 	vec3 diffuse=img(tex0,p,vec3(sin(time)*.1,time*.25,-time*.25));
 	diffuse=pow(diffuse,sin(time+vec3(0,2.1,4.2))*.25+.5);
 	gl_FragColor=vec4(diffuse,1);
-}</textarea><br>
+}</textarea>
 
 		<script>
 			var fshe = ace.edit('fsh',{
@@ -53,11 +53,11 @@ void main(){
 				showInvisibles:true,
 				theme:'ace/theme/monokai',
 				mode:'ace/mode/glsl',
-				minLines:16,maxLines:32,
 				fontSize:11,tabSize:2,
+				minLines:8,maxLines:128,
 				wrap:true,useSoftTabs:false
 			}),vsh='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',cpt;
-			fshe.on("input",()=>{clearTimeout(cpt);cpt=setTimeout(()=>prg=WebGL.compile(gl,vsh,fshe.getValue()),500);});
+			fshe.on("input",()=>{clearTimeout(cpt);cpt=setTimeout(cmp,500);});
 
 			var t=new Date(),gl=WebGL.setup(canvas,true),prg=WebGL.compile(gl,vsh,'void main(){gl_FragColor=vec4(0);}');
 			WebGL.attributes(gl,prg,[
@@ -76,7 +76,11 @@ void main(){
 				]);
 				WebGL.draw(gl);
 			};loop();
-			prg=WebGL.compile(gl,vsh,fshe.getValue());
+			const cmp=()=>{
+				prg=WebGL.compile(gl,vsh,fshe.getValue());
+				if(WebGL.log=='')console.log('ok');
+			}
+			cmp();
 		</script>
 	</body>
 </html>
