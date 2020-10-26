@@ -8,12 +8,11 @@
 <style>
 	:root,textarea{background:#222;color:#fff;font-family:monospace;}h1,h2{margin:4px;}
 	#log{height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;}
-	#slog{font-size:16px;margin:0;}#ps_{width:8px;height:24px;position:absolute;background:#8888;top:0;}
 	textarea{width:100%;height:256px;resize:vertical;font-size:16px;}
 	#mv{height:36px;overflow:scroll;white-space:nowrap;background:#333;position:relative;margin:2px;}
-	#mv div,#mv p{width:32px;height:32px;line-height:32px;vertical-align:top;margin:2px;text-align:center;}
-	#mv div{position:absolute;top:0px;left:0;font-size:8px;transition:.05s;background:#44f;z-index:1;box-shadow:0 0 2px}
-	#mv p{display:inline-block;background:#8888;font-size:16px;z-index:2;position:relative;}
+	#mv div,#mv p{width:32px;height:32px;margin:2px;}
+	#mv div{position:absolute;top:0px;left:0;font-size:8px;transition:.05s;background:#44f;z-index:1;box-shadow:0 0 2px;}
+	#mv p{line-height:32px;vertical-align:top;text-align:center;display:inline-block;background:#8888;font-size:16px;z-index:2;position:relative;}
 	table{background:#333;display:inline-block;vertical-align:top;}td{font-size:24px;}
 	th:first-child{border-right:1px solid;height:43px}th:not(:first-child){border-bottom:1px solid;width:24px;}
 </style>
@@ -22,7 +21,7 @@
 <div id="mv"><div></div><p>0</p></div>
 <pre id="log"></pre>
 <div id="slog"></div>
-<button id="btn">run</button> speed:<input type="range" id="spd" min="0" max="200" value="20">
+<button id="btn">run</button><button id="sbtn">stop</button> speed:<input type="range" id="spd" min="0" max="200" value="20">
 <textarea id="inp">
 +++++++++[>+++++++++++<-]>++.
 <+++++++++[>++<-]>+.
@@ -62,7 +61,8 @@
 	<tr><th>25</th><td>ú</td><td>û</td><td>ü</td><td>ý</td><td>þ</td><td>ÿ</td></tr>
 </table>
 <script>
-btn.onclick=()=>{main(inp.value);btn.innerText='running…';btn.disabled=true;}
+btn.onclick=()=>{main(inp.value);btn.disabled=true;}
+sbtn.onclick=()=>{if(btn.disabled)sbtn.disabled=true;}
 const main=s=>{
 	mv.innerHTML='<div></div><p>0</p>';
 	log.innerText='';
@@ -76,7 +76,7 @@ const main=s=>{
 		if(mv.childNodes.length-2<p)mv.appendChild(document.createElement('p'));
 		mv.childNodes[p+1].innerText=m[p];
 	}
-	const post=()=>{btn.innerText='run';btn.disabled=false;}
+	const post=()=>{btn.disabled=false;sbtn.disabled=false;}
 	const core=()=>{
 		switch(s[ps]){
 			case'>':p++;ps++;break;
@@ -87,12 +87,12 @@ const main=s=>{
 			case',':break;
 			case'[':l.push(ps);ps++;break;
 			case']':if(m[p]==0){l.pop(ps);ps++;break;}else{ps=l[l.length-1]+1;break;}
-			default:break;
+			default:ps++;break;
 		}
-		if(m[p]<0)m[p]=256-m[p];
+		if(m[p]<0)m[p]=256-m[p];else if(255<m[p])m[p]=m[p]-256;
 		if(m[p]==undefined)m[p]=0;
 		render();
-		if(ps==s.length)post();
+		if(ps==s.length || sbtn.disabled==true)post();
 		else setTimeout(core,spd.value);
 	};core();
 }
