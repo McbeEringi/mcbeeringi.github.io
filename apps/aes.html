@@ -8,27 +8,23 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi AES_encrypter</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-	<script src="../src/style.js" defer></script>
 	<script>var reader = new FileReader();var name = "unknown";</script>
 	<style>
+		:root{font-family:monospace;background-color:#222;color:#fff;}h1,h2{margin:4px;}
 		.file{width:320px;height:180px;position:relative;border-radius:5px;border:1px solid #888;display:inline-block;}
 		.file div{position:absolute;font-size:14px;top:calc(50% - 7px);width:100%;text-align:center;pointer-events:none;}
 		.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
 	</style>
 </head>
 <body>
-	<div class="title">AES_encrypter</div><p>入力したファイルを指定した鍵でAES暗号化し, それを埋め込んだhtmlファイルを生成します</p>
-	<div class="col1">
-		<label>key: <input id="key" type="text"></label><br>※メモすることをお勧めします
-	</div>
-	<div class="col2">↓</div>
-	<div class="col1">
-		<div class="file"><input type="file" id="inp" onchange="file(this)"><div>D&D又はクリックして選択</div></div>
-	</div>
-	<div class="col2">↓</div>
-	<div class="col1">
-		<a class="button" id="dl" download="">download</a>
-	</div>
+	<h1>AES_encrypter</h1>
+	<p>入力したファイルを指定した鍵でAES暗号化し, それを埋め込んだhtmlファイルを生成します</p>
+	<label>key: <input id="key" type="text"></label><br>
+	※メモすることをお勧めします <br>
+	↓ <br>
+	<div class="file"><input type="file" id="inp" onchange="file(this)"><div>D&D又はクリックして選択</div></div><br>
+	↓ <br>
+	<a class="button" id="dl" download="">download</a>
 
 	<script>
 		function file(_this) {

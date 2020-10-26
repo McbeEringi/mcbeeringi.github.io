@@ -10,20 +10,16 @@
 	<title>McbeEringi unicode_converter</title>
 	<script src="../src/inflate.js" defer>// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
 	<script src="../src/deflate.js" defer></script>
-	<script src="../src/style.js" defer></script>
 	<style>
-		h3,p{margin:0;}
+		:root{font-family:monospace;background-color:#222;color:#fff;}h1,h2{margin:4px;}
 		.box{width:100%;min-height:100px;border:solid 1px #fff;color:#fff;font-family:menlo;user-select:all;-webkit-userselect:all;}
 	</style>
 </head>
 
 <body>
-	<div class="title">unicode converter</div>
-	<div class="col1">
-		<h3>String</h3>
-		<div class="box" id="s" contenteditable="true"></div>
-	</div>
-	<div class="col2" style="text-align:center;">
+	<h1>unicode converter</h1>
+	String<div class="box" id="s" contenteditable="true"></div><br>
+	<div style="text-align:center;">
 		<button type="button" onclick="
 			u.innerText = escape(s.innerText).replace(/%/g, '\\');
 			b.innerText = btoa(u.innerText);
@@ -35,21 +31,9 @@
 			s.innerText = unescape(u.innerText.replace(/\\/g, '%'));
 		">　↑　</button>
 	</div>
-	<div class="col1">
-		<h3>Unicode</h3>
-		<div class="box" id="u" contenteditable="true"></div><br>
-		<p>おまけ</p>
-		<div class="pad">
-			<div>
-				<h3>Base64</h3>
-				<div class="box" id="b" contenteditable="true"></div>
-			</div>
-			<div>
-				<h3>ZIP(Base64 encoded)</h3>
-				<div class="box" id="z" contenteditable="true"></div>
-			</div>
-		</div>
-	</div>
+	Unicode<div class="box" id="u" contenteditable="true"></div><br>
+	おまけ<br>
+	Base64もどき<div class="box" id="b" contenteditable="true"></div>
+	ZIPもどき(Base64 encoded)<div class="box" id="z" contenteditable="true"></div>
 </body>
-
 </html>
