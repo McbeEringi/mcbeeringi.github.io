@@ -8,7 +8,7 @@
 <style>
 	:root{background:#222;color:#fff;font-family:monospace;}h1,h2{margin:4px;}
 	#log{height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;}
-	#src,#inp{background:#333;padding:4px;margin-top:0;}
+	#src,#inp{background:#333;padding:4px;margin-top:0;border:1px solid #888;}
 	#mv{height:36px;overflow:scroll;white-space:nowrap;background:#333;position:relative;margin:2px;}
 	#mv div,#mv p{width:32px;height:32px;margin:2px;border-radius:8px;}
 	#mv div{position:absolute;top:0px;left:0;font-size:8px;transition:.05s;background:#46f;z-index:1;}
@@ -20,8 +20,7 @@
 <h1>brainf***</h1>
 <div id="mv"><div></div><p>0</p></div>
 <pre id="log"></pre>
-speed:<input type="range" id="spd" min="0" max="200" value="20"><br>
-<button id="btn">run</button><button id="sbtn">stop</button><br>
+<button id="btn">run</button><button id="sbtn">stop</button>speed:<input type="range" id="spd" min="0" max="200" value="20"><br>
 src:
 <pre id="src" contenteditable>
 +++++++++[>+++++++++++<-]>++.
