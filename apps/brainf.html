@@ -32,7 +32,7 @@ src:
 +++++++..	ll
 +++.		o
 >++.
->-.		W
+>-.		w
 <<.		o
 +++.		r
 ------.		l
@@ -94,7 +94,7 @@ const main=s=>{
 	const core=()=>{
 		switch(s[ps]){
 			case'>':p++;ps++;break;
-			case'<':p--;ps++;break;
+			case'<':if(p>0)p--;ps++;break;
 			case'+':m[p]++;if(m[p]==256)m[p]=0;ps++;break;
 			case'-':m[p]--;if(m[p]==-1)m[p]=255;ps++;break;
 			case'.':log.innerText+=String.fromCharCode(m[p]);ps++;break;
