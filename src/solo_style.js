@@ -9,7 +9,7 @@ document.body.insertAdjacentHTML('beforeend',`
 window.addEventListener('DOMContentLoaded',()=>{
 	fetch('https://unpkg.com/swiper/swiper-bundle.min.js').then(r=>r.text()).then(t=>{
 		eval(t);
-		new Swiper('.swiper-container',{
+		var swiper=new Swiper('.swiper-container',{
 			slidesPerView:1,spaceBetween:0,loop:true,centeredSlides:true,
 			breakpoints:{
 				600:{slidesPerView:2,spaceBetween:30}
@@ -18,5 +18,6 @@ window.addEventListener('DOMContentLoaded',()=>{
 			pagination:{el:'.swiper-pagination',clickable:true},
 			navigation:{nextEl:'.swiper-button-next',prevEl:'.swiper-button-prev'}
 		});
+		console.log(swiper);
 	});
 });
