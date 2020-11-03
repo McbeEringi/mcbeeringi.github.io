@@ -28,5 +28,5 @@ document.querySelectorAll('a').forEach(e=>{if(e.ontouchstart==undefined)e.ontouc
 document.querySelectorAll('.stuff img,.pad img').forEach(e=>e.width="512px");
 document.body.insertAdjacentHTML('afterbegin',`<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
 <style></style>
-<link href="https://mcbeeringi.github.io/src/style.css" rel=preload>
+<link href="https://mcbeeringi.github.io/src/style.css" rel="stylesheet">
 `);
