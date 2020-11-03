@@ -5,18 +5,16 @@ document.body.insertAdjacentHTML('beforeend',`
 		.box{display:flex;flex-wrap:wrap;}.box>*{flex-grow:1;width:300px;}
 	</style>
 `);
-window.addEventListener('DOMContentLoaded',()=>{
-	fetch('https://unpkg.com/swiper/swiper-bundle.min.js').then(r=>r.text()).then(t=>{
-		eval(t);
-		var swiper=new Swiper('.swiper-container',{
-			slidesPerView:1,spaceBetween:0,loop:true,centeredSlides:true,
-			breakpoints:{
-				600:{slidesPerView:2,spaceBetween:30}
-			},
-			autoplay:{delay:2700,disableOnInteraction:false,},
-			pagination:{el:'.swiper-pagination',clickable:true},
-			navigation:{nextEl:'.swiper-button-next',prevEl:'.swiper-button-prev'}
-		});
-		console.log(swiper);
+fetch('https://unpkg.com/swiper/swiper-bundle.min.js').then(r=>r.text()).then(t=>{
+	eval(t);
+	var swiper=new Swiper('.swiper-container',{
+		slidesPerView:1,spaceBetween:0,loop:true,centeredSlides:true,
+		breakpoints:{
+			600:{slidesPerView:2,spaceBetween:30}
+		},
+		autoplay:{delay:2700,disableOnInteraction:false,},
+		pagination:{el:'.swiper-pagination',clickable:true},
+		navigation:{nextEl:'.swiper-button-next',prevEl:'.swiper-button-prev'}
 	});
+	console.log(swiper);
 });
