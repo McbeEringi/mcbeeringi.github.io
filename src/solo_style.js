@@ -5,7 +5,7 @@ document.body.insertAdjacentHTML('beforeend',`
 		.box{display:flex;flex-wrap:wrap;}.box>*{flex-grow:1;width:300px;}
 	</style>
 `);
-window.addEventListener('DOMContentLoaded',()=>{
+window.addEventListener('load',()=>{
 	fetch('https://unpkg.com/swiper/swiper-bundle.min.js').then(r=>r.text()).then(t=>{
 		eval(t);
 		var swiper=new Swiper('.swiper-container',{
