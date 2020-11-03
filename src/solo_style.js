@@ -1,4 +1,3 @@
-fetch('https://mcbeeringi.github.io/src/style.js').then(r=>r.text()).then(t=>eval(t));
 document.body.insertAdjacentHTML('beforeend',`
 	<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 	<style>
