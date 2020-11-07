@@ -30,5 +30,5 @@ const setstyle=()=>{
 if(document.readyState=='loading')window.addEventListener('DOMContentLoaded',setstyle);else setstyle();
 document.body.insertAdjacentHTML('afterbegin',`<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
 <style></style>
-<link href="src/style.css" rel="stylesheet">
+<link href="https://mcbeeringi.github.io/src/style.css" rel="stylesheet">
 `);
