@@ -3,6 +3,7 @@ document.body.insertAdjacentHTML('beforeend',`
 	<style>
 		.swiper-container{width:90%;height:auto;}.swiper-container img{width:100%;}
 		.box{display:flex;flex-wrap:wrap;}.box>*{flex-grow:1;width:300px;}
+		.tac{text-align:center;}
 	</style>
 `);
 fetch('https://unpkg.com/swiper/swiper-bundle.min.js').then(r=>r.text()).then(t=>{
