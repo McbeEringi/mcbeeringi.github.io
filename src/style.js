@@ -14,7 +14,7 @@ header.insertAdjacentHTML('beforeend',`
 `);
 document.body.insertBefore(header,document.body.firstChild);
 hnavm.insertAdjacentHTML('beforeend',hnavd.innerHTML);
-window.addEventListener('DOMContentLoaded',()=>{
+const setstyle=()=>{
 	var footer = document.createElement('footer');
 	footer.insertAdjacentHTML('beforeend',`
 		© 2018~ @McbeEringi.｡:+*<br><br>
@@ -23,9 +23,10 @@ window.addEventListener('DOMContentLoaded',()=>{
 		<a href="https://github.com/mcbeeringi">GitHub</a>
 	`);
 	document.body.appendChild(footer);
-});
-document.querySelectorAll('a').forEach(e=>{if(e.ontouchstart==undefined)e.ontouchstart=()=>{};});
-document.querySelectorAll('.stuff img,.pad img').forEach(e=>e.width="512px");
+	document.querySelectorAll('a').forEach(e=>{if(e.ontouchstart==undefined)e.ontouchstart=()=>{};});
+	document.querySelectorAll('.stuff img,.pad img').forEach(e=>e.width="512px");
+};
+if(document.readyState=='loading')window.addEventListener('DOMContentLoaded',setstyle);else setstyle();
 document.body.insertAdjacentHTML('afterbegin',`<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
 <style></style>
 <link href="https://mcbeeringi.github.io/src/style.css" rel="stylesheet">
