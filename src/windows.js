@@ -6,7 +6,7 @@
  */
 
 var wjs_pos=[{},{}];
-const wjs_save=()=>{document.cookie=`wjspos=${encodeURIComponent(JSON.stringify(wjs_pos[1]))};max-age=604800;path=${location.pathname}`;return 'saved'},
+const wjs_save=()=>{document.cookie=`wjspos=${encodeURIComponent(JSON.stringify(wjs_pos[1]))};max-age=604800;path=${location.pathname}`;},
 wjs_reset=()=>{document.body.querySelectorAll('div.window>div').forEach((e,i)=>{if(e.dataset.winid)[e.style.top,e.style.left,e.style.width,e.style.height]=wjs_pos[0][e.dataset.winid];});wjs_pos[1]={};wjs_save();},
 windowsMainfx=()=>{
 	document.body.insertAdjacentHTML('beforeend',`<style>
@@ -108,6 +108,6 @@ windowsMainfx=()=>{
 		}
 	}
 	document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden')wjs_save();})
-	document.addEventListener('beforeunload',()=>{wjs_save();})
+	document.addEventListener('beforeunload',wjs_save);
 };
 if(document.readyState=='loading')window.addEventListener('DOMContentLoaded',windowsMainfx,{once:true});else windowsMainfx();
