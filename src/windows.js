@@ -5,18 +5,18 @@
  * example : https://mcbeeringi.github.io/amuse/desktop.html
  */
 
-document.body.insertAdjacentHTML('beforeend',`<style>
-	div.window{position:relative;width:1920px;height:1080px;overflow:hidden;pointer-events:none;}
-	div.window>div{pointer-events:auto;background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:36px;}
-	div.window>div:last-child{filter:none;}
-	div.window.dark>div{background-color:#222;color:#fff;}div.window>div.transparent{background-color:#0000;}
-	.hbar,.fbar{user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;cursor:move;}
-	.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;font-size:16px;}
-	.fbar>svg{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:nwse-resize;}
-	.hbar.grab,.fbar.grab{background:#8888;}.pfixed>.hbar{background:#8668;cursor:default;}</style>`);
-
 var wjs_pos=[{},{}];
-window.addEventListener('load',()=>{
+window.addEventListener('DOMContentLoaded',()=>{
+	document.body.insertAdjacentHTML('beforeend',`<style>
+		div.window{position:relative;width:1920px;height:1080px;overflow:hidden;pointer-events:none;}
+		div.window>div{pointer-events:auto;background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:36px;}
+		div.window>div:last-child{filter:none;}
+		div.window.dark>div{background-color:#222;color:#fff;}div.window>div.transparent{background-color:#0000;}
+		.hbar,.fbar{user-select:none;-webkit-user-select:none;text-align:center;touch-action:none;cursor:move;}
+		.hbar{background:#6668;color:#fff;text-shadow:0 0 2px #444;font-size:16px;}
+		.fbar>svg{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:nwse-resize;}
+		.hbar.grab,.fbar.grab{background:#8888;}.pfixed>.hbar{background:#8668;cursor:default;}
+	</style>`);
 	var wtmp=[],wcr=[],tflag=false,custom_e=['hbar_pre','hbar_on','fbar_pre','fbar_on','bar_post','on_front'].map(x=>new Event(x));
 	const pxnum=(x)=>Number(x.replace('px',''));
 	//load data from cookie
@@ -36,12 +36,12 @@ window.addEventListener('load',()=>{
 		hbar.setAttribute('class','hbar');
 		hbar.insertAdjacentHTML('beforeend',e.getAttribute('name'));
 		if(!e.classList.contains('pfixed')){
-			hbar.ontouchstart=(m)=>{
+			hbar.addEventListener('touchstart',m=>{
 				tflag=true;hbar.classList.add('grab');
 				wtmp[i]=[pxnum(window.getComputedStyle(e).left),m.changedTouches[0].clientX,pxnum(window.getComputedStyle(e).top),m.changedTouches[0].clientY];
 				wcr=[e,i,wcr[2]];document.body.style.userSelect='none';document.body.style.WebkitUserSelect='none';e.dispatchEvent(custom_e[0]);
-			}
-			hbar.onmousedown=(m)=>{
+			},{passive:true});
+			hbar.onmousedown=m=>{
 				if(tflag)tflag=false;else{
 					hbar.classList.add('grab');
 					wtmp[i]=[pxnum(window.getComputedStyle(e).left),m.clientX,pxnum(window.getComputedStyle(e).top),m.clientY];
@@ -55,12 +55,12 @@ window.addEventListener('load',()=>{
 		fbar.setAttribute('class','fbar');
 		if(!e.classList.contains('sfixed')){
 			fbar.insertAdjacentHTML('beforeend','<svg><polygon points="0,0 0,16 16,16 16,0"fill="#6668"></polygon><polygon points="0,16 16,16 16,0"fill="#8888"></polygon></svg>');
-			fbar.ontouchstart=(m)=>{
+			fbar.addEventListener('touchstart',m=>{
 				tflag=true;fbar.classList.add('grab');
 				wtmp[i]=[pxnum(window.getComputedStyle(e).width),m.changedTouches[0].clientX,pxnum(window.getComputedStyle(e).height),m.changedTouches[0].clientY];
 				wcr=[e,i,wcr[2]];document.body.style.userSelect='none';document.body.style.WebkitUserSelect='none';e.dispatchEvent(custom_e[2]);
-			}
-			fbar.onmousedown=(m)=>{
+			},{passive:true});
+			fbar.onmousedown=m=>{
 				if(tflag)tflag=false;else{
 					fbar.classList.add('grab');
 					wtmp[i]=[pxnum(window.getComputedStyle(e).width),m.clientX,pxnum(window.getComputedStyle(e).height),m.clientY];
@@ -70,14 +70,14 @@ window.addEventListener('load',()=>{
 		}
 		e.appendChild(fbar);
 		//front controll
-		e.ontouchstart=()=>{if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
+		e.addEventListener('touchstart',()=>{if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}},{passive:true});
 		e.onmousedown=()=>{if(wcr[2]!=i){wcr[2]=i;e.parentNode.appendChild(e);e.dispatchEvent(custom_e[5]);}}
 	});//console.log(wjs_pos);
 	const onpost=()=>{if(wcr[0]){wcr[0].firstChild.classList.remove('grab');wcr[0].lastChild.classList.remove('grab');wcr[0].dispatchEvent(custom_e[4]);
 		if(wcr[0].dataset.winid)wjs_pos[1][wcr[0].dataset.winid]=[wcr[0].style.top,wcr[0].style.left,wcr[0].style.width,wcr[0].style.height];wcr[0]=null;wjs_save();}
 		document.body.style.userSelect='auto';document.body.style.WebkitUserSelect='auto';}
 	window.ontouchend=()=>onpost();window.ontouchcancel=()=>onpost();window.onmouseup=()=>onpost();
-	window.ontouchmove=(e)=>{
+	window.ontouchmove=e=>{
 		if(wcr[0]){
 			var winst=window.getComputedStyle(wcr[0].parentNode);
 			if(wcr[0].firstChild.classList.contains('grab')){//move
@@ -91,7 +91,7 @@ window.addEventListener('load',()=>{
 			}
 		}
 	}
-	window.onmousemove=(e)=>{
+	window.onmousemove=e=>{
 		if(wcr[0]){
 			var winst=window.getComputedStyle(wcr[0].parentNode);
 			if(wcr[0].firstChild.classList.contains('grab')){//move
