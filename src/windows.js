@@ -6,7 +6,9 @@
  */
 
 var wjs_pos=[{},{}];
-window.addEventListener('DOMContentLoaded',()=>{
+const wjs_save=()=>{document.cookie=`wjspos=${encodeURIComponent(JSON.stringify(wjs_pos[1]))};max-age=604800;path=${location.pathname}`;return 'saved'},
+wjs_reset=()=>{document.body.querySelectorAll('div.window>div').forEach((e,i)=>{if(e.dataset.winid)[e.style.top,e.style.left,e.style.width,e.style.height]=wjs_pos[0][e.dataset.winid];});wjs_pos[1]={};wjs_save();},
+windowsMainfx=()=>{
 	document.body.insertAdjacentHTML('beforeend',`<style>
 		div.window{position:relative;width:1920px;height:1080px;overflow:hidden;pointer-events:none;}
 		div.window>div{pointer-events:auto;background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:36px;}
@@ -107,6 +109,5 @@ window.addEventListener('DOMContentLoaded',()=>{
 	}
 	document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden')wjs_save();})
 	document.addEventListener('beforeunload',()=>{wjs_save();})
-},{once:true});
-const wjs_save=()=>{document.cookie=`wjspos=${encodeURIComponent(JSON.stringify(wjs_pos[1]))};max-age=604800;path=${location.pathname}`;return 'saved'}
-const wjs_reset=()=>{document.body.querySelectorAll('div.window>div').forEach((e,i)=>{if(e.dataset.winid)[e.style.top,e.style.left,e.style.width,e.style.height]=wjs_pos[0][e.dataset.winid];});wjs_pos[1]={};wjs_save();}
+};
+if(document.readyState=='loading')window.addEventListener('DOMContentLoaded',windowsMainfx,{once:true});else windowsMainfx();
