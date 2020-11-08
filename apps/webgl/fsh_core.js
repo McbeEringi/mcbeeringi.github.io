@@ -4,7 +4,7 @@ const read=x=>{
 	document.getElementById(x.id+'d').style.backgroundImage=`url(${url})`;
 	tex(parseInt(x.id.slice(-1)),url);
 }
-diffuse.ontouchstart=()=>{dftflag=true;diffuse.src=canvas.toDataURL();}
+diffuse.addEventListener('touchstart',()=>{dftflag=true;diffuse.src=canvas.toDataURL();},{passive:true})
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
 
 const load=()=>{
