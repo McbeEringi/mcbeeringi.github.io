@@ -8,7 +8,7 @@ img.img{width:100%;max-width:512px;}img.img_s{width:100%;max-width:256px;}
 
 /*header footer*/
 .lang{display:inline-block;width:16px;height:16px;margin:4px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='7' cx='8' cy='8' style='fill:transparent;stroke:%23eaf4fc;stroke-width:1'/%3E%3Cellipse cx='8' cy='8' rx='4' ry='7' style='fill:transparent;stroke:%23ccc;stroke-width:1'/%3E%3Cpath d='M8,1 L8,15 M2,4 L14,4 M1,8 L15,8 M2,12 L14,12' style='stroke:%23ccc;stroke-width:1'/%3E%3C/svg%3E");}
-header{font-family:'Lato';background-color:#444c;z-index:10;position:fixed;top:0;left:0;width:100%;height:48px;display:flex;align-items:center;justify-content:space-between;}header a{text-decoration:none;}
+header{font-family:'Lato';background-color:#8888;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:10;position:fixed;top:0;left:0;width:100%;height:48px;display:flex;align-items:center;justify-content:space-between;}header a{text-decoration:none;}
 header>a{height:48px;display:block;white-space:nowrap;line-height:48px;font-size:130%;font-weight:bold;}header>a::before{content:"";display:inline-block;width:32px;height:32px;margin:8px 2px;background:url("https://mcbeeringi.github.io/img/6x6.png");background-size:100%;vertical-align:bottom;}
 footer{text-align:center;padding:1em;}
 /*nav*/
@@ -28,7 +28,7 @@ footer{text-align:center;padding:1em;}
 }.title+p{text-align:center;}
 
 /*parts*/
-.col1,.col2{overflow-y:hidden;padding:16px 8px;margin:0;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}.col1{background-color:#8882;}.col2{background-color:#8884;}
+.col1,.col2{overflow-y:hidden;padding:16px 8px;margin:0;backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));}.col1{background-color:#8882;--blur:1px;}.col2{background-color:#8884;--blur:2px;}
 .stuff{}@media(max-width:600px){.stuff{text-align:center;}}
 .pad{display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;}
 .stuff>*{display:inline-block;width:172px;padding:4px;margin:6px;vertical-align:top;font-size:80%;}
