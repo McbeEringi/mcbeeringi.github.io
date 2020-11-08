@@ -43,8 +43,8 @@ textarea{width:90%;max-width:100%;min-width:50%;}
 textarea,input[type="text"],input[type="number"]{color:#eaf4fc;background-color:rgba(84,121,128,.2);border:none;border-radius:0;border-bottom:2px solid #eaf4fccc;font-size:13px;}
 textarea::placeholder,input[type="text"]::placeholder,input[type="number"]::placeholder{color:#eaf4fc88;}
 textarea:focus,input[type="text"]:focus,input[type="number"]:focus{outline:none;border-bottom:2px solid #48f;transition:.3s;}
-button,.button{display:inline-block;vertical-align:bottom;outline:none;cursor:pointer;background:#8886;color:#fff;border:none;border-bottom:4px solid #0004;padding:2px 1ex;border-radius:4px;font-size:20px;font-family:'M PLUS Rounded 1c',sans-serif;text-decoration:none;}
-button:hover,.button:hover{background:#48f8;border-bottom-color:#0004;}button:active,.button:active{background:#222;border-bottom:2px solid #0000;border-top:2px solid #0000;}
+button,.button{display:inline-block;vertical-align:bottom;outline:none;cursor:pointer;background:#8886;color:#fff;border:none;border-bottom:4px solid #0006;padding:2px 1ex;border-radius:4px;font-size:20px;font-family:'M PLUS Rounded 1c',sans-serif;text-decoration:none;}
+button:hover,.button:hover{background:#48fa;border-bottom-color:#8886;}button:active,.button:active{background:#222;border-bottom:0px solid #0000;border-top:4px solid #0000;}
 
 /*others*/
 table{display:block;overflow-x:scroll;white-space:nowrap;-webkit-overflow-scrolling:touch;}
