@@ -1,11 +1,11 @@
 /*
  * made by @McbeEringi MIT
- * last modified 2020/8/28
+ * last modified 2020/11/8
  *
  * example : https://mcbeeringi.github.io/amuse/desktop.html
  */
 
-document.write(`<style>
+document.body.insertAdjacentHTML('beforeend',`<style>
 	div.window{position:relative;width:1920px;height:1080px;overflow:hidden;pointer-events:none;}
 	div.window>div{pointer-events:auto;background-color:#fff;color:#000;border-radius:4px;box-shadow:0 0 8px #0008,0 0 2px #fff8 inset;filter:brightness(.7);position:absolute;overflow:hidden;min-width:128px;min-height:36px;}
 	div.window>div:last-child{filter:none;}
