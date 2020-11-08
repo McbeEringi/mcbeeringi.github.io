@@ -1,6 +1,6 @@
 /*@font-face{font-family:"tsa";src:url(tsa.woff2);}*/
 :root{background:url("../img/noise5.png") #0f2350;background-size:384px;color:#eaf4fc;font-family:'M PLUS Rounded 1c',sans-serif;word-wrap:break-word;image-rendering:pixelated;}
-body{margin:0;}a{color:#eaf4fc;transition:.2s;}*:not(a){text-shadow:0 0 4px #000c;}a img{user-select:none;-webkit-user-select:none;}
+body{margin:0;}a:not(.button){color:#eaf4fc;transition:.2s;}*:not(a){text-shadow:0 0 4px #000c;}a img{user-select:none;-webkit-user-select:none;}
 a:not(.button):visited{filter:drop-shadow(0 0 4px #84f);}a:not(.button):visited:hover{color:#caf;filter:drop-shadow(0 0 4px #a8f);}
 a:not(.button):link{filter:drop-shadow(0 0 4px #48f);}a:not(.button):link:hover{color:#acf;filter:drop-shadow(0 0 2px #8af);}
 @media(max-width:512px){li a{display:block;height:24px;padding:12px 0;margin:8px auto;background:#8884;}}
@@ -43,7 +43,7 @@ textarea{width:90%;max-width:100%;min-width:50%;}
 textarea,input[type="text"],input[type="number"]{color:#eaf4fc;background-color:rgba(84,121,128,.2);border:none;border-radius:0;border-bottom:2px solid #eaf4fccc;font-size:13px;}
 textarea::placeholder,input[type="text"]::placeholder,input[type="number"]::placeholder{color:#eaf4fc88;}
 textarea:focus,input[type="text"]:focus,input[type="number"]:focus{outline:none;border-bottom:2px solid #48f;transition:.3s;}
-button,.button{display:inline-block;vertical-align:bottom;outline:none;cursor:pointer;background:#8886;color:#fff;border:none;border-bottom:4px solid #0006;padding:2px 1ex;border-radius:4px;font-size:20px;font-family:'M PLUS Rounded 1c',sans-serif;text-decoration:none;}
+button,.button{display:inline-block;vertical-align:bottom;outline:none;cursor:pointer;background:#8886;color:#fff;border:none;border-bottom:4px solid #0006;padding:2px 1ex;border-radius:4px;font-size:20px;font-family:'M PLUS Rounded 1c',sans-serif;text-decoration:none;transition:.2s cubic-bezier(.3,0,.7,1);}
 button:hover,.button:hover{background:#48fa;border-bottom-color:#8886;}button:active,.button:active{background:#222;border-bottom:0px solid #0000;border-top:4px solid #0000;}
 
 /*others*/
