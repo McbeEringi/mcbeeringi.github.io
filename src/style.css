@@ -13,6 +13,7 @@ header{font-family:'Lato';background-color:#8888;backdrop-filter:blur(4px);-webk
 header>a{height:48px;display:block;white-space:nowrap;line-height:48px;font-size:130%;font-weight:bold;}header>a::before{content:"";display:inline-block;width:32px;height:32px;margin:8px 2px;background:url("https://mcbeeringi.github.io/img/6x6.png");background-size:100%;vertical-align:bottom;}
 footer{text-align:center;padding:1em;}
 /*nav*/
+nav{white-space:nowrap;}
 #hnavd{margin-right:8px;display:inline-block;}#hnavd *{vertical-align:middle;margin:4px;}#hnavmcb{display:none;}
 #hnavm{background:#2228;display:none;position:absolute;top:48px;right:-100%;opacity:0;transition:.3s;padding:8px 16px;border-radius:16px;border-top-right-radius:0;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
 #hnavm *{display:block;text-align:center;margin:8px auto;font-size:24px;}
