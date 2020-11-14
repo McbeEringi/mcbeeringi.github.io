@@ -10,7 +10,8 @@
 </head>
 <body>
 <style>
-	:root{background:#222;color:#fff;font-family:monospace;}h1,h2{margin:4px;}
+	:root{background:#222;color:#fff;font-family:monospace;user-select:none;-webkit-user-select:none;}h1,h2{margin:4px;}
+	#src,#inp,#out,td{user-select:auto;-webkit-user-select:auto;}
 	#out{height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;}
 	#src,#inp{background:#333;padding:4px;margin-top:0;border:1px solid #888;}
 	#mv{height:36px;overflow:scroll;white-space:nowrap;background:#333;position:relative;margin:2px;user-select:none;-webkit-user-select:none;}
@@ -24,7 +25,7 @@
 <h1>brainf***</h1>
 <div id="mv"><div></div><p>0</p></div>
 <pre id="out"></pre>
-<button id="btn">run</button><button id="sbtn">stop</button>speed:<input type="range" id="spd" min="0" max="200" value="20"><br>
+<button id="btn">run</button> <button id="stopb">stop</button> <button id="skipb">skip</button> speed:<input type="range" id="spd" min="0" max="200" value="20" style="vertical-align:middle;"><br>
 src:
 <pre id="src" contenteditable>++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
 >>>>>++.	H
@@ -78,19 +79,22 @@ type here before run.</pre>
 	<tr><th>25</th><td>ú</td><td>û</td><td>ü</td><td>ý</td><td>þ</td><td>ÿ</td></tr>
 </table>
 <script>
-btn.onclick=()=>{main(src.innerText);btn.disabled=true;}
-sbtn.onclick=()=>{if(btn.disabled)sbtn.disabled=true;}
-const main=s=>{
+'use strict';
+btn.onclick=()=>{main();btn.disabled=true;}
+stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
+skipb.onclick=()=>{if(btn.disabled)skipb.disabled=true;}
+document.querySelectorAll('pre[contenteditable]').forEach(e=>e.onpaste=e=>{document.execCommand('insertHTML',false,e.clipboardData.getData('text/plain'));return false;});
+const main=()=>{
 	mv.innerHTML='<div></div><p>0</p>';
 	out.innerText='';log.innerText='';
-	s=s.replace(/\n/g,'').split('');
+	var s=src.innerText.replace(/\n/g,'').split('');
 	var p=0,ps=0,pi=0,m=[0],l=[],tmp;
 	const render=()=>{
 		mv.firstChild.style.left=`${36*p}px`;
 		if(mv.childNodes.length-2<p)mv.appendChild(document.createElement('p'));
 		mv.childNodes[p+1].innerText=m[p];
 	}
-	const post=()=>{btn.disabled=false;sbtn.disabled=false;}
+	const post=()=>{btn.disabled=false;stopb.disabled=false;skipb.disabled=false;}
 	const core=()=>{
 		switch(s[ps]){
 			case'>':p++;ps++;break;
@@ -105,8 +109,8 @@ const main=s=>{
 		}
 		if(m[p]==undefined)m[p]=0;
 		render();
-		if(ps==s.length || sbtn.disabled==true)setTimeout(post,spd.value);
-		else setTimeout(core,spd.value);
+		if(ps==s.length||stopb.disabled==true)setTimeout(post,spd.value);
+		else{if(skipb.disabled)core();else setTimeout(core,spd.value);}
 	};core();
 }
 </script>
