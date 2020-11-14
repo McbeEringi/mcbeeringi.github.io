@@ -100,7 +100,7 @@ const main=()=>{
 	out.innerText='';log.innerText='';
 	src.readOnly=true;inp.readOnly=true;srcprv.style.zIndex=2;inpprv.style.zIndex=2;
 	var s=src.value.split('');
-	var p=0,ps=0,pi=0,m=[0],l=[],tmp;
+	var p=0,ps=0,pi=0,m=[0],l=[],tmp=null;
 	const render=()=>{
 		mv.firstChild.style.left=`${36*p}px`;
 		if(mv.childNodes.length-2<p)mv.appendChild(document.createElement('p'));
@@ -119,10 +119,10 @@ const main=()=>{
 			case'+':m[p]++;if(m[p]==256)m[p]=0;ps++;break;
 			case'-':m[p]--;if(m[p]==-1)m[p]=255;ps++;break;
 			case'.':out.innerText+=String.fromCharCode(m[p]);ps++;break;
-			case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;ps++;log.innerText+=ps+': input empty. use 0 as input.\n';break;}else if(tmp>255){pi++;break;}else{m[p]=tmp;pi++;ps++;break;}
+			case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;ps++;log.innerText+=ps+': input empty. use 0 as input.\n';}else if(tmp>255){pi++;}else{m[p]=tmp;pi++;ps++;}break;
 			case'[':l.push(ps);ps++;break;
 			case']':if(m[p]==0){l.pop(ps);ps++;break;}else{ps=l[l.length-1]+1;break;}
-			default:ps++;break;
+			default:ps++;tmp=1;break;
 		}
 		if(m[p]==undefined)m[p]=0;
 		render();
