@@ -99,12 +99,14 @@ const main=()=>{
 	mv.innerHTML='<div></div><p>0</p>';
 	out.innerText='';log.innerText='';
 	src.readOnly=true;inp.readOnly=true;srcprv.style.zIndex=2;inpprv.style.zIndex=2;
-	var s=src.value.replace(/\n/g,'').split('');
+	var s=src.value.split('');
 	var p=0,ps=0,pi=0,m=[0],l=[],tmp;
 	const render=()=>{
 		mv.firstChild.style.left=`${36*p}px`;
 		if(mv.childNodes.length-2<p)mv.appendChild(document.createElement('p'));
 		mv.childNodes[p+1].innerText=m[p];
+		srcprv.innerHTML=src.value.substring(0,ps-1)+`<span class="caret">${src.value[ps-1]?src.value[ps-1]:''}</span>`;
+		inpprv.innerHTML=inp.value.substring(0,pi-1)+`<span class="caret">${inp.value[pi-1]?inp.value[pi-1]:''}</span>`;
 	}
 	const post=()=>{
 		btn.disabled=false;stopb.disabled=false;skipb.disabled=false;
