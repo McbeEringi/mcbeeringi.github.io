@@ -53,6 +53,14 @@ type here before run.</textarea><pre id="inpprv"></pre>
 <script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
 <script>
 'use strict';
+//https://dbaron.org/log/20100309-faster-timeouts
+(function(){
+		var timeouts=[],messageName='zero-timeout-message';
+		function setZeroTimeout(fn){timeouts.push(fn);window.postMessage(messageName,"*");}
+		function handleMessage(event){if(event.source==window&&event.data==messageName){event.stopPropagation();if(timeouts.length>0){var fn=timeouts.shift();fn();}}}
+		window.addEventListener("message",handleMessage,true);
+		window.setZeroTimeout=setZeroTimeout;
+})();
 btn.onclick=()=>{main();btn.disabled=true;}
 stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
 skipb.onclick=()=>{if(btn.disabled)skipb.disabled=true;}
@@ -90,7 +98,7 @@ const main=()=>{
 		}
 		if(m[p]==undefined)m[p]=0;if(!tmp)render();
 		if(ps==s.length||stopb.disabled==true)setTimeout(post,spd.value);
-		else{if(skipb.disabled||tmp)core();else setTimeout(core,spd.value);}
+		else{if(skipb.disabled||tmp){try{core();}catch(e){setZeroTimeout(core);}}else setTimeout(core,spd.value);}
 	};if(s.length)core();else setTimeout(post,spd.value);
 }
 </script>
