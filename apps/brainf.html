@@ -75,8 +75,8 @@ render=all=>{
 	while(mv.childNodes.length-2<p)mv.appendChild(document.createElement('p'));
 	if(all)mv.childNodes.forEach((e,i)=>{if(i)e.textContent=m[i-1]});
 	else mv.childNodes[p+1].textContent=m[p];
-	srcprv.innerHTML=src.value.substring(0,ps-1)+`<span class="caret">${src.value[ps-1]?src.value[ps-1]:''}</span>`;
-	inpprv.innerHTML=inp.value.substring(0,pi-1)+`<span class="caret">${inp.value[pi-1]?inp.value[pi-1]:''}</span>`;
+	srcprv.innerHTML=src.value.substring(0,ps-1)+(src.value[ps-1]?`<span class="caret">${src.value[ps-1]}</span>`:'');
+	inpprv.innerHTML=inp.value.substring(0,pi-1)+(inp.value[pi-1]?`<span class="caret">${inp.value[pi-1]}</span>`:'');
 },
 post=()=>{
 	render(true);
