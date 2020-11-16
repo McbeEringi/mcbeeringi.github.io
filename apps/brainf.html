@@ -69,7 +69,8 @@ autosize(src);src.oninput=()=>autosize.update(src);
 autosize(inp);inp.oninput=()=>autosize.update(inp);
 
 var s,p,ps,pi,m,l,tmp;
-const render=all=>{
+const sleep=t=>new Promise(r=>setTimeout(r,t)),
+render=all=>{
 	mv.firstChild.style.left=`${36*p}px`;
 	while(mv.childNodes.length-2<p)mv.appendChild(document.createElement('p'));
 	if(all)mv.childNodes.forEach((e,i)=>{if(i)e.textContent=m[i-1]});
@@ -82,17 +83,36 @@ post=()=>{
 	btn.disabled=false;stopb.disabled=false;skipb.disabled=false;
 	src.readOnly=false;inp.readOnly=false;srcprv.style.display='none';inpprv.style.display='none';
 },
+core_=async()=>{
+	while(ps<s.length&&stopb.disabled==false){
+		tmp=null;
+		switch(s[ps]){
+			case'>':p++;if(m[p]==undefined)m[p]=0;ps++;break;
+			case'<':if(p>0)p--;else{log.textContent+=ps+': invailed "<". canceled.\n';stopb.disabled=true;}ps++;break;
+			case'+':m[p]++;m[p]&=0xff;ps++;break;
+			case'-':m[p]--;m[p]&=0xff;ps++;break;
+			case'.':out.textContent+=String.fromCharCode(m[p]);ps++;break;
+			case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;log.textContent+=ps+': input empty. use 0 as input.\n';ps++;}else if(tmp>255)pi++;else{m[p]=tmp;pi++;ps++;}tmp=null;break;
+			case'[':l.push(ps);ps++;break;
+			case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.textContent+=ps+': invailed "]". skipped.\n';ps++;}break;
+			default:ps++;tmp=1;break;
+		}
+		if(!tmp&&!skipb.disabled)render();
+		if(!(skipb.disabled||tmp))await sleep(spd.value);
+	}
+	post();
+},
 core=()=>{
 	tmp=null;
 	switch(s[ps]){
 		case'>':p++;if(m[p]==undefined)m[p]=0;ps++;break;
-		case'<':if(p>0)p--;else{log.innerText+=ps+': invailed "<". canceled.\n';stopb.disabled=true;}ps++;break;
+		case'<':if(p>0)p--;else{log.textContent+=ps+': invailed "<". canceled.\n';stopb.disabled=true;}ps++;break;
 		case'+':m[p]++;m[p]&=0xff;ps++;break;
 		case'-':m[p]--;m[p]&=0xff;ps++;break;
-		case'.':out.innerText+=String.fromCharCode(m[p]);ps++;break;
-		case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;log.innerText+=ps+': input empty. use 0 as input.\n';ps++;}else if(tmp>255)pi++;else{m[p]=tmp;pi++;ps++;}tmp=null;break;
+		case'.':out.textContent+=String.fromCharCode(m[p]);ps++;break;
+		case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;log.textContent+=ps+': input empty. use 0 as input.\n';ps++;}else if(tmp>255)pi++;else{m[p]=tmp;pi++;ps++;}tmp=null;break;
 		case'[':l.push(ps);ps++;break;
-		case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.innerText+=ps+': invailed "]". skipped.\n';ps++;}break;
+		case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.textContent+=ps+': invailed "]". skipped.\n';ps++;}break;
 		default:ps++;tmp=1;break;
 	}
 	if(!tmp&&!skipb.disabled)render();
@@ -101,10 +121,10 @@ core=()=>{
 },
 main=()=>{
 	mv.innerHTML='<div></div><p>0</p>';
-	out.innerText='';log.innerText='';
+	out.textContent='';log.textContent='';
 	src.readOnly=true;inp.readOnly=true;srcprv.style.display='block';inpprv.style.display='block';
 	s=src.value.split('');p=0;ps=0;pi=0;m=[0];l=[];
-	if(s.length)core();else{log.innerText+='! : no src found.\n';setTimeout(post,spd.value);}
+	if(s.length)core();else{log.textContent+='! : no src found.\n';setTimeout(post,spd.value);}
 }
 </script>
 </body>
