@@ -14,6 +14,7 @@
 	#out{min-height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;user-select:text;-webkit-user-select:text;}
 	.wrapper>*{padding:4px;margin-top:0;font-size:12px;word-break:break-all;}
 	textarea{display:block;background:#333;border:1px solid #888;user-select:auto;-webkit-user-select:auto;}
+	input{vertical-align:middle;}
 	#mv{height:36px;overflow:scroll;white-space:nowrap;background:#333;position:relative;margin:2px;}
 	#mv div,#mv p{width:32px;height:32px;margin:2px;border-radius:8px;}
 	#mv div{position:absolute;top:0px;left:0;font-size:8px;background:#46f;z-index:1;/*transition:.05s;*/}
@@ -25,7 +26,7 @@
 <h1>brainf***</h1>
 <div id="mv"><div></div><p>0</p></div>
 <pre id="out"></pre>
-<button id="btn">run</button> <button id="stopb">stop</button> <button id="skipb">skip</button> speed:<input type="range" id="spd" min="0" max="200" value="20" style="vertical-align:middle;"><br>
+<button id="btn">run</button> <button id="stopb">stop</button> <label>skip:<input type="checkbox" id="skipcb"></label> speed:<input type="range" id="spd" min="0" max="200" value="20"><br>
 src:
 <div class="wrapper">
 <textarea id="src">++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
@@ -64,7 +65,6 @@ type here before run.</textarea><pre id="inpprv"></pre>
 })();
 btn.onclick=()=>{main();btn.disabled=true;}
 stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
-skipb.onclick=()=>{if(btn.disabled)skipb.disabled=true;}
 autosize(src);src.oninput=()=>autosize.update(src);
 autosize(inp);inp.oninput=()=>autosize.update(inp);
 
@@ -80,7 +80,7 @@ render=all=>{
 },
 post=()=>{
 	render(true);
-	btn.disabled=false;stopb.disabled=false;skipb.disabled=false;
+	btn.disabled=false;stopb.disabled=false;skipcb.checked=false;
 	src.readOnly=false;inp.readOnly=false;srcprv.style.display='none';inpprv.style.display='none';
 },
 core_=async()=>{
@@ -97,8 +97,8 @@ core_=async()=>{
 			case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.textContent+=ps+': invailed "]". skipped.\n';ps++;}break;
 			default:ps++;tmp=1;break;
 		}
-		if(!tmp&&!skipb.disabled)render();
-		if(!(skipb.disabled||tmp))await sleep(spd.value);
+		if(!tmp&&!skipcb.checked)render();
+		if(!(skipcb.checked||tmp))await sleep(spd.value);
 	}
 	post();
 },
@@ -115,9 +115,9 @@ core=()=>{
 		case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.textContent+=ps+': invailed "]". skipped.\n';ps++;}break;
 		default:ps++;tmp=1;break;
 	}
-	if(!tmp&&!skipb.disabled)render();
+	if(!tmp&&!skipcb.checked)render();
 	if(ps==s.length||stopb.disabled==true)setTimeout(post,spd.value);
-	else{if(skipb.disabled||tmp){try{core();}catch(e){render(!tmp);setZeroTimeout(core);}}else setTimeout(core,spd.value);}
+	else{if(skipcb.checked||tmp){try{core();}catch(e){render(!tmp);setZeroTimeout(core);}}else setTimeout(core,spd.value);}
 },
 main=()=>{
 	mv.innerHTML='<div></div><p>0</p>';
