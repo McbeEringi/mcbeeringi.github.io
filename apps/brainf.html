@@ -22,12 +22,13 @@
 	.wrapper,.wrapper>textarea{position:relative;width:100%;}.wrapper>pre{position:absolute;top:0;left:0;right:0;white-space:pre-wrap;border:1px solid #0000;pointer-events:none;color:#0000;}
 	.caret{color:#333;background:#fff;border-radius:1px;}
 	*::-webkit-scrollbar{display:none;}*{-ms-overflow-style:none;scrollbar-width:none;}
+	#skipcb:checked+*{display:none;}
 </style>
 
 <h1>brainf***</h1>
 <div id="mv"><div></div><p>0</p></div>
 <pre id="out"></pre>
-<button id="btn">run</button> <button id="stopb">stop</button> <label>skip:<input type="checkbox" id="skipcb"></label> speed:<input type="range" id="spd" min="0" max="200" value="20"><br>
+<button id="btn">run</button> <button id="stopb">stop</button> <label for="skipcb">skip:</label><input type="checkbox" id="skipcb"> <span>speed:<input type="range" id="spd" min="0" max="200" value="20"></span> <br>
 src:
 <div class="wrapper">
 <textarea id="src">++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
