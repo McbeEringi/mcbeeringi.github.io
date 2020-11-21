@@ -35,16 +35,26 @@
 			<span style="display:inline-block;width:6em;text-align:right;">normal:</span><input type="text" id="vnfx" value="[vn[0],vn[1],vn[2]];"><br>
 			<span style="display:inline-block;width:6em;text-align:right;">tex_uv:</span><input type="text" id="vtfx" value="[vt[0],vt[1]];"><br>
 			<br>
-			<label>format(1.8.0):<input type="checkbox" id="frm" onchange="frmc.style.display=this.checked?'block':'none';outtitle.textContent=this.checked?'mcbe geometry':'mcbe bones(poly_mesh)'"></label><br>
-			<div id="frmc" style="display:none;">
-				geometry.<input class="inp" id="mname" value="armor_stand"><br>
+			<label>
+				format:
+				<select id="frm">
+					<option value="null">null</option>
+					<option value="0">1.8.0</option>
+					<option value="1">1.10.0</option>
+					<option value="2">1.12.0</option>
+					<option value="3" selected>1.16.0</option>
+				</select>
+			</label>
+			<div id="frmc">
+				<label>geometry.<input class="inp" id="mname" value="armor_stand"></label>
+				<textarea id="frmtmp"></textarea>
 			</div>
 		</div>
 		<br>
 		<span class="button" id="run">Run</span><br>
 		<br>
 		<div class="box">
-			<h2 id="outtitle">mcbe bones(poly_mesh)</h2>
+			<h2 id="outtitle"></h2>
 			<form id="outm" onchange="outt.style.display=['block','none'][this.m.value];outf.style.display=['none','block'][this.m.value];">
 				<label><input type="radio" name="m" value="1" checked>file</label><br>
 				<label><input type="radio" name="m" value="0">text</label><br>
@@ -65,13 +75,24 @@
 		<script>
 			var reader=new FileReader(),fname='unknown';
 			const worker=new Worker('poly.js'),
+			format_tmp=[
+				'{"format_version":"1.8.0","geometry.NAME":{"texturewidth":64,"textureheight":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0],"bones":[OBJ]}}',
+				'{"format_version":"1.10.0","geometry.NAME":{"texturewidth":64,"textureheight":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0],"bones":[OBJ]}}',
+				'{"format_version":"1.12.0","minecraft:geometry":[{"description":{"identifier":"geometry.NAME","texture_width":64,"texture_height":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0]},"bones":[OBJ]}]}',
+				'{"format_version":"1.16.0","minecraft:geometry":[{"description":{"identifier":"geometry.NAME","texture_width":64,"texture_height":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0]},"bones":[OBJ]}]}',
+			],
+			frmfx=()=>{
+				frmtmp.value=format_tmp[Number(frm.value)];
+				frmc.style.display=(frmtmp.value=='null')?'none':'block';
+				outtitle.textContent=(frmtmp.value=='null')?'mcbe bones(poly_mesh)':'mcbe geometry';
+			}
 			main=()=>{
 				log.textContent='';
 				worker.postMessage({
-					"s":reader.result,
-					"frm":frm.checked?mname.value:'',
-					"cffx":[vfx.value,vnfx.value,vtfx.value],
-					"fname":fname
+					s:reader.result,
+					format:(frm.value=='null')?'':[mname.value,frmtmp.value],
+					cffx:[vfx.value,vnfx.value,vtfx.value],
+					fname:fname
 				});
 				run.textContent='Please wait…';run.style.background='#333';
 				run.onclick=()=>{}
@@ -101,6 +122,8 @@
 					else{log.textContent+=m.data;}
 			});
 			run.onclick=main;
+			frm.onchange=frmfx;
+			frmfx();
 		</script>
 	</body>
 </html>
