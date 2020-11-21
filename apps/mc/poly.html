@@ -83,8 +83,8 @@
 			],
 			frmfx=()=>{
 				frmtmp.value=format_tmp[Number(frm.value)];
-				frmc.style.display=(frmtmp.value=='null')?'none':'block';
-				outtitle.textContent=(frmtmp.value=='null')?'mcbe bones(poly_mesh)':'mcbe geometry';
+				frmc.style.display=(frm.value=='null')?'none':'block';
+				outtitle.textContent=(frm.value=='null')?'mcbe bones(poly_mesh)':'mcbe geometry';
 			}
 			main=()=>{
 				log.textContent='';
