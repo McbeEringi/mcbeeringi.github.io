@@ -33,7 +33,7 @@ function main(data){
 	console.log("main()");
 	self.postMessage(time()+"[info] all convertions started\n");
 	var posf=0,nf=0,uvf=0,diffuse="",tmp;
-	var s=data.s,frm=data.frm,o=data.fname;
+	var s=data.s,format=data.format,o=data.fname;
 	if(!s){self.postMessage(time()+"[error] Input not found\n");return ["error"];}
 	if(s.match(/^o\s.+$/m))s = ("o\n#\n"+s).split(/\n(?=o)/).slice(1);
 	else s=[s];
@@ -44,9 +44,9 @@ function main(data){
 		else {return["error"];}
 	}
 	diffuse = diffuse.slice(0,-2);
-	if(frm){
-		o = frm;
-		diffuse = `{"format_version":"1.8.0","geometry.${o}":{"bones":[\n${diffuse}]}}`;
+	if(format){
+		o=format[0];
+		diffuse=format[1].replace('NAME',o).replace('OBJ',diffuse);
 	}
 	self.postMessage(time()+"[info] all convertions completed");
 	return [o,diffuse];
