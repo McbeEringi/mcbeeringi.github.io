@@ -1,32 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en' dir='ltr'>
 	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="x-ua-compatible" content="ie=edge" />
+		<meta charset='utf-8'>
 		<title>JavaScript</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link href="https://interactive-examples.mdn.mozilla.net/css/codemirror-5-50-2.css?v=419ee2e" rel="stylesheet" />
-		<link href="https://interactive-examples.mdn.mozilla.net/css/editor-js.css?v=419ee2e" rel="stylesheet" />
-		<script>"use strict";function postToKuma(e){window.parent.postMessage(e,"*")}postToKuma({markName:"interactive-editor-loading"}),document.addEventListener("readystatechange",function(e){switch(e.target.readyState){case"interactive":postToKuma({markName:"interactive-editor-interactive",measureName:"ie-time-to-interactive",startMark:"interactive-editor-loading",endMark:"interactive-editor-interactive"});break;case"complete":postToKuma({markName:"interactive-editor-complete",measureName:"ie-time-to-complete",startMark:"interactive-editor-loading",endMark:"interactive-editor-complete"})}});</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js'></script>
 	</head>
 	<body>
-		<section id="static">
-			<pre><code id="static-js" data-height="">console.log();</code></pre>
-		</section>
-
-		<section id="live" class="live hidden">
-			<header><h4>JavaScript</h4></header>
-			<div id="editor" class="editor"></div>
-			<div class="output-container">
-				<div class="buttons-container">
-					<button id="execute" class="button run" type="button">Run &rsaquo;</button>
-					<button id="reset" type="button" class="button">Reset</button>
-				</div>
-				<div id="console" class="output"><code></code></div>
-			</div>
-		</section>
-
-		<script src="https://interactive-examples.mdn.mozilla.net/js/codemirror-5-50-2.js?v=419ee2e"></script>
-		<script src="https://interactive-examples.mdn.mozilla.net/js/editor-js.js?v=419ee2e"></script>
-  </body>
+		<style>
+			:root{background:#222;color:#fff;}:link{color:#8cf;}:visited{color:#c8f;}
+			#log{background:#333;padding:4px;}
+		</style>
+		<div id='e'>console.clear();
+console.log(Math.ceil(Math.random()*41));</div>
+		<button onclick="eval(editor.getValue());">run</button>
+		<pre id="log"></pre>
+		<script>
+		var editor=ace.edit('e',{
+			showInvisibles:true,
+			theme:'ace/theme/monokai',
+			mode:'ace/mode/javascript',
+			minLines:16,maxLines:32,
+			fontSize:12,wrap:true,
+			useSoftTabs:false,
+			tabSize:2
+		});
+		const time_=()=>{var d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}] `;}
+		console.clear=()=>log.textContent='';
+		console.log=(...x)=>log.textContent+=`${time_()}${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
+		console.error=(...x)=>log.textContent+=`${time_()}ERROR: ${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
+		console.info=(...x)=>log.textContent+=`${time_()}INFO: ${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
+		console.warn=(...x)=>log.textContent+=`${time_()}WARN: ${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
+		</script>
+	</body>
 </html>
