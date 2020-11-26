@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>download_counter</title>
+	</head>
+	<body>
+		<style>
+			:root{color:#fff;background:#222;font-family:monospace;}
+			input{width:80%}
+			pre{display:inline-block;margin:8px;vertical-align:top;}
+		</style>
+		<h2>download_counter</h2>
+		<input id="inp" placeholder="user/repo, user/repo, …" value="mcbeeringi/esbe-2g, mcbeeringi/esbe-3g"><button onclick="main();">run</button><br>
+		<div id="log"></div>
+		<script>
+			const core=async u=>{
+				var e=document.createElement('pre');
+				log.appendChild(e);
+				e.textContent=`${u}\nPlease wait…`;
+				var r=await fetch(`https://api.github.com/repos/${u}/releases`),c=0;
+				r=await r.json();
+				if(r.message){e.textContent=u+'\n'+r.message;return;}
+				e.textContent=u+'\n';
+				console.log(r);
+				r.forEach(x=>{
+					e.textContent+=`${x.name}\n${x.assets.map(y=>{c+=y.download_count;return `\t${y.name}\t${y.download_count}`;}).join('\n')}\n\n`;
+				})
+				e.textContent+=`total: ${c}`;
+			},
+			main=()=>{
+				log.textContent='';
+				inp.value.replace(/\s+/,'').split(',').forEach(x=>core(x));
+			};
+		</script>
+	</body>
+</html>
