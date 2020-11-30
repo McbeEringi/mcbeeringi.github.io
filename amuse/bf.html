@@ -1,7 +1,7 @@
 <html lang="en" dir="ltr">
 <head>
 	<meta charset="utf-8">
-	<title>test</title>
+	<title>bfgolf</title>
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
@@ -89,7 +89,10 @@ const main=(s,md)=>{
 	console.log('index freq',freq_);
 	ind=ind.map(x=>freq_.indexOf(x));clm=freq_.map(x=>clm[x]);
 	console.log('index',ind);console.log('data',clm);
-	console.log(freq(ind));
+	//console.log(freq(ind));
+	tmp=clm.map(x=>(x.d[0]>127)?x.d[0]-256:x.d[0]);
+	console.log(tmp);
+	console.log(tmp.map(x=>Math.round(x/7)*7));
 };
 main(inp.value,mmind.value);
 </script>
