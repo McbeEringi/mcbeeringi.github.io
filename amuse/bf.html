@@ -72,12 +72,12 @@ const main=(s,md,md_)=>{
 	log.innerText='';
 	s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);
 	console.log('raw',s);
-	const tpl=x=>{return {c:0,d:[x]};},round=x=>-Math.sign(x)*Math.round(-Math.abs(x));
-	var ind=[0],clm=[tpl(s[0])],tmp={};
+	const round=x=>-Math.sign(x)*Math.round(-Math.abs(x));
+	var ind=[0],clm=[[s[0]]],tmp={};
 	s.slice(1).forEach((x,i)=>{i++;
 		tmp.mini=-1;tmp.mind=Number(md)+1;
 		clm.forEach((y,j)=>{
-			tmp.last=y.d[y.d.length-1];
+			tmp.last=y[y.length-1];
 			tmp.dist=Math.abs(tmp.last-x);
 			tmp.dist=Math.min(tmp.dist,256-tmp.dist);
 			if(tmp.dist<tmp.mind){
@@ -85,8 +85,8 @@ const main=(s,md,md_)=>{
 				tmp.mini=j;
 			}
 		});
-		if(tmp.mini==-1){ind[i]=clm.length;clm[ind[i]]=tpl(x);}
-		else{ind[i]=tmp.mini;clm[ind[i]].d.push(x);}
+		if(tmp.mini==-1){ind[i]=clm.length;clm[ind[i]]=[x];}
+		else{ind[i]=tmp.mini;clm[ind[i]].push(x);}
 	});
 	console.log('index',ind);console.log('data',clm);
 	var freq_=freq(ind);ind=ind.map(x=>freq_.indexOf(x));clm=freq_.map(x=>clm[x]);
@@ -95,15 +95,16 @@ const main=(s,md,md_)=>{
 
 	console.log('');
 	tmp=clm.map((x,i)=>{//near
-		var r=round((x.d[0]>127)?x.d[0]-256:x.d[0]/md_);
-		clm[i].c=r<0?256+r*md_:r*md_;
+		var r=round((x[0]>127)?x[0]-256:x[0]/md_);
+		clm[i].unshift(r<0?256+r*md_:r*md_);
 		return r;
 	});
 	console.log('boot',tmp);
-	s='+'.repeat(md_)+'[>';
-	tmp.forEach(x=>s+=(x>0?'+':'-').repeat(Math.abs(x))+'>');
-	s=s.slice(0,-1)+'<'.repeat(tmp.length)+'-]';
+	s='+'.repeat(md_)+'[';
+	tmp.forEach(x=>s+='>'+(x>0?'+':'-').repeat(Math.abs(x)));
+	s+='<'.repeat(tmp.length)+'-]';
 	console.log('data',clm);
+
 	console.log('result:',s);
 	return s;
 };
