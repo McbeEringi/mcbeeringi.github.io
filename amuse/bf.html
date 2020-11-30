@@ -69,7 +69,8 @@ const main=(s,md)=>{
 	log.innerText='';
 	s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);
 	console.log('raw',s);
-	const tpl=x=>{return {c:0,d:[x]};};var ind=[0],clm=[tpl(s[0])],tmp={};
+	const tpl=x=>{return {c:0,d:[x]};},round=x=>-Math.sign(x)*Math.round(-Math.abs(x));
+	var ind=[0],clm=[tpl(s[0])],tmp={};
 	s.slice(1).forEach((x,i)=>{i++;
 		tmp.mini=-1;tmp.mind=Number(md)+1;
 		clm.forEach((y,j)=>{
@@ -92,7 +93,7 @@ const main=(s,md)=>{
 	//console.log(freq(ind));
 	tmp=clm.map(x=>(x.d[0]>127)?x.d[0]-256:x.d[0]);
 	console.log(tmp);
-	console.log(tmp.map(x=>Math.round(x/7)*7));
+	console.log(tmp.map(x=>round(x/7)*7));
 };
 main(inp.value,mmind.value);
 </script>
