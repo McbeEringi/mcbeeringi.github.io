@@ -91,9 +91,13 @@ const main=(s,md)=>{
 	ind=ind.map(x=>freq_.indexOf(x));clm=freq_.map(x=>clm[x]);
 	console.log('index',ind);console.log('data',clm);
 	//console.log(freq(ind));
-	tmp=clm.map(x=>(x.d[0]>127)?x.d[0]-256:x.d[0]);
-	console.log(tmp);
-	console.log(tmp.map(x=>round(x/7)*7));
+	tmp=clm.map(x=>(x.d[0]>127)?x.d[0]-256:x.d[0]);console.log(tmp);
+	tmp=tmp.map(x=>[round(x/7),x-round(x/7)*7]);console.log(tmp);
+	s='+'.repeat(md)+'[>';
+	tmp.forEach(x=>s+=(x[0]>0?'+':'-').repeat(Math.abs(x[0]))+'>');
+	s=s.slice(0,-1)+'<'.repeat(tmp.length)+'-]';
+	console.log('result:',s);
+	return s;
 };
 main(inp.value,mmind.value);
 </script>
