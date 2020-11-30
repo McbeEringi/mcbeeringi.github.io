@@ -17,7 +17,7 @@
 <pre id="log"></pre>
 <script>
 'use strict';
-console.log=(...x)=>{x.forEach(x=>log.innerText+=`${JSON.stringify(x)}, `);log.innerText=log.innerText.slice(0,-2)+'\n';};
+console.log=(...x)=>log.textContent+=`${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
 const joinPair=x=>{
 	var indm=Math.max(...(x.join('').split('')));
 	console.log('joinPair',x,indm);
