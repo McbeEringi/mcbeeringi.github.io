@@ -12,7 +12,7 @@
 		</style>
 		<div id='e'>console.clear();
 console.log(Math.ceil(Math.random()*41));</div>
-		<button onclick="eval(editor.getValue());">run</button>
+		<button onclick="main();">run</button>
 		<pre id="log"></pre>
 		<script>
 		var editor=ace.edit('e',{
@@ -24,7 +24,8 @@ console.log(Math.ceil(Math.random()*41));</div>
 			useSoftTabs:false,
 			tabSize:2
 		});
-		const time_=()=>{var d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}] `;}
+		const time_=()=>{var d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}] `;},
+		main=()=>{try{eval(editor.getValue());}catch(e){console.error(e.toString());}}
 		console.clear=()=>log.textContent='';
 		console.log=(...x)=>log.textContent+=`${time_()}${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
 		console.error=(...x)=>log.textContent+=`${time_()}ERROR: ${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
