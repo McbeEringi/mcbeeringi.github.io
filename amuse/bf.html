@@ -50,7 +50,8 @@ const joinPair=x=>{
 }
 const freq=inp=>{
 	var inpm=Math.max(...inp);
-	if(inpm<2)return inp;
+	inpm=[...new Array(inpm+1).keys()];
+	if(inpm.length<3){console.log('freq skipped',inpm);return inpm;}
 	inp=inp.join('');
 	var arr=inp.match(/.{2}/g).concat(inp.substring(1).match(/.{2}/g));
 	arr=arr.filter(x=>x[0]!=x[1]).map(x=>x[0]>x[1]?x[1]+x[0]:x);
@@ -66,7 +67,6 @@ const freq=inp=>{
 		s=tmp[1];out=out.concat(tmp[0]);
 		if(tmp[1].length==0)break;
 	}
-	inpm=[...new Array(inpm+1).keys()];
 	out=out.concat(inpm.filter(x=>out.indexOf(String(x))==-1)).map(x=>Number(x));
 	console.log('freq',out);
 	return out;
