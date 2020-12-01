@@ -54,9 +54,10 @@
 					[/others\/calpis/i,"apps/calpis"],
 					[/others\/bmp/i,"apps/mc/glyph"],[/apps\/mc\/bmp/i,"apps/mc/glyph"],
 					[/others\/arch/i,"apps/mc/arch"],[/others\/poly/i,"apps/mc/poly"],
-					[/others\/sky/i,"sky"],[/apps\/sky/i,"sky"]
+					[/others\/sky/i,"sky"],[/apps\/sky/i,"sky"],
+					[/amuse\/bf/i,"apps/brainf"]
 				];
-				dict.map(x=>fixed=fixed.replace(x[0],x[1]));
+				dict.forEach(x=>fixed=fixed.replace(x[0],x[1]));
 				/*
 				fixed = fixed.replace(/others\/gl/i,"apps/webgl/index").replace(/apps\/fsh/i,"apps/webgl/fsh");
 				fixed = fixed.replace(/others\/aes/i,"apps/aes").replace(/others\/col/i,"apps/col").replace(/others\/unicode/i,"apps/unc").replace(/others\/sosu-/i,"apps/sosu-").replace(/others\/calpis/i,"apps/calpis");
