@@ -11,13 +11,13 @@
 	</style>
 <textarea id="inp">Sky: Children of the Light</textarea><br>
 <input type="number" id="mmind" value="7" min="0" max="127" step="1">chained threshold [0~127] less calc <<< less memory<br>
-<input type="number" id="mmind_" value="8" min="1" max="127" step="1">first loop [1~127] <br><br>
-<button onclick="out.value=main(inp.value,mmind.value,mmind_.value)">run</button>
+<button onclick="out.value=main(inp.value,mmind.value)">run</button>
 <textarea id="out"></textarea>
 <pre id="log"></pre>
 <script>
 'use strict';
 console.log=(...x)=>log.textContent+=`${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
+const round=x=>-Math.sign(x)*Math.round(-Math.abs(x));
 const joinPair=x=>{
 	var indm=Math.max(...(x.join('').split('')));
 	console.log('joinPair',x,indm);
@@ -49,7 +49,8 @@ const joinPair=x=>{
 	return [s.filter(e=>e),x];
 }
 const freq=inp=>{
-var inpm=Math.max(...inp);
+	var inpm=Math.max(...inp);
+	if(inpm<2)return inp;
 	inp=inp.join('');
 	var arr=inp.match(/.{2}/g).concat(inp.substring(1).match(/.{2}/g));
 	arr=arr.filter(x=>x[0]!=x[1]).map(x=>x[0]>x[1]?x[1]+x[0]:x);
@@ -70,11 +71,20 @@ var inpm=Math.max(...inp);
 	console.log('freq',out);
 	return out;
 }
-const main=(s,md,md_)=>{
+const slm=arr=>{
+	var m=Number.POSITIVE_INFINITY,s,tmp;
+	for(var i=4;i<=16;i++){
+		tmp=arr.map(x=>Math.abs(x>127?256-x:x)).map(x=>round(x/i)+x%i).reduce((a,b)=>a+b)+i;
+		if(tmp<m){m=tmp;s=i;}
+		console.log(i,tmp);
+	}
+	console.log('slm',s);
+	return s;
+}
+const main=(s,md)=>{
 	log.innerText='';
 	s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);
 	console.log('raw',s);
-	const round=x=>-Math.sign(x)*Math.round(-Math.abs(x));
 	var ind=[0],clm=[[s[0]]],tmp={};
 	s.slice(1).forEach((x,i)=>{i++;
 		tmp.mini=-1;tmp.mind=Number(md)+1;
@@ -95,13 +105,15 @@ const main=(s,md,md_)=>{
 	console.log('index',ind);console.log('data',clm);
 	//console.log(freq(ind));//shoud be ordered
 
-	tmp=clm.map((x,i)=>{//near
-		var r=round((x[0]>127)?x[0]-256:x[0]/md_);
-		clm[i].unshift(r<0?256+r*md_:r*md_);
+	tmp=clm.map(x=>x[0]);
+	md=slm(tmp);
+	tmp=tmp.map((x,i)=>{//near
+		var r=round((x>127?x-256:x)/md);
+		clm[i].unshift(r<0?256+r*md:r*md);
 		return r;
 	});
 	console.log('boot',tmp);
-	s='+'.repeat(md_)+'[';
+	s='+'.repeat(md)+'[';
 	tmp.forEach(x=>s+='>'+(x>0?'+':'-').repeat(Math.abs(x)));
 	s+='<'.repeat(tmp.length)+'-]>';
 	ind.forEach((x,i)=>{
@@ -112,10 +124,10 @@ const main=(s,md,md_)=>{
 		console.log(clm);
 	});
 
-	console.log('result:',s);
-	return s;
+	console.log('result:',s.length,s);
+	return s+s.length;
 };
-out.value=main(inp.value,mmind.value,mmind_.value);
+out.value=main(inp.value,mmind.value);
 </script>
 </body>
 </html>
