@@ -1,5 +1,5 @@
 /*@font-face{font-family:"tsa";src:url(tsa.woff2);}*/
-:root{background:url("../img/noise5.png") #0f2350;background-size:384px;color:#eaf4fc;font-family:'M PLUS Rounded 1c',sans-serif;word-wrap:break-word;image-rendering:crisp-edges;}
+:root{background:url("../img/noise5.png") #0f2350;background-size:384px;color:#eaf4fc;font-family:'M PLUS Rounded 1c',sans-serif;word-wrap:break-word;image-rendering:crisp-edges;image-rendering:pixelated;}
 body{margin:0;}a:not(.button){color:#eaf4fc;transition:.2s;}*:not(a){text-shadow:0 0 4px #000c;}a img{user-select:none;-webkit-user-select:none;}
 a:not(.button):visited{filter:drop-shadow(0 0 4px #84f);}a:not(.button):visited:hover{color:#caf;filter:drop-shadow(0 0 4px #a8f);}
 a:not(.button):link{filter:drop-shadow(0 0 4px #48f);}a:not(.button):link:hover{color:#acf;filter:drop-shadow(0 0 2px #8af);}
