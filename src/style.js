@@ -9,7 +9,7 @@ header.insertAdjacentHTML('beforeend',`
 			<a href="https://mcbeeringi.github.io/apps">Apps</a>
 			<a class="lang"></a>
 		</div>
-		<input type="checkbox" id="hnavmcb"><div id="hnavm"></div><label id="hnavml" for="hnavmcb"></label>
+		<input type="checkbox" id="hnavmcb"><div id="hnavm"></div><label for="hnavmcb"></label>
 	</nav>
 `);
 document.body.insertBefore(header,document.body.firstChild);

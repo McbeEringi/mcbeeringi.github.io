@@ -7,19 +7,19 @@ a:not(.button):link{filter:drop-shadow(0 0 4px #48f);}a:not(.button):link:hover{
 img.img{width:100%;max-width:512px;}img.img_s{width:100%;max-width:256px;}
 
 /*header footer*/
-.lang{display:inline-block;width:20px;height:20px;margin:4px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='9' cx='10' cy='10' style='fill:transparent;stroke:%23eaf4fc;stroke-width:1'/%3E%3Cellipse cx='10' cy='10' rx='5' ry='9' style='fill:transparent;stroke:%23eaf4fc;stroke-width:1'/%3E%3Cpath d='M10,1 L10,19 M2.2,5 L17.8,5 M1,10 L19,10 M2.5,15 L17.8,15' style='stroke:%23eaf4fc;stroke-width:1'/%3E%3C/svg%3E");}
+.lang{display:inline-block;width:20px;height:20px;margin:4px;background-position:center;background-size:20px 20px;background-repeat:no-repeat;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='9' cx='10' cy='10' style='fill:transparent;stroke:%23eaf4fc;stroke-width:1'/%3E%3Cellipse cx='10' cy='10' rx='5' ry='9' style='fill:transparent;stroke:%23eaf4fc;stroke-width:1'/%3E%3Cpath d='M10,1 L10,19 M2.2,5 L17.8,5 M1,10 L19,10 M2.5,15 L17.8,15' style='stroke:%23eaf4fc;stroke-width:1'/%3E%3C/svg%3E");}
 .lang:hover{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='9' cx='10' cy='10' style='fill:transparent;stroke:%23acf;stroke-width:1'/%3E%3Cellipse cx='10' cy='10' rx='5' ry='9' style='fill:transparent;stroke:%23acf;stroke-width:1'/%3E%3Cpath d='M10,1 L10,19 M2.2,5 L17.8,5 M1,10 L19,10 M2.5,15 L17.8,15' style='stroke:%23acf;stroke-width:1'/%3E%3C/svg%3E");}
 header{font-family:'Lato';background-color:#8888;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:10;position:fixed;top:0;left:0;width:100%;height:48px;display:flex;align-items:center;justify-content:space-between;}header a{text-decoration:none;}
 header>a{height:48px;display:block;white-space:nowrap;line-height:48px;font-size:130%;font-weight:bold;}header>a::before{content:"";display:inline-block;width:32px;height:32px;margin:8px 2px;background:url("https://mcbeeringi.github.io/img/6x6.png");background-size:100%;vertical-align:bottom;}
 footer{text-align:center;padding:1em;}
 /*nav*/
-nav{white-space:nowrap;}
+nav{white-space:nowrap;overflow:visible;}
 #hnavd{margin-right:8px;display:inline-block;}#hnavd *{vertical-align:middle;margin:4px;}#hnavmcb{display:none;}
-#hnavm{background:#2228;display:none;position:absolute;top:48px;right:-100%;opacity:0;transition:.3s;padding:8px 16px;border-radius:16px;border-top-right-radius:0;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
-#hnavm *{display:block;text-align:center;margin:8px auto;font-size:24px;}
-#hnavml{display:none;width:48px;height:48px;vertical-align:top;transition:.2s;background:#0004 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10,14l28,0m-28,10l28,0m-28,10l28,0' stroke='%23fff' stroke-width='1.5px'/%3E%3C/svg%3E");}
-@media(max-width:512px){#hnavd{display:none;}#hnavm{display:block;}#hnavml{display:inline-block;}}
-#hnavmcb:checked+#hnavm{right:0;opacity:1;}#hnavmcb:checked+*+#hnavml{background:#0008 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8,8L40,40M40,8L8,40' stroke='%23fff' stroke-width='1.5px'/%3E%3C/svg%3E");}
+#hnavm{background:#2228;display:none;position:absolute;left:50%;top:0;width:60%;height:100vh;transform:translateX(-50%);opacity:0;pointer-events:none;transition:.2s}
+#hnavm *{display:block;width:100%;text-align:center;margin:8px auto;font-size:32px;}
+#hnavm+label{display:none;width:48px;height:48px;position:absolute;top:0;right:0;background:#0004 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10,14l28,0m-28,10l28,0m-28,10l28,0' stroke='%23fff' stroke-width='1.5px'/%3E%3C/svg%3E");}
+@media(max-width:512px){#hnavd{display:none;}#hnavm{display:block;}#hnavm+label{display:block;}}
+#hnavmcb:checked+#hnavm{right:0;opacity:1;pointer-events:auto;}#hnavmcb:checked+*+label{width:calc(100vw + 48px);height:100vh;}
 /*title*/
 .title{
 	margin:0;padding:calc(1.5em + 24px) 0 1.5em;font-size:calc(5vmin + 16px);text-align:center;text-shadow:0 0 8px #444;backdrop-filter:blur(4px) brightness(1.5);-webkit-backdrop-filter:blur(4px) brightness(1.5);
