@@ -3,8 +3,8 @@ header.insertAdjacentHTML('beforeend',`
 	<a href="https://mcbeeringi.github.io">McbeEringi</a>
 	<nav>
 		<div id="hnavd">
-			<a href="https://mcbeeringi.github.io/esbe-2g">ESBE 2G</a>
-			<a href="https://mcbeeringi.github.io/java-jajp">java ja_JP</a>
+			<a href="https://mcbeeringi.github.io/esbe-2g">ESBE_2G</a>
+			<a href="https://mcbeeringi.github.io/esbe-3g">ESBE_3G</a>
 			<a href="https://mcbeeringi.github.io/sky">Sky</a>
 			<a href="https://mcbeeringi.github.io/apps">Apps</a>
 			<a class="lang"></a>
