@@ -51,7 +51,7 @@ void main(){
 			<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
 		</div>
 		<div style="float:right;margin:16px;text-align:center;">
-			<div class="button" onclick="if(copy(location.href)){this.textContent='copied!';setTimeout(()=>this.textContent='copy url',1000);}">copy url</div><br>
+			<div class="button" onclick="if(copy(expurl())){this.textContent='copied!';setTimeout(()=>this.textContent='copy url',1000);}">export as url</div><br>
 			<div class="button" onclick="location.href=location.href.replace('/fsh_.html','/fsh.html')">new UI</div>
 		</div>
 		<h3>uniforms</h3>
