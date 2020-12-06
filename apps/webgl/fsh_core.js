@@ -1,13 +1,19 @@
-var imgres=[,,,],dftflag;
-const read=x=>{
-	var url=URL.createObjectURL(x.files[0]);
-	document.getElementById(x.id+'d').style.backgroundImage=`url(${url})`;
-	tex(parseInt(x.id.slice(-1)),url);
-}
+var imgres=[,,,],dftflag,curdat;
 diffuse.addEventListener('touchstart',()=>{dftflag=true;diffuse.src=canvas.toDataURL();},{passive:true})
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
+const llog=x=>log.insertAdjacentHTML('beforeend',x);
 
-const load=()=>{
+const save=s=>{
+	curdat={
+		"fsh":fsh_e.getValue(),
+		"size":[w_.value,h_.value],
+		"fps":fps_.value
+	}
+	localStorage.curdat=JSON.stringify(curdat);
+	if(s)llog("\n<span style='color:#48f;'>auto saved.</span>");else console.log("saved");
+},
+expurl=()=>'mcbeeringi.github.io/apps/webgl/fsh.html#'+encodeURIComponent(JSON.stringify(curdat)).replace(/\(/g,"%28").replace(/\)/g,"%29"),
+inpurl=()=>{
 	var data = location.hash.slice(1);
 	if(data){
 		data=JSON.parse(decodeURIComponent(data.replace(/%28/g,"(").replace(/%29/g,")")));
@@ -15,35 +21,35 @@ const load=()=>{
 		if(data.size){w_.value = data.size[0];h_.value = data.size[1];}
 		if(data.fps)fps_.value = data.fps;
 	}
-}
-load();
-const save=(s)=>{
-	var data = {
-		"fsh":fsh_e.getValue(),
-		"size":[w_.value,h_.value],
-		"fps":fps_.value
+	else if(localStorage.curdat){
+		fsh_e.setValue(JSON.parse(localStorage.curdat).fsh,-1);
+		llog("<span style='color:#48f;'>loaded from cache</span>");
 	}
-	location.hash = encodeURIComponent(JSON.stringify(data)).replace(/\(/g,"%28").replace(/\)/g,"%29");
-	if(s)log.insertAdjacentHTML('beforeend',"\n<span style='color:#48f;'>auto saved.</span>");else console.log("saved");
-}
-const copy=x=>{navigator.clipboard.writeText(x).catch(e=>console.log(e));return x;}
-const resize=(c,prv,gl,w,h)=>{
-	c.width=w;prv.width=w;c.height=h;prv.height=h;
-	gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
+},
+copy=x=>{navigator.clipboard.writeText(x).catch(e=>console.log(e));return x;};
+inpurl();save();
+const saveas=()=>{
+	var name=prompt();if(name==null)return;
+	if(localStorage.dat)localStorage.dat+=`,${JSON.stringify(curdat)}`;
+	else localStorage.dat=JSON.stringify(curdat);
 }
 
 var c = document.getElementById("canvas"),gl = WebGL.setup(c,true,true);
 var prv = document.getElementById("preview"),prvctx = prv.getContext("2d");prvctx.imageSmoothingEnabled = false;
-resize(c,prv,gl,w_.value,h_.value);
-var prg;
+const vsh='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}';
+var prg=WebGL.compile(gl,vsh,'void main(){gl_FragColor=vec4(0);}');
 
-function compile(){
-	log.textContent='';
-	prg = WebGL.compile(gl,'attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',fsh_e.getValue());
-	if(!WebGL.log)log.insertAdjacentHTML('beforeend','<span style="color:#6b4;">compile succeeded.</span>');
-	else log.insertAdjacentHTML('beforeend',WebGL.log);
+const resize=(c,prv,gl,w,h)=>{
+	c.width=w;prv.width=w;c.height=h;prv.height=h;
+	gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
 }
-compile();
+resize(c,prv,gl,w_.value,h_.value);
+
+const read=x=>{
+	var url=URL.createObjectURL(x.files[0]);
+	document.getElementById(x.id+'d').style.backgroundImage=`url(${url})`;
+	tex(parseInt(x.id.slice(-1)),url);
+}
 
 WebGL.attributes(gl,prg,[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1]);
 //texture
@@ -81,3 +87,10 @@ function main(){
 	prc = setTimeout(main, 1000/fps);
 }
 main();
+const compile=()=>{
+	log.textContent='';
+	prg = WebGL.compile(gl,vsh,fsh_e.getValue());
+	if(!WebGL.log)llog('<span style="color:#6b4;">compile succeeded.</span>');
+	else llog(WebGL.log);
+}
+compile();

@@ -1,6 +1,6 @@
 /*
  * made by @McbeEringi MIT
- * last modified 2020/11/8
+ * last modified 2020/12/6
  *
  * example : https://mcbeeringi.github.io/amuse/desktop.html
  */
@@ -36,7 +36,7 @@ windowsMainfx=()=>{
 		//header bar pre post
 		var hbar=document.createElement('header');
 		hbar.setAttribute('class','hbar');
-		hbar.insertAdjacentHTML('beforeend',e.getAttribute('name'));
+		hbar.textContent=e.getAttribute('name')||'　';
 		if(!e.classList.contains('pfixed')){
 			hbar.addEventListener('touchstart',m=>{
 				tflag=true;hbar.classList.add('grab');
