@@ -1,7 +1,8 @@
-var imgres=[,,,],dftflag,curdat;
+var imgres=[],dftflag,curdat,curname;
 diffuse.addEventListener('touchstart',()=>{dftflag=true;diffuse.src=canvas.toDataURL();},{passive:true})
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
-const llog=x=>log.insertAdjacentHTML('beforeend',x);
+const llog=x=>log.insertAdjacentHTML('beforeend',x),
+copy=x=>{navigator.clipboard.writeText(x).catch(e=>console.log(e));return x;};
 
 const save=s=>{
 	curdat={
@@ -25,14 +26,17 @@ inpurl=()=>{
 		fsh_e.setValue(JSON.parse(localStorage.curdat).fsh,-1);
 		llog("<span style='color:#48f;'>loaded from cache</span>");
 	}
-},
-copy=x=>{navigator.clipboard.writeText(x).catch(e=>console.log(e));return x;};
+};
 inpurl();save();
 const saveas=()=>{
 	var name=prompt();if(name==null)return;
-	if(localStorage.dat)localStorage.dat+=`,${JSON.stringify(curdat)}`;
-	else localStorage.dat=JSON.stringify(curdat);
-}
+	curname=name||new Date().toLocaleString();
+	if(localStorage.datli)localStorage.datli=`${curname}:${canvas.toDataURL()}`;
+	else localStorage.datli+=`,${curname}:${canvas.toDataURL()}`;
+},
+loadfrom=()=>{
+	//curdat=localStorage['dat_'+]
+};
 
 var c = document.getElementById("canvas"),gl = WebGL.setup(c,true,true);
 var prv = document.getElementById("preview"),prvctx = prv.getContext("2d");prvctx.imageSmoothingEnabled = false;
