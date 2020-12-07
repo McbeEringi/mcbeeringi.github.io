@@ -2,13 +2,15 @@ var imgres=[],dftflag,curdat,curname;
 diffuse.addEventListener('touchstart',()=>{dftflag=true;diffuse.src=canvas.toDataURL();},{passive:true})
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
 const llog=x=>log.insertAdjacentHTML('beforeend',x),
-copy=x=>{navigator.clipboard.writeText(x).catch(e=>console.log(e));return x;};
+copy=x=>{navigator.clipboard.writeText(x).catch(e=>console.log(e));return x;},
+thumb=()=>{};
 
 const save=s=>{
 	curdat={
-		"fsh":fsh_e.getValue(),
-		"size":[w_.value,h_.value],
-		"fps":fps_.value
+		fsh:fsh_e.getValue(),
+		size:[w_.value,h_.value],
+		fps:fps_.value,
+		thumb:canvas.toDataURL()
 	}
 	localStorage.curdat=JSON.stringify(curdat);
 	if(s)llog("\n<span style='color:#48f;'>auto saved.</span>");else console.log("saved");
@@ -30,9 +32,11 @@ inpurl=()=>{
 inpurl();save();
 const saveas=()=>{
 	var name=prompt();if(name==null)return;
-	curname=name||new Date().toLocaleString();
-	if(localStorage.datli)localStorage.datli=`${curname}:${canvas.toDataURL()}`;
-	else localStorage.datli+=`,${curname}:${canvas.toDataURL()}`;
+	curname=name||('untitled '+new Date().toLocaleString());
+	var dat=JSON.parse(localStorage.datli||'{}');
+	dat[curname]={thumb:curdat.thumb};console.log(dat);
+
+	//localStorage.datli=JSON.srringify(dat);
 },
 loadfrom=()=>{
 	//curdat=localStorage['dat_'+]

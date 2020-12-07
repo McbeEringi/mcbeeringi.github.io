@@ -104,11 +104,6 @@ void main(){
 				useSoftTabs: false,
 				tabSize: 2
 			});
-			var comp_timer,save_timer;
-			fsh_e.on("input",()=>{
-				clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
-				clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
-			});
 			fsh.parentNode.addEventListener('fbar_on',()=>fsh_e.resize(),false);
 		</script>
 		<script src="../../src/webgl.js"></script>
