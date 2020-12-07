@@ -30,7 +30,9 @@ inpurl=()=>{
 		if(data.fps)fps_.value = data.fps;
 	}
 	else if(localStorage.curdat){
-		fsh_e.setValue(JSON.parse(localStorage.curdat).fsh,-1);
+		data=JSON.parse(localStorage.curdat);
+		w_.value = data.size[0];h_.value = data.size[1];fps_.value = data.fps;
+		fsh_e.setValue(data.fsh,-1);
 		llog("<span style='color:#48f;'>loaded from cache</span>");
 	}
 };
