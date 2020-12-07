@@ -105,7 +105,6 @@ main();
 const compile=()=>{
 	log.textContent='';
 	prg = WebGL.compile(gl,vsh,fsh_e.getValue());
-	if(!WebGL.log)llog('<span style="color:#6b4;">compile succeeded.</span>');
-	else llog(WebGL.log);
+	llog(WebGL.log||'<span style="color:#6b4;">compile succeeded.</span>');
 }
 compile();
