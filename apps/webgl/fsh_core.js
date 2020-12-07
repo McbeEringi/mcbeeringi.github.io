@@ -79,7 +79,7 @@ save=s=>{
 		fps:fps_.value,
 		thumb:thumb()
 	}
-	localStorage.curdat=JSON.stringify(curdat);
+	localStorage.fsh_curdat=JSON.stringify(curdat);
 	if(s)llog("\n<span style='color:#48f;'>auto saved.</span>");else console.log("saved");
 },
 expurl=()=>'mcbeeringi.github.io/apps/webgl/fsh.html#'+encodeURIComponent(JSON.stringify(curdat)).replace(/\(/g,"%28").replace(/\)/g,"%29"),
@@ -91,8 +91,8 @@ inpurl=()=>{
 		if(data.size){w_.value = data.size[0];h_.value = data.size[1];}
 		if(data.fps)fps_.value = data.fps;
 	}
-	else if(localStorage.curdat){
-		data=JSON.parse(localStorage.curdat);
+	else if(localStorage.fsh_curdat){
+		data=JSON.parse(localStorage.fsh_curdat);
 		w_.value = data.size[0];h_.value = data.size[1];fps_.value = data.fps;
 		fsh_e.setValue(data.fsh,-1);
 		llog("<span style='color:#48f;'>loaded from cache</span>");
@@ -102,9 +102,9 @@ inpurl();save();resize(c,prv,gl,w_.value,h_.value);compile();
 const saveas=()=>{
 	var name=prompt();if(name==null)return;
 	curname=name||('untitled '+new Date().toLocaleString());
-	var dat=JSON.parse(localStorage.datli||'{}');
+	var dat=JSON.parse(localStorage.fsh_datli||'{}');
 	dat[curname]={thumb:curdat.thumb};console.log(dat);
-	localStorage.datli=JSON.srringify(dat);
+	localStorage.fsh_datli=JSON.srringify(dat);
 },
 loadfrom=()=>{
 	//curdat=localStorage['dat_'+]
