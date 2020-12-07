@@ -21,7 +21,7 @@ const WebGL={
 		gl.shaderSource(sh,'#define round(x) floor(x+.5)\n'+src);
 		gl.compileShader(sh);
 		if(gl.getShaderParameter(sh,gl.COMPILE_STATUS)){
-			console.log(t?'vsh':'fsh',sh);
+			console.log(t?'fsh':'vsh',sh);
 			return sh;
 		}
 		else this.log+=gl.getShaderInfoLog(sh);
