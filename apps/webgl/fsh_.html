@@ -22,7 +22,7 @@
 			.box{width:300px;min-height:320px;height:50vh;flex-grow:1;display:block;border:1px solid #888;margin:2px;position:relative;}
 			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
 			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
-			.file{width:160px;height:120px;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
+			.file{width:160px;height:120px;display:inline-block;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
 			pre{width:100%;margin:0;word-wrap:break-word;white-space:pre-wrap;display:inline-block;}#log{color:#f55;}
 			.unilog{user-select:none;-webkit-user-select:none;color:#aaa;}
@@ -44,7 +44,7 @@ void main(){
 		</div>
 		<code id="fpslog"></code><!--<code id="mslog" style="float:right;"></code>-->
 		<pre id="log"></pre>
-		<div class="flex" style="max-width:800px;margin:0 auto;">
+		<div style="max-width:800px;text-align:center;">
 			<div class="file" id="inp0d"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0</div>
 			<div class="file" id="inp1d"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1</div>
 			<div class="file" id="inp2d"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2</div>
@@ -74,7 +74,7 @@ void main(){
 			<div>
 				<h3>Config</h3>
 				<div>
-					img size<br>
+					res<br>
 					<input type="number" id="w_" value="16" oninput="if(this.value>0){resize(c,prv,gl,this.value,h_.value);save();}else this.value=null" style="width:4em">
 					*
 					<input type="number" id="h_" value="16" oninput="if(this.value>0){resize(c,prv,gl,w_.value,this.value);save();}else this.value=null" style="width:4em">
@@ -84,7 +84,7 @@ void main(){
 					<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;save();main();}else this.value=null" style="width:8em"></label>
 				</div><br>
 				<div>
-					<label>save wait(ms)<br>
+					<label>save(ms)<br>
 					<input type="number" id="wait_" value="5000" oninput="if(this.value<0)this.value=0" style="width:8em"></label>
 				</div><br>
 				<p align="center" style="margin:0;font-size:11px;">
@@ -94,6 +94,8 @@ void main(){
 				</p>
 			</div>
 		</div>
+
+
 		<script>
 			var fsh_e = ace.edit("fsh",{
 				showInvisibles: true,
@@ -103,11 +105,6 @@ void main(){
 				wrap: true,
 				useSoftTabs: false,
 				tabSize: 2
-			});
-			var comp_timer,save_timer;
-			fsh_e.on("input",()=>{
-				clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
-				clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
 			});
 		</script>
 		<script src="../../src/webgl.js"></script>
