@@ -1,3 +1,8 @@
+var comp_timer,save_timer;
+fsh_e.on("input",()=>{
+	clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
+	clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
+});
 var imgres=[],dftflag,curdat,curname;
 diffuse.addEventListener('touchstart',()=>{dftflag=true;diffuse.src=canvas.toDataURL();},{passive:true})
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
