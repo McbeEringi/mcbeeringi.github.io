@@ -1,11 +1,3 @@
-addEventListener('load',()=>{
-	var comp_timer,save_timer;
-	fsh_e.on("input",()=>{
-		console.log('inp');
-		clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
-		clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
-	});
-})
 var imgres=[],dftflag,curdat,curname;
 diffuse.addEventListener('touchstart',()=>{dftflag=true;diffuse.src=canvas.toDataURL();},{passive:true})
 diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
@@ -28,18 +20,17 @@ read=x=>{
 }
 
 WebGL.attributes(gl,prg,[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1]);
-//texture
-var texture=[];
-function tex(i,url){
+
+var texture=[],t0=new Date(),t,fps=fps_.value,fpstm,prc;//二重起動防止
+const tex=(i,url)=>{
 	WebGL.texture(gl,url,x=>{
 		texture[i]=x;
 		console.log(i+" loaded as tex",x);
 		imgres[i]=[x.width,x.height];
 		document.getElementById(i+"reslog").textContent=imgres[i].join(", ");
 	});
-}
-var t0=new Date(),t,fps=fps_.value,fpstm,prc;//二重起動防止
-function main(){
+},
+main=()=>{
 	clearTimeout(prc);
 	fpstm=new Date()-fpstm;
 	fpslog.textContent = (1000/fpstm).toFixed(1)+' fps';
@@ -61,14 +52,12 @@ function main(){
 	prvctx.drawImage(c,0,0,prv.width,prv.height);
 
 	prc = setTimeout(main, 1000/fps);
-}
-main();
-const compile=()=>{
+},
+compile=()=>{
 	log.textContent='';
 	prg = WebGL.compile(gl,vsh,fsh_e.getValue());
 	llog(WebGL.log||'<span style="color:#6b4;">compile succeeded.</span>');
 }
-
 
 
 const thumb=()=>{var prvtmp=[prv.width,prv.height];prv.width=32;prv.height=32;prvctx.drawImage(c,0,0,prv.width,prv.height);var s=prv.toDataURL();prv.width=prvtmp[0];prv.height=prvtmp[0];return s;},
@@ -98,14 +87,26 @@ inpurl=()=>{
 		llog("<span style='color:#48f;'>loaded from cache</span>");
 	}
 };
-inpurl();save();resize(c,prv,gl,w_.value,h_.value);compile();
+
 const saveas=()=>{
 	var name=prompt();if(name==null)return;
 	curname=name||('untitled '+new Date().toLocaleString());
 	var dat=JSON.parse(localStorage.fsh_datli||'{}');
 	dat[curname]={thumb:curdat.thumb};console.log(dat);
-	localStorage.fsh_datli=JSON.srringify(dat);
+	localStorage.fsh_datli=JSON.stringify(dat);
+	localStorage['fsh_dat_'+curname]=JSON.stringify(curdat);
 },
 loadfrom=()=>{
 	//curdat=localStorage['dat_'+]
 };
+
+
+inpurl();save();resize(c,prv,gl,w_.value,h_.value);compile();main();
+addEventListener('load',()=>{
+	var comp_timer,save_timer;
+	fsh_e.on("input",()=>{
+		console.log('inp');
+		clearTimeout(comp_timer);comp_timer=setTimeout(compile,500);
+		clearTimeout(save_timer);comp_timer=setTimeout(save,wait_.value,1);
+	});
+})
