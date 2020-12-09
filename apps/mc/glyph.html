@@ -40,7 +40,7 @@
 				<br>
 				<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
 				<label>list:<input id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
-				<label>mcpack:<input type="checkbox" id="expmcpack"></label>
+				<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
 			</div>
 			<br>
 			<button onclick="exp(expl.value,expmode.checked,expmcpack.checked);" id="expb" ontouchstart="">export</button><br>
@@ -58,24 +58,22 @@
 		<!--<img id="img" style="width:50vmin;">-->
 
 		<script>
+			'use strict'
 			window.onload=()=>window.scrollTo(0,0);
 			dpr.textContent='*'+window.devicePixelRatio;
 			/////base
 			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
-			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';}
-			i_s(img_s.value);
-			const	f_s=x=>disp.querySelectorAll('p').forEach(e=>{e.style.fontSize=`${x}px`;e.style.lineHeight=`${x}px`;});
-			f_s(font_s.value);
-			const f_r=f=>{
+			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';},
+			f_s=x=>disp.querySelectorAll('p').forEach(e=>{e.style.fontSize=`${x}px`;e.style.lineHeight=`${x}px`;}),
+			f_r=f=>{
 				var fname=f.files[0].name;fname=[fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1),fname.slice((fname.lastIndexOf('.')-1>>>0)+2)];
 				const format={"ttf":"truetype","otf":"opentype","woff":"woff","woff2":"woff2"};
 				fstyle.textContent=`@font-face{font-family:"${fname[0]}";src:url(${URL.createObjectURL(f.files[0])})format("${format[fname[1]]}");}`;
 				font_f.value=fname[0];document.body.style.fontFamily=fname[0]+',sans-serif';render();
-			}
-			const debug=x=>disp.querySelectorAll('#disp>p').forEach(e=>{e.style.boxShadow=x?'0 0 1px #fff4':'';e.style.textDecoration=x?'underline':'';e.style.textDecorationColor=x?'#fff8':'';});
-			const set=x=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(x,16)*0x100+Number(i)));
-			set(men.value);
-			const render=()=>{
+			},
+			debug=x=>disp.querySelectorAll('#disp>p').forEach(e=>{e.style.boxShadow=x?'0 0 1px #fff4':'';e.style.textDecoration=x?'underline':'';e.style.textDecorationColor=x?'#fff8':'';}),
+			set=x=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(x,16)*0x100+Number(i))),
+			render=()=>{
 				html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scrollX":0,"scrollY":-window.pageYOffset}).then(c=>{
 					dl.href=c.toDataURL();
 					dl.download=`glyph_${men.value}.png`;
@@ -83,7 +81,7 @@
 					//img.src=dl.href;
 				});
 			}
-			render();
+			i_s(img_s.value);f_s(font_s.value);set(men.value);render();
 
 			/////export
 			const exp=(blist,mode,mcpack)=>{
@@ -97,8 +95,8 @@
 				const exppost=expn=>{
 					zip.generateAsync({type:"blob"},d=>{pbar1.value=d.percent;log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;})
 						.then(c=>{log_.textContent+='packaging done.\n';saveAs(c,expn);expb.textContent='export';expb.disabled=false;console.log('done');})
-				};
-				const pexppost=()=>{
+				},
+				pexppost=()=>{
 					zip.file('manifest.json',simple_mcmf(`n${font_f.value}; dfont resource pack.\nmcbeeringi.github.io/apps/glyph; v[0,0,1]; tresources`));
 					log_.textContent+='manifest.json done.\n';
 					html2canvas(document.getElementById("picon"),{"scale":1,"scrollX":0,"scrollY":0}).then(c=>c.toBlob(b=>{
@@ -106,8 +104,8 @@
 						log_.textContent+='pack_icon.png done.\n';
 						exppost(`${font_f.value}_resource.mcpack`);
 					}));
-				};
-				const expmain=()=>{
+				},
+				expmain=()=>{
 					console.group();console.log(arr);
 					arr.map((x,i)=>requestIdleCallback(()=>{
 						set(x);
@@ -119,10 +117,11 @@
 							if(i==arr.length-1){if(arr_.length){arr=arr_;arr_=[];log_.textContent=' fix…\n';expmain();}else{log_.textContent+='rendering done.\n';console.groupEnd();set(men.value);configp.style.opacity=1;configp.style.pointerEvents='auto';if(mcpack)pexppost();else exppost(`${font_f.value}_bmp.zip`);}}
 						})).catch(e=>{arr_.push(x);log_.textContent+=`${x} `;});
 					}));
-				}
+				};
 				expmain();
 			};
 
 		</script>
+		<!-- hor_ad --><ins class="adsbygoogle"style="display:block"data-ad-client="ca-pub-6462086334272944"data-ad-slot="5283762489"data-ad-format="auto"data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 	</body>
 </html>
