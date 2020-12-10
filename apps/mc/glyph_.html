@@ -1,0 +1,101 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>glyph</title>
+</head>
+<body>
+<style>
+	:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:pixelated;}h1,h2{margin:4px;}
+	.box{background-color:#333;padding:4px;overflow:scroll;}canvas{border:1px solid;}progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}
+	a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
+	input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;user-select:auto;-webkit-user-select:auto;}input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
+	.clear_fix::after{content:"";clear:both;display:block;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
+<script src="../../src/requestIdleCallback.min.js"></script>
+<script src="mcmf.js"></script>
+
+
+<h1>glyph_gen beta</h1>
+<div class="box">
+	<h2>config</h2>
+	<div id="configp">
+		<label><span>img:</span><input id="csize" type="number" value="512" onchange="csize_(this.value);">px²</label><br>
+		<label><span>size:</span><input id="fsize" type="number" value="32" oninput="font_(this.value,ffamily.value);">px</label><br>
+		<label><span>font:</span><input id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);"></label> or <input type="file" onchange="load(this)" accept=".ttf,.otf,.woff,.woff2"><br>
+		<br>
+		<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
+		<label>list:<input id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
+		<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
+	</div>
+	<button id="expb" onclick="exp(expl.value,expmode.checked,expmcpack.checked);">export</button>
+	<progress id="pbar" value="0"></progress>
+	<pre id="log"></pre><pre id="log_"></pre>
+</div>
+<br>
+<div class="box">
+	<h2>preview</h2>
+	<label><span>block:</span><input id="ward" value="00" onchange="set(this.value);"></label><br>
+	<canvas id="c">canvas</canvas>
+</div>
+
+<script>
+'use strict';
+var ctx=c.getContext('2d');
+const set=x=>{ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<256;i++)ctx.fillText(String.fromCodePoint(parseInt(x,16)*0x100+i),c.width*.0625*(i%16),c.height*.0625*(Math.floor(i*.0625)+1),c.width*.0625);},
+font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
+csize_=x=>{c.width=x;c.height=x;c.style.background=`url("data:image/svg+xml,%3Csvg width='${x*.125}' height='${x*.125}' viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")`;
+	ctx.fillStyle='#fff';ctx.textBaseline='bottom';font_(fsize.value,ffamily.value);},
+load=async f=>{
+	var fname=f.files[0].name;fname=fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1);
+	const font = new FontFace(fname,`url(${URL.createObjectURL(f.files[0])})`);
+	await font.load();
+	document.fonts.add(font);
+	ffamily.value=fname;font_(fsize.value,ffamily.value);
+};
+
+csize_(csize.value);
+
+const exp=(list,mode,mcpack)=>{
+	log_.textContent='';
+	var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)),zip=new JSZip(),fontFolder=zip.folder('font');
+	if(list){
+		list = list.split(',').map(x=>x.split('~')).map(x=>{if(x[1])return [...Array(parseInt(x[1],16)-parseInt(x,16)+1).keys()].map(y=>(y+parseInt(x[0],16)).toString(16).toUpperCase());else return x;}).join(',').split(',');
+		console.log(list);
+		if(mode)arr=list;else arr=arr.filter(x=>!(list.includes(x)));
+	}else if(mode)return;
+	expb.disabled=true;expb.textContent='Running…';
+	configp.style.opacity=0.2;configp.style.pointerEvents='none';
+	pbar.max=(arr.length-1)*2;
+	const post=()=>{
+		var expn=`${ffamily.value}_bmp.zip`;
+		if(mcpack){
+			zip.file('manifest.json',simple_mcmf(`n${ffamily.value}; dfont resource pack.\nmcbeeringi.github.io/apps/glyph; v[0,0,1]; tresources`));
+			log_.textContent+='manifest.json done.\n';
+			c.toBlob(b=>{
+				zip.file('pack_icon.png',b);
+				log_.textContent+='pack_icon.png done.\n';
+			});
+			expn=`${ffamily.value}_resource.mcpack`;
+		}
+		zip.generateAsync({type:"blob"},d=>{pbar.value=(1+d.percent*.01)*(pbar.max*.5);log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;}).then(c=>{
+			log_.textContent+='packaging done.\n';saveAs(c,expn);
+			expb.disabled=false;expb.textContent='export';
+			configp.style.opacity=1;configp.style.pointerEvents='auto';
+		})
+	}
+	arr.forEach((x,i)=>requestIdleCallback(()=>{
+		set(x);
+		c.toBlob(b=>{
+			fontFolder.file(`glyph_${x}.png`,b);
+			if(x=='00')fontFolder.file('default8.png',b);
+		});
+		pbar.value=i;//log.textContent=x;
+		log.textContent=`step 1/2 rendering… ${(i/(arr.length-1)*100).toFixed(2)}%   ( ${i} / ${arr.length-1}  ${x} )`;
+		if(i==arr.length-1){log_.textContent+='rendering done.\n';post();set(ward.value);}
+	}));
+};
+</script>
+</body>
+<html>
