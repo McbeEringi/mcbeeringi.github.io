@@ -11,7 +11,7 @@
 <body>
 <style>
 	:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:pixelated;}h1,h2{margin:4px;}
-	.box{background-color:#333;padding:4px;overflow:scroll;}canvas{border:1px solid;margin-top:4px;}progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}
+	.box{background-color:#333;padding:4px;overflow:scroll;}progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}canvas{width:100%;border:1px solid;margin-top:4px;background-size:12.5%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")}
 	a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
 	input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;user-select:auto;-webkit-user-select:auto;}input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 	.clear_fix::after{content:"";clear:both;display:block;}
@@ -58,7 +58,7 @@ const set=x=>{ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<256;i++){
 	if(hs!=1)ctx.scale(1,1/hs);
 }},
 font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
-csize_=x=>{c.width=x*16;c.height=x*16;ctx.fillStyle='#fff';c.style.background=`url("data:image/svg+xml,%3Csvg width='${x*2}' height='${x*2}' viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")`;font_(fsize.value,ffamily.value);},
+csize_=x=>{c.width=x*16;c.height=x*16;ctx.fillStyle='#fff';font_(fsize.value,ffamily.value);},
 load=async f=>{
 	var fname=f.files[0].name;fname=fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1);
 	const font = new FontFace(fname,`url(${URL.createObjectURL(f.files[0])})`);
