@@ -21,7 +21,7 @@
 <div class="box">
 	<h2>config</h2>
 	<div id="configp">
-		<label><span>img:</span><input id="csize" type="number" value="512" onchange="csize_(this.value);">px²</label><br>
+		<label><span>img:</span><input id="csize" type="number" value="32" onchange="csize_(this.value);">px²</label><br>
 		<label><span>size:</span><input id="fsize" type="number" value="32" oninput="font_(this.value,ffamily.value);">px</label><br>
 		<label><span>font:</span><input id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);"></label> or <input type="file" onchange="load(this)" accept=".ttf,.otf,.woff,.woff2"><br>
 		<br>
@@ -45,7 +45,7 @@
 var ctx=c.getContext('2d');
 const set=x=>{ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<256;i++)ctx.fillText(String.fromCodePoint(parseInt(x,16)*0x100+i),c.width*.0625*(i%16),c.height*.0625*(Math.floor(i*.0625)+1),c.width*.0625);},
 font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
-csize_=x=>{c.width=x;c.height=x;c.style.background=`url("data:image/svg+xml,%3Csvg width='${x*.125}' height='${x*.125}' viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")`;
+csize_=x=>{c.width=x*16;c.height=x*16;c.style.background=`url("data:image/svg+xml,%3Csvg width='${x*2}' height='${x*2}' viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")`;
 	ctx.fillStyle='#fff';ctx.textBaseline='bottom';font_(fsize.value,ffamily.value);},
 load=async f=>{
 	var fname=f.files[0].name;fname=fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1);
