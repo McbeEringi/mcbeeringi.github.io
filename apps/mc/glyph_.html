@@ -11,7 +11,7 @@
 <body>
 <style>
 	:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:pixelated;}h1,h2{margin:4px;}
-	.box{background-color:#333;padding:4px;overflow:scroll;}canvas{border:1px solid;}progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}
+	.box{background-color:#333;padding:4px;overflow:scroll;}canvas{border:1px solid;margin-top:4px;}progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}
 	a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
 	input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;user-select:auto;-webkit-user-select:auto;}input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
 	.clear_fix::after{content:"";clear:both;display:block;}
@@ -35,6 +35,7 @@
 		<label>list:<input id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
 		<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
 	</div>
+	<br>
 	<button id="expb" onclick="exp(expl.value,expmode.checked,expmcpack.checked);">export</button>
 	<progress id="pbar" value="0"></progress>
 	<pre id="log"></pre><pre id="log_"></pre>
@@ -43,7 +44,6 @@
 <div class="box">
 	<h2>preview</h2>
 	<label><span>block:</span><input id="ward" value="00" onchange="set(this.value);dl_();"></label><br>
-	<br>
 	<canvas id="c">canvas</canvas>
 </div>
 
