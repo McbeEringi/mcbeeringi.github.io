@@ -82,22 +82,27 @@ const exp=(list,mode,mcpack)=>{
 	configp.style.opacity=0.2;configp.style.pointerEvents='none';
 	pbar.max=(arr.length-1)*2;
 	const post=()=>{
-		const post_=()=>zip.generateAsync({type:"blob"},d=>{pbar.value=(1+d.percent*.01)*(pbar.max*.5);log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;}).then(c=>{
-			log_.textContent+='packaging done.\n';saveAs(c,expn);
-			expb.disabled=false;expb.textContent='export';
-			configp.style.opacity=1;configp.style.pointerEvents='auto';
-		});
+		const post_=()=>{
+			zip.generateAsync({type:"blob"},d=>{pbar.value=(1+d.percent*.01)*(pbar.max*.5);log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;}).then(c=>{
+				log_.textContent+='packaging done.\n';saveAs(c,expn);
+				expb.disabled=false;expb.textContent='export';
+				configp.style.opacity=1;configp.style.pointerEvents='auto';
+			});
+		};
 		var expn=`${ffamily.value}_bmp.zip`;
 		if(mcpack){
 			zip.file('manifest.json',simple_mcmf(`n${ffamily.value}; dfont resource pack.\nmcbeeringi.github.io/apps/glyph; v[0,0,1]; tresources`));
 			log_.textContent+='manifest.json done.\n';
+			c.width=64;c.height=64;ctx.font=`40px ${ffamily.value},sans-serif`;ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#fff';var str='Aa',strm=ctx.measureText(str);
+			ctx.fillText(str,(c.width-strm.width)*.5,(c.height+strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent)*.5-strm.actualBoundingBoxDescent);
 			c.toBlob(b=>{
 				zip.file('pack_icon.png',b);
 				log_.textContent+='pack_icon.png done.\n';
 				expn=`${ffamily.value}_resource.mcpack`;
+				csize_(csize.value);
 				post_();
 			});
-		}else post_();
+		}else{set(ward.value);post_();}
 	}
 	arr.forEach((x,i)=>requestIdleCallback(()=>{
 		set(x);
@@ -107,7 +112,7 @@ const exp=(list,mode,mcpack)=>{
 		});
 		pbar.value=i;//log.textContent=x;
 		log.textContent=`step 1/2 rendering… ${(i/(arr.length-1)*100).toFixed(2)}%   ( ${i} / ${arr.length-1}  ${x} )`;
-		if(i==arr.length-1){log_.textContent+='rendering done.\n';post();set(ward.value);}
+		if(i==arr.length-1){log_.textContent+='rendering done.\n';post();}
 	}));
 };
 </script>
