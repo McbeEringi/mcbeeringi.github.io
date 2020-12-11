@@ -1,7 +1,12 @@
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>glyph</title>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+<script data-ad-client="ca-pub-6462086334272944" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<meta charset="utf-8">
+		<title>McbeEringi glyph_gen</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 </head>
 <body>
 <style>
@@ -17,13 +22,14 @@
 <script src="mcmf.js"></script>
 
 
-<h1>glyph_gen beta</h1>
+<h1>glyph_gen</h1>
 <div class="box">
 	<h2>config</h2>
 	<div id="configp">
-		<label><span>img:</span><input id="csize" type="number" value="64" onchange="csize_(this.value);">px²</label><br>
-		<label><span>size:</span><input id="fsize" type="number" value="64" oninput="font_(this.value,ffamily.value);">px</label><br>
-		<label><span>font:</span><input id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);"></label> or <input type="file" onchange="load(this)" accept=".ttf,.otf,.woff,.woff2"><br>
+		<label><span>img:</span><input id="csize" type="number" value="64" onchange="csize_(this.value);dl_();">px²</label><br>
+		<label><span>size:</span><input id="fsize" type="number" value="64" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
+		<label><span>font:</span><input id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);dl_();"></label> or <input type="file" onchange="load(this);" accept=".ttf,.otf,.woff,.woff2"><br>
+		<a id="dl" href="#">…</a><br>
 		<br>
 		<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
 		<label>list:<input id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
@@ -36,26 +42,33 @@
 <br>
 <div class="box">
 	<h2>preview</h2>
-	<label><span>block:</span><input id="ward" value="00" onchange="set(this.value);"></label><br>
+	<label><span>block:</span><input id="ward" value="00" onchange="set(this.value);dl_();"></label><br>
+	<br>
 	<canvas id="c">canvas</canvas>
 </div>
 
 <script>
 'use strict';
 var ctx=c.getContext('2d');
-const set=x=>{ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<256;i++)ctx.fillText(String.fromCodePoint(parseInt(x,16)*0x100+i),c.width*.0625*(i%16),c.height*.0625*(Math.floor(i*.0625)+1),c.width*.0625);},
+const set=x=>{ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<256;i++){
+	var str=String.fromCodePoint(parseInt(x,16)*0x100+i),strm=ctx.measureText(str),hs=1,
+	cw=c.width*.0625,ch=c.height*.0625,abb=strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent;
+	if(abb>ch){hs=ch/abb;ctx.scale(1,hs);}
+	ctx.fillText(str,cw*(i%16)+Math.min(strm.actualBoundingBoxLeft,0),ch*(Math.floor(i*.0625)+1)/hs-strm.actualBoundingBoxDescent,cw);
+	if(hs!=1)ctx.scale(1,1/hs);
+}},
 font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
-csize_=x=>{c.width=x*16;c.height=x*16;c.style.background=`url("data:image/svg+xml,%3Csvg width='${x*2}' height='${x*2}' viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")`;
-	ctx.fillStyle='#fff';ctx.textBaseline='bottom';font_(fsize.value,ffamily.value);},
+csize_=x=>{c.width=x*16;c.height=x*16;ctx.fillStyle='#fff';c.style.background=`url("data:image/svg+xml,%3Csvg width='${x*2}' height='${x*2}' viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")`;font_(fsize.value,ffamily.value);},
 load=async f=>{
 	var fname=f.files[0].name;fname=fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1);
 	const font = new FontFace(fname,`url(${URL.createObjectURL(f.files[0])})`);
 	await font.load();
 	document.fonts.add(font);
 	ffamily.value=fname;font_(fsize.value,ffamily.value);
-};
+},
+dl_=()=>{c.toBlob(b=>{dl.href=URL.createObjectURL(b);dl.download=`glyph_${ward.value}.png`;dl.textContent=`download as ${dl.download}`;})};
 
-csize_(csize.value);
+csize_(csize.value);dl_();
 
 const exp=(list,mode,mcpack)=>{
 	log_.textContent='';
@@ -69,6 +82,11 @@ const exp=(list,mode,mcpack)=>{
 	configp.style.opacity=0.2;configp.style.pointerEvents='none';
 	pbar.max=(arr.length-1)*2;
 	const post=()=>{
+		const post_=()=>zip.generateAsync({type:"blob"},d=>{pbar.value=(1+d.percent*.01)*(pbar.max*.5);log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;}).then(c=>{
+			log_.textContent+='packaging done.\n';saveAs(c,expn);
+			expb.disabled=false;expb.textContent='export';
+			configp.style.opacity=1;configp.style.pointerEvents='auto';
+		});
 		var expn=`${ffamily.value}_bmp.zip`;
 		if(mcpack){
 			zip.file('manifest.json',simple_mcmf(`n${ffamily.value}; dfont resource pack.\nmcbeeringi.github.io/apps/glyph; v[0,0,1]; tresources`));
@@ -76,14 +94,10 @@ const exp=(list,mode,mcpack)=>{
 			c.toBlob(b=>{
 				zip.file('pack_icon.png',b);
 				log_.textContent+='pack_icon.png done.\n';
+				expn=`${ffamily.value}_resource.mcpack`;
+				post_();
 			});
-			expn=`${ffamily.value}_resource.mcpack`;
-		}
-		zip.generateAsync({type:"blob"},d=>{pbar.value=(1+d.percent*.01)*(pbar.max*.5);log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;}).then(c=>{
-			log_.textContent+='packaging done.\n';saveAs(c,expn);
-			expb.disabled=false;expb.textContent='export';
-			configp.style.opacity=1;configp.style.pointerEvents='auto';
-		})
+		}else post_();
 	}
 	arr.forEach((x,i)=>requestIdleCallback(()=>{
 		set(x);
@@ -97,5 +111,6 @@ const exp=(list,mode,mcpack)=>{
 	}));
 };
 </script>
+<!-- hor_ad --><ins class="adsbygoogle"style="display:block"data-ad-client="ca-pub-6462086334272944"data-ad-slot="5283762489"data-ad-format="auto"data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 </body>
 <html>
