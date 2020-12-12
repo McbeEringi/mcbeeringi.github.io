@@ -6,14 +6,18 @@
 	</head>
 	<body>
 		<script src="https://tonejs.github.io/build/Tone.js"></script>
+		<button onclick="main();">start</button>
 		<pre id="log"></pre>
 		<script>
-			const sy=new Tone.Synth().toDestination();
-			setInterval(()=>{
-				sy.oscillator.partials=new Array(8).fill(1).map(()=>Math.random());
-				log.textContent=sy.oscillator.partials.join('\n');
-				sy.triggerAttackRelease('A4','8n');
-			},1000);
+			const main=()=<{
+				Tone.start();
+				const sy=new Tone.Synth().toDestination();
+				setInterval(()=>{
+					sy.oscillator.partials=new Array(8).fill(1).map(()=>Math.random());
+					log.textContent=sy.oscillator.partials.join('\n');
+					sy.triggerAttackRelease('A4','8n');
+				},1000);
+			}
 		</script>
 	</body>
 </html>
