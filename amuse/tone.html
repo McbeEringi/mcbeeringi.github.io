@@ -6,18 +6,26 @@
 	</head>
 	<body>
 		<script src="https://tonejs.github.io/build/Tone.js"></script>
-		<button onclick="main();">start</button>
+		<button id="btn">start</button>
 		<pre id="log"></pre>
 		<script>
-			const main=()=>{
+			const sy=new Tone.Synth().toDestination();
+				sy.envelope.attack=0.01;
+				sy.envelope.decayCurve="exponential";
+				sy.envelope.decay=5;
+				sy.envelope.sustain=0;
+				sy.envelope.release=0.2;
+			const att=()=>{
 				Tone.start();
-				const sy=new Tone.Synth().toDestination();
-				setInterval(()=>{
-					sy.oscillator.partials=new Array(8).fill(1).map(()=>Math.random());
-					log.textContent=sy.oscillator.partials.join('\n');
-					sy.triggerAttackRelease('A4','8n');
-				},1000);
+				sy.oscillator.partials=new Array(8).fill(1).map(()=>Math.random());
+				log.textContent=sy.oscillator.partials.join('\n');
+				sy.triggerAttack('A4');
+			},
+			rel=()=>{
+				sy.triggerRelease();
 			}
+			btn.onmousedown=att;
+			btn.onmouseup=rel;
 		</script>
 	</body>
 </html>
