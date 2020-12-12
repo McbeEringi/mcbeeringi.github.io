@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-	<head>
+<html>
+<head>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
@@ -8,121 +7,115 @@
 		<meta charset="utf-8">
 		<title>McbeEringi glyph_gen</title>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	</head>
-	<body>
-		<style>
-			:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:pixelated;}.box{background-color:#333;padding:4px;overflow:scroll;}h1,h2{margin:4px;}
-			#picon{background:#222;color:#fff;width:128px;height:128px;line-height:128px;text-align:center;font-size:80px;position:fixed;top:-128px;}
-			#configp{user-select:none;-webkit-user-select:none;}#disp{box-shadow:0 0 0 1px #888;overflow:hidden;display:flex;flex-wrap:wrap;}
-			#disp>p{width:6.25%;height:6.25%;margin:0;padding:0;vertical-align:top;overflow:hidden;position:relative;vertical-align:text-bottom;}
-			p span{margin:0;padding:0;}label{display:inline-block;margin:2px;}label span{display:inline-block;width:6ex;text-align:right;margin-right:1ex;}
-			a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
-			input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;user-select:auto;-webkit-user-select:auto;}
-			input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
-			.clear_fix::after{content:"";clear:both;display:block;}
-			progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}textarea{width:24em;height:42px;line-height:14px;font-size:12px;font-family:monospace;}
-		</style>
-		<style id="fstyle"></style>
-		<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
-		<script src="../../src/requestIdleCallback.min.js"></script>
-		<script src="mcmf.js"></script>
+</head>
+<body>
+<style>
+	:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:pixelated;}h1,h2{margin:4px;}
+	.box{background-color:#333;padding:4px;overflow:scroll;}progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}canvas{width:100%;border:1px solid;margin-top:4px;background-size:12.5%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")}
+	a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
+	input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;user-select:auto;-webkit-user-select:auto;}input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
+	.clear_fix::after{content:"";clear:both;display:block;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
+<script src="../../src/requestIdleCallback.min.js"></script>
+<script src="mcmf.js"></script>
 
-		<div id="picon">Aa</div>
-		<h1>glyph_gen</h1>
-		<div class="box">
-			<h2>config</h2>
-			<div id="configp">
-				<label><span>img:</span><input id="img_s" type="number" value="512" onchange="i_s(this.value);render();"><i id="dpr"></i> px²</label><br>
-				<label><span>size:</span><input id="font_s" type="number" value="32" oninput="f_s(this.value);render();">px</label><br>
-				<label><span>font:</span><input id="font_f" value="sans-serif" onchange="document.body.style.fontFamily=this.value+',sans-serif';render();"></label> or <input type="file" onchange="f_r(this)" accept=".ttf,.otf,.woff,.woff2"><br>
-				<a id="dl" download href="" ontouchstart="">……</a><br>
-				<br>
-				<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
-				<label>list:<input id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
-				<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
-			</div>
-			<br>
-			<button onclick="exp(expl.value,expmode.checked,expmcpack.checked);" id="expb" ontouchstart="">export</button><br>
-			<progress value="0" id="pbar0"></progress><br>
-			<progress value="0" id="pbar1" max="100"></progress><br>
-			<pre id="log"></pre><pre id="log_"></pre>
-		</div>
+
+<h1>glyph_gen</h1>
+<div class="box">
+	<h2>config</h2>
+	<div id="configp">
+		<label><span>img:</span><input id="csize" type="number" value="64" onchange="csize_(this.value);dl_();">px²</label><br>
+		<label><span>size:</span><input id="fsize" type="number" value="64" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
+		<label><span>font:</span><input id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);dl_();"></label> or <input type="file" onchange="load(this);" accept=".ttf,.otf,.woff,.woff2"><br>
+		<a id="dl" href="#">…</a><br>
 		<br>
-		<div class="box">
-			<h2>preview</h2>
-			<label><span>block:</span><input id="men" value="00" onchange="set(this.value);render();"></label><br>
-			<label><span>debug:</span><input type="checkbox" onchange="debug(this.checked);"></label><br>
-			<div id="disp"></div>
-		</div>
-		<!--<img id="img" style="width:50vmin;">-->
+		<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
+		<label>list:<input id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
+		<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
+	</div>
+	<br>
+	<button id="expb" onclick="exp(expl.value,expmode.checked,expmcpack.checked);">export</button>
+	<progress id="pbar" value="0"></progress>
+	<pre id="log"></pre><pre id="log_"></pre>
+</div>
+<br>
+<div class="box">
+	<h2>preview</h2>
+	<label><span>block:</span><input id="ward" value="00" onchange="set(this.value);dl_();"></label><br>
+	<canvas id="c">canvas</canvas>
+</div>
 
-		<script>
-			'use strict'
-			window.onload=()=>window.scrollTo(0,0);
-			dpr.textContent='*'+window.devicePixelRatio;
-			/////base
-			var p256='';for(var i=0;i<256;i++)p256+='<p><span></span></p>';disp.insertAdjacentHTML('beforeend',p256);
-			const	i_s=x=>{disp.style.width=x+'px';disp.style.height=x+'px';},
-			f_s=x=>disp.querySelectorAll('p').forEach(e=>{e.style.fontSize=`${x}px`;e.style.lineHeight=`${x}px`;}),
-			f_r=f=>{
-				var fname=f.files[0].name;fname=[fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1),fname.slice((fname.lastIndexOf('.')-1>>>0)+2)];
-				const format={"ttf":"truetype","otf":"opentype","woff":"woff","woff2":"woff2"};
-				fstyle.textContent=`@font-face{font-family:"${fname[0]}";src:url(${URL.createObjectURL(f.files[0])})format("${format[fname[1]]}");}`;
-				font_f.value=fname[0];document.body.style.fontFamily=fname[0]+',sans-serif';render();
-			},
-			debug=x=>disp.querySelectorAll('#disp>p').forEach(e=>{e.style.boxShadow=x?'0 0 1px #fff4':'';e.style.textDecoration=x?'underline':'';e.style.textDecorationColor=x?'#fff8':'';}),
-			set=x=>disp.querySelectorAll('p span').forEach((e,i)=>e.textContent=String.fromCodePoint(parseInt(x,16)*0x100+Number(i))),
-			render=()=>{
-				html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scrollX":0,"scrollY":-window.pageYOffset}).then(c=>{
-					dl.href=c.toDataURL();
-					dl.download=`glyph_${men.value}.png`;
-					dl.innerText=`download as ${dl.download}`;
-					//img.src=dl.href;
-				});
-			}
-			i_s(img_s.value);f_s(font_s.value);set(men.value);render();
+<script>
+'use strict';
+var ctx=c.getContext('2d');
+const set=x=>{ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<256;i++){
+	var str=String.fromCodePoint(parseInt(x,16)*0x100+i),strm=ctx.measureText(str),hs=1,
+	cw=c.width*.0625,ch=c.height*.0625,abb=strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent;
+	if(abb>ch){hs=ch/abb;ctx.scale(1,hs);}
+	ctx.fillText(str,cw*(i%16)+Math.min(strm.actualBoundingBoxLeft,0),ch*(Math.floor(i*.0625)+1)/hs-strm.actualBoundingBoxDescent,cw);
+	if(hs!=1)ctx.scale(1,1/hs);
+}},
+font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
+csize_=x=>{c.width=x*16;c.height=x*16;ctx.fillStyle='#fff';font_(fsize.value,ffamily.value);},
+load=async f=>{
+	var fname=f.files[0].name;fname=fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1);
+	const font = new FontFace(fname,`url(${URL.createObjectURL(f.files[0])})`);
+	await font.load();
+	document.fonts.add(font);
+	ffamily.value=fname;font_(fsize.value,ffamily.value);
+},
+dl_=()=>{c.toBlob(b=>{dl.href=URL.createObjectURL(b);dl.download=`glyph_${ward.value}.png`;dl.textContent=`download as ${dl.download}`;})};
 
-			/////export
-			const exp=(blist,mode,mcpack)=>{
-				var arr;log_.textContent='';pbar0.value=0;pbar1.value=0;expb.disabled=true;expb.textContent='Running…';configp.style.opacity=0.2;configp.style.pointerEvents='none';
-				if(blist){
-					blist = blist.split(',').map(x=>x.split('~')).map(x=>{if(x[1])return [...Array(parseInt(x[1],16)-parseInt(x,16)+1).keys()].map(y=>(y+parseInt(x[0],16)).toString(16).toUpperCase());else return x;}).join(',').split(',');
-					console.log(blist);
-					if(mode)arr=blist;else arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)).filter(x=>!(blist.includes(x)));
-				}
-				var arr_=[],zip=new JSZip(),fontFolder=zip.folder("font"),arrl=arr.length;pbar0.max=arrl;
-				const exppost=expn=>{
-					zip.generateAsync({type:"blob"},d=>{pbar1.value=d.percent;log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;})
-						.then(c=>{log_.textContent+='packaging done.\n';saveAs(c,expn);expb.textContent='export';expb.disabled=false;console.log('done');})
-				},
-				pexppost=()=>{
-					zip.file('manifest.json',simple_mcmf(`n${font_f.value}; dfont resource pack.\nmcbeeringi.github.io/apps/glyph; v[0,0,1]; tresources`));
-					log_.textContent+='manifest.json done.\n';
-					html2canvas(document.getElementById("picon"),{"scale":1,"scrollX":0,"scrollY":0}).then(c=>c.toBlob(b=>{
-						zip.file('pack_icon.png',b);
-						log_.textContent+='pack_icon.png done.\n';
-						exppost(`${font_f.value}_resource.mcpack`);
-					}));
-				},
-				expmain=()=>{
-					console.group();console.log(arr);
-					arr.map((x,i)=>requestIdleCallback(()=>{
-						set(x);
-						html2canvas(document.getElementById("disp"),{"backgroundColor":null,"scrollX":0,"scrollY":-window.pageYOffset}).then(c=>c.toBlob(b=>{
-							fontFolder.file(`glyph_${x}.png`,b);
-							if(x=='00')fontFolder.file('default8.png',b);
-							log.textContent=`step 1/2 rendering… ${(++pbar0.value/arrl*100).toFixed(2)}%   ( ${('00'+pbar0.value).slice(-3)} / ${arrl}  ${x} )`;
-							console.log(x);
-							if(i==arr.length-1){if(arr_.length){arr=arr_;arr_=[];log_.textContent=' fix…\n';expmain();}else{log_.textContent+='rendering done.\n';console.groupEnd();set(men.value);configp.style.opacity=1;configp.style.pointerEvents='auto';if(mcpack)pexppost();else exppost(`${font_f.value}_bmp.zip`);}}
-						})).catch(e=>{arr_.push(x);log_.textContent+=`${x} `;});
-					}));
-				};
-				expmain();
-			};
+csize_(csize.value);dl_();
 
-		</script>
-		<!-- hor_ad --><ins class="adsbygoogle"style="display:block"data-ad-client="ca-pub-6462086334272944"data-ad-slot="5283762489"data-ad-format="auto"data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
-	</body>
-</html>
+const exp=(list,mode,mcpack)=>{
+	log_.textContent='';
+	var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)),zip=new JSZip(),fontFolder=zip.folder('font');
+	if(list){
+		list = list.split(',').map(x=>x.split('~')).map(x=>{if(x[1])return [...Array(parseInt(x[1],16)-parseInt(x,16)+1).keys()].map(y=>(y+parseInt(x[0],16)).toString(16).toUpperCase());else return x;}).join(',').split(',');
+		console.log(list);
+		if(mode)arr=list;else arr=arr.filter(x=>!(list.includes(x)));
+	}else if(mode)return;
+	expb.disabled=true;expb.textContent='Running…';
+	configp.style.opacity=0.2;configp.style.pointerEvents='none';
+	pbar.max=(arr.length-1)*2;
+	const post=()=>{
+		const post_=()=>{
+			zip.generateAsync({type:"blob"},d=>{pbar.value=(1+d.percent*.01)*(pbar.max*.5);log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;}).then(c=>{
+				log_.textContent+='packaging done.\n';saveAs(c,expn);
+				expb.disabled=false;expb.textContent='export';
+				configp.style.opacity=1;configp.style.pointerEvents='auto';
+			});
+		};
+		var expn=`${ffamily.value}_bmp.zip`;
+		if(mcpack){
+			zip.file('manifest.json',simple_mcmf(`n${ffamily.value}; dfont resource pack.\nmcbeeringi.github.io/apps/glyph; v[0,0,1]; tresources`));
+			log_.textContent+='manifest.json done.\n';
+			c.width=64;c.height=64;ctx.font=`40px ${ffamily.value},sans-serif`;ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#fff';var str='Aa',strm=ctx.measureText(str);
+			ctx.fillText(str,(c.width-strm.width)*.5,(c.height+strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent)*.5-strm.actualBoundingBoxDescent);
+			c.toBlob(b=>{
+				zip.file('pack_icon.png',b);
+				log_.textContent+='pack_icon.png done.\n';
+				expn=`${ffamily.value}_resource.mcpack`;
+				csize_(csize.value);
+				post_();
+			});
+		}else{set(ward.value);post_();}
+	}
+	arr.forEach((x,i)=>requestIdleCallback(()=>{
+		set(x);
+		c.toBlob(b=>{
+			fontFolder.file(`glyph_${x}.png`,b);
+			if(x=='00')fontFolder.file('default8.png',b);
+		});
+		pbar.value=i;//log.textContent=x;
+		log.textContent=`step 1/2 rendering… ${(i/(arr.length-1)*100).toFixed(2)}%   ( ${i} / ${arr.length-1}  ${x} )`;
+		if(i==arr.length-1){log_.textContent+='rendering done.\n';post();}
+	}));
+};
+</script>
+<!-- hor_ad --><ins class="adsbygoogle"style="display:block"data-ad-client="ca-pub-6462086334272944"data-ad-slot="5283762489"data-ad-format="auto"data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+</body>
+<html>
