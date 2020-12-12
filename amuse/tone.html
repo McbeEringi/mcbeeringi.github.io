@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<script src="https://tonejs.github.io/build/Tone.js"></script>
+		<pre id="log"></pre>
+		<script>
+			const sy=new Tone.Synth().toDestination();
+			setInterval(()=>{
+				sy.oscillator.partials=new Array(8).fill(1).map(()=>Math.random());
+				log.textContent=sy.oscillator.partials.join('\n');
+				sy.triggerAttackRelease('A4','8n');
+			},1000);
+		</script>
+	</body>
+</html>
