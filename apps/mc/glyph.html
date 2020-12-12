@@ -53,10 +53,10 @@
 var ctx=c.getContext('2d');
 const set=x=>{ctx.clearRect(0,0,c.width,c.height);var hofs=1,li=[];
 	for(var i=0;i<256;i++){
-		var str=String.fromCodePoint(parseInt(x,16)*0x100+i),strm=ctx.measureText(str),hs=1,
-		cw=c.width*.0625,ch=c.height*.0625,abb=Math.max(strm.fontBoundingBoxDescent,strm.actualBoundingBoxDescent+hofs)+strm.actualBoundingBoxAscent;
+		var str=String.fromCodePoint(parseInt(x,16)*0x100+i),strm=ctx.measureText(str),hs=1,cw=c.width*.0625,ch=c.height*.0625,
+		btm=Math.max(strm.fontBoundingBoxDescent,strm.actualBoundingBoxDescent+hofs),abb=btm+strm.actualBoundingBoxAscent;
 		if(abb>ch){hs=ch/abb;ctx.scale(1,hs);li.push([str,hs])}
-		ctx.fillText(str,cw*(i%16)+strm.actualBoundingBoxLeft,ch*(Math.floor(i*.0625)+1)/hs-Math.max(strm.fontBoundingBoxDescent,strm.actualBoundingBoxDescent+hofs),cw-strm.actualBoundingBoxLeft);
+		ctx.fillText(str,cw*(i%16)+strm.actualBoundingBoxLeft,ch*(Math.floor(i*.0625)+1)/hs-btm,cw-strm.actualBoundingBoxLeft);
 		if(hs!=1)ctx.scale(1,1/hs);
 	}
 	console.log('shrunked',li);
