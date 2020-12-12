@@ -51,13 +51,16 @@
 <script>
 'use strict';
 var ctx=c.getContext('2d');
-const set=x=>{ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<256;i++){
-	var str=String.fromCodePoint(parseInt(x,16)*0x100+i),strm=ctx.measureText(str),hs=1,
-	cw=c.width*.0625,ch=c.height*.0625,abb=strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent;
-	if(abb>ch){hs=ch/abb;ctx.scale(1,hs);}
-	ctx.fillText(str,cw*(i%16)+strm.actualBoundingBoxLeft,ch*(Math.floor(i*.0625)+1)/hs-strm.actualBoundingBoxDescent,cw-strm.actualBoundingBoxLeft);
-	if(hs!=1)ctx.scale(1,1/hs);
-}},
+const set=x=>{ctx.clearRect(0,0,c.width,c.height);const hofs=1;
+	for(var i=0;i<256;i++){
+		var str=String.fromCodePoint(parseInt(x,16)*0x100+i),strm=ctx.measureText(str),hs=1,
+		cw=c.width*.0625,ch=c.height*.0625,abb=strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent+hofs;
+		if(abb>ch){hs=ch/abb;ctx.scale(1,hs);}
+		console.log(ch*(Math.floor(i*.0625)+1)/hs,abb)
+		ctx.fillText(str,cw*(i%16)+strm.actualBoundingBoxLeft,ch*(Math.floor(i*.0625)+1)/hs-strm.actualBoundingBoxDescent-hofs,cw-strm.actualBoundingBoxLeft);
+		if(hs!=1)ctx.scale(1,1/hs);
+	}
+},
 font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
 csize_=x=>{c.width=x*16;c.height=x*16;ctx.fillStyle='#fff';ctx.textAlign='left';font_(fsize.value,ffamily.value);},
 load=async f=>{
