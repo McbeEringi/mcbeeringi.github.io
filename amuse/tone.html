@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<script src="https://tonejs.github.io/build/Tone.js"></script>
-		<button id="btn">start</button>
+		<button id="btn">A4</button>
 		<pre id="log"></pre>
 		<script>
 			const sy=new Tone.Synth().toDestination();
@@ -24,8 +24,8 @@
 			rel=()=>{
 				sy.triggerRelease();
 			}
-			btn.onmousedown=att;
-			btn.onmouseup=rel;
+			btn.onmousedown=att;btn.ontouchstart=att;
+			btn.onmouseup=rel;btn.ontouchend=rel;
 		</script>
 	</body>
 </html>
