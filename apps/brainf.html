@@ -65,28 +65,27 @@ type here before run.</textarea><pre id="inpprv"></pre>
 		window.addEventListener("message",handleMessage,true);
 		window.setZeroTimeout=setZeroTimeout;
 })();
-btn.onclick=()=>{main();btn.disabled=true;}
+btn.onclick=()=>{demain();btn.disabled=true;}
 stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
 autosize(src);src.oninput=()=>autosize.update(src);
 autosize(inp);inp.oninput=()=>autosize.update(inp);
 
-var s,p,ps,pi,m,l,tmp;
-const sleep=t=>new Promise(r=>setTimeout(r,t)),
-render=all=>{
-	mv.firstChild.style.left=`${36*p}px`;
-	while(mv.childNodes.length-1<m.length)mv.appendChild(document.createElement('p'));
-	if(all)mv.childNodes.forEach((e,i)=>{if(i)e.textContent=m[i-1]});
-	else mv.childNodes[p+1].textContent=m[p];
-	srcprv.innerHTML=src.value.substring(0,ps-1)+(src.value[ps-1]?`<span class="caret">${src.value[ps-1]}</span>`:'');
-	inpprv.innerHTML=inp.value.substring(0,pi-1)+(inp.value[pi-1]?`<span class="caret">${inp.value[pi-1]}</span>`:'');
-},
-post=()=>{
-	render(true);
-	btn.disabled=false;stopb.disabled=false;skipcb.checked=false;
-	src.readOnly=false;inp.readOnly=false;srcprv.style.display='none';inpprv.style.display='none';
-},
-core_=async()=>{
-	while(ps<s.length&&stopb.disabled==false){
+const demain=()=>{
+	var s,p,ps,pi,m,l,tmp;
+	const render=all=>{
+		mv.firstChild.style.left=`${36*p}px`;
+		while(mv.childNodes.length-1<m.length)mv.appendChild(document.createElement('p'));
+		if(all)mv.childNodes.forEach((e,i)=>{if(i)e.textContent=m[i-1]});
+		else mv.childNodes[p+1].textContent=m[p];
+		srcprv.innerHTML=src.value.substring(0,ps-1)+(src.value[ps-1]?`<span class="caret">${src.value[ps-1]}</span>`:'');
+		inpprv.innerHTML=inp.value.substring(0,pi-1)+(inp.value[pi-1]?`<span class="caret">${inp.value[pi-1]}</span>`:'');
+	},
+	post=()=>{
+		render(true);
+		btn.disabled=false;stopb.disabled=false;skipcb.checked=false;
+		src.readOnly=false;inp.readOnly=false;srcprv.style.display='none';inpprv.style.display='none';
+	},
+	core=()=>{
 		tmp=null;
 		switch(s[ps]){
 			case'>':p++;if(m[p]==undefined)m[p]=0;ps++;break;
@@ -100,28 +99,9 @@ core_=async()=>{
 			default:ps++;tmp=1;break;
 		}
 		if(!tmp&&!skipcb.checked)render();
-		if(!(skipcb.checked||tmp))await sleep(spd.value);
-	}
-	post();
-},
-core=()=>{
-	tmp=null;
-	switch(s[ps]){
-		case'>':p++;if(m[p]==undefined)m[p]=0;ps++;break;
-		case'<':if(p>0)p--;else{log.textContent+=ps+': invailed "<". canceled.\n';stopb.disabled=true;}ps++;break;
-		case'+':m[p]++;m[p]&=0xff;ps++;break;
-		case'-':m[p]--;m[p]&=0xff;ps++;break;
-		case'.':out.textContent+=String.fromCharCode(m[p]);ps++;break;
-		case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;log.textContent+=ps+': input empty. use 0 as input.\n';ps++;}else if(tmp>255)pi++;else{m[p]=tmp;pi++;ps++;}tmp=null;break;
-		case'[':l.push(ps);ps++;break;
-		case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.textContent+=ps+': invailed "]". skipped.\n';ps++;}break;
-		default:ps++;tmp=1;break;
-	}
-	if(!tmp&&!skipcb.checked)render();
-	if(ps==s.length||stopb.disabled==true)setTimeout(post,spd.value);
-	else{if(skipcb.checked||tmp){try{core();}catch(e){render(!tmp);setZeroTimeout(core);}}else setTimeout(core,spd.value);}
-},
-main=()=>{
+		if(ps==s.length||stopb.disabled==true)setTimeout(post,spd.value);
+		else{if(skipcb.checked||tmp){try{core();}catch(e){render(!tmp);setZeroTimeout(core);}}else setTimeout(core,spd.value);}
+	};
 	mv.innerHTML='<div></div><p>0</p>';
 	out.textContent='';log.textContent='';
 	src.readOnly=true;inp.readOnly=true;srcprv.style.display='block';inpprv.style.display='block';
