@@ -28,7 +28,7 @@
 	<h2>config</h2>
 	<div id="configp">
 		<label><span>img:</span><input id="csize" type="number" value="64" onchange="csize_(this.value);dl_();">px²</label><br>
-		<label><span>size:</span><input id="fsize" type="number" value="64" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
+		<label><span>size:</span><input id="fsize" type="number" value="60" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
 		<label><span>font:</span><input id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);dl_();"></label> or <input type="file" onchange="load(this);" accept=".ttf,.otf,.woff,.woff2"><br>
 		<a id="dl" href="#">…</a><br>
 		<br>
@@ -51,15 +51,15 @@
 <script>
 'use strict';
 var ctx=c.getContext('2d');
-const set=x=>{ctx.clearRect(0,0,c.width,c.height);const hofs=1;
+const set=x=>{ctx.clearRect(0,0,c.width,c.height);var hofs=1,li=[];
 	for(var i=0;i<256;i++){
 		var str=String.fromCodePoint(parseInt(x,16)*0x100+i),strm=ctx.measureText(str),hs=1,
-		cw=c.width*.0625,ch=c.height*.0625,abb=strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent+hofs;
-		if(abb>ch){hs=ch/abb;ctx.scale(1,hs);}
-		console.log(ch*(Math.floor(i*.0625)+1)/hs,abb)
-		ctx.fillText(str,cw*(i%16)+strm.actualBoundingBoxLeft,ch*(Math.floor(i*.0625)+1)/hs-strm.actualBoundingBoxDescent-hofs,cw-strm.actualBoundingBoxLeft);
+		cw=c.width*.0625,ch=c.height*.0625,abb=Math.max(strm.fontBoundingBoxDescent,strm.actualBoundingBoxDescent+hofs)+strm.actualBoundingBoxAscent;
+		if(abb>ch){hs=ch/abb;ctx.scale(1,hs);li.push([str,hs])}
+		ctx.fillText(str,cw*(i%16)+strm.actualBoundingBoxLeft,ch*(Math.floor(i*.0625)+1)/hs-Math.max(strm.fontBoundingBoxDescent,strm.actualBoundingBoxDescent+hofs),cw-strm.actualBoundingBoxLeft);
 		if(hs!=1)ctx.scale(1,1/hs);
 	}
+	console.log('shrunked',li);
 },
 font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
 csize_=x=>{c.width=x*16;c.height=x*16;ctx.fillStyle='#fff';ctx.textAlign='left';font_(fsize.value,ffamily.value);},
