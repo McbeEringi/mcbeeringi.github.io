@@ -32,7 +32,8 @@
 			const att=i=>{
 				sy.triggerAttack(220*Math.pow(2,i/12));
 				sy.set({oscillator:{
-					partials:new Array(8).fill(1).map(()=>Math.random())
+					type:'sine12',
+					partials:[16,28,29,38,38,53,46,60,65,63,72,72].map(x=>Math.pow(10,-x))//new Array(8).fill(1).map(()=>Math.random())
 				}});
 			},
 			rel=i=>{
