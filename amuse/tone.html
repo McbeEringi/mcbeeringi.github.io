@@ -5,27 +5,43 @@
 		<title></title>
 	</head>
 	<body>
+		<style media="screen">
+			.p>p{width:16px;height:64px;display:inline-block;margin:2px;background:#ccc;}
+		</style>
 		<script src="https://tonejs.github.io/build/Tone.js"></script>
-		<button id="btn">A4</button>
+		<button id="start">start</button>
+		<div class="p">
+			<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>
+		</div>
 		<pre id="log"></pre>
 		<script>
-			const sy=new Tone.Synth().toDestination();
-				sy.envelope.attack=0.01;
-				sy.envelope.decayCurve="exponential";
-				sy.envelope.decay=5;
-				sy.envelope.sustain=0;
-				sy.envelope.release=0.2;
-			const att=()=>{
+			var sy;
+			start.onclick=()=>{
 				Tone.start();
-				sy.oscillator.partials=new Array(8).fill(1).map(()=>Math.random());
-				log.textContent=sy.oscillator.partials.join('\n');
-				sy.triggerAttack('A4');
-			},
-			rel=()=>{
-				sy.triggerRelease();
+				sy=new Tone.PolySynth(Tone.Synth).toDestination();
+				sy.set({envelope:{
+					attackCurve:"linear",
+					attack:0.01,
+					decayCurve:"exponential",
+					decay:5.0,
+					releaseCurve:"exponential",
+					release:0.2,
+					sustain:0.0
+				}});
 			}
-			btn.onmousedown=att;btn.ontouchstart=att;
-			btn.onmouseup=rel;btn.ontouchend=rel;
+			const att=i=>{
+				sy.triggerAttack(220*Math.pow(2,i/12));
+				sy.set({oscillator:{
+					partials:new Array(8).fill(1).map(()=>Math.random())
+				}});
+			},
+			rel=i=>{
+				sy.triggerRelease(220*Math.pow(2,i/12));
+			}
+			document.querySelectorAll('.p>p').forEach((e,i)=>{
+				e.onpointerenter=()=>att(i);
+				e.onpointerout=()=>rel(i);
+			})
 		</script>
 	</body>
 </html>
