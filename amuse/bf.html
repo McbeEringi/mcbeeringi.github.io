@@ -11,7 +11,7 @@
 	</style>
 <textarea id="inp">Hello World!</textarea><br>
 <input type="number" id="mmind" value="10" min="0" max="127" step="1">chained threshold [0~127] less calc <<< less memory<br>
-<button onclick="out.value=enmain(inp.value,mmind.value)">run</button>
+<button onclick="log.innerText='';out.value=enmain(inp.value,mmind.value)">run</button>
 <textarea id="out"></textarea>
 <pre id="log"></pre>
 <script>
@@ -73,7 +73,6 @@ const enmain=(s,md)=>{
 		console.log('slm',s);
 		return s;
 	};
-	log.innerText='';
 	s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);console.log('raw',s);
 	var ind=[0],clm=[[s[0]]],tmp={};
 	s.slice(1).forEach((x,i)=>{i++;
