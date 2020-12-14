@@ -7,10 +7,10 @@
 <body>
 <style>
 	body,h1{margin:0;}
-	.box{background:#ccc;height:100vh;position:relative;user-select:none;-webkit-user-select:none;touch-action:none;}
-	#lc{position:absolute;bottom:16px;left:16px;width:128px;height:128px;border:8px solid #0000;pointer-events:none;transition:top .1s,left .1s;}
-	#lc::before{content:"";display:block;width:32px;height:32px;border:2px solid #8888;border-radius:50%;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;}
-	#lc.press{background:#8884;border-top-color:#888;border-radius:50%;}
+	.box{background:#eee;height:100vh;position:relative;user-select:none;-webkit-user-select:none;touch-action:none;}
+	#lc{position:absolute;bottom:32px;left:32px;width:128px;height:128px;border:8px solid #0000;pointer-events:none;transition:top .1s,left .1s;}
+	#lc::before{content:"";display:block;width:32px;height:32px;border:4px solid #8888;border-radius:50%;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;}
+	#lc.press{background:#8884;border-color:#8882;border-top-color:#888;border-radius:50%;box-shadow:0 0 16px #888;}
 </style>
 
 <div class="box">
@@ -45,7 +45,7 @@ window.addEventListener('pointermove',e=>{
 			log.textContent=JSON.stringify(p);
 			lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5-px2n(lc_.style.borderWidth)}px`;
 			lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5-px2n(lc_.style.borderWidth)}px`;
-			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.min(128,Math.max(64,144-p.l*.5))/128})`;
+			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.min(128,Math.max(64,144-p.l))/128})`;
 		}
 	}
 });
