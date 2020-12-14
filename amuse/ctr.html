@@ -6,8 +6,8 @@
 </head>
 <body>
 <style>
-	body{position:relative;height:90vh;}
-	#lc{position:absolute;width:128px;height:128px;border:2px solid #8888;border-radius:50%;bottom:10px;pointer-events:none;transition:transform .05s;}
+	body{position:relative;height:90vh;user-select:none;-webkit-user-select:none;}
+	#lc{position:absolute;width:128px;height:128px;border:2px solid #8888;border-radius:50%;bottom:10px;pointer-events:none;transition:transform .1s;}
 	#lc::before{content:"";display:block;width:32px;height:32px;border:4px solid #888;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
 	#lc::after{content:"";display:block;width:100%;height:100%;border:4px solid #0000;border-top:4px solid #888;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
 </style>
@@ -30,7 +30,7 @@ window.addEventListener('pointerdown',e=>{
 window.addEventListener('pointermove',e=>{
 	log.textContent=e.pressure;
 	var p={x:e.clientX-lc_.pdx,y:-e.clientY+lc_.pdy};
-	p.l=Math.sqrt(p.x*p.x+p.y*p.y);console.log(lc_.stl.width,p)
+	p.l=Math.sqrt(p.x*p.x+p.y*p.y);p.l=Math.min(64,p.l)
 	if(psta.press){
 		lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg)`;
 		lc.style.left=`${px2n(lc_.pdl)-p.l*.5}px`;
