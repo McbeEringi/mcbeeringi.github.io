@@ -10,7 +10,7 @@
 	.box{background:#ccc;height:100vh;position:relative;user-select:none;-webkit-user-select:none;touch-action:none;}
 	#lc{position:absolute;border:2px solid #8888;border-radius:50%;bottom:16px;left:10px;pointer-events:none;transition:top .1s,left .1s}
 	#lc:not(.press){width:32px;height:32px;}
-	#lc.press{width:128px;height:128px;background:#8884;border:4px solid #0000;border-top:4px solid #888}
+	#lc.press{width:128px;height:128px;background:#8884;border:8px solid #0000;border-top:8px solid #888}
 </style>
 
 <div class="box">
@@ -42,7 +42,7 @@ window.addEventListener('pointermove',e=>{
 		lc_.pmx=e.clientX;lc_.pmy=e.clientY;
 		if(lc.classList.contains('press')){
 			log.textContent=JSON.stringify(p);
-			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.max(80,128-p.l)/128})`;
+			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.max(64,128-p.l*.5)/128})`;
 		}
 	}
 });
