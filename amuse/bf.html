@@ -73,6 +73,7 @@ const enmain=(s,md)=>{
 		console.log('slm',s);
 		return s;
 	};
+
 	s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);console.log('raw',s);
 	var ind=[0],clm=[[s[0]]],tmp={};
 	s.slice(1).forEach((x,i)=>{i++;
@@ -89,7 +90,6 @@ const enmain=(s,md)=>{
 		if(tmp.mini==-1){ind[i]=clm.length;clm[ind[i]]=[x];}
 		else{ind[i]=tmp.mini;clm[ind[i]].push(x);}
 	});
-
 	console.log('index',ind);console.log('data',clm);
 	var freq_=freq(ind);ind=ind.map(x=>freq_.indexOf(x));clm=freq_.map(x=>clm[x]);
 	console.log('index',ind);console.log('data',clm);//console.log(freq(ind));//shoud be ordered
