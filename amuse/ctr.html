@@ -6,17 +6,21 @@
 </head>
 <body>
 <style>
-	body{position:relative;height:90vh;user-select:none;-webkit-user-select:none;touch-action:none;}
+	body,pre{margin:0}
+	#box{background:#ccc;position:relative;user-select:none;-webkit-user-select:none;touch-action:none;}
 	#lc{position:absolute;border:2px solid #8888;border-radius:50%;bottom:16px;left:10px;pointer-events:none;transition:top .1s,left .1s}
 	#lc:not(.press){width:32px;height:32px;}
 	#lc.press{width:128px;height:128px;background:#8884;border:4px solid #0000;border-top:4px solid #888}
 </style>
 
-<div id="lc"></div>
-<pre id="log"></pre>
+<div id="box">
+	<div id="lc"></div>
+	<pre id="log"></pre>
+</div>
 
 <script>
 'use strict';
+box.style.height=window.innerHeight+'px';
 var lc_={style:getComputedStyle(lc)};lc_.l=lc_.style.left;lc_.r=lc_.style.right
 const px2n=x=>Number(x.slice(0,-2));
 console.log(lc_)
@@ -37,7 +41,7 @@ window.addEventListener('pointermove',e=>{
 });
 window.addEventListener('pointerup',e=>{
 	lc.classList.remove('press');
-	log.textContent+='\n'+lc_.a;
+	log.textContent+='\nflick: '+lc_.a;
 	lc.style.left=lc_.l;lc.style.top=lc_.r;
 	lc.style.transform='none';
 });
