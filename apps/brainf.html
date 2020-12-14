@@ -10,28 +10,39 @@
 </head>
 <body>
 <style>
-	:root,textarea{background:#222;color:#fff;font-family:monospace;user-select:none;-webkit-user-select:none;resize:none;}h1,h2{margin:4px;}
-	#out{min-height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;user-select:text;-webkit-user-select:text;}
+	:root,textarea,input{background:#222;color:#fff;font-family:monospace;user-select:none;-webkit-user-select:none;resize:none;}h1,h2{margin:4px;}
+	.box{border-left:2px solid #888;padding-left:8px;margin:16px auto;}
+	#out,#srcout{min-height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;user-select:text;-webkit-user-select:text;}
 	.wrapper>*{padding:4px;margin-top:0;font-size:12px;word-break:break-all;}
-	textarea{display:block;background:#333;border:1px solid #888;user-select:auto;-webkit-user-select:auto;}
-	input{vertical-align:middle;}
+	input,textarea{background:#333;border:1px solid #888;user-select:text;-webkit-user-select:text;}
+	textarea{display:block;width:100%;}input{vertical-align:middle;}
 	#mv{height:36px;overflow:scroll;white-space:nowrap;background:#333;position:relative;margin:2px;}
 	#mv div,#mv p{width:32px;height:32px;margin:2px;border-radius:8px;}
 	#mv div{position:absolute;top:0px;left:0;font-size:8px;background:#46f;z-index:1;/*transition:.05s;*/}
 	#mv p{line-height:32px;vertical-align:top;text-align:center;display:inline-block;box-shadow:0 0 0 1px #888 inset;font-size:16px;z-index:2;position:relative;}
-	.wrapper,.wrapper>textarea{position:relative;width:100%;}.wrapper>pre{position:absolute;top:0;left:0;right:0;white-space:pre-wrap;border:1px solid #0000;pointer-events:none;color:#0000;}
+	.wrapper,.wrapper>textarea{position:relative;}.wrapper>pre{position:absolute;top:0;left:0;right:0;white-space:pre-wrap;border:1px solid #0000;pointer-events:none;color:#0000;}
 	.caret{color:#333;background:#fff;border-radius:1px;}
 	*::-webkit-scrollbar{display:none;}*{-ms-overflow-style:none;scrollbar-width:none;}
 	#skipcb:checked+*{display:none;}
 </style>
 
+
 <h1>brainf***</h1>
-<div id="mv"><div></div><p>0</p></div>
-<pre id="out"></pre>
-<button id="btn">run</button> <button id="stopb">stop</button> <label for="skipcb">skip:</label><input type="checkbox" id="skipcb"> <span>speed:<input type="range" id="spd" min="0" max="200" value="20"></span> <br>
-src:
-<div class="wrapper">
-<textarea id="src">++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
+<div class="box">
+	<h2>encode</h2>
+	<pre id="srcout"></pre>
+	<button onclick="srcout.textContent=enmain(eninp.value,mmind.value)">run</button>
+	<label>chained threshold: <input type="number" id="mmind" value="10" min="0" max="127" step="1"> [0~127] less calc <<< less memory</label><br>
+	inp:<br><textarea id="eninp">Hello World!</textarea><br>
+</div>
+<div class="box">
+	<h2>decode</h2>
+	<div id="mv"><div></div><p>0</p></div>
+	<pre id="out"></pre>
+		<button id="btn">run</button> <button id="stopb">stop</button> <label for="skipcb">skip:</label><input type="checkbox" id="skipcb"> <span>speed:<input type="range" id="spd" min="0" max="200" value="20"></span> <br>
+	src:
+	<div class="wrapper">
+	<textarea id="src">++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
 >>>>>++.	H
 <<<<+.		e
 +++++++..	ll
@@ -45,11 +56,12 @@ src:
 >>>----.
 >>++[>+++++<-]>.	return
 <[,.]			input</textarea><pre id="srcprv"></pre>
-</div>
-","inp:
-<div class="wrapper">
-<textarea id="inp">To use input command,
+	</div>
+	","inp:
+	<div class="wrapper">
+	<textarea id="inp">To use input command,
 type here before run.</textarea><pre id="inpprv"></pre>
+	</div>
 </div>
 <pre id="log"></pre>
 <iframe src="../amuse/ascii.html" style="border:none;width:100%;height:90vh;"></iframe>
@@ -67,6 +79,8 @@ type here before run.</textarea><pre id="inpprv"></pre>
 })();
 btn.onclick=()=>{demain();btn.disabled=true;}
 stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
+autosize(eninp);eninp.oninput=()=>autosize.update(eninp);
+autosize(srcout);srcout.oninput=()=>autosize.update(srcout);
 autosize(src);src.oninput=()=>autosize.update(src);
 autosize(inp);inp.oninput=()=>autosize.update(inp);
 
@@ -107,7 +121,104 @@ const demain=()=>{
 	src.readOnly=true;inp.readOnly=true;srcprv.style.display='block';inpprv.style.display='block';
 	s=src.value.split('');p=0;ps=0;pi=0;m=[0];l=[];
 	if(s.length)core();else{log.textContent+='! : no src found.\n';setTimeout(post,spd.value);}
-}
+},
+enmain=(s,md)=>{
+	const round=x=>-Math.sign(x)*Math.round(-Math.abs(x)),
+	freq=inp=>{
+		const joinPair=x=>{
+			var indm=Math.max(...(x.join('').split('')));
+			console.log('joinPair',x,indm);
+			var ind=new Array(indm+1).fill(null),s=new Array(indm).concat(x[0].split(''));
+			x.shift();ind[s[indm]]=indm;ind[s[indm+1]]=indm+1;
+			var tmp,flag=true;
+			while(flag){
+				flag=false;
+				x=x.map((e,i)=>{
+					tmp=e.split('');
+					if(ind[tmp[0]]&&!ind[tmp[1]]){
+						if(!(s[ind[tmp[0]]+1]+1)){s[ind[tmp[0]]+1]=tmp[1];ind[tmp[1]]=ind[tmp[0]]+1;}//ok
+						else if(!(s[ind[tmp[0]]-1]+1)){s[ind[tmp[0]]-1]=tmp[1];ind[tmp[1]]=ind[tmp[0]]-1;}//ok
+					}//doom
+					else if(!ind[tmp[0]]&&ind[tmp[1]]){
+						if(!(s[ind[tmp[1]]+1]+1)){s[ind[tmp[1]]+1]=tmp[0];ind[tmp[0]]=ind[tmp[1]]+1;}//ok
+						else if(!(s[ind[tmp[1]]-1]+1)){s[ind[tmp[1]]-1]=tmp[0];ind[tmp[0]]=ind[tmp[1]]-1;}//ok
+					}//doom
+					else if(!ind[tmp[0]]&&!ind[tmp[1]])return e;//pass
+					//else if(ind[tmp[0]]&&ind[tmp[1]])//doom
+					flag=true;console.log(e,s,ind);
+				});
+				x=x.filter(x=>x);console.log(x);
+			}
+			return [s.filter(e=>e),x];
+		}
+		var inpm=[...new Array(Math.max(...inp)+1).keys()];
+		if(inpm.length<3){console.log('freq skipped',inpm);return inpm;}
+		inp=inp.join('');
+		var arr=inp.match(/.{2}/g).concat(inp.substring(1).match(/.{2}/g));
+		arr=arr.filter(x=>x[0]!=x[1]).map(x=>x[0]>x[1]?x[1]+x[0]:x);
+		//freq sort
+		var fq={};arr.forEach(x=>fq[x]=0);
+		var s=arr.filter(x=>++fq[x]==1);
+		s.sort((a,b)=>fq[b]-fq[a]);
+		//arr
+		var tmp,out=[];
+		while(true){
+			tmp=joinPair(s);s=tmp[1];out=out.concat(tmp[0]);
+			if(tmp[1].length==0)break;
+		}
+		out=out.concat(inpm.filter(x=>out.indexOf(String(x))==-1)).map(x=>Number(x));console.log('freq',out);
+		return out;
+	},
+	slm=arr=>{
+		var m=Number.POSITIVE_INFINITY,s,tmp;
+		for(var i=4;i<=16;i++){
+			tmp=arr.map(x=>Math.abs(x>127?256-x:x)).map(x=>round(x/i)+x%i).reduce((a,b)=>a+b)+i;
+			if(tmp<m){m=tmp;s=i;}console.log(i,tmp);
+		}
+		console.log('slm',s);
+		return s;
+	};
+
+	s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);console.log('raw',s);
+	var ind=[0],clm=[[s[0]]],tmp={};
+	s.slice(1).forEach((x,i)=>{i++;
+		tmp.mini=-1;tmp.mind=Number(md)+1;
+		clm.forEach((y,j)=>{
+			tmp.last=y[y.length-1];
+			tmp.dist=Math.abs(tmp.last-x);
+			tmp.dist=Math.min(tmp.dist,256-tmp.dist);
+			if(tmp.dist<tmp.mind){
+				tmp.mind=tmp.dist;
+				tmp.mini=j;
+			}
+		});
+		if(tmp.mini==-1){ind[i]=clm.length;clm[ind[i]]=[x];}
+		else{ind[i]=tmp.mini;clm[ind[i]].push(x);}
+	});
+	console.log('index',ind);console.log('data',clm);
+	var freq_=freq(ind);ind=ind.map(x=>freq_.indexOf(x));clm=freq_.map(x=>clm[x]);
+	console.log('index',ind);console.log('data',clm);//console.log(freq(ind));//shoud be ordered
+
+	tmp=clm.map(x=>x[0]);
+	md=slm(tmp);
+	tmp=tmp.map((x,i)=>{//near
+		var r=round((x>127?x-256:x)/md);
+		clm[i].unshift(r<0?256+r*md:r*md);
+		return r;
+	});console.log('boot',tmp);
+	s='+'.repeat(md)+'[';
+	tmp.forEach(x=>s+='>'+(x>0?'+':'-').repeat(Math.abs(x)));
+	s+='<'.repeat(tmp.length)+'-]>';
+	ind.forEach((x,i)=>{
+		var p=x-(ind[i-1]||0),to=clm[x][1]-clm[x][0];clm[x].shift();
+		s+=(p>0?'>':'<').repeat(Math.abs(p));
+		s+=(to>0?'+':'-').repeat(Math.abs(to))+'.';
+		console.log(i,x,s);console.log(clm);
+	});
+
+	console.log('result:',s.length,s);
+	return s+s.length;
+};
 </script>
 </body>
 </html>
