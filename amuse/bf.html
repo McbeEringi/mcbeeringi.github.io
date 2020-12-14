@@ -11,80 +11,70 @@
 	</style>
 <textarea id="inp">Hello World!</textarea><br>
 <input type="number" id="mmind" value="10" min="0" max="127" step="1">chained threshold [0~127] less calc <<< less memory<br>
-<button onclick="out.value=main(inp.value,mmind.value)">run</button>
+<button onclick="out.value=enmain(inp.value,mmind.value)">run</button>
 <textarea id="out"></textarea>
 <pre id="log"></pre>
 <script>
 'use strict';
 console.log=(...x)=>log.textContent+=`${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
-const round=x=>-Math.sign(x)*Math.round(-Math.abs(x));
-const joinPair=x=>{
-	var indm=Math.max(...(x.join('').split('')));
-	console.log('joinPair',x,indm);
-	var ind=new Array(indm+1).fill(null),s=new Array(indm).concat(x[0].split(''));
-	x.shift();ind[s[indm]]=indm;ind[s[indm+1]]=indm+1;
-	var tmp,flag=true;
-	while(flag){
-		flag=false;
-		x=x.map((e,i)=>{
-			tmp=e.split('');
-			if(ind[tmp[0]]&&!ind[tmp[1]]){
-				if(!(s[ind[tmp[0]]+1]+1)){s[ind[tmp[0]]+1]=tmp[1];ind[tmp[1]]=ind[tmp[0]]+1;}//ok
-				else if(!(s[ind[tmp[0]]-1]+1)){s[ind[tmp[0]]-1]=tmp[1];ind[tmp[1]]=ind[tmp[0]]-1;}//ok
-				//doom
+const enmain=(s,md)=>{
+	const round=x=>-Math.sign(x)*Math.round(-Math.abs(x)),
+	freq=inp=>{
+		const joinPair=x=>{
+			var indm=Math.max(...(x.join('').split('')));
+			console.log('joinPair',x,indm);
+			var ind=new Array(indm+1).fill(null),s=new Array(indm).concat(x[0].split(''));
+			x.shift();ind[s[indm]]=indm;ind[s[indm+1]]=indm+1;
+			var tmp,flag=true;
+			while(flag){
+				flag=false;
+				x=x.map((e,i)=>{
+					tmp=e.split('');
+					if(ind[tmp[0]]&&!ind[tmp[1]]){
+						if(!(s[ind[tmp[0]]+1]+1)){s[ind[tmp[0]]+1]=tmp[1];ind[tmp[1]]=ind[tmp[0]]+1;}//ok
+						else if(!(s[ind[tmp[0]]-1]+1)){s[ind[tmp[0]]-1]=tmp[1];ind[tmp[1]]=ind[tmp[0]]-1;}//ok
+					}//doom
+					else if(!ind[tmp[0]]&&ind[tmp[1]]){
+						if(!(s[ind[tmp[1]]+1]+1)){s[ind[tmp[1]]+1]=tmp[0];ind[tmp[0]]=ind[tmp[1]]+1;}//ok
+						else if(!(s[ind[tmp[1]]-1]+1)){s[ind[tmp[1]]-1]=tmp[0];ind[tmp[0]]=ind[tmp[1]]-1;}//ok
+					}//doom
+					else if(!ind[tmp[0]]&&!ind[tmp[1]])return e;//pass
+					//else if(ind[tmp[0]]&&ind[tmp[1]])//doom
+					flag=true;console.log(e,s,ind);
+				});
+				x=x.filter(x=>x);console.log(x);
 			}
-			else if(!ind[tmp[0]]&&ind[tmp[1]]){
-				if(!(s[ind[tmp[1]]+1]+1)){s[ind[tmp[1]]+1]=tmp[0];ind[tmp[0]]=ind[tmp[1]]+1;}//ok
-				else if(!(s[ind[tmp[1]]-1]+1)){s[ind[tmp[1]]-1]=tmp[0];ind[tmp[0]]=ind[tmp[1]]-1;}//ok
-				//doom
-			}
-			else if(!ind[tmp[0]]&&!ind[tmp[1]])return e;//pass
-			//else if(ind[tmp[0]]&&ind[tmp[1]])//doom
-			flag=true;
-			console.log(e,s,ind);
-		});
-		x=x.filter(x=>x);
-		console.log(x);
-	}
-	return [s.filter(e=>e),x];
-}
-const freq=inp=>{
-	var inpm=Math.max(...inp);
-	inpm=[...new Array(inpm+1).keys()];
-	if(inpm.length<3){console.log('freq skipped',inpm);return inpm;}
-	inp=inp.join('');
-	var arr=inp.match(/.{2}/g).concat(inp.substring(1).match(/.{2}/g));
-	arr=arr.filter(x=>x[0]!=x[1]).map(x=>x[0]>x[1]?x[1]+x[0]:x);
-	//freq sort
-	var fq={};
-	arr.forEach(x=>fq[x]=0);
-	var s=arr.filter(x=>++fq[x]==1);
-	s.sort((a,b)=>fq[b]-fq[a]);
-	//arr
-	var tmp,out=[];
-	while(true){
-		tmp=joinPair(s);
-		s=tmp[1];out=out.concat(tmp[0]);
-		if(tmp[1].length==0)break;
-	}
-	out=out.concat(inpm.filter(x=>out.indexOf(String(x))==-1)).map(x=>Number(x));
-	console.log('freq',out);
-	return out;
-}
-const slm=arr=>{
-	var m=Number.POSITIVE_INFINITY,s,tmp;
-	for(var i=4;i<=16;i++){
-		tmp=arr.map(x=>Math.abs(x>127?256-x:x)).map(x=>round(x/i)+x%i).reduce((a,b)=>a+b)+i;
-		if(tmp<m){m=tmp;s=i;}
-		console.log(i,tmp);
-	}
-	console.log('slm',s);
-	return s;
-}
-const main=(s,md)=>{
+			return [s.filter(e=>e),x];
+		}
+		var inpm=[...new Array(Math.max(...inp)+1).keys()];
+		if(inpm.length<3){console.log('freq skipped',inpm);return inpm;}
+		inp=inp.join('');
+		var arr=inp.match(/.{2}/g).concat(inp.substring(1).match(/.{2}/g));
+		arr=arr.filter(x=>x[0]!=x[1]).map(x=>x[0]>x[1]?x[1]+x[0]:x);
+		//freq sort
+		var fq={};arr.forEach(x=>fq[x]=0);
+		var s=arr.filter(x=>++fq[x]==1);
+		s.sort((a,b)=>fq[b]-fq[a]);
+		//arr
+		var tmp,out=[];
+		while(true){
+			tmp=joinPair(s);s=tmp[1];out=out.concat(tmp[0]);
+			if(tmp[1].length==0)break;
+		}
+		out=out.concat(inpm.filter(x=>out.indexOf(String(x))==-1)).map(x=>Number(x));console.log('freq',out);
+		return out;
+	},
+	slm=arr=>{
+		var m=Number.POSITIVE_INFINITY,s,tmp;
+		for(var i=4;i<=16;i++){
+			tmp=arr.map(x=>Math.abs(x>127?256-x:x)).map(x=>round(x/i)+x%i).reduce((a,b)=>a+b)+i;
+			if(tmp<m){m=tmp;s=i;}console.log(i,tmp);
+		}
+		console.log('slm',s);
+		return s;
+	};
 	log.innerText='';
-	s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);
-	console.log('raw',s);
+	s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);console.log('raw',s);
 	var ind=[0],clm=[[s[0]]],tmp={};
 	s.slice(1).forEach((x,i)=>{i++;
 		tmp.mini=-1;tmp.mind=Number(md)+1;
@@ -100,10 +90,10 @@ const main=(s,md)=>{
 		if(tmp.mini==-1){ind[i]=clm.length;clm[ind[i]]=[x];}
 		else{ind[i]=tmp.mini;clm[ind[i]].push(x);}
 	});
+
 	console.log('index',ind);console.log('data',clm);
 	var freq_=freq(ind);ind=ind.map(x=>freq_.indexOf(x));clm=freq_.map(x=>clm[x]);
-	console.log('index',ind);console.log('data',clm);
-	//console.log(freq(ind));//shoud be ordered
+	console.log('index',ind);console.log('data',clm);//console.log(freq(ind));//shoud be ordered
 
 	tmp=clm.map(x=>x[0]);
 	md=slm(tmp);
@@ -111,8 +101,7 @@ const main=(s,md)=>{
 		var r=round((x>127?x-256:x)/md);
 		clm[i].unshift(r<0?256+r*md:r*md);
 		return r;
-	});
-	console.log('boot',tmp);
+	});console.log('boot',tmp);
 	s='+'.repeat(md)+'[';
 	tmp.forEach(x=>s+='>'+(x>0?'+':'-').repeat(Math.abs(x)));
 	s+='<'.repeat(tmp.length)+'-]>';
@@ -120,14 +109,13 @@ const main=(s,md)=>{
 		var p=x-(ind[i-1]||0),to=clm[x][1]-clm[x][0];clm[x].shift();
 		s+=(p>0?'>':'<').repeat(Math.abs(p));
 		s+=(to>0?'+':'-').repeat(Math.abs(to))+'.';
-		console.log(i,x,s);
-		console.log(clm);
+		console.log(i,x,s);console.log(clm);
 	});
 
 	console.log('result:',s.length,s);
 	return s+s.length;
 };
-out.value=main(inp.value,mmind.value);
+out.value=enmain(inp.value,mmind.value);
 </script>
 </body>
 </html>
