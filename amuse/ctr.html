@@ -20,7 +20,7 @@
 
 <script>
 'use strict';
-var lc_={style:getComputedStyle(lc)};lc_.l=lc_.style.left;lc_.r=lc_.style.right
+var lc_={style:getComputedStyle(lc),pmx:0,pmy:0};lc_.l=lc_.style.left;lc_.r=lc_.style.right
 const px2n=x=>Number(x.slice(0,-2));
 console.log(lc_)
 window.addEventListener('pointerdown',e=>{
@@ -32,7 +32,8 @@ window.addEventListener('pointerdown',e=>{
 window.addEventListener('pointermove',e=>{
 	var p={x:e.clientX-lc_.pdx,y:-e.clientY+lc_.pdy};
 	p.l=Math.sqrt(p.x*p.x+p.y*p.y);
-	lc_.a=Math.sqrt(e.movementX*e.movementX+e.movementY*e.movementY);
+	lc_.a=Math.sqrt((lc_.pmx-e.clientX)*(lc_.pmx-e.clientX)+(lc_.pmy-e.clientY)*(lc_.pmy-e.clientY));
+	lc_.pmx=e.clientX;lc_.pmy=e.clientY;
 	if(lc.classList.contains('press')){
 		log.textContent=JSON.stringify(p);
 		lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.max(80,128-p.l)/128})`;
