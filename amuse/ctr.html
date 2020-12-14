@@ -7,9 +7,9 @@
 <body>
 <style>
 	body{position:relative;height:90vh;user-select:none;-webkit-user-select:none;touch-action:none;}
-	#lc{position:absolute;width:128px;height:128px;border:2px solid #8888;border-radius:50%;bottom:10px;pointer-events:none;}
-	#lc::before{content:"";display:block;width:32px;height:32px;border:4px solid #888;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
-	#lc::after{content:"";display:block;width:100%;height:100%;border:4px solid #0000;border-top:4px solid #888;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+	#lc{position:absolute;border:2px solid #8888;border-radius:50%;bottom:16px;left:10px;pointer-events:none;transition:top .1s,left .1s}
+	#lc:not(.press){width:32px;height:32px;}
+	#lc.press{width:128px;height:128px;background:#8884;border:4px solid #0000;border-top:4px solid #888}
 </style>
 
 <div id="lc"></div>
@@ -17,32 +17,28 @@
 
 <script>
 'use strict';
-var lc_={stl:getComputedStyle(lc)},psta={};
-lc_.w=lc_.stl.width;lc_.h=lc_.stl.height;lc_.l=lc_.stl.left;lc_.t=lc_.stl.top;
+var lc_={style:getComputedStyle(lc)},psta={},lcsa=[lc_.style.left,lc_.style.top];
 const px2n=x=>Number(x.slice(0,-2));
 console.log(lc_)
 window.addEventListener('pointerdown',e=>{
 	console.log(e);
-	lc_.pdx=e.clientX;lc_.pdy=e.clientY;psta.press=true;
-	lc.style.left=(lc_.pdx-px2n(lc_.stl.width)*.5)+'px';lc.style.top=(lc_.pdy-px2n(lc_.stl.height)*.5)+'px';
-	lc_.pdl=lc.style.left;lc_.pdt=lc.style.top;
+	lc_.pdx=e.clientX;lc_.pdy=e.clientY;lc.classList.add('press');
+	lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5}px`;
+	lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`
 });
 window.addEventListener('pointermove',e=>{
 	log.textContent=e.pressure;
 	var p={x:e.clientX-lc_.pdx,y:-e.clientY+lc_.pdy};
-	p.l=Math.sqrt(p.x*p.x+p.y*p.y);p.l=Math.min(64,p.l)
-	if(psta.press){
-		lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg)`;
-		lc.style.left=`${px2n(lc_.pdl)-p.l*.5}px`;
-		lc.style.top=`${px2n(lc_.pdt)-p.l*.5}px`;
-		lc.style.width=`${px2n(lc_.w)+p.l}px`;
-		lc.style.height=`${px2n(lc_.h)+p.l}px`;
+	p.l=Math.sqrt(p.x*p.x+p.y*p.y);
+	if(lc.classList.contains('press')){
+		lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.max(80,128-p.l)/128})`;
 	}
 });
 window.addEventListener('pointerup',e=>{
-	psta.press=false;
-	lc.style.transform='none';
-	lc.style.width=lc_.w;lc.style.height=lc_.h;lc.style.left=lc_.l;lc.style.top=lc_.t;
+	lc.classList.remove('press');
+	lc.style.left=lcsa[0];
+	lc.style.top=lcsa[1];
+	lc.style.transform='scale(1)';
 });
 </script>
 </body>
