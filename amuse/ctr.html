@@ -45,7 +45,7 @@ window.addEventListener('pointermove',e=>{
 			log.textContent=JSON.stringify(p);
 			lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5-px2n(lc_.style.borderWidth)}px`;
 			lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5-px2n(lc_.style.borderWidth)}px`;
-			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.min(128,Math.max(64,144-p.l))/128})`;
+			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.min(128,Math.max(64,160-p.l))/128})`;
 		}
 	}
 });
