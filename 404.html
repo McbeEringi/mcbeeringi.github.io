@@ -34,7 +34,7 @@
 			リダイレクトします<br>
 			<div class="bar"><div></div></div>
 			<br>
-			私が後継で開発している<a href="https://mcbeeringi.github.io/esbe-2g">ESBE_2Gはこちら</a>
+			私が後継で開発していた<a href="https://mcbeeringi.github.io/esbe-2g">ESBE_2Gはこちら</a>
 		</div>
 		<br><hr><br>
 		<a href="" id="log"></a>
@@ -43,7 +43,7 @@
 			if(fixed.match(/mcbeeringi\.github\.io\/esbe-1g/)){
 				pre.style.display="none";
 				esbefg.style.display="block";
-				fixed = "https://nari0978.github.io/1g/"+(fixed.match(/info/i)?"esbe-info.html":"1g.html");
+				fixed = "https://nari0978.github.io/1g/"+(fixed.match(/info/i)?"1g-info.html":"1g.html");
 				log.innerText = fixed;log.href = fixed;
 				setTimeout(()=>location.href=fixed, 5000);
 			}else{
@@ -58,12 +58,6 @@
 					[/amuse\/bf/i,"apps/brainf"]
 				];
 				dict.forEach(x=>fixed=fixed.replace(x[0],x[1]));
-				/*
-				fixed = fixed.replace(/others\/gl/i,"apps/webgl/index").replace(/apps\/fsh/i,"apps/webgl/fsh");
-				fixed = fixed.replace(/others\/aes/i,"apps/aes").replace(/others\/col/i,"apps/col").replace(/others\/unicode/i,"apps/unc").replace(/others\/sosu-/i,"apps/sosu-").replace(/others\/calpis/i,"apps/calpis");
-				fixed = fixed.replace(/others\/bmp/i,"apps/mc/glyph").replace(/apps\/mc\/bmp/i,"apps/mc/glyph").replace(/others\/arch/i,"apps/mc/arch").replace(/others\/poly/i,"apps/mc/poly");
-				fixed = fixed.replace(/others\/sky/i,"sky/index").replace(/apps\/sky/i,"sky");
-				*/
 				log.innerText = fixed;log.href = fixed;
 				if(location.href==fixed){
 					pre.style.display="none";
