@@ -27,7 +27,7 @@ console.log(lc_)
 window.addEventListener('pointerdown',e=>{
 	console.log(e);
 	lc_.pdx=e.clientX;lc_.pdy=e.clientY;lc.classList.add('press');
-	lc_.pmx=0;lc_.pmy=0;
+	lc_.pmx=e.clientX;lc_.pmy=e.clientY;lc_.a=0;
 	lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5}px`;
 	lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`
 });
