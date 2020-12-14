@@ -21,31 +21,39 @@
 
 <script>
 'use strict';
-var lc_={style:getComputedStyle(lc)};lc_.l=lc_.style.left;lc_.r=lc_.style.right
+var lc_={style:getComputedStyle(lc)},psta=0;lc_.l=lc_.style.left;lc_.r=lc_.style.right;
 const px2n=x=>Number(x.slice(0,-2));
 console.log(lc_)
 window.addEventListener('pointerdown',e=>{
 	console.log(e);
-	lc_.pdx=e.clientX;lc_.pdy=e.clientY;lc.classList.add('press');
-	lc_.pmx=e.clientX;lc_.pmy=e.clientY;lc_.a=0;
-	lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5}px`;
-	lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`
+	if(!psta){
+		psta=e.pointerId;
+		lc_.pdx=e.clientX;lc_.pdy=e.clientY;lc.classList.add('press');
+		lc_.pmx=e.clientX;lc_.pmy=e.clientY;lc_.a=0;
+		lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5}px`;
+		lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`
+	}
 });
 window.addEventListener('pointermove',e=>{
-	var p={x:e.clientX-lc_.pdx,y:-e.clientY+lc_.pdy};
-	p.l=Math.sqrt(p.x*p.x+p.y*p.y);
-	lc_.a=Math.sqrt((lc_.pmx-e.clientX)*(lc_.pmx-e.clientX)+(lc_.pmy-e.clientY)*(lc_.pmy-e.clientY));
-	lc_.pmx=e.clientX;lc_.pmy=e.clientY;
-	if(lc.classList.contains('press')){
-		log.textContent=JSON.stringify(p);
-		lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.max(80,128-p.l)/128})`;
+	if(psta==e.pointerId){
+		var p={x:e.clientX-lc_.pdx,y:-e.clientY+lc_.pdy};
+		p.l=Math.sqrt(p.x*p.x+p.y*p.y);
+		lc_.a=Math.sqrt((lc_.pmx-e.clientX)*(lc_.pmx-e.clientX)+(lc_.pmy-e.clientY)*(lc_.pmy-e.clientY));
+		lc_.pmx=e.clientX;lc_.pmy=e.clientY;
+		if(lc.classList.contains('press')){
+			log.textContent=JSON.stringify(p);
+			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.max(80,128-p.l)/128})`;
+		}
 	}
 });
 const post=e=>{
-	lc.classList.remove('press');
-	log.textContent+='\nflick: '+lc_.a;
-	lc.style.left=lc_.l;lc.style.top=lc_.r;
-	lc.style.transform='none';
+	if(psta==e.pointerId){
+		psta=0;
+		lc.classList.remove('press');
+		log.textContent+='\nflick: '+lc_.a;
+		lc.style.left=lc_.l;lc.style.top=lc_.r;
+		lc.style.transform='none';
+	}
 };
 window.addEventListener('pointerup',post);
 window.addEventListener('pointercancel',post);
