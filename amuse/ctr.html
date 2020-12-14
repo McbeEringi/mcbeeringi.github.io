@@ -28,21 +28,24 @@ window.addEventListener('pointerdown',e=>{
 	console.log(e);
 	if(!psta){
 		psta=e.pointerId;
-		lc_.pdx=e.clientX;lc_.pdy=e.clientY;lc.classList.add('press');
+		lc_.pdx=e.clientX;lc_.pdy=e.clientY;
 		lc_.pmx=e.clientX;lc_.pmy=e.clientY;lc_.a=0;
 		lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5}px`;
-		lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`
+		lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`;
 	}
 });
 window.addEventListener('pointermove',e=>{
 	if(psta==e.pointerId){
+		lc.classList.add('press');
 		var p={x:e.clientX-lc_.pdx,y:-e.clientY+lc_.pdy};
 		p.l=Math.sqrt(p.x*p.x+p.y*p.y);
 		lc_.a=Math.sqrt((lc_.pmx-e.clientX)*(lc_.pmx-e.clientX)+(lc_.pmy-e.clientY)*(lc_.pmy-e.clientY));
 		lc_.pmx=e.clientX;lc_.pmy=e.clientY;
 		if(lc.classList.contains('press')){
 			log.textContent=JSON.stringify(p);
-			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.max(64,128-p.l*.5)/128})`;
+			lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5}px`;
+			lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`;
+			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.min(128,Math.max(64,144-p.l*.5))/128})`;
 		}
 	}
 });
