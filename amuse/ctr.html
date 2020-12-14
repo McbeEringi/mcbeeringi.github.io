@@ -17,7 +17,7 @@
 
 <script>
 'use strict';
-var lc_={style:getComputedStyle(lc)},psta={},lcsa=[lc_.style.left,lc_.style.top];
+var lc_={style:getComputedStyle(lc)};lc_.l=lc_.style.left;lc_.r=lc_.style.right
 const px2n=x=>Number(x.slice(0,-2));
 console.log(lc_)
 window.addEventListener('pointerdown',e=>{
@@ -27,18 +27,19 @@ window.addEventListener('pointerdown',e=>{
 	lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`
 });
 window.addEventListener('pointermove',e=>{
-	log.textContent=e.pressure;
 	var p={x:e.clientX-lc_.pdx,y:-e.clientY+lc_.pdy};
 	p.l=Math.sqrt(p.x*p.x+p.y*p.y);
+	lc_.a=Math.sqrt(e.movementX*e.movementX+e.movementY*e.movementY);
 	if(lc.classList.contains('press')){
+		log.textContent=JSON.stringify(p);
 		lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.max(80,128-p.l)/128})`;
 	}
 });
 window.addEventListener('pointerup',e=>{
 	lc.classList.remove('press');
-	lc.style.left=lcsa[0];
-	lc.style.top=lcsa[1];
-	lc.style.transform='scale(1)';
+	log.textContent+='\n'+lc_.a;
+	lc.style.left=lc_.l;lc.style.top=lc_.r;
+	lc.style.transform='none';
 });
 </script>
 </body>
