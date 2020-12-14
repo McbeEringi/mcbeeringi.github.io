@@ -38,12 +38,14 @@ window.addEventListener('pointermove',e=>{
 		lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.max(80,128-p.l)/128})`;
 	}
 });
-window.addEventListener('pointerup',e=>{
+const post=e=>{
 	lc.classList.remove('press');
 	log.textContent+='\nflick: '+lc_.a;
 	lc.style.left=lc_.l;lc.style.top=lc_.r;
 	lc.style.transform='none';
-});
+};
+window.addEventListener('pointerup',post);
+window.addEventListener('pointercancel',post);
 </script>
 </body>
 </html>
