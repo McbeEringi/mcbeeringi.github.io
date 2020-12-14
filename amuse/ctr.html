@@ -21,7 +21,7 @@
 
 <script>
 'use strict';
-var lc_={style:getComputedStyle(lc)},psta=0;lc_.l=lc_.style.left;lc_.r=lc_.style.right;
+var lc_={style:getComputedStyle(lc)},psta=0;lc_.l=lc_.style.left;lc_.t=lc_.style.top;
 const px2n=x=>Number(x.slice(0,-2));
 console.log(lc_)
 window.addEventListener('pointerdown',e=>{
@@ -51,7 +51,7 @@ const post=e=>{
 		psta=0;
 		lc.classList.remove('press');
 		log.textContent+='\nflick: '+lc_.a;
-		lc.style.left=lc_.l;lc.style.top=lc_.r;
+		lc.style.left=lc_.l;lc.style.top=lc_.t;
 		lc.style.transform='none';
 	}
 };
