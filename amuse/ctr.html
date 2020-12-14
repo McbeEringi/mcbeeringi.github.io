@@ -8,9 +8,9 @@
 <style>
 	body,h1{margin:0;}
 	.box{background:#ccc;height:100vh;position:relative;user-select:none;-webkit-user-select:none;touch-action:none;}
-	#lc{position:absolute;border:2px solid #8888;border-radius:50%;bottom:16px;left:10px;pointer-events:none;transition:top .1s,left .1s}
-	#lc:not(.press){width:32px;height:32px;}
-	#lc.press{width:128px;height:128px;background:#8884;border:8px solid #0000;border-top:8px solid #888}
+	#lc{position:absolute;bottom:16px;left:16px;width:128px;height:128px;border:8px solid #0000;pointer-events:none;transition:top .1s,left .1s;}
+	#lc::before{content:"";display:block;width:32px;height:32px;border:2px solid #8888;border-radius:50%;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;}
+	#lc.press{background:#8884;border-top-color:#888;border-radius:50%;}
 </style>
 
 <div class="box">
@@ -30,8 +30,8 @@ window.addEventListener('pointerdown',e=>{
 		psta=e.pointerId;
 		lc_.pdx=e.clientX;lc_.pdy=e.clientY;
 		lc_.pmx=e.clientX;lc_.pmy=e.clientY;lc_.a=0;
-		lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5}px`;
-		lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`;
+		lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5-px2n(lc_.style.borderWidth)}px`;
+		lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5-px2n(lc_.style.borderWidth)}px`;
 	}
 });
 window.addEventListener('pointermove',e=>{
@@ -43,8 +43,8 @@ window.addEventListener('pointermove',e=>{
 		lc_.pmx=e.clientX;lc_.pmy=e.clientY;
 		if(lc.classList.contains('press')){
 			log.textContent=JSON.stringify(p);
-			lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5}px`;
-			lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5}px`;
+			lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5-px2n(lc_.style.borderWidth)}px`;
+			lc.style.top=`${lc_.pdy-px2n(lc_.style.height)*.5-px2n(lc_.style.borderWidth)}px`;
 			lc.style.transform=`rotate(${Math.atan2(p.x,p.y)*180/Math.PI}deg) scale(${Math.min(128,Math.max(64,144-p.l*.5))/128})`;
 		}
 	}
