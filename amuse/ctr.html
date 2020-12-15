@@ -2,7 +2,8 @@
 <html lang="en" dir="ltr">
 <head>
 	<meta charset="utf-8">
-	<title></title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>ctr</title>
 </head>
 <body>
 <style>
@@ -10,25 +11,26 @@
 	body,h1{margin:0;}
 	#box{background:#eee;height:100%;user-select:none;-webkit-user-select:none;touch-action:none;box-shadow: 0 0 0 16px #888 inset;}
 	#lc{position:absolute;top:calc(100% - 176px);left:32px;width:128px;height:128px;border:8px solid #0000;pointer-events:none;transition:top .1s,left .1s;}
-	#lc::before{content:"";display:block;width:32px;height:32px;border:4px solid #8888;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+	#lc::before{content:"";display:block;width:32px;height:32px;border:4px solid #8888;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);transition:.5s;}
 	#lc.press{background:#8884;border-color:#8882;border-top-color:#888;border-radius:50%;box-shadow:0 0 16px #888;}
+	#lc.press::before{opacity:.2;}
 </style>
 
 <div id="box">
-	<h1>controllertest</h1>
+	<h1>ctr test</h1>
 	<pre id="log"></pre>
 	<div id="lc"></div>
 </div>
 
 <script>
 'use strict';
-var lc_={style:getComputedStyle(lc)},psta=0;
+var lc_={style:getComputedStyle(lc)},lcpid=0;
 const px2n=x=>Number(x.slice(0,-2));
 console.log(lc_)
 window.addEventListener('pointerdown',e=>{
 	console.log(e);
-	if(!psta){
-		psta=e.pointerId;
+	if(!lcpid&&e.clientX<window.innerWidth*.5){
+		lcpid=e.pointerId;
 		lc_.pdx=e.clientX;lc_.pdy=e.clientY;
 		lc_.pmx=e.clientX;lc_.pmy=e.clientY;lc_.a=0;
 		lc.style.left=`${lc_.pdx-px2n(lc_.style.width)*.5-px2n(lc_.style.borderWidth)}px`;
@@ -37,7 +39,7 @@ window.addEventListener('pointerdown',e=>{
 });
 window.addEventListener('pointermove',e=>{
 	//e.preventDefault();
-	if(psta==e.pointerId){
+	if(lcpid==e.pointerId){
 		lc.classList.add('press');
 		var p={x:e.clientX-lc_.pdx,y:-e.clientY+lc_.pdy};
 		p.l=Math.sqrt(p.x*p.x+p.y*p.y);
@@ -52,8 +54,8 @@ window.addEventListener('pointermove',e=>{
 	}
 });
 const post=e=>{
-	if(psta==e.pointerId){
-		psta=0;
+	if(lcpid==e.pointerId){
+		lcpid=0;
 		lc.classList.remove('press');
 		log.textContent+='\nflick: '+lc_.a;
 		lc.style.left='';lc.style.top='';
