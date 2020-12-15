@@ -15,13 +15,12 @@
 
 <div id="box">
 	<h1>controllertest</h1>
-	<button onclick="box.requestFullscreen()">fsc</button>
 	<pre id="log"></pre>
 	<div id="lc"></div>
 </div>
 
 <script>
-'use strict';
+'use strict';box.requestFullscreen();
 var lc_={style:getComputedStyle(lc)},psta=0;
 const px2n=x=>Number(x.slice(0,-2));
 const resize=e=>{box.style.height=`${window.innerHeight}px`;}
