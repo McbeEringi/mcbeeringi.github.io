@@ -27,6 +27,7 @@ const resize=e=>{document.querySelector('.box').style.height=`${window.innerHeig
 window.addEventListener('resize',resize);resize();
 console.log(lc_)
 window.addEventListener('pointerdown',e=>{
+	e.preventDefault();
 	console.log(e);
 	if(!psta){
 		psta=e.pointerId;
@@ -37,6 +38,7 @@ window.addEventListener('pointerdown',e=>{
 	}
 });
 window.addEventListener('pointermove',e=>{
+	e.preventDefault();
 	if(psta==e.pointerId){
 		lc.classList.add('press');
 		var p={x:e.clientX-lc_.pdx,y:-e.clientY+lc_.pdy};
@@ -52,6 +54,7 @@ window.addEventListener('pointermove',e=>{
 	}
 });
 const post=e=>{
+	e.preventDefault();
 	if(psta==e.pointerId){
 		psta=0;
 		lc.classList.remove('press');
