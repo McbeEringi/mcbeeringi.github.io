@@ -27,7 +27,7 @@ const resize=e=>{document.querySelector('.box').style.height=`${window.innerHeig
 window.addEventListener('resize',resize);resize();
 console.log(lc_)
 window.addEventListener('pointerdown',e=>{
-	console.log(e);resize();
+	console.log(e);
 	if(!psta){
 		psta=e.pointerId;
 		lc_.pdx=e.clientX;lc_.pdy=e.clientY;
