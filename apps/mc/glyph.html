@@ -59,7 +59,7 @@ const set=x=>{ctx.clearRect(0,0,c.width,c.height);var li=[];
 		ctx.fillText(str,cw*(i%16)+strm.actualBoundingBoxLeft,ch*(Math.floor(i*.0625)+1)/hs-btm,cw-strm.actualBoundingBoxLeft);
 		if(hs!=1)ctx.scale(1,1/hs);
 	}
-	console.log('shrunked',li);
+	if(li.length)console.log('shrunked',x,li);
 },
 font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
 csize_=x=>{c.width=x*16;c.height=x*16;ctx.fillStyle='#fff';ctx.textAlign='left';font_(fsize.value,ffamily.value);},
