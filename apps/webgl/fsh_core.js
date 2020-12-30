@@ -1,6 +1,5 @@
-var imgres=[],dftflag,curdat,curname;
-diffuse.addEventListener('touchstart',()=>{dftflag=true;diffuse.src=canvas.toDataURL();},{passive:true})
-diffuse.onmousedown=()=>{if(dftflag)dftflag=false;else diffuse.src=canvas.toDataURL();}
+var imgres=[],curdat,curname;
+diffuse.onpointerdown=()=>{diffuse.src=canvas.toDataURL();console.log(diffuse.src);};
 const llog=x=>log.insertAdjacentHTML('beforeend',x),
 copy=x=>{navigator.clipboard.writeText(x).catch(e=>console.log(e));return x;};
 
