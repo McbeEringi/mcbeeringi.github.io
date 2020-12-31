@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<style>
+			html,body{height:100%;margin:0;color:#fff;font-family:sans-serif;font-weight:lighter;}
+			body{background:url("../img/winter.jpg");background-size:cover;}
+			.main{text-align:center;font-size:6em;padding-top:.2em;}
+			.sub{text-align:center;font-size:1.2em;}
+			.sta{text-align:right;font-size:.8em;}
+			.bar{display:inline-block;margin:8px 15px;width:60px;height:2px;border-radius:1px;background:#ccc8;-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px);}
+			.batt{display:inline-block;}.batt>div,.batt>div::before,.batt::after{vertical-align:middle;content:"";display:inline-block;}
+			.batt>div{width:20px;height:8px;padding:2px;box-shadow:0 0 0 1px #aaac inset;border-radius:3px;overflow:hidden;margin-right:1px;}
+			.batt>div::before{background:#fff/*68CD67*/;display:block;height:100%;width:50%;border-radius:1px;}.batt::after{width:1px;height:3px;border-radius:0 1px 1px 0;background:#aaac;margin-right:4px;}
+			img{width:70px;position:absolute;bottom:48px;right:48px;}
+			.text{position:absolute;bottom:128px;right:29px;border-radius:16px;width:284px;background:#4448;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:4px 16px;}
+			.text p{text-align:center;font-weight:bold;color:#0000;caret-color:#fff;background:linear-gradient(45deg,#A9C2F9,#AFE1FC);-webkit-background-clip:text;}
+		</style>
+		<div class="sta">50% <div class="batt"><div></div></div><br><div class="bar"></div></div>
+		<div class="main" contenteditable>1:35</div>
+		<div class="sub" contenteditable>12月32日 金曜日</div>
+		<div class="siri">
+			<div class="text"><p contenteditable></p></div>
+			<img src="img/siri.png" alt="">
+	</body>
+</html>
