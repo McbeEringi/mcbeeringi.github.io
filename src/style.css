@@ -17,7 +17,6 @@ header{font-family:'Lato';background-color:#8888;backdrop-filter:blur(16px);-web
 header>a{height:48px;display:block;white-space:nowrap;line-height:48px;font-size:130%;font-weight:bold;}header>a::before{content:"";display:inline-block;width:32px;height:32px;margin:8px 2px;background:url("https://mcbeeringi.github.io/img/6x6.png");background-size:100%;vertical-align:bottom;}
 footer{text-align:center;padding:1em;}
 /*nav*/
-nav{white-space:nowrap;overflow:visible;}
 #hnavd{margin-right:8px;display:inline-block;}#hnavd *{vertical-align:middle;margin:4px;}#hnavmcb{display:none;}
 #hnavm{background:#111a;display:none;position:absolute;left:50%;top:0;width:60%;height:100vh;transform:translateX(-50%);opacity:0;pointer-events:none;transition:.3s;flex-direction:column;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 #hnavm *{display:block;width:100%;text-align:center;margin:8px auto;font-size:32px;}
