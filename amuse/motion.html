@@ -21,7 +21,7 @@
 		<div id="rot">
 			↑
 			<div style="background:#f884;transform:rotateY(90deg);"></div>
-			<div style="background:#8f84;"><pre id="log"></pre><pre id="log2"></pre></div>
+			<div style="background:#8f84;"><pre id="log">build: 2101090</pre><pre id="log2"></pre></div>
 			<div style="background:#88f4;transform:rotateX(90deg);"></div>
 		</div>
 	</div>
@@ -29,11 +29,12 @@
 		<pre id="a_log"></pre><canvas id="canvas"></canvas>
 	</div>
 </div>
-
+<pre id="log3"></pre>
 <script>
 canvas.width=1024;canvas.height=1024;
-var ctx=canvas.getContext('2d'),mo_a={"x":0,"y":0,"z":0},imgd;//,adt,v=[0,0,0];
+var ctx=canvas.getContext('2d'),mo_a={"x":0,"y":0,"z":0},imgd,adt,v=[0,0,0];
 ctx.imageSmoothingEnabled=false;
+
 const render=()=>{
 	imgd=ctx.getImageData(0,0,canvas.width,canvas.height);
 	ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -49,7 +50,7 @@ const render=()=>{
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
 		mo_a=e.acceleration;render();
-		//adt=[mo_a.x,mo_a.y,mo_a.z].map(x=>-x*e.interval);v=v.map((x,i)=>x+adt[i]);log2.textContent='V(km/h)\n'+v.map(x=>(x*3.6).toFixed(2)).join('\n');
+		adt=[mo_a.x,mo_a.y,mo_a.z].map(x=>x*1000/e.interval);v=v.map((x,i)=>x+adt[i]);log3.textContent='V(km/h)\n'+v.map(x=>(x*3.6).toFixed(2)).join('\n');
 		a_log.textContent=`${mo_a.x.toFixed(2)}\n${mo_a.y.toFixed(2)}\n${mo_a.z.toFixed(2)}`;
 		log.textContent=`motion : ${e.interval}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
@@ -59,7 +60,7 @@ R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.ro
 const ormain=()=>{
 	window.addEventListener('deviceorientation',e=>{
 		o_log.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
-		rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${e.alpha}deg)`;
+		rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${-e.alpha*(window.navigator.userAgent.match(/(iPad|iPhone|iPod|Firefox)/i)?-1:1)}deg)`;
 	});
 };
 const reqp=()=>{
