@@ -60,7 +60,7 @@ R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.ro
 const ormain=()=>{
 	window.addEventListener('deviceorientation',e=>{
 		o_log.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
-		rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${-e.alpha*(window.navigator.userAgent.match(/(iPad|iPhone|iPod|Firefox)/i)?-1:1)}deg)`;
+		rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${-e.alpha*(window.navigator.userAgent.match(/(Apple|Safari|Firefox)/i)?-1:1)}deg)`;
 	});
 };
 const reqp=()=>{
