@@ -51,7 +51,7 @@ const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
 		mo_a=e.acceleration;render();
 		v=v.map((x,i)=>x+mo_a[['x','y','z'][i]]*e.interval*e.interval*.000001);
-		log3.textContent=e.interval+'\nV(km/h)\n'+v.map(x=>(x*3.6).toFixed(2)).join('\n');
+		log3.textContent=e.interval+'\nV(km/h)\n'+v.map(x=>(x*3.6).toFixed(6)).join('\n');
 		a_log.textContent=`${mo_a.x.toFixed(2)}\n${mo_a.y.toFixed(2)}\n${mo_a.z.toFixed(2)}`;
 		log.textContent=`motion : ${e.interval}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
