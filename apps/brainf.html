@@ -220,7 +220,7 @@ enmain=(s,md)=>{
 	ind.forEach((x,i)=>{
 		var p=x-(ind[i-1]||0),to=clm[x][1]-clm[x][0];clm[x].shift();
 		s+=(p>0?'>':'<').repeat(Math.abs(p));
-		s+=(to>0?'+':'-').repeat(Math.abs(to))+'.';
+		p=Math.abs(to);s+=(to>0^p>128?'+':'-').repeat(p>128?256-p:p)+'.';
 		console.log(i,x,s);console.log(clm);
 	});
 
