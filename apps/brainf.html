@@ -134,36 +134,34 @@ enmain=(s,md)=>{
 	const round=x=>-Math.sign(x)*Math.round(-Math.abs(x)),
 	freq=inp=>{
 		const joinPair=x=>{
-			var indm=Math.max(...(x.join('').split('')));
+			var indm=x.reduce((a,y)=>Math.max(y[0],y[1],a||0));
 			console.log('joinPair',x,indm);
-			var ind=new Array(indm+1).fill(null),s=new Array(indm).concat(x[0].split(''));
+			var ind=new Array(indm+1).fill(null),s=new Array(indm).concat(x[0]);
 			x.shift();ind[s[indm]]=indm;ind[s[indm+1]]=indm+1;
-			var tmp,flag=true;
+			var flag=true;
 			while(flag){
 				flag=false;
 				x=x.map((e,i)=>{
-					tmp=e.split('');
-					if(ind[tmp[0]]&&!ind[tmp[1]]){
-						if(!(s[ind[tmp[0]]+1]+1)){s[ind[tmp[0]]+1]=tmp[1];ind[tmp[1]]=ind[tmp[0]]+1;}//ok
-						else if(!(s[ind[tmp[0]]-1]+1)){s[ind[tmp[0]]-1]=tmp[1];ind[tmp[1]]=ind[tmp[0]]-1;}//ok
+					if(ind[e[0]]&&!ind[e[1]]){
+						if(!(s[ind[e[0]]+1]+1)){s[ind[e[0]]+1]=e[1];ind[e[1]]=ind[e[0]]+1;}//ok
+						else if(!(s[ind[e[0]]-1]+1)){s[ind[e[0]]-1]=e[1];ind[e[1]]=ind[e[0]]-1;}//ok
 					}//doom
-					else if(!ind[tmp[0]]&&ind[tmp[1]]){
-						if(!(s[ind[tmp[1]]+1]+1)){s[ind[tmp[1]]+1]=tmp[0];ind[tmp[0]]=ind[tmp[1]]+1;}//ok
-						else if(!(s[ind[tmp[1]]-1]+1)){s[ind[tmp[1]]-1]=tmp[0];ind[tmp[0]]=ind[tmp[1]]-1;}//ok
+					else if(!ind[e[0]]&&ind[e[1]]){
+						if(!(s[ind[e[1]]+1]+1)){s[ind[e[1]]+1]=e[0];ind[e[0]]=ind[e[1]]+1;}//ok
+						else if(!(s[ind[e[1]]-1]+1)){s[ind[e[1]]-1]=e[0];ind[e[0]]=ind[e[1]]-1;}//ok
 					}//doom
-					else if(!ind[tmp[0]]&&!ind[tmp[1]])return e;//pass
-					//else if(ind[tmp[0]]&&ind[tmp[1]])//doom
+					else if(!ind[e[0]]&&!ind[e[1]])return e;//pass
+					//else if(ind[e[0]]&&ind[e[1]])//doom
 					flag=true;console.log(e,s,ind);
 				});
-				x=x.filter(x=>x);console.log(x);
+				x=x.filter(y=>y);console.log(x);
 			}
-			return [s.filter(e=>e),x];
+			return [s.filter(e=>e+1),x];
 		}
 		var inpm=[...new Array(Math.max(...inp)+1).keys()];
 		if(inpm.length<3){console.log('freq skipped',inpm);return inpm;}
-		inp=inp.join('');
-		var arr=inp.match(/.{2}/g).concat(inp.substring(1).match(/.{2}/g));
-		arr=arr.filter(x=>x[0]!=x[1]).map(x=>x[0]>x[1]?x[1]+x[0]:x);
+		var arr=inp.map((x,i,c)=>{if(c[i+1])return[x,c[i+1]];})
+			.filter(x=>x&&x[0]!=x[1]).map(x=>x[0]>x[1]?[x[1],x[0]]:x);
 		//freq sort
 		var fq={};arr.forEach(x=>fq[x]=0);
 		var s=arr.filter(x=>++fq[x]==1);
@@ -174,7 +172,7 @@ enmain=(s,md)=>{
 			tmp=joinPair(s);s=tmp[1];out=out.concat(tmp[0]);
 			if(tmp[1].length==0)break;
 		}
-		out=out.concat(inpm.filter(x=>out.indexOf(String(x))==-1)).map(x=>Number(x));console.log('freq',out);
+		out=out.concat(inpm.filter(x=>out.indexOf(x)==-1));console.log('freq',out);
 		return out;
 	},
 	slm=arr=>{
