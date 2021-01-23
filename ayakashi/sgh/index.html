@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>index</title>
+	</head>
+	<body>
+		<style>
+			:root{background:#222;font-size:18px;color:#fff;user-select:none;font-family:sans-serif;}
+			.grid{background:#cccc;border-radius:4px;color:#222;box-shadow:0 0 4px #888;margin:8px;transition:.1s;padding:4px;}
+			.grid:hover{background:#fff;}
+			.box{display:inline-block;max-width:320px;width:100%;vertical-align:top;}
+		</style>
+		<div class="box">
+			リスニング
+			<div class="grid"><a href="listening/swap.html">文を聞いて単語並び替え</a></div>
+			<div class="grid"><a href="listening/pred.html">次の会話予測</a></div>
+			<div class="grid"><a href="listening/grasp.html">内容理解</a></div>
+		</div>
+		<div class="box">
+			空欄補充
+			<div class="grid"><a href="blank/word.html">単語</a></div>
+			<div class="grid"><a href="blank/idiom.html">熟語</a></div>
+		</div>
+		<script>
+			document.querySelectAll('.grid').ontoucstart=()=>{};
+		</script>
+	</body>
+</html>
