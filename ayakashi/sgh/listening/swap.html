@@ -2,19 +2,59 @@
 <html lang="ja" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<title>swap</title>
+		<title>並び替え</title>
 	</head>
 	<body>
 		<style>
 			:root{background:#222;font-size:18px;color:#fff;user-select:none;font-family:sans-serif;}
+			html,body{height:100%;margin:0;}h2{margin:0;}
 			.grid{background:#cccc;border-radius:4px;color:#222;box-shadow:0 0 4px #888;margin:8px;transition:.1s;padding:4px;}
 			.grid:hover{background:#fff;}
 			.box{display:inline-block;max-width:320px;width:100%;vertical-align:top;}
+
+			#main{height:calc(100% - 32px);background:#888;display:none;overflow:hidden;}
+			.jaw{height:40%;background:#ccc;position:relative;}
+			#ja{position:absolute;top:50%;width:100%;transform:translateY(-50%);text-align:center;color:#000;}
+			#ans{height:20%;}
+			#cand{height:40%;background:#aaa;}
+			p{display:inline-block;padding:4px 8px;margin:4px;background:#eee;color:#000;border-radius:4px;font-size:18px;}
 		</style>
-		<a href="../" class="grid">top</a><br>
-		swap
+		<div style="height:24px;">
+			<a href="../" style="background:#ccc;">top</a>>swap
+		</div>
+		<div id="sbtn">
+			<div class="grid" onclick="start();"><h1 style="text-align:center;">start</h1></div>
+		</div>
+		<div id="main">
+			<div class="jaw">
+				<h2 id="ja">ja</h2>
+			</div><div id="ans"></div><div id="cand">
+
+			</div>
+		</div>
 		<script>
 		document.querySelectorAll('.grid').ontouchstart=()=>{};
+		const start=()=>{
+			sbtn.style.display='none';
+			main.style.display='block';
+			core();
+		},
+		dat=[
+			[
+				'彼女は持っていたなけなしのお金を奪われた',
+				'she/all/of/little/robbed/had/money/she/what/by/was'//（一字不要）
+			]
+		],
+		core=()=>{
+			var cur=dat[Math.floor(Math.random()*dat.length)];
+			ja.textContent=cur[0];
+			cur[1].split('/').map(x=>{
+				var e=document.createElement('p');
+				cand.appendChild(e);
+				e.textContent=x;
+				e.onclick=e=>{};
+			});
+		}
 		</script>
 	</body>
 </html>
