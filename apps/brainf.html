@@ -134,7 +134,7 @@ enmain=(s,md)=>{
 	const round=x=>-Math.sign(x)*Math.round(-Math.abs(x)),
 	freq=inp=>{
 		const joinPair=x=>{
-			var indm=x.reduce((a,y)=>Math.max(y[0],y[1],a||0));
+			var indm=x.reduce((a,y)=>Math.max(y[0],y[1],a),0);
 			console.log('joinPair',x,indm);
 			var ind=new Array(indm+1).fill(null),s=new Array(indm).concat(x[0]);
 			x.shift();ind[s[indm]]=indm;ind[s[indm+1]]=indm+1;
@@ -169,7 +169,7 @@ enmain=(s,md)=>{
 		//arr
 		var tmp,out=[];
 		while(true){
-			tmp=joinPair(s);s=tmp[1];out=out.concat(tmp[0]);
+			tmp=joinPair(s);out=out.concat(tmp[0]);s=tmp[1];
 			if(tmp[1].length==0)break;
 		}
 		out=out.concat(inpm.filter(x=>out.indexOf(x)==-1));console.log('freq',out);
