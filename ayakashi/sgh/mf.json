@@ -1,0 +1,20 @@
+{
+	"name":"SGH English",
+	"short_name":"SGH",
+	"description":"",
+	"icons":[{
+			"src":"img/sky.png",
+			"sizes":"512x512",
+			"type":"image/png"
+		},{
+			"src":"img/sky_192.png",
+			"sizes":"192x192",
+			"type":"image/png",
+			"purpose":"any maskable"
+		}],
+	"scope":"/sgh/",
+	"start_url":"index.html",
+	"display":"fullscreen",
+	"theme_color":"#ccc",
+	"background_color":"#222"
+}
