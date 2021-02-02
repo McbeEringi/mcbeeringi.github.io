@@ -1,5 +1,6 @@
 /*
 designed by @McbeEringi cc0
+21/02/02
 usage:
 <div class="menu">
 	<input type="checkbox" id="example">
@@ -128,5 +129,7 @@ usage:
 	transition:var(--transition);
 	pointer-events:auto;
 	opacity:0;
+	backdrop-filter:blur(4px);
+	-webkit-backdrop-filter:blur(4px);
 }
 .menu>input:checked+label+div+div>*{opacity:1;}
