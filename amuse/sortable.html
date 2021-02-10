@@ -1,0 +1,53 @@
+<html lang="en" dir="ltr"><head>
+		<meta charset="utf-8">
+		<title>sortable</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+	</head>
+	<body>
+	<script src="http://sortablejs.github.io/Sortable/Sortable.min.js"></script>
+	<style>
+		:root{background:#222;}
+		.stbw{background:#aaa;overflow:scroll;white-space:nowrap;min-width:140px;min-height:80px;max-width:100%;box-sizing:border-box;display:inline-block;vertical-align: bottom;border-radius:4px;}
+		.stb{min-width:64px;min-height:64px;margin:0 8px;background:#fff;display:inline-block;padding:0 8px;border-radius:4px;}
+		.sortable-chosen{background:#ff8;}
+		.sortable-ghost{background:#88f;opacity:0;}.sortable-drag{}
+	</style>
+	<div class="stbw">
+		<div class="stb">1<div class="stbw"></div>
+		</div><div class="stb">2<div class="stbw"></div>
+		</div><div class="stb">3<div class="stbw"></div>
+		</div><div class="stb">4<div class="stbw"></div>
+		</div><div class="stb">5<div class="stbw"></div>
+		</div><div class="stb">6<div class="stbw"></div>
+		</div><div class="stb">7<div class="stbw"></div>
+		</div><div class="stb">8<div class="stbw"></div>
+		</div><div class="stb">1<div class="stbw"></div>
+		</div><div class="stb">2<div class="stbw"></div>
+		</div><div class="stb">3<div class="stbw"></div>
+		</div><div class="stb">4<div class="stbw"></div>
+		</div><div class="stb">5<div class="stbw"></div>
+		</div><div class="stb">6<div class="stbw"></div>
+		</div><div class="stb">7<div class="stbw"></div>
+		</div><div class="stb">8<div class="stbw"></div>
+		</div>
+	</div>
+	<pre id="log"></pre>
+	<script>
+	var opt = {
+  group: {
+    name: "group_",
+    pull: true,
+    put: true,
+  },
+  draggable: ".stb",
+	swapThreshold: 1,
+  invertSwap: true,
+  animation: 150,
+  forceFallback: true,
+  delay: 75,delayOnTouchOnly: true,
+};
+
+document.querySelectorAll(".stbw").forEach(x=>new Sortable(x, opt));
+
+	</script>
+</body></html>
