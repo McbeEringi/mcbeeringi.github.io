@@ -6,7 +6,7 @@
 	<body>
 	<script src="https://unpkg.com/sortablejs/Sortable.min.js"></script>
 	<style>
-		:root{background:#222;user-select:none;-webkit-user-select:none;}
+		:root{background:#222;user-select:none;-webkit-user-select:none;color:#fff;}pre{white-space:pre-wrap;}
 		.stbw{background:#4448;overflow:scroll;white-space:nowrap;min-width:64px;min-height:256px;max-width:100%;box-sizing:border-box;display:inline-block;vertical-align:bottom;border-radius:4px;}
 		.stb{min-width:64px;min-height:256px;margin:0 8px;background:#fff8;display:inline-block;padding:0 8px;border-radius:4px;vertical-align:bottom;}
 		.sortable-chosen{background:#ff8;}
@@ -31,23 +31,42 @@
 		</div><div class="stb">16<div class="stbw"></div>
 		</div>
 	</div>
+	<div id="test">
+		<div class="stb"><div class="stbw temp"></div>
+		</div><div class="stb">
+		</div>
+	</div>
 	<pre id="log"></pre>
 	<script>
-	var opt = {
-  group: {
-    name: "group_",
-    pull: true,
-    put: true,
-  },
-  draggable: ".stb",
-  invertSwap: true,
-  animation: 150,
-  forceFallback: true,
-	direction: 'horizontal',
-  delay: 75,delayOnTouchOnly: true,
-};
+	const opt = {
+		group: {
+			name: "group_",
+			pull: true,
+			put: true,
+		},
+		invertSwap: true,
+		animation: 150,
+		forceFallback: true,
+		direction: 'horizontal',
+		delay: 75,delayOnTouchOnly: true,
+	};
 
-document.querySelectorAll(".stbw").forEach(x=>new Sortable(x, opt));
+	new Sortable(test,{
+		group: {
+        name: 'group_',
+        pull: 'clone',
+        put: false
+    },
+		animation: 150,
+		forceFallback: true,
+    sort: false,
+		onEnd: e=>{
+			console.log(e);
+			if(e.pullMode=='clone'&&e.item.children.length)Array.from(e.item.children).forEach(e=>{e.classList.remove('temp');new Sortable(e,opt);});
+		},
+	})
+
+	document.querySelectorAll(".stbw:not(.temp)").forEach(x=>new Sortable(x, opt));
 
 	</script>
 </body></html>
