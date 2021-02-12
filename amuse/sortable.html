@@ -73,7 +73,7 @@ pull:(to,from)=>to.el.id=='trash'?true:'clone',
 		},
 		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:75,delayOnTouchOnly:true,
 	});
-	new Sortable(trash,{group:'group_',forceFallback:true,onAdd:e=>e.item.parentNode.removeChild(e.item)});
+	new Sortable(trash,{group:'group_',onAdd:e=>e.item.parentNode.removeChild(e.item)});
 
 
 	document.querySelectorAll(".stbw:not(.temp)").forEach(x=>new Sortable(x, opt));
