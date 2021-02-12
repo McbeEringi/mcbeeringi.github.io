@@ -8,10 +8,14 @@
 	<style>
 		:root{background:#222;user-select:none;-webkit-user-select:none;color:#fff;}pre{white-space:pre-wrap;}
 		.stbw{background:#4448;overflow:scroll;white-space:nowrap;min-width:64px;height:240px;max-width:100%;box-sizing:border-box;display:inline-block;vertical-align:bottom;border-radius:4px;}
-		.stb{min-width:16px;height:240px;margin:0 0 0 2px;background:#fff8;display:inline-block;padding:0 8px;border-radius:4px;vertical-align:bottom;box-sizing:border-box;}
+		.stb{min-width:16px;height:240px;margin:0 0 0 2px;background:#fff8;display:inline-block;padding:0 8px;border-radius:4px;vertical-align:bottom;box-sizing:border-box;overflow:hidden;}
 		.sortable-chosen{background:#fea;}
-		.sortable-ghost{animation:.83s infinite alternate wink;}.sortable-drag{}
-		@keyframes wink{0%{opacity:.2;}100%{opacity:.3;}}
+		.sortable-ghost{}.sortable-drag{animation:.5s infinite alternate wink;}
+		#temp,#clip{background:#fff4;display:inline-block;padding:8px;}
+		#trash{background:#f44 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64px' viewBox='0 0 5 5' %3E%3Cpath d='M1,1l3,3m-3,0l3,-3' stroke='%23fff' stroke-width='.2'/%3E%3C/svg%3E");width:64px;height:64px;border-radius:8px;overflow:hidden;display:inline-block;vertical-align:bottom;}
+		#trash .sortable-ghost{background:#f88;animation:.2s shake infinite;}
+		@keyframes wink{0%{opacity:.2;}100%{opacity:.4;}}
+		@keyframes shake{0%{transform:translate(1px,1px) rotate(0deg);}10%{transform:translate(-1px,-2px) rotate(-1deg);}20%{transform:translate(-3px,0px) rotate(1deg);}30%{transform:translate(3px,2px) rotate(0deg);}40%{transform:translate(1px,-1px) rotate(1deg);}50%{transform:translate(-1px,2px) rotate(-1deg);}60%{transform:translate(-3px,1px) rotate(0deg);}70%{transform:translate(3px,1px) rotate(-1deg);}80%{transform:translate(-1px,-1px) rotate(1deg);}90%{transform:translate(1px,2px) rotate(0deg);}100% { transform: translate(1px,-2px) rotate(-1deg);}}
 	</style>
 	<div class="stbw">
 		<div class="stb">1<div class="stbw"></div>
@@ -33,11 +37,11 @@
 		</div>
 	</div><br>
 	<br>
-	<div id="temp" style="background:#fff4;display:inline-block;padding:8px;">
+	<div id="temp">
 		<div class="stb">template</div><div class="stb"><div class="stbw temp"></div></div>
 	</div>
-	<div id="trash" style="background:#f44;width:64px;height:64px;overflow:hidden;display:inline-block;">delete</div>
-	<div id="clip" style="background:#fff4;display:inline-block;padding:8px;">
+	<div id="trash"></div>
+	<div id="clip">
 		<div class="stb">clip board</div>
 	</div>
 	<pre id="log"></pre>
@@ -50,7 +54,6 @@
 		},
 		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:75,delayOnTouchOnly:true,
 	};
-
 	new Sortable(temp,{
 		group:{
 			name:'group_',
