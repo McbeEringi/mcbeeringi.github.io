@@ -7,10 +7,11 @@
 	<script src="https://unpkg.com/sortablejs/Sortable.min.js"></script>
 	<style>
 		:root{background:#222;user-select:none;-webkit-user-select:none;color:#fff;}pre{white-space:pre-wrap;}
-		.stbw{background:#4448;overflow:scroll;white-space:nowrap;min-width:64px;min-height:256px;max-width:100%;box-sizing:border-box;display:inline-block;vertical-align:bottom;border-radius:4px;}
-		.stb{min-width:64px;min-height:256px;margin:0 8px;background:#fff8;display:inline-block;padding:0 8px;border-radius:4px;vertical-align:bottom;}
-		.sortable-chosen{background:#ff8;}
-		.sortable-ghost{opacity:.1;}.sortable-drag{}
+		.stbw{background:#4448;overflow:scroll;white-space:nowrap;min-width:64px;height:240px;max-width:100%;box-sizing:border-box;display:inline-block;vertical-align:bottom;border-radius:4px;}
+		.stb{min-width:16px;height:240px;margin:0 0 0 2px;background:#fff8;display:inline-block;padding:0 8px;border-radius:4px;vertical-align:bottom;box-sizing:border-box;}
+		.sortable-chosen{background:#fea;}
+		.sortable-ghost{animation:.83s infinite alternate wink;}.sortable-drag{}
+		@keyframes wink{0%{opacity:.2;}100%{opacity:.3;}}
 	</style>
 	<div class="stbw">
 		<div class="stb">1<div class="stbw"></div>
@@ -30,41 +31,50 @@
 		</div><div class="stb">15<div class="stbw"></div>
 		</div><div class="stb">16<div class="stbw"></div>
 		</div>
+	</div><br>
+	<br>
+	<div id="temp" style="background:#fff4;display:inline-block;padding:8px;">
+		<div class="stb">template</div><div class="stb"><div class="stbw temp"></div></div>
 	</div>
-	<div id="test">
-		<div class="stb"><div class="stbw temp"></div>
-		</div><div class="stb">
-		</div>
+	<div id="trash" style="background:#f44;width:64px;height:64px;overflow:hidden;display:inline-block;">delete</div>
+	<div id="clip" style="background:#fff4;display:inline-block;padding:8px;">
+		<div class="stb">clip board</div>
 	</div>
 	<pre id="log"></pre>
 	<script>
 	const opt = {
-		group: {
-			name: "group_",
-			pull: true,
-			put: true,
+		group:{
+			name:"group_",
+			pull:(to,from)=>to.el.id=='clip'?'clone':true,
+			put:true,
 		},
-		invertSwap: true,
-		animation: 150,
-		forceFallback: true,
-		direction: 'horizontal',
-		delay: 75,delayOnTouchOnly: true,
+		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:75,delayOnTouchOnly:true,
 	};
 
-	new Sortable(test,{
-		group: {
-        name: 'group_',
-        pull: 'clone',
-        put: false
-    },
-		animation: 150,
-		forceFallback: true,
-    sort: false,
-		onEnd: e=>{
+	new Sortable(temp,{
+		group:{
+			name:'group_',
+			pull:'clone',
+			put:false
+		},
+		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:75,delayOnTouchOnly:true,
+		sort:false,
+		onEnd:e=>{
 			console.log(e);
 			if(e.pullMode=='clone'&&e.item.children.length)Array.from(e.item.children).forEach(e=>{e.classList.remove('temp');new Sortable(e,opt);});
 		},
-	})
+	});
+	new Sortable(clip,{
+		group:{
+			name:'group_',
+pull:(to,from)=>to.el.id=='trash'?true:'clone',
+
+			put:true
+		},
+		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:75,delayOnTouchOnly:true,
+	});
+	new Sortable(trash,{group:'group_',forceFallback:true,onAdd:e=>e.item.parentNode.removeChild(e.item)});
+
 
 	document.querySelectorAll(".stbw:not(.temp)").forEach(x=>new Sortable(x, opt));
 
