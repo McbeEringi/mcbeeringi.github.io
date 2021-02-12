@@ -52,7 +52,7 @@
 			pull:(to,from)=>to.el.id=='clip'?'clone':true,
 			put:true,
 		},
-		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:75,delayOnTouchOnly:true,
+		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:100,delayOnTouchOnly:true,
 	};
 	new Sortable(temp,{
 		group:{
@@ -60,7 +60,7 @@
 			pull:'clone',
 			put:false
 		},
-		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:75,delayOnTouchOnly:true,
+		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:100,delayOnTouchOnly:true,
 		sort:false,
 		onEnd:e=>{
 			console.log(e);
@@ -74,7 +74,7 @@ pull:(to,from)=>to.el.id=='trash'?true:'clone',
 
 			put:true
 		},
-		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:75,delayOnTouchOnly:true,
+		invertSwap:true,animation:150,forceFallback:true,direction:'horizontal',delay:100,delayOnTouchOnly:true,
 	});
 	new Sortable(trash,{group:'group_',onAdd:e=>e.item.parentNode.removeChild(e.item)});
 
