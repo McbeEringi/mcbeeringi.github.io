@@ -14,9 +14,10 @@
 <button onclick="log.innerText='';out.value=enmain(inp.value,mmind.value)">run</button>
 <textarea id="out"></textarea>
 <pre id="log"></pre>
+<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
 <script>
 'use strict';
-console.log=(...x)=>log.textContent+=`${x.map(x=>JSON.stringify(x)).join(', ')}\n`;
+console.log=(...x)=>requestIdleCallback(()=>log.textContent+=`${x.map(x=>JSON.stringify(x)).join(', ')}\n`);
 const enmain=(s,md)=>{
 	const round=x=>-Math.sign(x)*Math.round(-Math.abs(x)),
 	freq=inp=>{
