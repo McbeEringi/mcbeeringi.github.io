@@ -6,19 +6,19 @@
 	</head>
 	<body>
 		<style>
-			:root,input{background:#222;color:#fff;font-family:monospace;user-select:none;-webkit-user-select:none;font-size:16px;}
-			#fsh,input{user-select:auto;-webkit-user-select:auto;}
-			html,body{margin:0;height:100%;position:relative;}
+			:root,input{background:#222;color:#fff;font-family:monospace;image-rendering:pixelated;user-select:none;-webkit-user-select:none;}:link{color:#fff;}
+			.usa,input{user-select:auto;-webkit-user-select:auto;}.cmt{opacity:.5;user-select:none;-webkit-user-select:none;}
+			html,body{margin:0;height:100%;overflow:hidden;position:relative;}
 			#prv,#fsh,.disp,.cfg{margin:0;width:100%;height:100%;position:absolute;object-fit:contain;}
 			.disp{height:calc(100% - 128px);}.cfg{height:128px;margin;0;bottom:0;overflow:scroll;white-space:nowrap;scroll-snap-type:x mandatory;}
-			#log{position:absolute;bottom:0;z-index:10;text-align:right;}
+			#log{position:absolute;top:0;right:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;pointer-events:none;}
 
-			.cfg>*{display:inline-block;vertical-align:top;overflow:scroll;scroll-snap-align:start;width:160px;height:100%;}
+			.cfg>*{display:inline-block;vertical-align:top;overflow:scroll;scroll-snap-align:start;height:100%;}
 			.file{width:160px;height:120px;position:relative;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
-			.file code{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+			.file span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);white-space:pre-wrap;}
 			input{width:16ex;background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
-			.ace_editor{background:#2224;}.ace_marker-layer,.ace_gutter{opacity:.5;}
+			.ace_editor{background:#2226;}.ace_marker-layer,.ace_gutter{opacity:.5;}
 		</style>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-glsl.min.js"></script>
@@ -27,25 +27,39 @@
 		<canvas id="c" style="display:none;"></canvas>
 		<div class="disp">
 			<canvas id="prv" style="pointer-events:none;"></canvas>
-			<div id="fsh">precision mediump float;
+			<div id="fsh" class="usa">precision mediump float;
 uniform float time;
 uniform vec2 res;
 void main(){
-vec2 p = gl_FragCoord.xy/res;
-gl_FragColor = vec4(p,sin(time)*.5+.5,1);
-}</div><pre id="log"></pre>
+	vec2 p = gl_FragCoord.xy/res;
+	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
+}</div>
+			<pre id="log"></pre>
 		</div>
 		<div class="cfg">
 			<div>
 				<b>config</b><br>
-				<label>size<br><input id="isize" value="16,16"></label><br>
-				<label>fps<br><input id="ifps" type="number" value="60"></label><br>
+				<label>size: <input id="isize" value="16,16" oninput="resize();"></label><br>
+				<label>fps : <input id="ifps" type="number" value="60"></label><br>
 			</div>
-			<div class="file"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0<code></code></div>
-			<div class="file"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1<code></code></div>
-			<div class="file"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2<code></code></div>
-			<div class="file"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3<code></code></div>
-
+			<div class="usa">
+				<b>uniforms</b><br>
+				uniform float time;<br>
+				<span class='cmt'>// <span id='tlog'>0.000</span></span><br>
+				uniform vec2 res;<br>
+				<span class='cmt'>// defined in config>size</span><br>
+				uniform sampler2D tex[0~3];<br>
+				uniform vec2 tex[0~3]res;<br>
+			</div>
+			<div class="file"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0<span></span></div>
+			<div class="file"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1<span></span></div>
+			<div class="file"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2<span></span></div>
+			<div class="file"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3<span></span></div>
+			<div>
+				powered by WebGL1.0<br>
+				special thanks to wgld.org<br>
+				<a href="https://twitter.com/mcbeeringi">@McbeEringi.｡:+*</a>
+			</div>
 		</div>
 
 
@@ -70,8 +84,9 @@ gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 			prvctx.imageSmoothingEnabled=false;
 			WebGL.attributes(gl,prg,[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1]);
 
-			const resize=(w,h)=>{
-				c.width=w;prv.width=w;c.height=h;prv.height=h;
+			const resize=()=>{
+				let s=isize.value.split(',',2);
+				if(s[0]>0){c.width=s[0];prv.width=s[0];c.height=s[s[1]>0?1:0];prv.height=s[s[1]>0?1:0];}
 				gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
 			},
 			read=x=>{
@@ -83,7 +98,7 @@ gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 				WebGL.texture(gl,url,x=>{
 					texture[i]=x;
 					console.log(i+' loaded as tex',x);
-					window['inp'+i].nextElementSibling.textContent=`${x.width},${x.height}`;
+					window['inp'+i].nextElementSibling.textContent=`uniform tex${i}res\n=vec2(${x.width},${x.height});`;
 				});
 			},
 			compile=()=>{
@@ -97,6 +112,8 @@ gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 			main=()=>{
 				clearTimeout(prc);
 				t=(new Date()-t0)*.001;
+				t%=3600;
+				tlog.textContent=t.toFixed(3);
 
 				WebGL.uniforms(gl,prg,[
 					{name:'time',type:'1f',data:t},
@@ -116,7 +133,7 @@ gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 			save=()=>{
 
 			};
-			compile();main();
+			resize();compile();main();
 			window.onload=()=>{
 				fsh_e.on('input',()=>{
 					console.log('inp');
@@ -125,6 +142,7 @@ gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 				});
 			};
 			window.onbeforeunload=e=>{save();e.preventDefault();return'';};
+			window.onresize=fsh_e.resize;
 
 		</script>
 	</body>
