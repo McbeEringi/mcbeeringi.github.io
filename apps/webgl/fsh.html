@@ -70,7 +70,7 @@ void main(){
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to wgld.org<br>
-				build: 2102200<br>
+				build: 2102201<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
@@ -112,7 +112,7 @@ void main(){
 				WebGL.texture(gl,url,x=>{
 					texture[i]=x;
 					console.log(i+' loaded as tex',x);
-					window['inp'+i].nextElementSibling.textContent=`uniform tex${i}res\n=vec2(${x.width},${x.height});`;
+					window['inp'+i].nextElementSibling.textContent=`uniform vec2 tex${i}res=vec2(${x.width},${x.height});`;
 				});
 			},
 			compile=()=>{
