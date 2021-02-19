@@ -153,7 +153,7 @@ void main(){
 				};
 				localStorage.fsh_curdat=JSON.stringify(curdat);
 			};
-			exp.onclick=()=>{save();copy(location.href+'#'+encodeURIComponent(JSON.stringify(curdat)).replace(/\(/g,"%28").replace(/\)/g,"%29")).then(x=>alert('copied'));};
+			exp.onclick=()=>{save();copy(location.href.split('#')[0]+'#'+encodeURIComponent(JSON.stringify(curdat)).replace(/\(/g,"%28").replace(/\)/g,"%29")).then(x=>alert('copied'));};
 			diffuse.ontouchstart=()=>{tflag=true;dl.href=diffuse.src=c.toDataURL();}
 			diffuse.onmousedown=()=>{if(tflag)tflag=false;else dl.href=diffuse.src=c.toDataURL();};
 			diffuse.onclick=()=>dl.click();
