@@ -1,112 +1,168 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr">
 	<head>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1.0">
-		<title>McbeEringi fsh</title>
+		<title></title>
 	</head>
 	<body>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-		<script src="../../src/windows.js" async></script>
 		<style>
-			:root,input,a{font-family:menlo,sans-serif;background-color:#222;color:#eee;image-rendering:pixelated;tab-size:2ex;user-select:none;-webkit-user-select:none;}
-			body{margin:0;}
-			#diffuse,#preview,#canvas{width:100%;height:calc(100% - 16px);object-fit:contain;position:absolute;}
-			.fbar>svg{z-index:6;}
-			.button{padding:4px 12px;background-color:#aaa;text-shadow:0 0 4px #0008;border-bottom:4px solid #888;border-radius:4px;text-align:center;margin:16px;}.button:hover{background-color:#48f;border-bottom-color:#aaa;}.button:active{background-color:#888;border-top:2px solid #0000;border-bottom:2px solid #0000;}
-			input{user-select:auto;-webkit-user-select:auto;background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:16px;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
-			.file{width:160px;height:120px;display:inline-block;position:relative;border-radius:5px;border:1px solid #888;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
+			:root,input{background:#222;color:#fff;font-family:monospace;image-rendering:pixelated;user-select:none;-webkit-user-select:none;}
+			:link,:visited{color:#fff;}.dn{display:none;}
+			.usa,input{user-select:auto;-webkit-user-select:auto;}.cmt{opacity:.5;user-select:none;-webkit-user-select:none;}
+			html,body{margin:0;height:100%;overflow:hidden;position:relative;}
+			#prv,#fsh,.disp,.cfg{margin:0;width:100%;height:100%;position:absolute;object-fit:contain;}
+			.disp{height:calc(100% - 128px);}.cfg{height:128px;margin;0;bottom:0;overflow:scroll;white-space:nowrap;scroll-snap-type:x mandatory;}
+			#log{position:absolute;top:0;right:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;pointer-events:none;}
+			#fsh{transition:.1s;}
+
+			.cfg>*{display:inline-block;vertical-align:top;overflow:scroll;scroll-snap-align:start;height:100%;}
+			.file{width:160px;height:120px;position:relative;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
-			pre{width:100%;margin:0;word-wrap:break-word;white-space:pre-wrap;display:inline-block;}#log{color:#f55;}
-			.unilog{user-select:none;-webkit-user-select:none;color:#aaa;}
+			.file span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);white-space:pre-wrap;}
+			input{width:16ex;background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
+			.ace_editor{background:#2226;}.ace_marker-layer,.ace_gutter{opacity:.5;}
+
+			label[for],.btn{display:inline-block;position:relative;margin:4px;padding:4px 8px;border-radius:4px;background:linear-gradient(#666,#444);}
+			#ecb:checked~* #fsh{opacity:0;pointer-events:none;}#ecb:checked~* label[for="ecb"],.btn:active{background:#48f;}
+			.btn>img{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;}
 		</style>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-glsl.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.min.js"></script>
+		<script src="https://mcbeeringi.github.io/src/webgl.js"></script>
 
-
-		<canvas id="canvas" style="display:none;"></canvas>
-		<h2>fsh sandbox</h2>
-		<div class="window dark" style="border:2px solid #888;">
-			<div name="diffuse" style="width:320px;height:320px;" data-winid="d">
-				<img id="diffuse" style="opacity:0;"><canvas id="preview" style="pointer-events:none;"></canvas>
-			</div>
-			<div name="textures" class="sfixed" style="top:712px;" data-winid="t">
-				<div class="file" id="inp0d"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0</div>
-				<div class="file" id="inp1d"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1</div>
-				<div class="file" id="inp2d"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2</div>
-				<div class="file" id="inp3d"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3</div>
-			</div>
-			<div name="log" style="left:336px;width:320px;height:180px;" data-winid="l">
-				<code id="fpslog" style="float:left;"></code>
-				<!--<code id="mslog" style="float:right;"></code>-->
-				<pre id="log"></pre>
-			</div>
-			<div name="config" class="sfixed" style="left:336px;top:196px;" data-winid="c">
-				<div style="margin:8px;">
-					<label>res:<input type="number" id="w_" value="16" oninput="if(this.value>0){resize(c,prv,gl,this.value,h_.value);save();}else this.value=null" style="width:6ex"></label>*
-					<input type="number" id="h_" value="16" oninput="if(this.value>0){resize(c,prv,gl,w_.value,this.value);save();}else this.value=null" style="width:6ex">
-					<br>
-					<label>fps:<input type="number" id="fps_" value="60" oninput="if(this.value>0){clearTimeout(prc);fps=this.value;save();main();}else this.value=null" style="width:4ex"></label>
-				</div>
-			</div>
-			<div name="uniforms" class="sfixed" style="left:672px;" data-winid="u">
-				<p style="user-select:text;-webkit-user-select:text;margin:0;">
-					uniform float time; <span id="timelog" class="unilog"></span> <br>
-					uniform vec2 res;<br>
-					uniform vec2 tex0res; <span id="0reslog" class="unilog"></span> <br>
-					uniform vec2 tex1res; <span id="1reslog" class="unilog"></span> <br>
-					uniform vec2 tex2res; <span id="2reslog" class="unilog"></span> <br>
-					uniform vec2 tex3res; <span id="3reslog" class="unilog"></span> <br>
-					uniform sampler2D tex0;<br>
-					uniform sampler2D tex1;<br>
-					uniform sampler2D tex2;<br>
-					uniform sampler2D tex3;
-				</p>
-			</div>
-			<div class="sfixed" style="top:230px;left:672px;" data-winid="i">
-				<p style="margin:4px;text-align:center;">
-					<label>save (ms):<input type="number" id="wait_" value="2000" oninput="if(this.value<0)this.value=0" style="width:6ex"></label>
-				</p>
-				<!--<div class="button" onclick="saveas();">save as</div>-->
-				<div class="button" onclick="if(copy(expurl())){this.textContent='copied!';setTimeout(()=>this.textContent='export as url',1000);}">export as url</div>
-				<div class="button" onclick="wjs_reset();">reset window pos</div>
-				<div class="button" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html')">old UI</div>
-				<p style="margin:16px;font-size:13px;text-align:center;">
-					powered by WebGL1.0 <br>
-					special thanks to <a href="https://wgld.org" target="_blank">wgld.org</a> <br>
-					<a href="https://twitter.com/mcbeeringi" target="_blank">@McbeEringi</a>.｡:+*
-				</p>
-			</div>
-			<div name="open from" style="top:520px;left:700px;" data-winid="list">
-			</div>
-
-			<div name="fsh editor" style="top:336px;width:640px;height:360px;" data-winid="e">
-				<div id="fsh">precision mediump float;
+		<input type="checkbox" id="ecb" class="dn">
+		<input type="checkbox" id="ofcb" class="dn">
+		<canvas id="c" class="dn"></canvas>
+		<div class="disp">
+			<canvas id="prv" style="pointer-events:none;"></canvas>
+			<div id="fsh" class="usa">precision mediump float;
 uniform float time;
 uniform vec2 res;
 void main(){
 	vec2 p = gl_FragCoord.xy/res;
 	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 }</div>
+			<pre id="log"></pre>
+			<pre id="log_"></pre>
+		</div>
+		<div class="cfg">
+			<div>
+				<b>config</b><br>
+				<label>size: <input id="isize" value="16,16" oninput="resize();"></label><br>
+				<label>fps : <input id="ifps" type="number" value="60"></label><br>
+				<label for="ecb">view</label><div class="btn" id="exp">export</div><br>
+				<div class="btn">download<img src id="diffuse"></div><a href id="dl" download></a>
+			</div>
+			<div class="usa">
+				<b>uniforms</b><br>
+				uniform float time;<br>
+				<span class='cmt'>// <span id='tlog'>0.000</span></span><br>
+				uniform vec2 res;<br>
+				<span class='cmt'>// defined in config>size</span><br>
+				uniform sampler2D tex[0~3];<br>
+				uniform vec2 tex[0~3]res;<br>
+			</div>
+			<div class="file"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0<span></span></div>
+			<div class="file"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1<span></span></div>
+			<div class="file"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2<span></span></div>
+			<div class="file"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3<span></span></div>
+			<div>
+				powered by WebGL1.0<br>
+				special thanks to wgld.org<br>
+				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
+				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
 		</div>
 
 
 		<script>
-			window.addEventListener("load",()=>{fsh.style.height="calc(100% - "+window.getComputedStyle(fsh.parentNode.firstChild).height+")";fsh_e.resize();},false);
-			var fsh_e = ace.edit("fsh",{
-				showInvisibles: true,
-				theme: "ace/theme/monokai",
-				mode: "ace/mode/glsl",
-				fontSize: 12,
-				//wrap: true,
-				useSoftTabs: false,
-				tabSize: 2
-			});
-			fsh.parentNode.addEventListener('fbar_on',()=>fsh_e.resize(),false);
+			'use strict';
+			let gl=WebGL.setup(c,true,true),
+				prvctx=prv.getContext('2d'),
+				vsh='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
+				prg=WebGL.compile(gl,vsh,'void main(){gl_FragColor=vec4(0);}'),
+				fsh_e=ace.edit('fsh',{
+					showInvisibles:true,
+					theme:'ace/theme/monokai',
+					mode:'ace/mode/glsl',
+					fontSize:12,//wrap: true,
+					useSoftTabs:false,tabSize:2
+				}),
+				mtim,texture=[],texres=[],t0=new Date(),t=[0,0],itim,curdat,tflag;
+			fsh_e.on('input',()=>{clearTimeout(itim);itim=setTimeout(()=>{compile();save();},750);});
+
+			prvctx.imageSmoothingEnabled=false;
+			WebGL.attributes(gl,prg,[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1]);
+
+			const llog=x=>log.insertAdjacentHTML('beforeend',x),
+			copy=x=>navigator.clipboard.writeText(x).catch(e=>console.log(e)),
+			resize=()=>{
+				let s=isize.value.split(',',2);
+				if(s[0]>0){c.width=s[0];prv.width=s[0];c.height=s[s[1]>0?1:0];prv.height=s[s[1]>0?1:0];}
+				gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
+			},
+			read=x=>{
+				var url=URL.createObjectURL(x.files[0]);
+				x.parentNode.style.backgroundImage=`url(${url})`;
+				tex(parseInt(x.id.slice(-1)),url);
+			},
+			tex=(i,url)=>{
+				WebGL.texture(gl,url,x=>{
+					texture[i]=x;
+					console.log(i+' loaded as tex',x);
+					window['inp'+i].nextElementSibling.textContent=`uniform tex${i}res\n=vec2(${x.width},${x.height});`;
+				});
+			},
+			compile=()=>{
+				log.textContent='';
+				try{prg=WebGL.compile(gl,vsh,fsh_e.getValue());}
+				catch(e){log.textContent=WebGL.log;}
+			},
+			main=()=>{
+				clearTimeout(mtim);
+				t[0]=((new Date()-t0)*.001)%3600;
+				if(t[0]-t[1]>.1){t[1]=t[0];tlog.textContent=t[0].toFixed(3);}
+
+				WebGL.uniforms(gl,prg,[
+					{name:'time',type:'1f',data:t[0]},
+					{name:'res',type:'2f',data:[c.width,c.height]},
+					{name:'tex0',type:'tex',rname:'tex0res',data:texture[0]},
+					{name:'tex1',type:'tex',rname:'tex1res',data:texture[1]},
+					{name:'tex2',type:'tex',rname:'tex2res',data:texture[2]},
+					{name:'tex3',type:'tex',rname:'tex3res',data:texture[3]},
+				]);
+				WebGL.draw(gl);
+				prvctx.clearRect(0,0,prv.width,prv.height);
+				prvctx.drawImage(c,0,0,prv.width,prv.height);
+
+				mtim=setTimeout(main,1000/(Number(ifps.value)||60));
+			},
+			thumb=()=>{let tmp=[prv.width,prv.height];prv.width=32;prv.height=32;prvctx.drawImage(c,0,0,prv.width,prv.height);let s=prv.toDataURL();prv.width=tmp[0];prv.height=tmp[1];return s;},
+			save=()=>{
+				curdat={
+					fsh:fsh_e.getValue(),
+					size:isize.value.split(',',2)[1]?isize.value.split(',',2):Array(2).fill(isize.value.split(',',1)),
+					fps:ifps.value,
+					//thumb:thumb()
+				};
+				localStorage.fsh_curdat=JSON.stringify(curdat);
+			};
+			exp.onclick=()=>{save();copy(location.href+'#'+encodeURIComponent(JSON.stringify(curdat)).replace(/\(/g,"%28").replace(/\)/g,"%29"));};
+			diffuse.ontouchstart=()=>{tflag=true;dl.href=diffuse.src=c.toDataURL();}
+			diffuse.onmousedown=()=>{if(tflag)tflag=false;else dl.href=diffuse.src=c.toDataURL();};
+			diffuse.onclick=()=>dl.click();
+
+			(()=>{
+				let data=location.hash.slice(1);
+				if(data)data=JSON.parse(decodeURIComponent(data.replace(/%28/g,"(").replace(/%29/g,")")));
+				else if(localStorage.fsh_curdat)data=JSON.parse(localStorage.fsh_curdat);
+				fsh_e.setValue(data.fsh,-1);
+				if(data.size[0])isize.value=data.size.join(',');
+				if(data.fps)ifps.value=data.fps;
+			})();resize();compile();main();
+			window.onbeforeunload=e=>{e.preventDefault();return'';};
+			window.onresize=()=>fsh_e.resize();
 		</script>
-		<script src="../../src/webgl.js"></script>
-		<script src="fsh_core.js"></script>
 	</body>
 </html>
