@@ -22,7 +22,7 @@
 			input{width:16ex;background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
 			.ace_editor{background:#2226;}.ace_marker-layer,.ace_gutter{opacity:.5;}
 
-			label[for],.btn{display:inline-block;position:relative;margin:4px;padding:4px 8px;border-radius:4px;background:linear-gradient(#666,#444);}
+			.btn{display:inline-block;position:relative;margin:4px;padding:4px 8px;border-radius:4px;background:linear-gradient(#666,#444);text-decoration:none;}
 			#ecb:checked~* #fsh{opacity:0;pointer-events:none;}#ecb:checked~* label[for="ecb"],.btn:active{background:#48f;}
 			.btn>img{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;}
 		</style>
@@ -51,7 +51,7 @@ void main(){
 				<b>config</b><br>
 				<label>size: <input id="isize" value="16,16" oninput="resize();save();"></label><br>
 				<label>fps : <input id="ifps" type="number" value="30" oninput="save();"></label><br>
-				<label for="ecb">view mode</label><div class="btn" id="exp" ontouchstart="">export as url</div><br>
+				<label for="ecb" class="btn">view mode</label><a class="btn" id="exp" ontouchstart="">export as url</a><br>
 				<div class="btn">download png<img src id="diffuse"></div><a href id="dl" download></a>
 			</div>
 			<div class="usa">
@@ -70,7 +70,7 @@ void main(){
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to wgld.org<br>
-				build: 2102210<br>
+				build: 2102211<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
@@ -152,11 +152,15 @@ void main(){
 					//thumb:thumb()
 				};
 				localStorage.fsh_curdat=JSON.stringify(curdat);
-			};
-			exp.onclick=()=>{save();copy(location.href.split('#')[0]+'#'+encodeURIComponent(JSON.stringify(curdat)).replace(/\(/g,"%28").replace(/\)/g,"%29")).then(x=>alert('copied'));};
-			diffuse.ontouchstart=()=>{tflag=true;dl.href=diffuse.src=c.toDataURL();}
-			diffuse.onmousedown=()=>{if(tflag)tflag=false;else dl.href=diffuse.src=c.toDataURL();};
-			diffuse.onclick=()=>dl.click();
+			},
+			expbfx=()=>{save();exp.href=location.href.split('#')[0]+'#'+encodeURIComponent(JSON.stringify(curdat)).replace(/\(/g,"%28").replace(/\)/g,"%29");},
+			difbfx=()=>dl.href=diffuse.src=c.toDataURL();
+			exp.ontouchstart=()=>{tflag=true;expbfx();}
+			exp.onmousedown=()=>{if(tflag)tflag=false;else expbfx();};
+			exp.onclick=e=>{e.preventDefault();copy(exp.href).then(x=>alert('copied'));};
+			diffuse.ontouchstart=()=>{tflag=true;difbfx();}
+			diffuse.onmousedown=()=>{if(tflag)tflag=false;else difbfx();};
+			diffuse.onclick=e=>{e.preventDefault();dl.click();}
 
 			(()=>{
 				let data=location.hash.slice(1);
