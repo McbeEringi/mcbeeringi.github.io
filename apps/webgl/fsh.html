@@ -57,7 +57,7 @@ void main(){
 			<div class="usa">
 				<b>uniforms</b><br>
 				uniform float time;<br>
-				<span class='cmt'>// <span id='tlog'>0.000</span></span><br>
+				<span class='cmt'>// <span id='tlog'>0.000</span> (<span id='flog'>0.0</span>fps)</span><br>
 				uniform vec2 res;<br>
 				<span class='cmt'>// defined in config>size</span><br>
 				uniform sampler2D tex[0~3];<br>
@@ -90,7 +90,7 @@ void main(){
 					fontSize:12,//wrap: true,
 					useSoftTabs:false,tabSize:2
 				}),
-				mtim,texture=[],texres=[],t0=new Date(),t=[0,0],itim,curdat,tflag;
+				mtim,texture=[],texres=[],t0=new Date(),t=[0,0,0],itim,curdat,tflag;
 			fsh_e.on('input',()=>{clearTimeout(itim);itim=setTimeout(()=>{compile();save();},750);});
 
 			prvctx.imageSmoothingEnabled=false;
@@ -123,7 +123,11 @@ void main(){
 			main=()=>{
 				clearTimeout(mtim);
 				t[0]=((new Date()-t0)*.001)%3600;
-				if(t[0]-t[1]>.1){t[1]=t[0];tlog.textContent=t[0].toFixed(3);}
+				if(t[0]-t[2]>.1){
+					flog.textContent=(1/(t[0]-t[1])).toFixed(1);
+					t[2]=t[0];tlog.textContent=t[0].toFixed(3);
+				}
+				t[1]=t[0];
 
 				WebGL.uniforms(gl,prg,[
 					{name:'time',type:'1f',data:t[0]},
