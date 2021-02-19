@@ -2,7 +2,7 @@
 const WebGL={
 	log:'',
 	setup:function(c,tr,m){
-		var gl=c.getContext('webgl')||c.getContext('experimental-webgl');
+		var gl=c.getContext('webgl',{preserveDrawingBuffer:true})||c.getContext('experimental-webgl',{preserveDrawingBuffer:true});
 		gl.clearColor(0,0,0,tr?0:1);
 		if(!m){gl.enable(gl.CULL_FACE);gl.frontFace(gl.CCW);//gl.frontFace(gl.CW);
 		gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearDepth(1);}

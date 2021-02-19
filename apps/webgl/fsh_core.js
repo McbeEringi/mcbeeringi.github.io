@@ -59,7 +59,7 @@ compile=()=>{
 }
 
 
-const thumb=()=>{var prvtmp=[prv.width,prv.height];prv.width=32;prv.height=32;prvctx.drawImage(c,0,0,prv.width,prv.height);var s=prv.toDataURL();prv.width=prvtmp[0];prv.height=prvtmp[0];return s;},
+const thumb=()=>{var prvtmp=[prv.width,prv.height];prv.width=32;prv.height=32;prvctx.drawImage(c,0,0,prv.width,prv.height);var s=prv.toDataURL();prv.width=prvtmp[0];prv.height=prvtmp[1];return s;},
 save=s=>{
 	curdat={
 		fsh:fsh_e.getValue(),
