@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<style>
+			:root,input{background:#222;color:#fff;font-family:monospace;user-select:none;-webkit-user-select:none;font-size:16px;}
+			#fsh,input{user-select:auto;-webkit-user-select:auto;}
+			html,body{margin:0;height:100%;position:relative;}
+			#prv,#fsh,.disp,.cfg{margin:0;width:100%;height:100%;position:absolute;object-fit:contain;}
+			.disp{height:calc(100% - 128px);}.cfg{height:128px;margin;0;bottom:0;overflow:scroll;white-space:nowrap;scroll-snap-type:x mandatory;}
+			#log{position:absolute;bottom:0;z-index:10;text-align:right;}
+
+			.cfg>*{display:inline-block;vertical-align:top;overflow:scroll;scroll-snap-align:start;width:160px;height:100%;}
+			.file{width:160px;height:120px;position:relative;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
+			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
+			.file code{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+			input{width:16ex;background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
+			.ace_editor{background:#2224;}.ace_marker-layer,.ace_gutter{opacity:.5;}
+		</style>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-glsl.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.min.js"></script>
+		<script src="https://mcbeeringi.github.io/src/webgl.js"></script>
+		<canvas id="c" style="display:none;"></canvas>
+		<div class="disp">
+			<canvas id="prv" style="pointer-events:none;"></canvas>
+			<div id="fsh">precision mediump float;
+uniform float time;
+uniform vec2 res;
+void main(){
+vec2 p = gl_FragCoord.xy/res;
+gl_FragColor = vec4(p,sin(time)*.5+.5,1);
+}</div><pre id="log"></pre>
+		</div>
+		<div class="cfg">
+			<div>
+				<b>config</b><br>
+				<label>size<br><input id="isize" value="16,16"></label><br>
+				<label>fps<br><input id="ifps" type="number" value="60"></label><br>
+			</div>
+			<div class="file"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0<code></code></div>
+			<div class="file"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1<code></code></div>
+			<div class="file"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2<code></code></div>
+			<div class="file"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3<code></code></div>
+
+		</div>
+
+
+		<script>
+			'use strict';
+			let fsh_e=ace.edit('fsh',{
+				showInvisibles:true,
+				theme:'ace/theme/monokai',
+				mode:'ace/mode/glsl',
+				fontSize:12,
+				//wrap: true,
+				useSoftTabs:false,
+				tabSize:2
+			});
+
+
+			let gl=WebGL.setup(c,true,true),
+				prvctx=prv.getContext('2d'),
+				vsh='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
+				prg=WebGL.compile(gl,vsh,'void main(){gl_FragColor=vec4(0);}'),
+				prc,texture=[],texres=[],t0=new Date(),t,ctm,stm;
+			prvctx.imageSmoothingEnabled=false;
+			WebGL.attributes(gl,prg,[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1]);
+
+			const resize=(w,h)=>{
+				c.width=w;prv.width=w;c.height=h;prv.height=h;
+				gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
+			},
+			read=x=>{
+				var url=URL.createObjectURL(x.files[0]);
+				x.parentNode.style.backgroundImage=`url(${url})`;
+				tex(parseInt(x.id.slice(-1)),url);
+			},
+			tex=(i,url)=>{
+				WebGL.texture(gl,url,x=>{
+					texture[i]=x;
+					console.log(i+' loaded as tex',x);
+					window['inp'+i].nextElementSibling.textContent=`${x.width},${x.height}`;
+				});
+			},
+			compile=()=>{
+				log.textContent='';
+				try{
+					prg=WebGL.compile(gl,vsh,fsh_e.getValue());
+				}catch(e){
+					log.textContent=WebGL.log;
+				}
+			},
+			main=()=>{
+				clearTimeout(prc);
+				t=(new Date()-t0)*.001;
+
+				WebGL.uniforms(gl,prg,[
+					{name:'time',type:'1f',data:t},
+					{name:'res',type:'2f',data:[c.width,c.height]},
+					{name:'tex0',type:'tex',rname:'tex0res',data:texture[0]},
+					{name:'tex1',type:'tex',rname:'tex1res',data:texture[1]},
+					{name:'tex2',type:'tex',rname:'tex2res',data:texture[2]},
+					{name:'tex3',type:'tex',rname:'tex3res',data:texture[3]},
+				]);
+
+				prvctx.clearRect(0,0,prv.width,prv.height);
+				WebGL.draw(gl);
+				prvctx.drawImage(c,0,0,prv.width,prv.height);
+
+				prc=setTimeout(main,1000/(Number(ifps.value)||60));
+			},
+			save=()=>{
+
+			};
+			compile();main();
+			window.onload=()=>{
+				fsh_e.on('input',()=>{
+					console.log('inp');
+					clearTimeout(ctm);ctm=setTimeout(compile,500);
+					clearTimeout(stm);stm=setTimeout(save,5000);
+				});
+			};
+			window.onbeforeunload=e=>{save();e.preventDefault();return'';};
+
+		</script>
+	</body>
+</html>
