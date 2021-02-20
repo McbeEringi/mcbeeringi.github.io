@@ -17,7 +17,7 @@
 			#prv,#fsh,.disp,.cfg{margin:0;width:100%;height:100%;position:absolute;object-fit:contain;}
 			.disp{height:calc(100% - 128px);}.cfg{height:128px;margin;0;bottom:0;overflow:scroll;white-space:nowrap;scroll-snap-type:x mandatory;}
 			/*.cfg::-webkit-scrollbar,.cfg ::-webkit-scrollbar{display:none;}.cfg,.cfg *{scrollbar-width:none;}*/
-			#log{position:absolute;top:0;right:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;pointer-events:none;}
+			label[for="ercb"]{display:inline-block;position:absolute;top:0;right:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;}
 			#fsh{transition:.1s;}
 
 			.cfg>*{display:inline-block;vertical-align:top;overflow:scroll;scroll-snap-align:start;height:100%;}
@@ -28,7 +28,8 @@
 			.ace_editor{background:#2226;}.ace_marker-layer,.ace_gutter{opacity:.5;}
 
 			.btn{display:inline-block;position:relative;margin:4px;padding:4px 8px;border-radius:4px;background:linear-gradient(#666,#444);text-decoration:none;}
-			#ecb:checked~* #fsh{opacity:0;pointer-events:none;}#ecb:checked~* label[for="ecb"],.btn:active{background:#48f;}
+			#edcb:checked~* #fsh{opacity:0;pointer-events:none;}#edcb:checked~* label[for="edcb"],.btn:active{background:#48f;}
+			#ercb:checked~* label[for="ercb"]{width:24px;opacity:.5;}
 			.btn>img{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;}
 		</style>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
@@ -36,8 +37,9 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.min.js"></script>
 		<script src="https://mcbeeringi.github.io/src/webgl.js"></script>
 
-		<input type="checkbox" id="ecb" class="dn">
+		<input type="checkbox" id="edcb" class="dn">
 		<input type="checkbox" id="ofcb" class="dn">
+		<input type="checkbox" id="ercb" class="dn">
 		<canvas id="c" class="dn"></canvas>
 		<div class="disp">
 			<canvas id="prv" style="pointer-events:none;"></canvas>
@@ -48,15 +50,14 @@ void main(){
 	vec2 p = gl_FragCoord.xy/res;
 	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 }</div>
-			<pre id="log"></pre>
-			<pre id="log_"></pre>
+			<label for="ercb"><pre id="log"></pre></label>
 		</div>
 		<div class="cfg">
 			<div>
 				<b>config</b><br>
 				<label>size: <input id="isize" value="16,16" oninput="resize();save();"></label><br>
 				<label>fps : <input id="ifps" type="number" value="30" oninput="save();"></label><br>
-				<label for="ecb" class="btn">hide code</label><br>
+				<label for="edcb" class="btn">hide code</label><br>
 				<a class="btn" id="exp">exp url</a><div class="btn">dl png<img src id="diffuse"></div><a href id="dl" download></a>
 			</div>
 			<div class="usa">
@@ -75,7 +76,7 @@ void main(){
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2102203<br>
+				build: 2102204<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
