@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 	<head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
 		<meta charset="utf-8">
-		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>McbeEringi fsh</title>
 	</head>
 	<body>
 		<style>
@@ -69,8 +73,8 @@ void main(){
 			<div class="file"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3<span></span></div>
 			<div>
 				powered by WebGL1.0<br>
-				special thanks to wgld.org<br>
-				build: 2102211<br>
+				special thanks to <a href="https://wgld.org">wgld.org</a><br>
+				build: 2102212<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
@@ -122,6 +126,7 @@ void main(){
 			},
 			main=()=>{
 				clearTimeout(mtim);
+				mtim=setTimeout(main,1000/(Number(ifps.value)||60));
 				t[0]=((new Date()-t0)*.001)%3600;
 				if(t[0]-t[2]>.1){
 					flog.textContent=(1/(t[0]-t[1])).toFixed(1);
@@ -140,8 +145,6 @@ void main(){
 				WebGL.draw(gl);
 				prvctx.clearRect(0,0,prv.width,prv.height);
 				prvctx.drawImage(c,0,0,prv.width,prv.height);
-
-				mtim=setTimeout(main,1000/(Number(ifps.value)||60));
 			},
 			thumb=()=>{let tmp=[prv.width,prv.height];prv.width=32;prv.height=32;prvctx.drawImage(c,0,0,prv.width,prv.height);let s=prv.toDataURL();prv.width=tmp[0];prv.height=tmp[1];return s;},
 			save=()=>{
