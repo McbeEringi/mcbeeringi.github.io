@@ -74,7 +74,7 @@ void main(){
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2102212<br>
+				build: 2102213<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
@@ -124,7 +124,7 @@ void main(){
 			},
 			main=()=>{
 				clearTimeout(mtim);
-				mtim=setTimeout(main,1000/(Number(ifps.value)||60));
+				mtim=setTimeout(main,1000/(Number(ifps.value)||30));
 				t[0]=((new Date()-t0)*.001)%3600;
 				if(t[0]-t[2]>.1){
 					flog.textContent=(1/(t[0]-t[1])).toFixed(1);
