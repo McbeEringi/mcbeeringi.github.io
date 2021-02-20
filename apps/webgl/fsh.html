@@ -169,6 +169,7 @@ void main(){
 				let data=location.hash.slice(1);
 				if(data)data=JSON.parse(decodeURIComponent(data.replace(/%28/g,"(").replace(/%29/g,")")));
 				else if(localStorage.fsh_curdat)data=JSON.parse(localStorage.fsh_curdat);
+				else return;
 				fsh_e.setValue(data.fsh,-1);
 				if(data.size[0])isize.value=data.size.join(',');
 				if(data.fps)ifps.value=data.fps;
