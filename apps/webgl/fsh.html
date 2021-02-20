@@ -55,8 +55,8 @@ void main(){
 				<b>config</b><br>
 				<label>size: <input id="isize" value="16,16" oninput="resize();save();"></label><br>
 				<label>fps : <input id="ifps" type="number" value="30" oninput="save();"></label><br>
-				<label for="ecb" class="btn">view mode</label><a class="btn" id="exp" ontouchstart="">export as url</a><br>
-				<div class="btn">download png<img src id="diffuse"></div><a href id="dl" download></a>
+				<label for="ecb" class="btn">hide code</label><a class="btn" id="exp">exp url</a><br>
+				<div class="btn">dl png<img src id="diffuse"></div><a href id="dl" download></a>
 			</div>
 			<div class="usa">
 				<b>uniforms</b><br>
@@ -74,7 +74,7 @@ void main(){
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2102213<br>
+				build: 2102203<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
@@ -158,7 +158,7 @@ void main(){
 			difbfx=()=>dl.href=diffuse.src=c.toDataURL();
 			exp.addEventListener('touchstart',()=>{tflag=true;expbfx();},{passive:true});
 			exp.onmousedown=()=>{if(tflag)tflag=false;else expbfx();};
-			exp.onclick=e=>{e.preventDefault();copy(exp.href).then(x=>{exp.textContent='copied';setTimeout(()=>exp.textContent='export as url',1000);});};
+			exp.onclick=e=>{e.preventDefault();copy(exp.href).then(x=>{exp.textContent='copied!';setTimeout(()=>exp.textContent='exp url',1000);});};
 			diffuse.addEventListener('touchstart',()=>{tflag=true;difbfx();},{passive:true});
 			diffuse.onmousedown=()=>{if(tflag)tflag=false;else difbfx();};
 			diffuse.onclick=e=>{e.preventDefault();dl.click();}
