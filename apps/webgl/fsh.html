@@ -9,6 +9,12 @@
 		<title>McbeEringi fsh</title>
 	</head>
 	<body>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/theme/monokai.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.js"></script>
+		<script src="https://mcbeeringi.github.io/src/cm-glsl.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/matchbrackets.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/closebrackets.min.js"></script>
 		<style>
 			:root,input{background:#222;color:#fff;font-family:monospace;image-rendering:pixelated;user-select:none;-webkit-user-select:none;}
 			:link,:visited{color:#fff;}.dn{display:none;}
@@ -18,23 +24,20 @@
 			.disp{height:calc(100% - 128px);}.cfg{height:128px;margin;0;bottom:0;overflow:scroll;white-space:nowrap;scroll-snap-type:x mandatory;}
 			.cfg ::-webkit-scrollbar{display:none;}.cfg *{scrollbar-width:none;}
 			label[for="ercb"]{display:inline-block;position:absolute;top:0;right:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;}
-			#fsh{transition:.1s;}
+			#fsh{transition:.2s;}.CodeMirror{height:100%;}.cm-s-monokai.CodeMirror,.cm-s-monokai .CodeMirror-gutters{background:#272822aa;}.cm-s-monokai div.CodeMirror-selected{background:#49483e88;}
 
 			.cfg>*{display:inline-block;vertical-align:top;overflow:scroll;scroll-snap-align:start;height:100%;}
 			.file{width:160px;height:120px;position:relative;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
 			.file input[type=file]{position:absolute;cursor:pointer;margin:0;width:100%;height:100%;opacity:0;}
 			.file span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);white-space:pre-wrap;pointer-events:none;}
 			input{width:16ex;background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;}input:focus{outline:none;background-color:#0002;border-bottom-color:#48f;transition:.2s;}
-			.ace_editor{background:#2226;}.ace_marker-layer,.ace_gutter{opacity:.5;}
+
 
 			.btn{display:inline-block;position:relative;margin:4px;padding:4px 8px;border-radius:4px;background:linear-gradient(#666,#444);text-decoration:none;}
 			#edcb:checked~* #fsh{opacity:0;pointer-events:none;}#edcb:checked~* label[for="edcb"],.btn:active{background:#48f;}
 			#ercb:checked~* label[for="ercb"]{width:24px;opacity:.5;}
 			.btn>img{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;}
 		</style>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-glsl.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.min.js"></script>
 		<script src="https://mcbeeringi.github.io/src/webgl.js"></script>
 
 		<input type="checkbox" id="edcb" class="dn">
@@ -43,13 +46,7 @@
 		<canvas id="c" class="dn"></canvas>
 		<div class="disp">
 			<canvas id="prv" style="pointer-events:none;"></canvas>
-			<div id="fsh" class="usa">precision mediump float;
-uniform float time;
-uniform vec2 res;
-void main(){
-	vec2 p = gl_FragCoord.xy/res;
-	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
-}</div>
+			<div id="fsh"></div>
 			<label for="ercb"><pre id="log"></pre></label>
 		</div>
 		<div class="cfg">
@@ -76,7 +73,7 @@ void main(){
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2102220<br>
+				build: 2102221<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
@@ -87,17 +84,24 @@ void main(){
 			'use strict';
 			let gl=WebGL.setup(c,true,true),
 				prvctx=prv.getContext('2d'),
-				vsh='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
-				prg=WebGL.compile(gl,vsh,'void main(){gl_FragColor=vec4(0);}'),
-				fsh_e=ace.edit('fsh',{
-					showInvisibles:true,
-					theme:'ace/theme/monokai',
-					mode:'ace/mode/glsl',
-					fontSize:12,//wrap: true,
-					useSoftTabs:false,tabSize:2
+				vsh_='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
+fsh_=`precision mediump float;
+uniform float time;
+uniform vec2 res;
+void main(){
+vec2 p = gl_FragCoord.xy/res;
+gl_FragColor = vec4(p,sin(time)*.5+.5,1);
+}`,
+				prg=WebGL.compile(gl,vsh_,'void main(){gl_FragColor=vec4(0);}'),
+				fsh_e=CodeMirror(fsh,{
+					value:fsh_,
+					mode:'text/x-glsl',theme:'monokai',
+					lineNumbers:true,//firstLineNumber:2,//lineNumberFormatter:x=>x,
+					tabSize:2,indentWithTabs:true,
+					matchBrackets:true,autoCloseBrackets: true,
 				}),
 				mtim,texture=[],texres=[],t0=new Date(),t=[0,0,0],itim,curdat,tflag;
-			fsh_e.on('input',()=>{clearTimeout(itim);itim=setTimeout(()=>{compile();save();},750);});
+			fsh_e.on('change',()=>{clearTimeout(itim);itim=setTimeout(()=>{compile();save();},750);});
 
 			prvctx.imageSmoothingEnabled=false;
 			WebGL.attributes(gl,prg,[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1]);
@@ -121,7 +125,7 @@ void main(){
 			},
 			compile=()=>{
 				log.textContent='';
-				try{prg=WebGL.compile(gl,vsh,fsh_e.getValue());}
+				try{prg=WebGL.compile(gl,vsh_,fsh_e.getValue());}
 				catch(e){log.textContent=WebGL.log;}
 			},
 			main=()=>{
