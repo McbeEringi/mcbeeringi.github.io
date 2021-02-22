@@ -24,7 +24,7 @@
 			.disp{height:calc(100% - 128px);}.cfg{height:128px;margin;0;bottom:0;overflow:scroll;white-space:nowrap;scroll-snap-type:x mandatory;}
 			.cfg ::-webkit-scrollbar{display:none;}.cfg *{scrollbar-width:none;}
 			label[for="ercb"]{display:inline-block;position:absolute;top:0;right:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;}
-			#fsh{transition:.2s;}.CodeMirror{height:100%;}.cm-s-monokai.CodeMirror,.cm-s-monokai .CodeMirror-gutters{background:#272822aa;}.cm-s-monokai div.CodeMirror-selected{background:#49483e88;}
+			#fsh{transition:.2s;}.CodeMirror{height:100%;font-size:11px;}.cm-s-monokai.CodeMirror,.cm-s-monokai .CodeMirror-gutters{background:#272822aa;}.cm-s-monokai div.CodeMirror-selected{background:#49483e88;}
 
 			.cfg>*{display:inline-block;vertical-align:top;overflow:scroll;scroll-snap-align:start;height:100%;}
 			.file{width:160px;height:120px;position:relative;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
@@ -179,7 +179,6 @@ gl_FragColor = vec4(p,sin(time)*.5+.5,1);
 				if(data.fps)ifps.value=data.fps;
 			})();resize();compile();main();
 			window.onbeforeunload=e=>{e.preventDefault();return'';};
-			window.onresize=()=>fsh_e.resize();
 		</script>
 	</body>
 </html>
