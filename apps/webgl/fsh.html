@@ -15,16 +15,19 @@
 		<script src="https://mcbeeringi.github.io/src/cm-glsl.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/matchbrackets.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/closebrackets.min.js"></script>
+		<script src="https://mcbeeringi.github.io/src/webgl.js"></script>
 		<style>
 			:root,input{background:#222;color:#fff;font-family:monospace;image-rendering:pixelated;user-select:none;-webkit-user-select:none;}
 			:link,:visited{color:#fff;}.dn{display:none;}
-			.usa,input{user-select:auto;-webkit-user-select:auto;}.cmt{opacity:.5;user-select:none;-webkit-user-select:none;}
+			.usa,input,.CodeMirror{user-select:auto;-webkit-user-select:auto;}.cmt{opacity:.5;user-select:none;-webkit-user-select:none;}
 			html,body{margin:0;height:100%;overflow:hidden;position:relative;}
 			#prv,#fsh,.disp,.cfg{margin:0;width:100%;height:100%;position:absolute;object-fit:contain;}
 			.disp{height:calc(100% - 128px);}.cfg{height:128px;margin;0;bottom:0;overflow:scroll;white-space:nowrap;scroll-snap-type:x mandatory;}
 			.cfg ::-webkit-scrollbar{display:none;}.cfg *{scrollbar-width:none;}
 			label[for="ercb"]{display:inline-block;position:absolute;top:0;right:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;}
 			#fsh,.CodeMirror{height:100%;font-size:11px;transition:.2s;}.cm-s-monokai.CodeMirror,.cm-s-monokai .CodeMirror-gutters{background:#272822aa;}.cm-s-monokai div.CodeMirror-selected{background:#49483e88;}
+			.cm-tab{position:relative;}
+			.cm-tab::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:block;height:1.4px;width:calc(100% - 1.4px);border-radius:.7px;background:#8884;}
 
 			.cfg>*{display:inline-block;vertical-align:top;overflow:scroll;scroll-snap-align:start;height:100%;}
 			.file{width:160px;height:120px;position:relative;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
@@ -38,7 +41,6 @@
 			#ercb:checked~* label[for="ercb"]{width:24px;opacity:.5;}
 			.btn>img{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;}
 		</style>
-		<script src="https://mcbeeringi.github.io/src/webgl.js"></script>
 
 		<input type="checkbox" id="edcb" class="dn">
 		<input type="checkbox" id="ofcb" class="dn">
@@ -79,7 +81,7 @@
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2102222<br>
+				build: 2102223<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
@@ -90,8 +92,8 @@
 			'use strict';
 			let gl=WebGL.setup(c,true,true),
 				prvctx=prv.getContext('2d'),
-				vsh_='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
-				prg=WebGL.compile(gl,vsh_,'void main(){gl_FragColor=vec4(0);}'),
+				vsh='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
+				prg=WebGL.compile(gl,vsh,'void main(){gl_FragColor=vec4(0);}'),
 				fsh_e=CodeMirror.fromTextArea(fsh,{
 					mode:'text/x-glsl',theme:'monokai',
 					lineNumbers:true,//firstLineNumber:2,//lineNumberFormatter:x=>x,
@@ -123,7 +125,7 @@
 			},
 			compile=()=>{
 				log.textContent='';
-				try{prg=WebGL.compile(gl,vsh_,fsh_e.getValue());}
+				try{prg=WebGL.compile(gl,vsh,fsh_e.getValue());}
 				catch(e){log.textContent=WebGL.log;}
 			},
 			main=()=>{
