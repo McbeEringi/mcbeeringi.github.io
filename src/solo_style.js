@@ -1,12 +1,12 @@
 document.body.insertAdjacentHTML('beforeend',`
-	<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
 	<style>
 		.swiper-container{width:90%;height:auto;}.swiper-container img{width:100%;}
 		.box{display:flex;flex-wrap:wrap;}.box>*{flex-grow:1;width:300px;}
 		.tac{text-align:center;}
 	</style>
 `);
-fetch('https://unpkg.com/swiper/swiper-bundle.min.js').then(r=>r.text()).then(t=>{
+fetch('https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js').then(r=>r.text()).then(t=>{
 	eval(t);
 	var swiper=new Swiper('.swiper-container',{
 		slidesPerView:1,spaceBetween:0,loop:true,centeredSlides:true,

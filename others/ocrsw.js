@@ -2,7 +2,7 @@
 //https://developers.google.com/web/fundamentals/primers/service-workers?hl=ja
 const cacheName='ocr_cache0',STATIC_DATA=[
 	'ocr.html',
-	'https://unpkg.com/tesseract.js',
+	'https://cdn.jsdelivr.net/npm/tesseract.js',
 	'ocr_/test.png'
 ];
 
