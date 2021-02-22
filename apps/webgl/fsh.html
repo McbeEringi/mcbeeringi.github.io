@@ -76,7 +76,7 @@ void main(){
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2102204<br>
+				build: 2102220<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
@@ -113,10 +113,10 @@ void main(){
 				var url=URL.createObjectURL(x.files[0]);
 				x.parentNode.style.backgroundImage=`url(${url})`;
 				x=parseInt(x.id.slice(-1));
-				WebGL.texture(gl,url,x=>{
-					texture[i]=x;
-					console.log(i+' loaded as tex',x);
-					window['inp'+i].nextElementSibling.textContent=`uniform vec2 tex${i}res= vec2(${x.width},${x.height});`;
+				WebGL.texture(gl,url,t=>{
+					texture[x]=t;
+					console.log(x+' loaded as tex',t);
+					window['inp'+x].nextElementSibling.textContent=`uniform vec2 tex${x}res= vec2(${t.width},${t.height});`;
 				});
 			},
 			compile=()=>{
