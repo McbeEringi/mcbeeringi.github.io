@@ -24,7 +24,7 @@
 			.disp{height:calc(100% - 128px);}.cfg{height:128px;margin;0;bottom:0;overflow:scroll;white-space:nowrap;scroll-snap-type:x mandatory;}
 			.cfg ::-webkit-scrollbar{display:none;}.cfg *{scrollbar-width:none;}
 			label[for="ercb"]{display:inline-block;position:absolute;top:0;right:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;}
-			#fsh{transition:.2s;}.CodeMirror{height:100%;font-size:11px;}.cm-s-monokai.CodeMirror,.cm-s-monokai .CodeMirror-gutters{background:#272822aa;}.cm-s-monokai div.CodeMirror-selected{background:#49483e88;}
+			#fsh,.CodeMirror{height:100%;font-size:11px;transition:.2s;}.cm-s-monokai.CodeMirror,.cm-s-monokai .CodeMirror-gutters{background:#272822aa;}.cm-s-monokai div.CodeMirror-selected{background:#49483e88;}
 
 			.cfg>*{display:inline-block;vertical-align:top;overflow:scroll;scroll-snap-align:start;height:100%;}
 			.file{width:160px;height:120px;position:relative;overflow:hidden;text-shadow:0 0 4px #000;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#000;margin:2px 0;}
@@ -34,7 +34,7 @@
 
 
 			.btn{display:inline-block;position:relative;margin:4px;padding:4px 8px;border-radius:4px;background:linear-gradient(#666,#444);text-decoration:none;}
-			#edcb:checked~* #fsh{opacity:0;pointer-events:none;}#edcb:checked~* label[for="edcb"],.btn:active{background:#48f;}
+			#edcb:checked~* #fsh,#edcb:checked~* .CodeMirror{opacity:0;pointer-events:none;}#edcb:checked~* label[for="edcb"],.btn:active{background:#48f;}
 			#ercb:checked~* label[for="ercb"]{width:24px;opacity:.5;}
 			.btn>img{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;}
 		</style>
@@ -46,7 +46,13 @@
 		<canvas id="c" class="dn"></canvas>
 		<div class="disp">
 			<canvas id="prv" style="pointer-events:none;"></canvas>
-			<div id="fsh"></div>
+			<textarea id="fsh">precision mediump float;
+	uniform float time;
+	uniform vec2 res;
+	void main(){
+	vec2 p = gl_FragCoord.xy/res;
+	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
+}</textarea>
 			<label for="ercb"><pre id="log"></pre></label>
 		</div>
 		<div class="cfg">
@@ -85,16 +91,8 @@
 			let gl=WebGL.setup(c,true,true),
 				prvctx=prv.getContext('2d'),
 				vsh_='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
-fsh_=`precision mediump float;
-uniform float time;
-uniform vec2 res;
-void main(){
-vec2 p = gl_FragCoord.xy/res;
-gl_FragColor = vec4(p,sin(time)*.5+.5,1);
-}`,
 				prg=WebGL.compile(gl,vsh_,'void main(){gl_FragColor=vec4(0);}'),
-				fsh_e=CodeMirror(fsh,{
-					value:fsh_,
+				fsh_e=CodeMirror.fromTextArea(fsh,{
 					mode:'text/x-glsl',theme:'monokai',
 					lineNumbers:true,//firstLineNumber:2,//lineNumberFormatter:x=>x,
 					tabSize:2,indentWithTabs:true,
