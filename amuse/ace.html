@@ -10,7 +10,8 @@
 	</style>
 	<body>
 		<div id="ed">void main(){
-	gl_FragColor = vec4(1,0,1,1);
+	vec4 diffuse=vec4(1);
+	gl_FragColor=diffuse;
 }</div>
 		<button onclick="alert(editor.getValue());">alert</button>
 		<script>
@@ -20,7 +21,7 @@
 			mode: "ace/mode/glsl",
 			minLines: 16,
 			maxLines: 32,
-			fontSize: 12,
+			fontSize: 11,
 			wrap: true,
 			useSoftTabs: false,
 			tabSize: 2
