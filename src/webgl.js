@@ -40,7 +40,7 @@ const WebGL={
 		this.log='';
 		return this.createProgram(gl,this.createShader(gl,0,vsh),this.createShader(gl,1,fsh));//prg
 	},
-	texture:function(gl,url,callback,i=0){
+	texture:function(gl,url,callback){
 		var img=new Image();
 		img.onload=()=>{
 			var tex=gl.createTexture();
@@ -51,7 +51,7 @@ const WebGL={
 			if(((nw&(nw-1))==0)&&((nh&(nh-1))==0))
 				gl.generateMipmap(gl.TEXTURE_2D);
 			else{
-				console.log('mipmap canceled');
+				console.log('tex mipmap canceled');
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
 			}
@@ -59,9 +59,32 @@ const WebGL={
 			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
 			gl.bindTexture(gl.TEXTURE_2D,null);
 			console.log(tex);
-			callback({texture:tex,width:nw,height:nh},i);
+			callback({texture:tex,width:nw,height:nh});
 		}
 		img.src=url;
+	},
+	fbuffer:function(gl,w=gl.canvas.width,h=gl.canvas.height){
+		var fb=gl.createFramebuffer(),depthb=gl.createRenderbuffer(),ftex=gl.createTexture();
+		gl.bindFramebuffer(gl.FRAMEBUFFER,fb);
+		gl.bindRenderbuffer(gl.RENDERBUFFER,depthb);
+		gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,w,h);
+		gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,depthb);
+		gl.bindTexture(gl.TEXTURE_2D,ftex);
+		gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+		if(((w&(w-1))==0)&&((h&(h-1))==0))
+			gl.generateMipmap(gl.TEXTURE_2D);
+		else{
+			console.log('buf mipmap canceled');
+			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+		}
+		gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+		gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,ftex,0);
+		gl.bindTexture(gl.TEXTURE_2D,null);
+		gl.bindRenderbuffer(gl.RENDERBUFFER,null);
+		gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+		return {f:fb,d:depthb,tex:ftex};
 	},
 	attributes:function(gl,prg,atts,index){
 		var aloc=atts.map(x=>gl.getAttribLocation(prg,x.name));
@@ -97,9 +120,11 @@ const WebGL={
 			}
 		}});
 	},
-	draw:function(gl,l){
+	draw:function(gl,fb){
+		if(fb)gl.bindFramebuffer(gl.FRAMEBUFFER,fb.f);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		gl.drawElements(gl.TRIANGLES,gl.ilength,gl.UNSIGNED_SHORT,0);
-		gl.flush();
+		if(fb)gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+		else gl.flush();
 	}
 }
