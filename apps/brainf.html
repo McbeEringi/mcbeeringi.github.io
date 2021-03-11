@@ -11,6 +11,7 @@
 <body>
 <style>
 	:root,textarea,input{background:#222;color:#fff;font-family:monospace;user-select:none;-webkit-user-select:none;resize:none;}h1,h2{margin:4px;}
+	a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
 	.box{border-left:2px solid #888;padding-left:8px;margin:16px auto;}
 	#out,#srcout{min-height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;user-select:text;-webkit-user-select:text;}
 	#srcout{white-space:pre-wrap;max-height:560px;}
@@ -32,11 +33,12 @@
 <div class="box">
 	<h2>encoder</h2>
 	<pre id="srcout"></pre>
-	<button onclick="srcout.textContent=enmain(eninp.value,mmind.value)">run</button>
+	<button onclick="srcout.textContent=enmain(eninp.value,mmind.value)">run</button>  <button onclick="romaji(eninp.value).then(x=>srcout.textContent=enmain(x,mmind.value))">run (ja)</button>
 	<label>chained threshold: <input type="number" id="mmind" value="10" min="0" max="127" step="1"> [0~127] less calc <<< less memory</label><br>
 	<br>
 	inp: <button onclick="eninp.select();">select all</button><br>
 	<textarea id="eninp">Hello World!</textarea><br>
+	Romanized by <a href="https://developer.yahoo.co.jp/webapi/jlp/furigana/v1/furigana.html">Yahoo ルビ振りAPI</a><br>
 </div>
 <div class="box">
 	<h2>interpreter</h2>
@@ -68,6 +70,7 @@ type here before run.</textarea><pre id="inpprv"></pre>
 	</div>
 </div>
 <pre id="log"></pre>
+build: 2103110<br>
 <iframe src="../amuse/ascii.html" style="border:none;width:100%;" onload="this.height=this.contentWindow.document.body.scrollHeight+24"></iframe>
 
 <script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
@@ -84,15 +87,15 @@ type here before run.</textarea><pre id="inpprv"></pre>
 btn.onclick=()=>{demain();btn.disabled=true;qbtn.disabled=true;}
 qbtn.onclick=()=>navigator.clipboard.readText().then(t=>{if(t){src.value=t;autosize.update(src);skipcb.checked=true;demain();btn.disabled=true;qbtn.disabled=true;}});
 stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
-const asu=e=>autosize.update(e.target),
-copy=e=>navigator.clipboard.writeText(e.target.textContent).then(()=>{e.target.style.background='#48f';setTimeout(()=>e.target.style.background='',100);});
-srcout.onclick=copy;
-out.onclick=copy;
-autosize(eninp);eninp.oninput=asu;
-autosize(src);src.oninput=asu;
-autosize(inp);inp.oninput=asu;
+const copy=e=>navigator.clipboard.writeText(e.target.textContent).then(()=>{e.target.style.background='#48f';setTimeout(()=>e.target.style.background='',100);});
+out.onclick=srcout.onclick=copy;
+[eninp,src,inp].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 
-const demain=()=>{
+const dp=new DOMParser(),
+romaji=x=>fetch(`https://jlp.yahooapis.jp/FuriganaService/V1/furigana?appid=${atob('ZGowMGFpWnBQVnBQY0dGbVpFRTVkelJ0ZENaelBXTnZibk4xYldWeWMyVmpjbVYwSm5nOVptTS0=')}&sentence=${encodeURIComponent(x)}`)
+	.then(r=>r.text()).then(t=>dp.parseFromString(t,'text/xml'))
+	.then(y=>{console.log(y);let s='';y.querySelectorAll('Word').forEach(e=>s+=(e.querySelector('Roman')||e.querySelector('Surface')).textContent);return s;}),
+demain=()=>{
 	var s,p,ps,pi,m,l,tmp;
 	const render=all=>{
 		mv.firstChild.style.left=`${36*p}px`;
