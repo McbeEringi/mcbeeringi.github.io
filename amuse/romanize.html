@@ -2,11 +2,10 @@
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<title>yahoo ruby</title>
+		<title>romanize</title>
 	</head>
 	<body>
-		<textarea id="inp">ﾔﾌｰ ルビ振りAPI
-		東京特許許可局局長今日急遽休暇許可却下</textarea>
+		<textarea id="inp">東京特許許可局局長今日急遽休暇許可却下</textarea>
 		<button onclick="main(inp.value).then(x=>log.textContent=x);">exe</button>
 		<pre id="log"></pre>
 		<a href="https://developer.yahoo.co.jp/webapi/jlp/furigana/v1/furigana.html">Yahoo ルビ振りAPI</a>
@@ -19,12 +18,12 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/kuromoji/build/kuromoji.min.js"></script>
 		<script>
-		kuromoji.builder({dicPath:"https://cdn.jsdelivr.net/npm/kuromoji/dict/"}).build(function (err, tokenizer) {
-	// tokenizer is ready
-	var path = tokenizer.tokenize(inp.value);
-	console.log(path);
-	log.textContent=JSON.stringify(path,null,'\t');
-});
+			kuromoji.builder({dicPath:"https://cdn.jsdelivr.net/npm/kuromoji/dict/"}).build(function (err, tokenizer) {
+				// tokenizer is ready
+				var path = tokenizer.tokenize(inp.value);
+				console.log(path);
+				log.textContent=JSON.stringify(path,null,'\t');
+			});
 		</script>
 	</body>
 </html>
