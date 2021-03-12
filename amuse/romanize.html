@@ -8,7 +8,6 @@
 		<textarea id="inp">東京特許許可局局長今日急遽休暇許可却下</textarea>
 		<button onclick="main(inp.value).then(x=>log.textContent=x);">exe</button>
 		<pre id="log"></pre>
-		<a href="https://developer.yahoo.co.jp/webapi/jlp/furigana/v1/furigana.html">Yahoo ルビ振りAPI</a>
 		<script>
 			let dp=new DOMParser();
 			const main=x=>fetch(`https://jlp.yahooapis.jp/FuriganaService/V1/furigana?appid=${atob('ZGowMGFpWnBQVnBQY0dGbVpFRTVkelJ0ZENaelBXTnZibk4xYldWeWMyVmpjbVYwSm5nOVptTS0=')}&sentence=${encodeURIComponent(x)}`,{mode:'cors'})
@@ -18,7 +17,7 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/kuromoji/build/kuromoji.min.js"></script>
 		<script>
-			kuromoji.builder({dicPath:"https://cdn.jsdelivr.net/npm/kuromoji/dict/"}).build(function (err, tokenizer) {
+			kuromoji.builder({dicPath:"https://cdn.jsdelivr.net/npm/kuromoji/dict"}).build(function (err, tokenizer) {
 				// tokenizer is ready
 				var path = tokenizer.tokenize(inp.value);
 				console.log(path);
