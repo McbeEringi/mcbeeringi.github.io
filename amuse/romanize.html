@@ -18,7 +18,7 @@
 					app_id:'57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3',
 					sentence:x
 				})
-			}).then(r=>r.json()).then(x=>x.word_list.map(x=>x[2]?jaconv.toHebon(jaconv.toHiragana(x[2])).toLowerCase():x[0]).join(''));
+			}).then(r=>r.json()).then(x=>x.word_list.reduce((a,x)=>a.concat(x),[]).map(x=>x[2]?jaconv.toHebon(jaconv.toHiragana(x[2])).toLowerCase():x[0]).join(''));
 		</script>
 
 		<!--
