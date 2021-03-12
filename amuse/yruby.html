@@ -16,5 +16,15 @@
 					.then(r=>r.text()).then(t=>dp.parseFromString(t,'text/xml'))
 					.then(y=>{console.log(y);let s='';y.querySelectorAll('Word').forEach(e=>s+=(e.querySelector('Roman')||e.querySelector('Surface')).textContent);return s;});
 		</script>
+
+		<script src="https://cdn.jsdelivr.net/npm/kuromoji/build/kuromoji.min.js"></script>
+		<script>
+		kuromoji.builder({dicPath:"https://cdn.jsdelivr.net/npm/kuromoji/dict/"}).build(function (err, tokenizer) {
+	// tokenizer is ready
+	var path = tokenizer.tokenize(inp.value);
+	console.log(path);
+	log.textContent=JSON.stringify(path,null,'\t');
+});
+		</script>
 	</body>
 </html>
