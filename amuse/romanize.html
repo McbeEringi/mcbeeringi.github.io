@@ -8,17 +8,17 @@
 		<textarea id="inp">東京特許許可局局長今日急遽休暇許可却下</textarea>
 		<button onclick="goo(inp.value).then(x=>log.textContent=x);">exe</button>
 		<pre id="log"></pre>
-		<a href="https://labs.goo.ne.jp/api/jp/hiragana-translation/">goo hiraganize api</a>
-		<script src="https://cdn.jsdelivr.net/npm/jaconv@1.0.4/lib/jaconv.min.js"></script>
+		<a href="https://labs.goo.ne.jp/api/jp/morphological-analysis/">goo morph api</a>
+		<script src="https://cdn.jsdelivr.net/npm/jaconv/lib/jaconv.min.js"></script>
 		<script>
-		const goo=x=>fetch('https://labs.goo.ne.jp/api/hiragana',{
+		const goo=x=>fetch('https://labs.goo.ne.jp/api/morph',{
 				method:'POST',mode:'cors',
 				headers:{'Accept':'application/json','Content-Type':'application/json'},
 				body:JSON.stringify({
 					app_id:'57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3',
-					sentence:x,output_type:'hiragana'
+					sentence:x
 				})
-			}).then(r=>r.json()).then(x=>jaconv.toHebon(x.converted));
+			}).then(r=>r.json()).then(x=>x.word_list.map(x=>x[2]?jaconv.toHebon(jaconv.toHiragana(x[2])).toLowerCase():x[0]).join(''));
 		</script>
 
 		<!--

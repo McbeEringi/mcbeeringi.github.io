@@ -38,7 +38,7 @@
 	<br>
 	inp: <button onclick="eninp.select();">select all</button><br>
 	<textarea id="eninp">Hello World!</textarea><br>
-	Romanized by <a href="https://developer.yahoo.co.jp/webapi/jlp/furigana/v1/furigana.html">Yahoo ルビ振りAPI</a><br>
+	morphed by <a href="https://labs.goo.ne.jp/api/jp/morphological-analysis/">goo 形態素解析API</a><br>
 </div>
 <div class="box">
 	<h2>interpreter</h2>
@@ -70,10 +70,11 @@ type here before run.</textarea><pre id="inpprv"></pre>
 	</div>
 </div>
 <pre id="log"></pre>
-build: 2103120<br>
+build: 2103130<br>
 <iframe src="../amuse/ascii.html" style="border:none;width:100%;" onload="this.height=this.contentWindow.document.body.scrollHeight+24"></iframe>
 
 <script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jaconv/lib/jaconv.min.js"></script>
 <script>
 'use strict';
 //https://dbaron.org/log/20100309-faster-timeouts
@@ -91,10 +92,14 @@ const copy=e=>navigator.clipboard.writeText(e.target.textContent).then(()=>{e.ta
 out.onclick=srcout.onclick=copy;
 [eninp,src,inp].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 
-const dp=new DOMParser(),
-romaji=x=>fetch(`https://jlp.yahooapis.jp/FuriganaService/V1/furigana?appid=${atob('ZGowMGFpWnBQVnBQY0dGbVpFRTVkelJ0ZENaelBXTnZibk4xYldWeWMyVmpjbVYwSm5nOVptTS0=')}&sentence=${encodeURIComponent(x)}`,{mode:'cors'})
-	.then(r=>r.text()).then(t=>dp.parseFromString(t,'text/xml'))
-	.then(y=>{console.log(y);let s='';y.querySelectorAll('Word').forEach(e=>s+=(e.querySelector('Roman')||e.querySelector('Surface')).textContent);return s;}),
+const romaji=x=>fetch('https://labs.goo.ne.jp/api/morph',{
+	method:'POST',mode:'cors',
+	headers:{'Accept':'application/json','Content-Type':'application/json'},
+	body:JSON.stringify({
+		app_id:'57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3',
+		sentence:x
+	})
+}).then(r=>r.json()).then(x=>x.word_list.map(x=>x[2]?jaconv.toHebon(jaconv.toHiragana(x[2])).toLowerCase():x[0]).join('')),
 demain=()=>{
 	var s,p,ps,pi,m,l,tmp;
 	const render=all=>{
