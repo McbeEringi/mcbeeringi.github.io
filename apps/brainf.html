@@ -92,7 +92,7 @@ out.onclick=srcout.onclick=copy;
 [eninp,src,inp].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 
 const dp=new DOMParser(),
-romaji=x=>fetch(`https://jlp.yahooapis.jp/FuriganaService/V1/furigana?appid=${atob('ZGowMGFpWnBQVnBQY0dGbVpFRTVkelJ0ZENaelBXTnZibk4xYldWeWMyVmpjbVYwSm5nOVptTS0=')}&sentence=${encodeURIComponent(x)}`)
+romaji=x=>fetch(`https://jlp.yahooapis.jp/FuriganaService/V1/furigana?appid=${atob('ZGowMGFpWnBQVnBQY0dGbVpFRTVkelJ0ZENaelBXTnZibk4xYldWeWMyVmpjbVYwSm5nOVptTS0=')}&sentence=${encodeURIComponent(x)}`,{mode:'cors'})
 	.then(r=>r.text()).then(t=>dp.parseFromString(t,'text/xml'))
 	.then(y=>{console.log(y);let s='';y.querySelectorAll('Word').forEach(e=>s+=(e.querySelector('Roman')||e.querySelector('Surface')).textContent);return s;}),
 demain=()=>{

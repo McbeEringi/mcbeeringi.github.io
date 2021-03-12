@@ -12,7 +12,7 @@
 		<a href="https://developer.yahoo.co.jp/webapi/jlp/furigana/v1/furigana.html">Yahoo ルビ振りAPI</a>
 		<script>
 			let dp=new DOMParser();
-			const main=x=>fetch(`https://jlp.yahooapis.jp/FuriganaService/V1/furigana?appid=${atob('ZGowMGFpWnBQVnBQY0dGbVpFRTVkelJ0ZENaelBXTnZibk4xYldWeWMyVmpjbVYwSm5nOVptTS0=')}&sentence=${encodeURIComponent(x)}`)
+			const main=x=>fetch(`https://jlp.yahooapis.jp/FuriganaService/V1/furigana?appid=${atob('ZGowMGFpWnBQVnBQY0dGbVpFRTVkelJ0ZENaelBXTnZibk4xYldWeWMyVmpjbVYwSm5nOVptTS0=')}&sentence=${encodeURIComponent(x)}`,{mode:'cors'})
 					.then(r=>r.text()).then(t=>dp.parseFromString(t,'text/xml'))
 					.then(y=>{console.log(y);let s='';y.querySelectorAll('Word').forEach(e=>s+=(e.querySelector('Roman')||e.querySelector('Surface')).textContent);return s;});
 		</script>
