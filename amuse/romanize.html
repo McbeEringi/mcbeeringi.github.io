@@ -6,39 +6,36 @@
 	</head>
 	<body>
 		<textarea id="inp">東京特許許可局局長今日急遽休暇許可却下</textarea>
-		<button onclick="main(inp.value).then(x=>log.textContent=x);">exe</button>
+		<button onclick="goo(inp.value).then(x=>log.textContent=x);">exe</button>
 		<pre id="log"></pre>
+		<a href="https://labs.goo.ne.jp/api/jp/hiragana-translation/">goo hiraganize api</a>
+		<script src="https://cdn.jsdelivr.net/npm/jaconv@1.0.4/lib/jaconv.min.js"></script>
+		<script>
+		const goo=x=>fetch('https://labs.goo.ne.jp/api/hiragana',{
+				method:'POST',mode:'cors',
+				headers:{'Accept':'application/json','Content-Type':'application/json'},
+				body:JSON.stringify({
+					app_id:'57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3',
+					sentence:x,output_type:'hiragana'
+				})
+			}).then(r=>r.json()).then(x=>jaconv.toHebon(x.converted));
+		</script>
+
+		<!--
 		<script>
 			let dp=new DOMParser();
 			const yahoo=x=>fetch(`https://jlp.yahooapis.jp/FuriganaService/V1/furigana?appid=${atob('ZGowMGFpWnBQVnBQY0dGbVpFRTVkelJ0ZENaelBXTnZibk4xYldWeWMyVmpjbVYwSm5nOVptTS0=')}&sentence=${encodeURIComponent(x)}`,{mode:'cors'})
 					.then(r=>r.text()).then(t=>dp.parseFromString(t,'text/xml'))
 					.then(y=>{console.log(y);let s='';y.querySelectorAll('Word').forEach(e=>s+=(e.querySelector('Roman')||e.querySelector('Surface')).textContent);return s;});
 		</script>
-		<script>
-		fetch(`https://labs.goo.ne.jp/api/hiragana`,{
-			method:'POST',
-			mode:'cors',
-			headers:{
-				'Accept':'application/json',
-  			'Content-Type':'application/json'
-			},
-			body:{
-				app_id:"57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3",
-				sentence:"平仮名変換テスト 東京特許許可局局長今日急遽休暇許可却下",
-				output_type:"hiragana"
-			}
-		}).then(r=>r.json()).then(x=>console.log(x));
-
-		</script>
-
 		<script src="https://cdn.jsdelivr.net/npm/kuromoji/build/kuromoji.min.js"></script>
 		<script>
-			/*window.onload=()=>kuromoji.builder({dicPath:"https://cdn.jsdelivr.net/npm/kuromoji/dict"}).build(function (err, tokenizer) {
+			window.onload=()=>kuromoji.builder({dicPath:"https://cdn.jsdelivr.net/npm/kuromoji/dict"}).build(function (err, tokenizer) {
 				// tokenizer is ready
 				var path = tokenizer.tokenize(inp.value);
 				console.log(path);
 				log.textContent=JSON.stringify(path,null,'\t');
-			});*/
-		</script>
+			});
+		</script>-->
 	</body>
 </html>
