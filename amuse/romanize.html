@@ -18,6 +18,10 @@
 		fetch(`https://labs.goo.ne.jp/api/hiragana`,{
 			method:'POST',
 			mode:'cors',
+			headers:{
+				'Accept':'application/json',
+  			'Content-Type':'application/json'
+			},
 			body:{
 				app_id:"57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3",
 				sentence:"平仮名変換テスト 東京特許許可局局長今日急遽休暇許可却下",
