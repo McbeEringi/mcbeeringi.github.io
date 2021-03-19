@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="jp">
+<html lang='jp'>
 	<head>
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
+<script async src='https://www.googletagmanager.com/gtag/js?id=UA-145066191-2'></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<meta charset='utf-8'>
+		<meta name='viewport' content='width=device-width,initial-scale=1.0'>
 		<title>McbeEringi 404</title>
-		<style media="screen">
+		<style media='screen'>
 			:root{background-color:#222;color:#fff;
 				font-family:monospace;text-align:center;
 				overflow-wrap:break-word;
@@ -20,51 +20,48 @@
 	</head>
 	<body>
 		McbeEringi <br>
-		<div id="pre" style="font-size:150%;">
+		<div id='pre' style='font-size:150%;'>
 			Redirecting to correct URL <br>
 			Please wait…
 		</div>
-		<div id="error" style="display:none;">
-			<h1 style="font-size:500%;">404</h1>
+		<div id='error' style='display:none;'>
+			<h1 style='font-size:500%;'>404</h1>
 			<h2>Page not found :(</h2>
 			<p>URL fixing failed</p>
 		</div>
-		<div id="esbefg" style="display:none;font-size:150%;">
-			ESBE 1Gの管理は<a href="https://twitter.com/channel_nari">NARI氏</a>に委託しました。 <br>
+		<div id='esbefg' style='display:none;font-size:150%;'>
+			ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。 <br>
 			リダイレクトします<br>
-			<div class="bar"><div></div></div>
+			<div class='bar'><div></div></div>
 			<br>
-			私が後継で開発していた<a href="https://mcbeeringi.github.io/esbe-2g">ESBE_2Gはこちら</a>
+			私が後継で開発していた<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2Gはこちら</a>
 		</div>
 		<br><hr><br>
-		<a href="" id="log"></a>
+		<a href='' id='log'></a>
 		<script>
-			var fixed = location.href;
+			var fixed=location.href;
 			if(fixed.match(/mcbeeringi\.github\.io\/esbe-1g/)){
-				pre.style.display="none";
-				esbefg.style.display="block";
-				fixed = "https://nari0978.github.io/1g/"+(fixed.match(/info/i)?"1g-info.html":"1g.html");
-				log.innerText = fixed;log.href = fixed;
-				setTimeout(()=>location.href=fixed, 5000);
+				pre.style.display='none';
+				esbefg.style.display='block';
+				fixed='https://nari0978.github.io/1g/'+(fixed.match(/info/i)?'1g-info.html':'1g.html');
+				log.innerText=log.href=fixed;
+				setTimeout(()=>location.href=fixed,5000);
 			}else{
-				const dict=[
-					[/others\/gl/i,"apps/webgl/index"],[/apps\/fsh/i,"apps/webgl/fsh"],
-					[/others\/aes/i,"apps/aes"],[/others\/col/i,"apps/col"],
-					[/others\/unicode/i,"apps/unc"],[/others\/sosu-/i,"apps/sosu-"],
-					[/others\/calpis/i,"apps/calpis"],
-					[/others\/bmp/i,"apps/mc/glyph"],[/apps\/mc\/bmp/i,"apps/mc/glyph"],
-					[/others\/arch/i,"apps/mc/arch"],[/others\/poly/i,"apps/mc/poly"],
-					[/others\/sky/i,"sky"],[/apps\/sky/i,"sky"],
-					[/amuse\/bf/i,"apps/brainf"]
-				];
-				dict.forEach(x=>fixed=fixed.replace(x[0],x[1]));
-				log.innerText = fixed;log.href = fixed;
+				[
+					[/others\/gl/i,'apps/webgl/index'],[/apps\/fsh/i,'apps/webgl/fsh'],
+					[/others\/aes/i,'apps/aes'],[/others\/col/i,'apps/col'],
+					[/others\/unicode/i,'apps/unc'],[/others\/sosu-/i,'apps/sosu-'],
+					[/others\/calpis/i,'apps/calpis'],
+					[/others\/bmp/i,'apps/mc/glyph'],[/apps\/mc\/bmp/i,'apps/mc/glyph'],
+					[/others\/arch/i,'apps/mc/arch'],[/others\/poly/i,'apps/mc/poly'],
+					[/others\/sky/i,'sky'],[/apps\/sky/i,'sky'],
+					[/amuse\/js/i,'apps/js']
+				].forEach(x=>fixed=fixed.replace(x[0],x[1]));
+				log.innerText=log.href=fixed;
 				if(location.href==fixed){
-					pre.style.display="none";
-					error.style.display="block";
-				}else{
-					location.href = fixed;
-				}
+					pre.style.display='none';
+					error.style.display='block';
+				}else location.href=fixed;
 			}
 		</script>
 	</body>
