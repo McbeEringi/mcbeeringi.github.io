@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang='en' dir='ltr'>
+	<head>
+		<meta charset='utf-8'>
+		<title>McbeEringi JavaScript</title>
+		<style>
+			:root{font-family:sans-serif;background:#222;color:#fff;}:link{color:#8cf;}:visited{color:#c8f;}h1,h2{margin:4px;}
+			#log{background:#333;padding:4px;}
+		</style>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/theme/monokai.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/codemirror/mode/javascript/javascript.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/matchbrackets.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/closebrackets.min.js"></script>
+	</head>
+	<body>
+		<h1>JavaScript</h1>
+		<div id='e'></div>
+		<button onclick="run();">run</button>
+		<pre id="log"></pre>
+		<script>
+		let editor=CodeMirror(e,{
+			value:'console.clear();\nconsole.log(Math.ceil(Math.random()*41));',
+			mode:'javascript',theme:'monokai',
+			lineNumbers:true,tabSize:2,indentWithTabs:true,
+			matchBrackets:true,autoCloseBrackets: true,
+		});
+		const time_=()=>{var d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}] `;},
+		run=()=>{try{eval(editor.getValue());}catch(e){log.textContent=e.toString();}};
+		console.clear=()=>log.textContent='';
+		console.warn=console.info=console.error=console.log=(...x)=>log.textContent+=`${time_()}${x.map(x=>JSON.stringify(x)||x.toString()).join(', ')}\n`;
+		</script>
+	</body>
+</html>
