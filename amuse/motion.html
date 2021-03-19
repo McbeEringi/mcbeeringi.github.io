@@ -21,7 +21,7 @@
 		<div id="rot">
 			↑
 			<div style="background:#f884;transform:rotateY(90deg);"></div>
-			<div style="background:#8f84;"><pre id="log">build: 2103191</pre><pre id="log2"></pre></div>
+			<div style="background:#8f84;"><pre id="log">build: 2103192</pre><pre id="log2"></pre></div>
 			<div style="background:#88f4;transform:rotateX(90deg);"></div>
 		</div>
 	</div>
@@ -65,6 +65,7 @@ const ormain=()=>{
 	setInterval(()=>{
 		v.forEach((x,i)=>{
 			let a=atmp[i].reduce((a,y)=>a+y)/atmp[i].length;
+			console.log(i,a);
 			x+=a*.5;
 		});
 		atmp=[[],[],[]];
