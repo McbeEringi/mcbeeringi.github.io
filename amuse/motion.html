@@ -21,7 +21,7 @@
 		<div id="rot">
 			↑
 			<div style="background:#f884;transform:rotateY(90deg);"></div>
-			<div style="background:#8f84;"><pre id="log">build: 2101093</pre><pre id="log2"></pre></div>
+			<div style="background:#8f84;"><pre id="log">build: 2103190</pre><pre id="log2"></pre></div>
 			<div style="background:#88f4;transform:rotateX(90deg);"></div>
 		</div>
 	</div>
@@ -32,7 +32,7 @@
 <pre id="log3"></pre>
 <script>
 canvas.width=1024;canvas.height=1024;
-var ctx=canvas.getContext('2d'),mo_a={x:0,y:0,z:0},imgd,v=[0,0,0];
+var ctx=canvas.getContext('2d'),mo_a={x:0,y:0,z:0},imgd,v=[0,0,0],atmp=[[],[],[]];
 ctx.imageSmoothingEnabled=false;
 
 const render=()=>{
@@ -50,8 +50,7 @@ const render=()=>{
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
 		mo_a=e.acceleration;render();
-		v=v.map((x,i)=>x+mo_a[['x','y','z'][i]]*e.interval*e.interval);
-		log3.textContent=e.interval+'\nV(km/h)\n'+v.map(x=>(x*3.6).toFixed(6)).join('\n');
+		atmp.forEach((x,i)=>x.pop(mo_a[['x','y','z'][i]]));
 		a_log.textContent=`${mo_a.x.toFixed(2)}\n${mo_a.y.toFixed(2)}\n${mo_a.z.toFixed(2)}`;
 		log.textContent=`motion : ${e.interval}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
@@ -63,6 +62,14 @@ const ormain=()=>{
 		o_log.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
 		rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${-e.alpha*(window.navigator.userAgent.match(/(Apple|Safari|Firefox)/i)?-1:1)}deg)`;
 	});
+	setInterval(()=>{
+		v.forEach((x,i)=>{
+			let a=atmp[i].reduce((a,y)=>a+y)/atmp[i].length;
+			x+=a*.5;
+		});
+		atmp=[[],[],[]];
+		log3.textContent='V(km/h)\n'+v.map(x=>(x*3.6).toFixed(6)).join('\n');
+	},500);
 };
 const reqp=()=>{
 	contentWrapper.onclick=()=>{};
