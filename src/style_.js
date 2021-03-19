@@ -13,7 +13,7 @@ a:visited{color:#caf;}a:visited:hover{color:#a8f;}a:visited:active{color:#84f;}
 
 header{position:sticky;top:8px;left:0;width:100%;height:48px;background:#8888;line-height:48px;border-radius:8px;user-select:none;-webkit-user-select:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:16;}
 header>*{display:inline-block;position:absolute;}
-header>a{left:0;text-decoration:none;color:#ddd !important;}header>a::before{content:"";display:inline-block;width:48px;height:48px;vertical-align:bottom;background:no-repeat center/80% url("https://mcbeeringi.github.io/img/6x6_.png");}
+header>a{left:0;text-decoration:none;font-size:large;color:#ddd !important;}header>a::before{content:"";display:inline-block;width:48px;height:48px;vertical-align:bottom;background:no-repeat center/80% url("https://mcbeeringi.github.io/img/6x6_.png");}
 header>nav{right:0;margin-right:8px;}#hnavcb{display:none;}
 @media(max-width:512px){
 	header>nav{margin-right:unset;}
@@ -86,9 +86,11 @@ setstyle=()=>{
 <footer>
 	© 2018~ @McbeEringi.｡:+*<br><br>
 	<a href="https://twitter.com/mcbeeringi">Twitter</a>
-	<a href="https://github.com/mcbeeringi">GitHub</a>
+	<a href="https://github.com/mcbeeringi">GitHub</a><br>
+	press KeyZ…
 </footer>`);
 	document.querySelectorAll('.lang').forEach(e=>e.href='https://translate.google.com/translate?sl=ja&tl=en&u='+encodeURIComponent(location.href));
 	document.querySelectorAll('a').forEach(e=>{if(!e.ontouchstart)e.ontouchstart=()=>{};});
+	document.addEventListener('keydown',e=>{if(e.code=='KeyZ')bgplay();},{once:true});
 };
 if(document.readyState=='loading')window.addEventListener('DOMContentLoaded',setstyle,{once:true});else setstyle();
