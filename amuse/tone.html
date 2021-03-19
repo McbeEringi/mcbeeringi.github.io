@@ -5,36 +5,35 @@
 		<title></title>
 	</head>
 	<body>
-		<style media="screen">
-			.p>p{width:16px;height:64px;display:inline-block;margin:2px;background:#ccc;}
+		<style>
+			:root{background:#222;color:#fff;}
+			.p>p{width:16px;height:64px;display:inline-block;margin:2px;background:#8888;}
 		</style>
-		<script src="https://tonejs.github.io/build/Tone.js"></script>
-		<button id="start">start</button>
+		<script src="https://cdn.jsdelivr.net/npm/tone/build/Tone.js"></script>
 		<div class="p">
 			<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>
 		</div>
 		<pre id="log"></pre>
 		<script>
-			var sy;
-			start.onclick=()=>{
-				Tone.start();
-				sy=new Tone.PolySynth(Tone.Synth).toDestination();
-				sy.set({envelope:{
-					attackCurve:"linear",
-					attack:0.01,
-					decayCurve:"exponential",
-					decay:5.0,
-					releaseCurve:"exponential",
-					release:0.2,
-					sustain:0.0
-				}});
-			}
+			let sy=new Tone.PolySynth(Tone.Synth).toDestination();
+			sy.set({envelope:{
+				attackCurve:"linear",
+				attack:0.01,
+				decayCurve:"exponential",
+				decay:5.0,
+				releaseCurve:"exponential",
+				release:0.2,
+				sustain:0.0
+			}});
 			const att=i=>{
-				sy.triggerAttack(220*Math.pow(2,i/12));
+				Tone.start();
+				let tmp=new Array(8).fill(1).map(()=>Math.random());
+				log.textContent=JSON.stringify(tmp);
 				sy.set({oscillator:{
 					type:'sine12',
-					partials:[16,28,29,38,38,53,46,60,65,63,72,72].map(x=>Math.pow(10,-x))//new Array(8).fill(1).map(()=>Math.random())
+					partials:tmp//[16,28,29,38,38,53,46,60,65,63,72,72].map(x=>Math.pow(10,-x))
 				}});
+				sy.triggerAttack(220*Math.pow(2,i/12));
 			},
 			rel=i=>{
 				sy.triggerRelease(220*Math.pow(2,i/12));
