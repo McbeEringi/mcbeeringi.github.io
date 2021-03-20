@@ -69,21 +69,21 @@ const palette=[
 ],
 rand=JSON.parse(localStorage.bg_star),
 bgset=(t=new Date())=>{
-	let bgctx=bg.getContext('2d'),h=t.getHours(),m=t.getMinutes(),g;
+	let bgctx=bg.getContext('2d'),h=t.getHours(),m=t.getMinutes(),hexm=('0'+Math.round(m*256/60).toString(16)).slice(-2),g;
 	console.log(`${h}:${m}`);
-	m=('0'+Math.round(m*256/60).toString(16)).slice(-2);
 	bgctx.beginPath();
 	bgctx.rect(0,0,bg.width,bg.height);
 	for(let i=0;i<2;i++){
 		g=bgctx.createLinearGradient(1,0,1,bg.height);
-		palette[(h+i)%24].forEach(x=>g.addColorStop(x.p,x.c+(i?m:'')));
+		palette[(h+i)%24].forEach(x=>g.addColorStop(x.p,x.c+(i?hexm:'')));
 		bgctx.fillStyle=g;
 		bgctx.fill();
 	}
+	m=(m+h*60)/1440;
 	for(let i=1;i<=4;i++){
 		bgctx.beginPath();
 		bgctx.fillStyle='#fff'+['2','6','a','e'][i-1];
-		for(let j=1;j<=32;j++)bgctx.rect(Math.floor(rand[0][i*j-1]*bg.width),Math.floor(rand[1][i*j-1]*bg.height),1,1);
+		for(let j=1;j<=32;j++)bgctx.rect(Math.floor((rand[0][i*j-1]+m)%1*bg.width),Math.floor((rand[1][i*j-1]-m+1)%1*bg.height),1,1);
 		bgctx.fill();
 	}
 },
