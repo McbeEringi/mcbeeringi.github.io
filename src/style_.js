@@ -87,7 +87,7 @@ bgset=(t=new Date())=>{
 		bgctx.fill();
 	}
 },
-bgplay=(x=3000)=>{let t=Date.now(),fx=()=>{t+=50*x;bgset(new Date(t));};setInterval(fx,50);},
+bgplay=(x=1000)=>{let t=Date.now(),fx=()=>{t+=100*x;bgset(new Date(t));};setInterval(fx,100);},
 setstyle=()=>{
 	bgset();setInterval(bgset,60000);
 	document.body.insertAdjacentHTML('beforeend',`
