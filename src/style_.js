@@ -66,16 +66,23 @@ const palette=[
 	[{c:'#090401',p:0.5},{c:'#4B1D06',p:1}],
 	[{c:'#00000c',p:0.8},{c:'#150800',p:1}],
 ],
+rand=[0,0].map(x=>new Array(128).fill(0).map(Math.random)),
 bgset=(t=new Date())=>{
 	let bgctx=bg.getContext('2d'),h=t.getHours(),m=t.getMinutes(),g;
 	console.log(`${h}:${m}`);
 	m=('0'+Math.round(m*256/60).toString(16)).slice(-2);
+	bgctx.beginPath();
+	bgctx.rect(0,0,bg.width,bg.height);
 	for(let i=0;i<2;i++){
-		bgctx.beginPath();
 		g=bgctx.createLinearGradient(1,0,1,bg.height);
 		palette[(h+i)%24].forEach(x=>g.addColorStop(x.p,x.c+(i?m:'')));
 		bgctx.fillStyle=g;
-		bgctx.rect(0,0,bg.width,bg.height);
+		bgctx.fill();
+	}
+	for(let i=1;i<=4;i++){
+		bgctx.beginPath();
+		bgctx.fillStyle='#fff'+['2','6','a','e'][i-1];
+		for(let j=1;j<=32;j++)bgctx.rect(Math.floor(rand[0][i*j-1]*bg.width),Math.floor(rand[1][i*j-1]*bg.height),1,1);
 		bgctx.fill();
 	}
 },
