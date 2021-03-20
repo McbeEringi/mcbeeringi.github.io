@@ -40,6 +40,7 @@ footer,.box{width:100%;background:#8888;border-radius:8px;box-sizing:border-box;
 		</div>
 	</nav>
 </header>`);
+if(!localStorage.bg_star)localStorage.bg_star=JSON.stringify([0,0].map(x=>new Array(128).fill(0).map(Math.random)));
 const palette=[
 	[{c:'#00000c',p:0},{c:'#00000c',p:0}],
 	[{c:'#020111',p:0.85},{c:'#191621',p:1}],
@@ -66,7 +67,7 @@ const palette=[
 	[{c:'#090401',p:0.5},{c:'#4B1D06',p:1}],
 	[{c:'#00000c',p:0.8},{c:'#150800',p:1}],
 ],
-rand=[0,0].map(x=>new Array(128).fill(0).map(Math.random)),
+rand=JSON.parse(localStorage.bg_star),
 bgset=(t=new Date())=>{
 	let bgctx=bg.getContext('2d'),h=t.getHours(),m=t.getMinutes(),g;
 	console.log(`${h}:${m}`);
