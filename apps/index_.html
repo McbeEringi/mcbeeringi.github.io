@@ -1,48 +1,137 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" prefix="og: http://ogp.me/ns#">
-	<head>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-		<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
-		<script data-ad-client="ca-pub-6462086334272944" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<html lang="jp">
+<head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>McbeEringi apps</title>
+	<script src="../src/style.js" async></script>
+</head>
+<body>
+	<div class="title">Apps</div><p>js製のツールとか</p>
 
-		<meta charset="utf-8">
-		<title>McbeEringi Apps</title>
-		<meta name="viewport" content="width=device-width,initial-scale=1">
-		<meta name="description" content="McbeEringi's Web Apps">
-		<meta property="og:type" content="website">
-		<meta property="og:title" content="McbeEringi Apps">
-		<meta property="og:description" content="McbeEringi's Web Apps">
-		<meta property="og:url" content="https://mcbeeringi.github.io/apps">
-		<meta property="og:image" content="https://mcbeeringi.github.io/img/8x8.png">
-		<link rel="apple-touch-icon" href="img/6x6.png">
-	</head>
-	<body>
-		<script src="../src/style_.js" async></script>
-		<h1 class="c title">Apps</h1>
-		<p class="box c">JS製のツール等</p>
-		<h2 id="webgl">WebGL</h2>
-		<div class="stuff">
-			<a href="webgl" style="--img:url(../img/6x6_.png);--txt:'MCBE準拠の\aglslコンパイラ\aurl書き出し可能';">WebGL</a>
-			<a href="webgl/fsh.html" style="--img:url(../img/8x8_.png);--txt:'glslで画像編集ができる\a知識必須';">fsh</a>
-			<a href="webgl/kuwahara.html" style="--img:url(../img/6x6_.png);--txt:'webglで桑原フィルター\a写真を絵画っぽく';">Kuwahara_Filter</a>
+	<div class="col1" id="webgl"><h2>WebGL</h2></div>
+	<div class="col1 stuff">
+		<div>
+			<a href="webgl">
+				<img src="../img/6x6.png"><br>
+				WebGL
+			</a>
+			MCBE準拠の <br>
+			glslコンパイラ <br>
+			url書き出し可能
 		</div>
-		<div class="box"></div>
-		<h2 id="mc">MC</h2>
-		<div class="stuff">
-			<a href="mc/poly.html" style="--img:url(../img/6x6_.png);--txt:'.obj → MCBEmodel\a変換ツール\a blender推奨';">obj2mcbe</a>
-			<a href="mc/glyph.html" style="--img:url(../img/8x8_.png);--txt:'MCBE用\aビットマップフォント\a恐らくJEもok';">glyph_gen</a>
-			<a href="mc/arch.html" style="--img:url(../img/6x6_.png);--txt:'ハーフブロック単位で\a任意の大きさのアーチを\a生成するツール';">arch</a>
+		<div>
+			<a href="webgl/fsh.html">
+				<img src="../img/6x6.png"><br>
+				fsh
+			</a>
+			glslで画像を編集したくて作った <br>
+			知識必須です
 		</div>
-		<div class="box"></div>
-		<div class="stuff" id="others">
-			<a href="col.html" style="--img:url(../img/6x6_.png);--txt:'16進カラーコードを\a 0~1のrgbに\a変換するツール';">hex2vec</a>
-			<a href="unc.html" style="--img:url(../img/6x6_.png);--txt:'文字列⇄unicode\a base64とか';">unicode converter</a>
-			<a href="aes.html" style="--img:url(../img/6x6_.png);--txt:'任意のファイルを\a aes暗号化したhtmlを\a生成するツール';">aes</a>
-			<a href="sosu-.html" style="--img:url(../img/6x6_.png);--txt:'素数判定とか\a列挙とか';">sosu-</a>
-			<a href="calpis.html" style="--img:url(../img/6x6_.png);--txt:'カルピスの原液の量を\aわかりやすく計算\a初めてのhtml&js';">calpis</a>
-			<a href="brainf.html" style="--img:url(../img/8x8_.png);--txt:'brainf***\aエンコーダー インタプリタ';">brainf</a>
-			<a href="js.html" style="--img:url(../img/6x6_.png);--txt:'JavaScript\aサンドボックス';">JavaScript</a>
+		<div>
+			<a href="webgl/kuwahara.html">
+				<img src="../img/6x6.png"><br>
+				Kuwahara_Filter
+			</a>
+			桑原フィルターをwebglで作ってみた <br>
+			写真を絵画っぽくするやつです
 		</div>
-	</body>
+	</div>
+	<div class="col1"><hr></div>
+	<div class="col2" id="mc"><h2>MC</h2></div>
+	<div class="col2 stuff">
+		<div>
+			<a href="mc/poly.html">
+				<img src="../img/6x6.png"><br>
+				obj2mcbe
+			</a>
+			.obj → MCBEmodel <br>
+			変換ツール <br>
+			blender推奨
+		</div>
+		<div>
+			<a href="mc/glyph.html">
+				<img src="../img/6x6.png"><br>
+				glyph_gen
+			</a>
+			MCBE用の <br>
+			ビットマップフォント <br>
+			恐らくJEもok
+		</div>
+		<div>
+			<a href="mc/arch.html">
+				<img src="../img/6x6.png"><br>
+				arch
+			</a>
+			ハーフブロック単位で <br>
+			任意の大きさのアーチを <br>
+			生成するツール
+		</div>
+	</div>
+	<div class="col2"><hr></div>
+	<div class="col1 stuff" id="others">
+		<div>
+			<a href="col.html">
+				<img src="../img/6x6.png"><br>
+				hex2vec
+			</a>
+			16進カラーコードを <br>
+			0~1のrgbに <br>
+			変換するツール
+		</div>
+		<div>
+			<a href="unc.html">
+				<img src="../img/6x6.png"><br>
+				unicode converter
+			</a>
+			文字列⇄unicode <br>
+			base64とか
+		</div>
+		<div>
+			<a href="aes.html">
+				<img src="../img/6x6.png"><br>
+				aes
+			</a>
+			任意のファイルを <br>
+			aes暗号化したhtmlを <br>
+			生成するツール
+		</div>
+		<div>
+			<a href="sosu-.html">
+				<img src="../img/6x6.png"><br>
+				sosu-
+			</a>
+			素数判定とか <br>
+			列挙とか
+		</div>
+		<div>
+			<a href="calpis.html">
+				<img src="../img/6x6.png"><br>
+				calpis
+			</a>
+			カルピスの原液の量を <br>
+			わかりやすく計算 <br>
+			私が書いた初めてのhtml&js
+		</div>
+		<div>
+			<a href="brainf.html">
+				<img src="../img/6x6.png"><br>
+				brainf
+			</a>
+			brainf*** <br>
+			エンコーダー インタプリタ
+		</div>
+		<div>
+			<a href="js.html">
+				<img src="../img/6x6.png"><br>
+				JavaScript
+			</a>
+			JavaScript <br>
+			サンドボックス
+		</div>
+	</div>
+</body>
 </html>
