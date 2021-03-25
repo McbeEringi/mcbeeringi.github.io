@@ -7,36 +7,33 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi howto-3</title>
-		<script src="../src/style.js" async></script>
+		<script src="../src/style_.js" async></script>
+		<link rel="stylesheet" href="how.css" media="print" onload="this.media='all'">
 	</head>
 	<body>
-		<div class="title">#3 HelloWorld!</div><p>🐱にゃーん🐱</p>
-		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
-		<div class="pad col1">
-			<div align="center"><a href="2.html"><< #2 型と演算子</a></div>
-			<div align="center"><a href="index.html">トップ</a></div>
-			<div align="center"><a href="4.html">#4 影作る。 >></a></div>
+		<h1 class="c title">#3 HelloWorld!</h1>
+		<div class="c box">
+			🐱にゃーん🐱 <br>
+			<a href="2.html"><< #2 型と演算子</a>
+			<a href="index.html">トップ</a>
+			<a href="4.html">#4 影作る。 >></a>
 		</div>
-		<div class="col2">
-			<h2>index</h2>
-			<ul>
-				<li>materialsを見ると…</li>
-				<li>書いてみる 入れてみる</li>
-				<li>HelloWorld!</li>
-			</ul>
-			<p style="text-align:right;">2019/12/6作成 <br>2019/12/14更新 <br></p>
-		</div>
+		<h2>index</h2>
+		<ul>
+			<li>materialsを見ると…</li>
+			<li>書いてみる 入れてみる</li>
+			<li>HelloWorld!</li>
+		</ul>
+		<p style="text-align:right;">2019/12/6作成 <br>2019/12/14更新 <br></p>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>materialsを見ると…</h2>
 		</div>
-		<div class="col2">
-			<p style="margin-left:10px;">
-				いきなりHelloWorldなんて言われても <br>
-				#1で取り出したシェダーファイルのどれだか分かんないでしょう <br>
-				materials>terrain.materialを見てみましょ <br>
-				(こっちはデフォルトのリソースのとこにある)
-			</p>
+		<div>
+			いきなりHelloWorldなんて言われても <br>
+			#1で取り出したシェダーファイルのどれだか分かんないでしょう <br>
+			materials>terrain.materialを見てみましょ <br>
+			(こっちはデフォルトのリソースのとこにある)
 			<pre>
 {
 	"materials": {
@@ -47,27 +44,23 @@
 			"vrGeometryShader": "shaders/renderchunk.geometry",
 			"fragmentShader": "shaders/renderchunk.fragment",
 			</pre>
-			<p style="margin-left:10px;">
-				シェダーはvertexファイルとfragmentファイルの二つがペアになって動きます <br>
-				<span style="color: #777;">geometryはVR用のファイルらしい(環境ないから稚内</span> <br>
-				vertexは面の頂点の位置の計算、fragmentは色の計算をそれぞれ主に担当しています <br>
-				この文からは"terrain_base"を動かすのに <br>
-				renderchunk.vertexとrenderchunk.fragment <br>
-				が使われていることが分かりますね <br>
-				ならそこを開けばいいのです
-			</p>
+			シェダーはvertexファイルとfragmentファイルの二つがペアになって動きます <br>
+			<span style="color:#fff8;">geometryはVR用のファイルらしい(環境ないから稚内</span> <br>
+			vertexは面の頂点の位置の計算、fragmentは色の計算をそれぞれ主に担当しています <br>
+			この文からは"terrain_base"を動かすのに <br>
+			renderchunk.vertexとrenderchunk.fragment <br>
+			が使われていることが分かりますね <br>
+			ならそこを開けばいいのです
 			<br>
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>書いてみる 入れてみる</h2>
 		</div>
-		<div class="col2">
-			<p style="margin-left:10px;">
-				↓ renderchunk.vertex
-			</p>
+		<div>
+			↓ renderchunk.vertex
 			<pre>
-<span style="color: #666;">// __multiversion__
+<span style="color:#fff8;">// __multiversion__
 // This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.</span>
 
 #include "vertexVersionCentroid.h"
@@ -86,7 +79,7 @@ void main()
     worldPos.xyz = (POSITION.xyz * CHUNK_ORIGIN_AND_SCALE.w) + CHUNK_ORIGIN_AND_SCALE.xyz;
 		worldPos.w = 1.0;
 
-    <span style="color: #666;">// Transform to view space before projection instead of all at once to avoid floating point errors
+    <span style="color:#fff8;">// Transform to view space before projection instead of all at once to avoid floating point errors
     // Not required for entities because they are already offset by camera translation before rendering
     // World position here is calculated above and can get huge</span>
     POS4 pos = WORLDVIEW * worldPos;
@@ -97,11 +90,9 @@ void main()
 <後略>
 			</pre>
 			<br>
-			<p style="margin-left:10px;">
-				↓ renderchunk.fragment
-			</p>
+			↓ renderchunk.fragment
 			<pre>
-<span style="color: #666;">// __multiversion__
+<span style="color:#fff8;">// __multiversion__
 // This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.</span>
 
 #include "fragmentVersionCentroid.h"
@@ -129,69 +120,55 @@ void main()
 #endif // BYPASS_PIXEL_SHADER
 }
 			</pre>
-			<p style="margin-left:10px;">
-				怖気付かないでください、こんなんただのC言語だと思えば何ら怖くないです <br>
-				GLSLはグラフィック系の言語なので"文字"を表示するのは難しいですので <br>
-				ここでのHelloWorldは単色の表示になります <br>
-				大事なのはfragmentです vertexはいったん無視して構いません <br>
-				gl_FragColorがfragmentでの最終的な出力になります <br>
-				<code>gl_FragColor = diffuse;</code><br>
-				を、 <br>
-				<code>gl_FragColor = vec4(1.0);</code><br>
-				に書き換えて保存してください <br>
-				vec4(1.0) …つまり真っ白に表示してくれというコードです <br>
-				<br>
-				このファイルをリソースパックに詰めていきます
-			</p>
-			<table style="margin-left:10px;background-color:#0004;">
+			怖気付かないでください、こんなんただのC言語だと思えば何ら怖くないです <br>
+			GLSLはグラフィック系の言語なので"文字"を表示するのは難しいですので <br>
+			ここでのHelloWorldは単色の表示になります <br>
+			大事なのはfragmentです vertexはいったん無視して構いません <br>
+			gl_FragColorがfragmentでの最終的な出力になります <br>
+			<code>gl_FragColor = diffuse;</code><br>
+			を、 <br>
+			<code>gl_FragColor = vec4(1.0);</code><br>
+			に書き換えて保存してください <br>
+			vec4(1.0) …つまり真っ白に表示してくれというコードです <br>
+			<br>
+			このファイルをリソースパックに詰めていきます
+			<table style="background-color:#0004;">
 				<tr><td>┬</td><td>manifest.json</td></tr>
 				<tr><td>├</td><td>pack_icon.png</td></tr>
 				<tr><td>└</td><td>shaders───</td><td>glsl</td><td>─</td><td>renderchunk.fragment</td></tr>
 			</table>
-			<p style="margin-left:10px;">
-				あとはこれをマイクラに適用させるだけです
-			</p>
+			あとはこれをマイクラに適用させるだけです
 			<br>
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>HelloWorld</h2>
 		</div>
-		<div class="col2">
-			<p style="margin-left:10px;">
-				上手くいけばこうなります
-			</p>
+		<div>
+			上手くいけばこうなります
 			<img src="img/3-1.jpg" class="img">
 			<br>
-			<p style="margin-left:10px;">
-				サンプルはこちら↓ <br>
-				(WebGL見せたいだけ
-			</p>
+			サンプルはこちら↓ <br>
+			(WebGL見せたいだけ
 			<a href="https://mcbeeringi.github.io/others/gl.html?vsh=SywpKcpMKi1JVcjITM8oUChLTTZRCPAP9gzx9Pez5irNy0zLL8pVyE0sMVEI9w_ycQnzdA0PCPL3suYqy89MAUpk5mloVnNxpufEB-QXZ5Zk5ucp2KIqVdBCMrEWAA==&fsh=K8vPTFHITczM09Cs5uJMz4l3K0pMd87PyS9SsFUoS0020TDUtOaqBQA=&fps=60&model=0" target="_blank">WebGL</a><br>
 			<iframe class="gl" src="https://mcbeeringi.github.io/others/gl.html?vsh=SywpKcpMKi1JVcjITM8oUChLTTZRCPAP9gzx9Pez5irNy0zLL8pVyE0sMVEI9w_ycQnzdA0PCPL3suYqy89MAUpk5mloVnNxpufEB-QXZ5Zk5ucp2KIqVdBCMrEWAA==&fsh=K8vPTFHITczM09Cs5uJMz4l3K0pMd87PyS9SsFUoS0020TDUtOaqBQA=&fps=30&model=0&stuff=none">
 			</iframe>
 			<br><br>
-			<p style="margin-left:10px;">
-				こうなってしまった場合はどっかしら間違えています <br>
-				(エラーの場所は自分で探すしかないです
-			</p>
+			こうなってしまった場合はどっかしら間違えています <br>
+			(エラーの場所は自分で探すしかないです
 			<img src="img/3-2.jpg" class="img">
 			<br>
 		</div>
 		<br>
-		<div class="col2">
-			<p style="margin-left:10px;">
-				慣れるまでが長いです <br>
-				再起動せずともエディタで保存したら即時反映されるので <br>
-				根気よく試してください <br>
-				<br>
-				次回は影をつけたいと思います
-			</p>
-		</div>
-		<div class="pad col1">
-			<div align="center"><a href="2.html"><< #2 型と演算子</a></div>
-			<div align="center"><a href="index.html">トップ</a></div>
-			<div align="center"><a href="4.html">#4 影作る。 >></a></div>
+		<div class="c box">
+			慣れるまでが長いです <br>
+			再起動せずともエディタで保存したら即時反映されるので <br>
+			根気よく試してください <br>
+			<br>
+			次回は影をつけたいと思います <br>
+			<a href="2.html"><< #2 型と演算子</a>
+			<a href="index.html">トップ</a>
+			<a href="4.html">#4 影作る。 >></a>
 		</div>
 	</body>
 </html>

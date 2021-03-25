@@ -12,7 +12,7 @@ a:visited{color:#caf;}a:visited:hover{color:#a8f;}a:visited:active{color:#84f;}
 .stuff>a::after{content:var(--txt);display:inline-block;font-size:small;text-decoration:none;color:#fff;width:100%;}
 .stuff>a:hover{transform:scale(1.05);filter:brightness(1.2)saturate(1.2)drop-shadow(0 0 8px #fea);}
 
-header{position:sticky;top:8px;left:0;width:100%;height:48px;background:#8888;line-height:48px;border-radius:8px;user-select:none;-webkit-user-select:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:16;}
+header{position:-webkit-sticky;position:sticky;top:8px;left:0;width:100%;height:48px;background:#8888;line-height:48px;border-radius:8px;user-select:none;-webkit-user-select:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:16;}
 header>*{display:inline-block;position:absolute;}
 header>a{left:0;text-decoration:none;font-size:large;color:#ddd !important;}header>a::before{content:"";display:inline-block;width:48px;height:48px;vertical-align:bottom;background:no-repeat center/80% url("https://mcbeeringi.github.io/img/6x6_.png");}
 header>nav{right:0;margin-right:8px;}#hnavcb{display:none;}

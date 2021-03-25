@@ -7,29 +7,28 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi howto-5</title>
-		<script src="../src/style.js" async></script>
+		<script src="../src/style_.js" async></script>
+		<link rel="stylesheet" href="how.css" media="print" onload="this.media='all'">
 	</head>
 	<body>
-		<div class="title">#5 トーンマップ</div><p>brief</p>
-		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
-		<div class="pad col1">
-			<div><a href="4.html"><< #4 影作る。</a></div>
-			<div><a href="index.html">トップ</a></div>
-			<div><a href="6.html">#6 sinな葉っぱ >></a></div>
+		<h1 class="c title">#5 トーンマップ</h1>
+		<div class="c box">
+			ぷぇー <br>
+			<a href="4.html"><< #4 影作る。</a>
+			<a href="index.html">トップ</a>
+			<a href="6.html">#6 sinな葉っぱ >></a>
 		</div>
-		<div class="col2">
-			<h2>index</h2>
-			<ul>
-				<li>復習</li>
-				<li>トーンマップ</li>
-			</ul>
-			<p style="text-align:right;">2020/2/24 作成 <br>2020/2/24 更新 <br></p>
-		</div>
+		<h2>index</h2>
+		<ul>
+			<li>復習</li>
+			<li>トーンマップ</li>
+		</ul>
+		<p style="text-align:right;">2020/2/24 作成 <br>2020/2/24 更新 <br></p>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>復習</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			前回作り忘れたものがあるので <br>
 			復習がてらささっと作っちゃいましょう。 <br>
 			松明の色の話です。 <br>
@@ -62,10 +61,10 @@ diffuse.rgb += vec3(1,0.5,0)*max(uv1.x-0.5,0.0)*(1.0-diffuse.rgb);
 			本編に入ります(前置き長い) <br>
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>トーンマップ</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			トーンマップとはざっくり言うと画像をきれいに見せる加工手法の一つです。 <br>
 			色付きのフィルターみたいなもんです。 <br>
 			要はただの関数です。 <br>
@@ -118,17 +117,15 @@ diffuse.rgb = lum_tonemap(diffuse.rgb);
 			トーンマップの前に持ってきて試してみてください。 <br>
 		</div>
 		<br>
-		<div class="col2" style="padding-left:10px;">
+		<div class="c box">
 			こちら<a href="https://mcbeeringi.github.io/how/src/how_src_5.mcpack">今回のサンプル</a>です。 <br>
 			pow関数を使うと色の制御がしやすかったりと、 <br>
 			ここで紹介しなかったこともたくさんありますので試してみてください。 <br>
 			<br>
 			次回は葉っぱを揺らす予定です。 <br>
-		</div>
-		<div class="pad col1">
-			<div><a href="4.html"><< #4 影作る。</a></div>
-			<div><a href="index.html">トップ</a></div>
-			<div><a href="6.html">#6 sinな葉っぱ >></a></div>
+			<a href="4.html"><< #4 影作る。</a>
+			<a href="index.html">トップ</a>
+			<a href="6.html">#6 sinな葉っぱ >></a>
 		</div>
 	</body>
 </html>

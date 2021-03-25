@@ -7,61 +7,60 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi howto-4</title>
-		<script src="../src/style.js" async></script>
+		<script src="../src/style_.js" async></script>
+		<link rel="stylesheet" href="how.css" media="print" onload="this.media='all'">
 	</head>
 	<body>
-		<div class="title">#4 影作る。</div><p>ごにょごにょ言ってないで実際に作りましょ</p>
-		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
-		<div class="pad col1">
-			<div><a href="3.html"><< #3 型と演算子</a></div>
-			<div><a href="index.html">トップ</a></div>
-			<div><a href="5.html">#5 トーンマップ >></a></div>
+		<h1 class="c title">#4 影作る。</h1>
+		<div class="c box">
+			ごにょごにょ言ってないで実際に作りましょ <br>
+			<a href="3.html"><< #3 型と演算子</a>
+			<a href="index.html">トップ</a>
+			<a href="5.html">#5 トーンマップ >></a>
 		</div>
-		<div class="col2">
-			<h2>index</h2>
-			<ul>
-				<li>検討</li>
-				<li>情報収集</li>
-				<li>設計</li>
-				<li>動かす!</li>
-			</ul>
-			<p style="text-align:right;">2020/2/24 作成 <br>2020/2/24 更新 <br></p>
-		</div>
+		<h2>index</h2>
+		<ul>
+			<li>検討</li>
+			<li>情報収集</li>
+			<li>設計</li>
+			<li>動かす!</li>
+		</ul>
+		<p style="text-align:right;">2020/2/24 作成 <br>2020/2/24 更新 <br></p>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>検討</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
-				いきなり影作るぞーなんて言っても困惑するだけですね、 <br>
-				設計する前に影を作るにあたってどの情報があればいいか考えましょう…
+		<div>
+			いきなり影作るぞーなんて言っても困惑するだけですね、 <br>
+			設計する前に影を作るにあたってどの情報があればいいか考えましょう…
 			<ul>
 				<li>太陽光</li>
 				<li>周りのブロックの位置</li>
 			</ul>
-				この二つを思い浮かべたあなた<br>
-				確かに何も間違っていません、 <br>
-				駄菓子菓子世の中そう甘くないです。<br>
-				そんな贅沢な情報はマイクラは教えてくれないです。 <br>
-				「じゃぁ動的な影ができないじゃん」→できないです <br>
-				ほぼ全てのBEのシェダーが固定された影を持つ理由は、まさにこれです。<br>
-				<br><br>
-				逆に考えてみましょう <br>
-				マイクラは何を教えてくれるか…
+			この二つを思い浮かべたあなた<br>
+			確かに何も間違っていません、 <br>
+			駄菓子菓子世の中そう甘くないです。<br>
+			そんな贅沢な情報はマイクラは教えてくれないです。 <br>
+			「じゃぁ動的な影ができないじゃん」→できないです <br>
+			ほぼ全てのBEのシェダーが固定された影を持つ理由は、まさにこれです。<br>
+			<br><br>
+			逆に考えてみましょう <br>
+			マイクラは何を教えてくれるか…
 			<ul>
 				<li>人工的な光源の強さ(だいたい)</li>
 				<li>真上から光を当てたときに日陰になる度合いみたいな何か</li>
 			</ul>
-				材料は調いましたね!<br>
-				前者はuv1という変数の第一要素 <br>
-				後者はuv1の第二要素です。(つまりuv1.xとuv1.y)<br>
-				どちらも値域は0~1です(詳しいことはテクスチャについて調べてください) <br>
+			材料は調いましたね!<br>
+			前者はuv1という変数の第一要素 <br>
+			後者はuv1の第二要素です。(つまりuv1.xとuv1.y)<br>
+			どちらも値域は0~1です(詳しいことはテクスチャについて調べてください) <br>
 			<br>
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>情報収集</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			uv1なんて言われたって分からんぞー状態なので挙動を確認しましょう。 <br>
 			renderchunk.fragmentに書いていきます。 <br>
 			renderchunk.fragmentに処理を書く際は、l84~l86の <code>#endif</code>と<code>#ifdef FOG</code>の間に書いていきます。 <br>
@@ -78,10 +77,10 @@ diffuse.rgb = vec3(uv1,0);
 			なので"影"を作ってやるには、こちらで境目の値を調整してやる必要があります。 <br>
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>設計</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			まずは基本となる影を作ります。 <br>
 			関数としてそのまま考えると萎えるので、グラフと一緒に考えていきます。 <br>
 			<img src="img/4-3.jpg" class="img"> <br>
@@ -112,10 +111,10 @@ diffuse.rgb *= mix(shadow, 1.0, uv1.x);
 			</pre>
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>動かす!</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			ほい <br>
 			<img src="img/4-5.jpg" class="img_s">
 			<img src="img/4-6.jpg" class="img_s"> <br>
@@ -129,18 +128,16 @@ diffuse.rgb *= mix(shadow, 1.0, uv1.x);
 			上手く調整してください。 <br>
 		</div>
 		<br>
-		<div class="col2" style="padding-left:10px;">
+		<div class="c box">
 			今回の完成品、<a href="https://mcbeeringi.github.io/how/src/how_src_4.mcpack">こちら</a>から確認できます。 <br>
 			mixとsmoothstepの組み合わせは本当に便利なので覚えておくといいです <br>
 			<br>
 			次回はユーザー定義関数についてです。 <br>
 			トーンマップで世界観を変えます。 <br>
-			お楽しみに!
-		</div>
-		<div class="pad col1">
-			<div><a href="3.html"><< #3 型と演算子</a></div>
-			<div><a href="index.html">トップ</a></div>
-			<div><a href="5.html">#5 トーンマップ >></a></div>
+			お楽しみに! <br>
+			<a href="3.html"><< #3 型と演算子</a>
+			<a href="index.html">トップ</a>
+			<a href="5.html">#5 トーンマップ >></a>
 		</div>
 	</body>
 </html>

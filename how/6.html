@@ -7,30 +7,29 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi howto-6</title>
-		<script src="../src/style.js" async></script>
+		<script src="../src/style_.js" async></script>
+		<link rel="stylesheet" href="how.css" media="print" onload="this.media='all'">
 	</head>
 	<body>
-		<div class="title">#6 sinな葉っぱ</div><p>~(￣〜￣)~~(￣〜￣)~~(￣〜￣)~</p>
-		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
-		<div class="pad col1">
-			<div><a href="5.html"><< #5 トーンマップ</a></div>
-			<div><a href="index.html">トップ</a></div>
-			<div><a href="7.html">#7 空を描く(前編) >></a></div>
+		<h1 class="c title">#6 sinな葉っぱ</h1>
+		<div class="c box">
+			~(￣〜￣)~~(￣〜￣)~~(￣〜￣)~ <br>
+			<a href="5.html"><< #5 トーンマップ</a>
+			<a href="index.html">トップ</a>
+			<a href="7.html">#7 空を描く(前編) >></a>
 		</div>
-		<div class="col2">
-			<h2>index</h2>
-			<ul>
-				<li>sin</li>
-				<li>葉の特定</li>
-				<li>風の表現</li>
-			</ul>
-			<p style="text-align:right;">2020/xx/xx 作成 <br>2020/4/18 更新 <br></p>
-		</div>
+		<h2>index</h2>
+		<ul>
+			<li>sin</li>
+			<li>葉の特定</li>
+			<li>風の表現</li>
+		</ul>
+		<p style="text-align:right;">2020/xx/xx 作成 <br>2020/4/18 更新 <br></p>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>sin</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			今回はタイトルの通りsinを使って葉っぱを揺らしていきます(素) <br>
 			今までの色の操作と違って頂点座標の操作になるのでvertex(renderchunk.vertex)に書いていきます。 <br>
 			renderchunk.vertexに自分の処理を書く際は特にここじゃなきゃダメと言う場所はないですが、 <br>
@@ -56,10 +55,10 @@ gl_Position.x += sin(hTime*4.0)*0.1;
 			葉っぱを揺らすどころの騒ぎじゃないですね😇 <br>
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>葉の特定</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			葉っぱだけでなく普通のブロックなども含めて全部揺れてしまいました。 <br>
 			マイクラからもらえる情報から葉っぱを絞り込んでいきます。 <br>
 			マイクラの葉っぱと言われて思い当たること…<br>
@@ -104,10 +103,10 @@ gl_Position.x += sin(hTime*4.0)*0.1;
 			一部RSが揺れてますがそこはあなたに任せます。<br>
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>風の表現</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			全てのブロックが同じように左右に揺れているだけで <br>
 			風で葉っぱが揺れてるーなんていうのは流石に <br>
 			<img src="img/muri.jpg" class="img_s"><br>
@@ -179,17 +178,15 @@ highp float rand(highp vec3 p){
 			ゆらぎをもたせることでかなり自然になったのではないでしょうか。
 		</div>
 		<br>
-		<div class="col2" style="padding-left:10px;">
+		<div class="c box">
 			<a href="https://mcbeeringi.github.io/how/src/how_src_6.mcpack">今回のサンプル</a>です。 <br>
 			チャンクの境目で切れ目が出てしまいますが、POSITIONの本質を理解すると <br>
 			<code>vec3 p = POSITION.xyz;</code>を改良することで消すことができます。 <br>
 			(海外のシェダー屋さんも悩むレベルの問題　かなり難しい) <br>
 			次回からは最後にちょっと触れたノイズを使って雲を描いていきます <br>
-		</div>
-		<div class="pad col1">
-			<div><a href="5.html"><< #5 トーンマップ</a></div>
-			<div><a href="index.html">トップ</a></div>
-			<div><a href="7.html">#7 空を描く(前編) >></a></div>
+			<a href="5.html"><< #5 トーンマップ</a>
+			<a href="index.html">トップ</a>
+			<a href="7.html">#7 空を描く(前編) >></a>
 		</div>
 	</body>
 </html>
