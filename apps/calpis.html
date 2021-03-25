@@ -7,7 +7,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi calpis_calc</title>
-	<script src="../src/style.js" async></script>
+	<script src="../src/style_.js" async></script>
 </head>
 <body>
 	<style>
@@ -15,13 +15,14 @@
 		input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{display:none;}
 		input[type="number"]{-moz-appearance:textfield;}
 	</style>
-	<div class="title">🥛Calpis Calc🥛</div><p>カルピス原液を適量入れた時に、コップの底が見えなくなる角度を計算します<br>
+	<h1 class="c title">🥛Calpis Calc🥛</h1>
+	<p class="c box">カルピス原液を適量入れた時に、コップの底が見えなくなる角度を計算します<br>
 		美味しく作る目安程度に使ってください</p>
-	<div class="col1">
+	<div>
 		<img src="calpis.jpg" alt="calpis図解" style="width:50%;max-width:200px;"><br>
 		角θを求めます
 	</div>
-	<div class="col2">
+	<div class="box">
 		<h2>input</h2>
 		<form oninput="calpis(h_.value,d_.value,m_.value);">
 			液面 : 直径 =
@@ -29,7 +30,7 @@
 			<label><input type="number" id="m_" value="5" class="r" min="1">倍希釈</label>
 		</form>
 	</div>
-	<div class="col1">
+	<div>
 		<h2>result</h2>
 		<p id="out" style="transform-origin:left;"></p><br>
 	</div>
