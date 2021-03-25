@@ -7,30 +7,30 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>McbeEringi howto-7</title>
-		<script src="../src/style.js" async></script>
+		<script src="../src/style_.js" async></script>
+		<link rel="stylesheet" href="how.css" media="print" onload="this.media='all'">
 	</head>
 	<body>
-		<div class="title">#7 空を描く(前編)</div><p>空を描く前にファイルの準備を…</p>
+		<h1 class="c title">#7 空を描く(前編)</h1>
 		<!--<h1 align="center" style="transform:rotate(10deg)">工事中…</h1>-->
-		<div class="pad col1">
-			<div><a href="6.html"><< #6 sinな葉っぱ</a></div>
-			<div><a href="index.html">トップ</a></div>
-			<div><a href="8.html">#8 雲を描く(後編) >></a></div>
+		<div class="c box">
+			空を描く前にファイルの準備を… <br>
+			<a href="6.html"><< #6 sinな葉っぱ</a>
+			<a href="index.html">トップ</a>
+			<a href="8.html">#8 雲を描く(後編) >></a>
 		</div>
-		<div class="col2">
-			<h2>index</h2>
-			<ul>
-				<li>materialを見る</li>
-				<li>引き起こされる問題とその対処法</li>
-				<li>処理を書く前に</li>
-			</ul>
-			<p style="text-align:right;">2020/4/18 作成 <br>2020/4/18 更新 <br></p>
-		</div>
+		<h2>index</h2>
+		<ul>
+			<li>materialを見る</li>
+			<li>引き起こされる問題とその対処法</li>
+			<li>処理を書く前に</li>
+		</ul>
+		<p style="text-align:right;">2020/4/18 作成 <br>2020/4/18 更新 <br></p>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>materialを見る</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			空を担当するシェダーを特定するためにmaterialを見に行きます <br>
 			それっぽいところをあたっていきましょう <br> <br>
 			sky.material
@@ -81,10 +81,10 @@
 			sky.vertexとcolor.fragmentをいじればいいことは分かりましたね
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>引き起こされる問題とその対処法</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			sky.vertexとcolor.fragmentをいじる前に確認すべきことがあります <br>
 			感の良い方はなんとなく予想ついているでしょう <br>
 			なぜcolor.fragmentなんて名前がついているのでしょう <br>
@@ -117,10 +117,10 @@
 			このままsky.fshをいじってもいいのですが…<br>
 		</div>
 		<br>
-		<div class="col1">
+		<div class="box">
 			<h2>処理を描く前に</h2>
 		</div>
-		<div class="col2" style="padding-left:10px;">
+		<div>
 			コードを書く前にsky.vertexとsky.fshの中を見てみましょう <br>
 			<br>
 			sky.vertex
@@ -207,18 +207,16 @@ void main()
 			最後の <code>gl_FragColor = mix(diffuse,FOG_COLOR,fog);</code>が霧の処理になっています <br>
 		</div>
 		<br>
-		<div class="col2" style="padding-left:10px;">
+		<div class="c box">
 			今回はデフォルトのシェダーをいじりやすくするための作業しかしていないので <br>
 			見た目にはほとんど変化がありません <br>
 			がしかし、これはとても重要な作業なので一回分使わせていただきました <br>
 			こちら<a href="https://mcbeeringi.github.io/how/src/how_src_7.mcpack">今回のサンプル</a>です <br>
 			次回からノイズを使って雲本体を描いていきます <br>
-			お楽しみに
-		</div>
-		<div class="pad col1">
-			<div><a href="6.html"><< #6 sinな葉っぱ</a></div>
-			<div><a href="index.html">トップ</a></div>
-			<div><a href="8.html">#8 雲を描く(後編) >></a></div>
+			お楽しみに <br>
+			<a href="6.html"><< #6 sinな葉っぱ</a>
+			<a href="index.html">トップ</a>
+			<a href="8.html">#8 雲を描く(後編) >></a>
 		</div>
 	</body>
 </html>
