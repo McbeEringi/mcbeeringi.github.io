@@ -14,12 +14,13 @@
 		<input type="file" id="inp">
 		<pre><code id="out">console.log('Hello World!');</code></pre>
 		<script>
+			'use strict';
 			hljs.highlightAll();
 			inp.onchange=()=>{
 				const reader=new FileReader();
 				out.classList='';
-				out.classList.add(inp.files[0].name.match(/\.\w+$/)[0].slice(1));
-				reader.addEventListener("load",()=>{
+				out.classList.add((inp.files[0].name.match(/\.\w+$/)||[' plaintext'])[0].slice(1));
+				reader.addEventListener('load',()=>{
 					out.innerText=reader.result;
 					hljs.highlightAll();
 					html2canvas(out,{backgroundColor:null}).then(c=>c.toBlob(b=>{
