@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>McbeEringi src2img</title>
+	</head>
+	<body>
+		<script src="https://cdn.jsdelivr.net/npm/html2canvas/dist/html2canvas.min.js"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/atom-one-dark.min.css">
+		<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"></script>
+		<style>:root{font-family:monospace;background:#222;color:#fff;}html,body{width:100%;height:100%;}h1,h2{margin:4px;}#out{position:absolute;}</style>
+
+		<h1>src2img</h1>
+		<input type="file" id="inp">
+		<pre><code id="out">console.log('Hello World!');</code></pre>
+		<script>
+			hljs.highlightAll();
+			inp.onchange=()=>{
+				const reader=new FileReader();
+				out.classList='';
+				out.classList.add(inp.files[0].name.match(/\.\w+$/)[0].slice(1));
+				reader.addEventListener("load",()=>{
+					out.innerText=reader.result;
+					hljs.highlightAll();
+					html2canvas(out,{backgroundColor:null}).then(c=>c.toBlob(b=>{
+						console.log(b);
+						const a=document.createElement('a');
+						a.href=URL.createObjectURL(b);a.download=`${inp.files[0].name}.${b.type.match(/\/\w+$/)[0].slice(1)}`;
+						a.click();setTimeout(URL.revokeObjectURL,10000,a.href);
+					}));
+				});
+				reader.readAsText(inp.files[0]);
+			};
+		</script>
+	</body>
+</html>
