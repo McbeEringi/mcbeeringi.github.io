@@ -87,7 +87,7 @@ bgset=(t=new Date())=>{
 		bgctx.fill();
 	}
 },
-bgplay=(x=1000)=>{let t=Date.now(),fx=()=>{t+=100*x;bgset(new Date(t));};setInterval(fx,100);},
+bgplay=(x=1000)=>{let t=Date.now();setInterval(()=>bgset(new Date(t+=100*x)),100);},
 setstyle=()=>{
 	bgset();setInterval(bgset,60000);
 	document.body.insertAdjacentHTML('beforeend',`
@@ -98,7 +98,7 @@ setstyle=()=>{
 	<span contenteditable>press KeyZ…</span>
 </footer>`);
 	document.querySelectorAll('.lang').forEach(e=>e.href='https://translate.google.com/translate?sl=ja&tl=en&u='+encodeURIComponent(location.href));
-	document.querySelectorAll('a').forEach(e=>{if(!e.ontouchstart)e.ontouchstart=()=>{};});
+	document.querySelectorAll('a').forEach(e=>{if(!e.ontouchstart)e.setAttribute('ontouchstart','');});
 	document.addEventListener('keydown',e=>{if(e.code=='KeyZ')bgplay();},{once:true});
 };
 if(document.readyState=='loading')window.addEventListener('DOMContentLoaded',setstyle,{once:true});else setstyle();
