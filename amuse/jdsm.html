@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
+		<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/file-saver/dist/FileSaver.min.js"></script>
+
+		<input id="inp" type="file" webkitdirectory><br>
+		<br>
+		insert <br>
+		<textarea id="src" style="width:100%;">{}</textarea><br>
+		sort <br>
+		<textarea id="sort" style="width:100%;">[
+	"identifier",
+	"min_engine_version",
+	"materials",
+	"textures",
+	"geometry",
+	"scripts",
+	"animations",
+	"particle_effects",
+	"animation_controllers",
+	"render_controllers",
+	"enable_attachables",
+	"spawn_egg"
+]</textarea>
+		<button id="exe">run</button>
+		<pre id="log"></pre>
+		<script>
+			[src,sort].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+			let sdic;
+			const rmc=x=>x.replace(/\t/g,' ').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,''),
+			mergeDeeply=(target,source,opts)=>{//https://qiita.com/riversun/items/60307d58f9b2f461082a
+				const isObject=obj=>obj&&typeof obj==='object'&&!Array.isArray(obj),
+				isConcatArray=opts && opts.concatArray;
+				let result=Object.assign({},target);
+				if(isObject(target)&&isObject(source)){
+					for(const[sourceKey, sourceValue]of Object.entries(source)){
+						const targetValue=target[sourceKey];
+						if(isConcatArray&&Array.isArray(sourceValue)&&Array.isArray(targetValue))result[sourceKey]=targetValue.concat(...sourceValue);
+						else if(isObject(sourceValue)&&target.hasOwnProperty(sourceKey))result[sourceKey]=mergeDeeply(targetValue,sourceValue,opts);
+						else Object.assign(result,{[sourceKey]:sourceValue});
+					}
+				}
+				return result;
+			},
+			sfx=(a,b)=>Math.sign(sdic.indexOf(a)-sdic.indexOf(b)),
+			objsort=(obj)=>{
+				let s={}
+				Object.keys(obj).sort(sfx).forEach(x=>{
+					if(typeof obj[x]=='object'){
+						if(Array.isArray(obj[x])){console.log(obj[x]);s[x]=obj[x].sort(sfx);}
+						else s[x]=objsort(obj[x]);
+					}else s[x]=obj[x];
+				});
+				return s;
+			};
+
+			exe.onclick=()=>{
+				src.value=rmc(src.value+'\n');
+				sdic=JSON.parse(sort.value);
+				console.log(inp.files);
+				let zip=new JSZip(),srcv=JSON.parse(src.value),
+				parr=Array.from(inp.files,x=>new Promise((res,rej)=>{
+					let path=x.webkitRelativePath;
+					if(/json$/i.test(x.name)){
+						let reader=new FileReader();
+						reader.onload=r=>{
+							let dat=rmc(r.target.result);
+							try{
+								dat=JSON.parse(dat);
+								console.log(path, dat);
+								dat=mergeDeeply(dat,srcv,{concatArray: true});
+								dat=objsort(dat);
+								zip.file(path,JSON.stringify(dat));
+								res('JSON');
+							}catch(err){rej([err,path,dat]);}
+						}
+						reader.readAsText(x);
+					}else{zip.file(path,x);res();}
+				}));
+				console.log(parr);
+				Promise.all(parr)
+					.then(x=>{console.log('zip');return zip.generateAsync({type:"blob"});})
+					.then(b=>{
+						let e=document.createElement('a');
+						e.download=`jdsm.zip`;e.href=URL.createObjectURL(b);
+						e.click();setTimeout(URL.revokeObjectURL,10000,e.href);
+					})
+					.catch(console.warn);
+			};
+		</script>
+	</body>
+</html>
