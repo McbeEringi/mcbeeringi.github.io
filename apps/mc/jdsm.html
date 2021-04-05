@@ -20,7 +20,7 @@
 		<br>
 		insert <br>
 		<textarea id="ins">{}</textarea><br>
-		sort (unspecified will be inserted front)<br>
+		sort <label>{unspecified insert:Boolean(<input type="checkbox" id="smode">)?"after_start":"before_end"}</label> <br>
 		<textarea id="sort">[
 	"identifier",
 	"min_engine_version",
@@ -32,7 +32,6 @@
 	"particle_effects",
 	"animation_controllers",
 	"render_controllers",
-	"enable_attachables",
 	"spawn_egg"
 ]</textarea>
 		<button id="exe">run</button>
@@ -54,7 +53,10 @@
 						return a;
 					}
 				},
-				sfx=(a,b)=>Math.sign(sdic.indexOf(a)-sdic.indexOf(b)),
+				sfx=(a,b)=>{
+					if(smode.checked)return Math.sign(sdic.indexOf(a)-sdic.indexOf(b));
+					else return Math.sign((sdic.indexOf(a)>>>0)-(sdic.indexOf(b)>>>0));
+				},
 				objsort=(obj)=>{
 					let s={}
 					Object.keys(obj).sort(sfx).forEach(x=>{
