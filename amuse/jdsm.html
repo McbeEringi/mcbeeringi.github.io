@@ -2,19 +2,23 @@
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<title></title>
+		<title>McbeEringi jdsm</title>
 	</head>
 	<body>
 		<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
 		<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/file-saver/dist/FileSaver.min.js"></script>
+		<style>
+			:root,textarea{font-family:monospace;background:#222;color:#fff;tab-size:2;}:link{color:#8cf;}:visited{color:#c8f;}h1,h2{margin:4px;}
+			#log{background:#333;padding:4px;}textarea{width:100%;resize:none;}
+		</style>
 
+		<h1>JSON directory sort&marge</h1>
 		<input id="inp" type="file" webkitdirectory><br>
 		<br>
 		insert <br>
-		<textarea id="src" style="width:100%;">{}</textarea><br>
-		sort <br>
-		<textarea id="sort" style="width:100%;">[
+		<textarea id="ins">{}</textarea><br>
+		sort (unspecified will be inserted front)<br>
+		<textarea id="sort">[
 	"identifier",
 	"min_engine_version",
 	"materials",
@@ -31,40 +35,38 @@
 		<button id="exe">run</button>
 		<pre id="log"></pre>
 		<script>
-			[src,sort].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
-			let sdic;
-			const rmc=x=>x.replace(/\t/g,' ').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,''),
-			mergeDeeply=(target,source,opts)=>{//https://qiita.com/riversun/items/60307d58f9b2f461082a
-				const isObject=obj=>obj&&typeof obj==='object'&&!Array.isArray(obj),
-				isConcatArray=opts && opts.concatArray;
-				let result=Object.assign({},target);
-				if(isObject(target)&&isObject(source)){
-					for(const[sourceKey, sourceValue]of Object.entries(source)){
-						const targetValue=target[sourceKey];
-						if(isConcatArray&&Array.isArray(sourceValue)&&Array.isArray(targetValue))result[sourceKey]=targetValue.concat(...sourceValue);
-						else if(isObject(sourceValue)&&target.hasOwnProperty(sourceKey))result[sourceKey]=mergeDeeply(targetValue,sourceValue,opts);
-						else Object.assign(result,{[sourceKey]:sourceValue});
-					}
-				}
-				return result;
-			},
-			sfx=(a,b)=>Math.sign(sdic.indexOf(a)-sdic.indexOf(b)),
-			objsort=(obj)=>{
-				let s={}
-				Object.keys(obj).sort(sfx).forEach(x=>{
-					if(typeof obj[x]=='object'){
-						if(Array.isArray(obj[x])){console.log(obj[x]);s[x]=obj[x].sort(sfx);}
-						else s[x]=objsort(obj[x]);
-					}else s[x]=obj[x];
-				});
-				return s;
-			};
+			[ins,sort].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 
 			exe.onclick=()=>{
-				src.value=rmc(src.value+'\n');
-				sdic=JSON.parse(sort.value);
 				console.log(inp.files);
-				let zip=new JSZip(),srcv=JSON.parse(src.value),
+				log.textContent='';
+				const rmc=x=>x.replace(/\t/g,' ').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,''),
+				mergeDeeply=(target,source,opts)=>{//https://qiita.com/riversun/items/60307d58f9b2f461082a
+					const isObject=obj=>obj&&typeof obj==='object'&&!Array.isArray(obj),
+					isConcatArray=opts && opts.concatArray;
+					let result=Object.assign({},target);
+					if(isObject(target)&&isObject(source)){
+						for(const[sourceKey, sourceValue]of Object.entries(source)){
+							const targetValue=target[sourceKey];
+							if(isConcatArray&&Array.isArray(sourceValue)&&Array.isArray(targetValue))result[sourceKey]=targetValue.concat(...sourceValue);
+							else if(isObject(sourceValue)&&target.hasOwnProperty(sourceKey))result[sourceKey]=mergeDeeply(targetValue,sourceValue,opts);
+							else Object.assign(result,{[sourceKey]:sourceValue});
+						}
+					}
+					return result;
+				},
+				sfx=(a,b)=>Math.sign(sdic.indexOf(a)-sdic.indexOf(b)),
+				objsort=(obj)=>{
+					let s={}
+					Object.keys(obj).sort(sfx).forEach(x=>{
+						if(typeof obj[x]=='object'){
+							if(Array.isArray(obj[x]))s[x]=obj[x].sort(sfx);
+							else s[x]=objsort(obj[x]);
+						}else s[x]=obj[x];
+					});
+					return s;
+				};
+				let sdic=JSON.parse(sort.value),zip=new JSZip(),insd=JSON.parse(rmc(ins.value+'\n')),
 				parr=Array.from(inp.files,x=>new Promise((res,rej)=>{
 					let path=x.webkitRelativePath;
 					if(/json$/i.test(x.name)){
@@ -74,16 +76,18 @@
 							try{
 								dat=JSON.parse(dat);
 								console.log(path, dat);
-								dat=mergeDeeply(dat,srcv,{concatArray: true});
+								dat=mergeDeeply(dat,insd,{concatArray: true});
 								dat=objsort(dat);
 								zip.file(path,JSON.stringify(dat));
 								res('JSON');
-							}catch(err){rej([err,path,dat]);}
+							}catch(err){log.textContent+=`${path}: ${err}\n`;res(err);}
 						}
 						reader.readAsText(x);
-					}else{zip.file(path,x);res();}
+					}else{
+						zip.file(path,x);
+						res();
+					}
 				}));
-				console.log(parr);
 				Promise.all(parr)
 					.then(x=>{console.log('zip');return zip.generateAsync({type:"blob"});})
 					.then(b=>{
