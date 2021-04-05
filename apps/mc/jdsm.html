@@ -5,8 +5,6 @@
 		<title>McbeEringi jdsm</title>
 	</head>
 	<body>
-		<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
-		<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
 		<style>
 			:root,textarea{font-family:monospace;background:#222;color:#fff;tab-size:2;}:link{color:#8cf;}:visited{color:#c8f;}h1,h2{margin:4px;}
 			#log{background:#333;padding:4px;}textarea{width:100%;resize:none;}
@@ -36,6 +34,8 @@
 ]</textarea>
 		<button id="exe">run</button>
 		<pre id="log"></pre>
+		<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
+		<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
 		<script>
 			[ins,sort].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 
