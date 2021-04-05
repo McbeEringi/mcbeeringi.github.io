@@ -13,7 +13,10 @@
 		</style>
 
 		<h1>JSON directory sort&marge</h1>
-		<input id="inp" type="file" webkitdirectory><br>
+		<label>
+			can choose directory <br>
+			<input id="inp" type="file" webkitdirectory>
+		</label><br>
 		<br>
 		insert <br>
 		<textarea id="ins">{}</textarea><br>
@@ -39,21 +42,17 @@
 
 			exe.onclick=()=>{
 				console.log(inp.files);
-				log.textContent='';
+				log.textContent='please wait…\n';
 				const rmc=x=>x.replace(/\t/g,' ').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,''),
-				mergeDeeply=(target,source,opts)=>{//https://qiita.com/riversun/items/60307d58f9b2f461082a
-					const isObject=obj=>obj&&typeof obj==='object'&&!Array.isArray(obj),
-					isConcatArray=opts && opts.concatArray;
-					let result=Object.assign({},target);
-					if(isObject(target)&&isObject(source)){
-						for(const[sourceKey, sourceValue]of Object.entries(source)){
-							const targetValue=target[sourceKey];
-							if(isConcatArray&&Array.isArray(sourceValue)&&Array.isArray(targetValue))result[sourceKey]=targetValue.concat(...sourceValue);
-							else if(isObject(sourceValue)&&target.hasOwnProperty(sourceKey))result[sourceKey]=mergeDeeply(targetValue,sourceValue,opts);
-							else Object.assign(result,{[sourceKey]:sourceValue});
-						}
+				dmerge=(a,b)=>{
+					if(Array.isArray(a)&&Array.isArray(b))return a.concat(b);
+					else{
+						Object.keys(b).forEach(x=>{
+							if(typeof a[x]=='object'&&typeof b[x]=='object')a[x]=dmerge(a[x],b[x]);
+							else a[x]=b[x];
+						});
+						return a;
 					}
-					return result;
 				},
 				sfx=(a,b)=>Math.sign(sdic.indexOf(a)-sdic.indexOf(b)),
 				objsort=(obj)=>{
@@ -66,8 +65,13 @@
 					});
 					return s;
 				};
-				let sdic=JSON.parse(sort.value),zip=new JSZip(),insd=JSON.parse(rmc(ins.value+'\n')),
-				parr=Array.from(inp.files,x=>new Promise((res,rej)=>{
+
+				let sdic,zip=new JSZip(),insd=JSON.parse(rmc(ins.value+'\n'));
+				try{
+					sdic=JSON.parse(sort.value);
+				}catch(e){log.textContent+=`[ sort ] ${e}`;return;}
+
+				let parr=Array.from(inp.files,x=>new Promise((res,rej)=>{
 					let path=x.webkitRelativePath;
 					if(/json$/i.test(x.name)){
 						let reader=new FileReader();
@@ -76,7 +80,7 @@
 							try{
 								dat=JSON.parse(dat);
 								console.log(path, dat);
-								dat=mergeDeeply(dat,insd,{concatArray: true});
+								dat=dmerge(dat,insd);
 								dat=objsort(dat);
 								zip.file(path,JSON.stringify(dat));
 								res('JSON');
@@ -89,10 +93,11 @@
 					}
 				}));
 				Promise.all(parr)
-					.then(x=>{console.log('zip');return zip.generateAsync({type:"blob"});})
+					.then(x=>{log.textContent+='packaging…\n';return zip.generateAsync({type:"blob"});})
 					.then(b=>{
+						log.textContent+='done!\n';
 						let e=document.createElement('a');
-						e.download=`jdsm.zip`;e.href=URL.createObjectURL(b);
+						e.download=`${inp.files[0].webkitRelativePath.split('/',2)[0]}.zip`;e.href=URL.createObjectURL(b);
 						e.click();setTimeout(URL.revokeObjectURL,10000,e.href);
 					})
 					.catch(console.warn);
