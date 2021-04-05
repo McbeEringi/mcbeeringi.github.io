@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>McbeEringi jdd</title>
+	</head>
+	<body>
+		<style>
+			:root,textarea{font-family:monospace;background:#222;color:#fff;tab-size:2;}:link{color:#8cf;}:visited{color:#c8f;}h1,h2{margin:4px;}
+			#log{background:#333;padding:4px;}textarea{width:100%;resize:none;}
+		</style>
+
+		<h1>JSON directory divider</h1>
+		<label>
+			can choose directory <br>
+			<input id="inp" type="file" webkitdirectory multiple>
+		</label><br>
+		<br>
+		target key <br>
+		<textarea id="tkey">[
+	"format_version"
+]</textarea><br>
+		<button id="exe">run</button>
+		<pre id="log"></pre>
+		<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
+		<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
+		<script>
+			[tkey].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+
+			exe.onclick=()=>{
+				log.textContent='please wait…\n';
+				const rmc=x=>x.replace(/\t/g,' ').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,'');
+				let zip=new JSZip(),keys;
+				try{
+					keys=JSON.parse(tkey.value);
+				}catch(e){log.textContent+=`[ target key ] ${e}`;return;}
+
+				let parr=Array.from(inp.files,x=>new Promise((res,rej)=>{
+					let path=x.webkitRelativePath;
+					if(/json$/i.test(x.name)){
+						let reader=new FileReader();
+						reader.onload=r=>{
+							try{
+								let dat=JSON.parse(rmc(r.target.result)),ind=keys.reduce((a,x)=>a[x],dat);
+								if(typeof ind=='object')throw 'parameter is object';
+								log.textContent+=`${path}\t${ind}\n`;
+								zip.file(`${ind}/${path}`,r.target.result);
+								res('JSON');
+							}catch(err){log.textContent+=`${path}: ${err}\n`;res(err);}
+						}
+						reader.readAsText(x);
+					}else{
+						zip.file(path,x);
+						res();
+					}
+				}));
+				Promise.all(parr)
+					.then(x=>{log.textContent+='packaging…\n';return zip.generateAsync({type:"blob"});})
+					.then(b=>{
+						log.textContent+='done!\n';
+						let e=document.createElement('a');
+						e.download=`${inp.files[0].webkitRelativePath.split('/',2)[0]}.zip`;e.href=URL.createObjectURL(b);
+						e.click();setTimeout(URL.revokeObjectURL,10000,e.href);
+					})
+					.catch(console.warn);
+			};
+		</script>
+	</body>
+</html>
