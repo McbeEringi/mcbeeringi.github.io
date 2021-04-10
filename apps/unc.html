@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="jp">
-
 <head>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
@@ -8,32 +7,50 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>McbeEringi unicode_converter</title>
-	<script src="../src/inflate.js" defer>// https://www.onicos.com/staff/iz/amuse/javascript/expert/zip.html</script>
-	<script src="../src/deflate.js" defer></script>
-	<style>
-		:root{font-family:monospace;background-color:#222;color:#fff;}h1,h2{margin:4px;}
-		.box{width:100%;min-height:100px;border:solid 1px #fff;color:#fff;font-family:menlo;user-select:all;-webkit-userselect:all;}
-	</style>
 </head>
-
 <body>
+	<style>
+		:root,textarea{font-family:'menlo',monospace;background-color:#222;color:#fff;}h1,h2{margin:4px;}
+		textarea{width:100%;resize:none;box-sizing:border-box;}
+	</style>
 	<h1>unicode converter</h1>
-	String<div class="box" id="s" contenteditable="true"></div><br>
+	String<textarea id="s"></textarea>
 	<div style="text-align:center;">
-		<button type="button" onclick="
-			u.innerText = escape(s.innerText).replace(/%/g, '\\');
-			b.innerText = btoa(u.innerText);
-			z.innerText = btoa(zip_deflate(u.innerText));
-		">　↓　</button>
-		<button type="button" onclick="
-			if(b.innerText)u.innerText = atob(b.innerText);
-			if(z.innerText)u.innerText = zip_inflate(atob(z.innerText));
-			s.innerText = unescape(u.innerText.replace(/\\/g, '%'));
-		">　↑　</button>
+		<button id="jbtn">　↓　</button>
+		<button id="kbtn">　↑　</button>
 	</div>
-	Unicode<div class="box" id="u" contenteditable="true"></div><br>
-	おまけ<br>
-	Base64もどき<div class="box" id="b" contenteditable="true"></div>
-	ZIPもどき(Base64 encoded)<div class="box" id="z" contenteditable="true"></div>
+	UTF-16<textarea id="u"></textarea>
+	base64(UTF-8)<textarea id="b"></textarea>
+	<!--ZIPもどき(Base64 encoded)<textarea id="z"></textarea>-->
+	<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
+	<script>
+		[s,u,b].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+		const b64='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split(''),
+		b64e=x=>{
+			x=[...new TextEncoder().encode(x)].map(y=>('0000000'+y.toString(2)).slice(-8)).join('');
+			x+='0'.repeat(5-(x.length+5)%6);
+			x=x.split(/(.{6})/).filter(y=>y).map(y=>b64[parseInt(y,2)]).join('');
+			x+='='.repeat(3-(x.length+3)%4);
+			return x;
+		},
+		b64d=x=>{
+			const dc=new TextDecoder();
+			x=x.replace(/=/g,'').split('').map(y=>('00000'+b64.indexOf(y).toString(2)).slice(-6)).join('');
+			x=x.slice(0,x.length-x.length%8);
+			x=x.split(/(.{8})/).filter(y=>y).map(y=>parseInt(y,2));
+			return new TextDecoder().decode(Uint8Array.from(x));
+		},
+		utf16=x=>{return x.split('').map(y=>'\\u'+('000'+y.codePointAt(0).toString(16)).slice(-4)).join('');};
+		jbtn.onclick=()=>{
+			u.value=utf16(s.value);
+			b.value=b64e(s.value);
+			//z.value = '';
+		};
+		kbtn.onclick=()=>{
+			if(b.value)s.value=b64d(b.value);
+			//if(z.value)u.value = '';
+			else s.value=unescape(u.value.replace(/\\/g,'%'));
+		};
+	</script>
 </body>
 </html>
