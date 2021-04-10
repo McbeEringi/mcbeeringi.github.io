@@ -45,7 +45,7 @@
 			u16.value=s.value.split('').map(y=>'\\u'+('000'+y.codePointAt(0).toString(16)).slice(-4)).join('');
 			b8.value=b64e([...new TextEncoder().encode(s.value)],8);
 			b16.value=b64e(s.value.split('').map(x=>x.codePointAt(0)),16);
-			[u8,u16,b8,b16].forEach(x=>window[x].oninput());
+			[u8,u16,b8,b16].forEach(x=>x.oninput());
 		};
 		kbtn.onclick=()=>{
 			if(b16.value)s.value=unescape(b64d(b16.value,16).map(x=>'%u'+('000'+x.toString(16)).slice(-4)).join(''));
