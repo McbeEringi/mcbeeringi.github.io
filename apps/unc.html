@@ -19,37 +19,38 @@
 		<button id="jbtn">　↓　</button>
 		<button id="kbtn">　↑　</button>
 	</div>
-	UTF-16<textarea id="u"></textarea>
-	base64(UTF-8)<textarea id="b"></textarea>
+	UTF-8<textarea id="u8"></textarea>
+	UTF-16<textarea id="u16"></textarea>
+	base64(UTF-8)<textarea id="b8"></textarea>
+	base64(UTF-16)<textarea id="b16"></textarea>
 	<!--ZIPもどき(Base64 encoded)<textarea id="z"></textarea>-->
 	<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
 	<script>
-		[s,u,b].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+		[s,u8,u16,b8,b16].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 		const b64='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split(''),
-		b64e=x=>{
-			x=[...new TextEncoder().encode(x)].map(y=>('0000000'+y.toString(2)).slice(-8)).join('');
+		b64e=(x,b)=>{
+			x=x.map(y=>('0'.repeat(b-1)+y.toString(2)).slice(-1*b)).join('');
 			x+='0'.repeat(5-(x.length+5)%6);
 			x=x.split(/(.{6})/).filter(y=>y).map(y=>b64[parseInt(y,2)]).join('');
 			x+='='.repeat(3-(x.length+3)%4);
 			return x;
 		},
-		b64d=x=>{
-			const dc=new TextDecoder();
+		b64d=(x,b)=>{
 			x=x.replace(/=/g,'').split('').map(y=>('00000'+b64.indexOf(y).toString(2)).slice(-6)).join('');
-			x=x.slice(0,x.length-x.length%8);
-			x=x.split(/(.{8})/).filter(y=>y).map(y=>parseInt(y,2));
-			return new TextDecoder().decode(Uint8Array.from(x));
-		},
-		utf16=x=>{return x.split('').map(y=>'\\u'+('000'+y.codePointAt(0).toString(16)).slice(-4)).join('');};
+			x=x.slice(0,x.length-x.length%b);
+			return x.split(new RegExp(`(.{${b}})`)).filter(y=>y).map(y=>parseInt(y,2));
+		};
 		jbtn.onclick=()=>{
-			u.value=utf16(s.value);
-			b.value=b64e(s.value);
-			//z.value = '';
+			u8.value=[...new TextEncoder().encode(s.value)].map(x=>'%'+('0'+x.toString(16)).slice(-2)).join('');
+			u16.value=s.value.split('').map(y=>'\\u'+('000'+y.codePointAt(0).toString(16)).slice(-4)).join('');
+			b8.value=b64e([...new TextEncoder().encode(s.value)],8);
+			b16.value=b64e(s.value.split('').map(x=>x.codePointAt(0)),16);
 		};
 		kbtn.onclick=()=>{
-			if(b.value)s.value=b64d(b.value);
-			//if(z.value)u.value = '';
-			else s.value=unescape(u.value.replace(/\\/g,'%'));
+			if(b16.value)s.value=unescape(b64d(b16.value,16).map(x=>'%u'+('000'+x.toString(16)).slice(-4)).join(''));
+			else if(b8.value)s.value=new TextDecoder().decode(Uint8Array.from(b64d(b8.value,8)));
+			else if(u16.value)s.value=unescape(u16.value.replace(/\\u/g,'%u'));
+			else if(u8.value)s.value=new TextDecoder().decode(Uint8Array.from(u8.value.split('%').filter(x=>x).map(x=>parseInt(x,16))));
 		};
 	</script>
 </body>
