@@ -41,10 +41,10 @@
 						if(typeof z=='object'){
 							let tmp=pos;pos+=13;
 							core(z);pos+=12;
-							if(pos>0)frr(ctx,'#0004',tmp,0,pos-tmp,240,4);
+							if(pos>0&&tmp<w)frr(ctx,'#0004',tmp,0,pos-tmp,240,4);
 							pos+=1;
 						}else{
-							if(pos>-15){
+							if(pos>-15&&pos<w){
 								frr(ctx,'#0004',pos,0,16,240,4,4);
 								if(z)z.split(',').forEach(n=>{
 									let tmp=false;
@@ -53,7 +53,7 @@
 										else n=String((Number(n)+10)%24+14);
 										tmp=true;
 									}
-									if(pos<w)note.push([tmp,pos+1,225-Number(n2i[n])*16]);
+									note.push([tmp,pos+1,225-Number(n2i[n])*16]);
 								});
 							}
 							pos+=17;
@@ -66,7 +66,7 @@
 				if(x&&Array.isArray(x)){
 					core(x);pos+=w*.5;
 					note.forEach(y=>frr(ctx,y[0]?'#fea8':'#fea',y[1],y[2],14,14,4));
-					if(b)return pos;
+					return pos;
 				}
 			};
 			//ctx.fillStyle='#888';ctx.fillRect(0,0,c.width,c.height);
