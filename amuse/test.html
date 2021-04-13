@@ -7,7 +7,7 @@
 	<body>
 		<style>
 			:root{background:#222;}textarea{width:100%;height:50vh;resize:none;box-sizing:border-box;}
-			.disp{position:relative;}
+			.disp{position:relative;}.disp>*{vertical-align:bottom;}
 			#c{image-rendering:crisp-edges;width:100%;background:#000a repeating-linear-gradient(#fffc,#fffc 16px,#fff8 16px,#fff8 48px,#fffa 48px,#fffa 64px,#fff8 64px,#fff8 80px,#fffa 80px,#fffa 96px,#fff8 96px,#fff8 112px);}
 			#scr{width:100%;height:100%;position:absolute;top:0;overflow-x:scroll;}#scr>div{height:10px;}
 		</style>
@@ -22,7 +22,6 @@
 			const i2n=['-9','-7','-5','-4','-2','0','2','3','5','7','8','10','12','14','15'],
 			n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'};
 			const ctx=c.getContext('2d'),res=window.devicePixelRatio||1;
-			c.width=c.parentNode.clientWidth*res;c.height=240*res;ctx.scale(res,res);
 			ctx.imageSmoothingEnabled=false;
 			const frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
 				ct.fillStyle=col;
@@ -54,7 +53,7 @@
 										else w=String((Number(w)+10)%24+14);
 										tmp=true;
 									}
-									note.push([tmp,pos+1,225-Number(n2i[w])*16]);
+									if(pos>w)note.push([tmp,pos+1,225-Number(n2i[w])*16]);
 								});
 							}
 							pos+=17;
@@ -71,7 +70,8 @@
 				}
 			};
 			//ctx.fillStyle='#888';ctx.fillRect(0,0,c.width,c.height);
-			(dat.oninput=()=>scr.children[0].style.width=a2c(JSON.parse(dat.value||0),1)+'px')();
+			dat.oninput=()=>scr.children[0].style.width=a2c(JSON.parse(dat.value||0),1)+'px';
+			(onresize=()=>{c.width=c.parentNode.clientWidth*res;c.height=240*res;ctx.scale(res,res);dat.oninput();})();
 			scr.onscroll=()=>a2c(JSON.parse(dat.value||0));
 		</script>
 	</body>
