@@ -5,7 +5,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>McbeEringi unicode_converter</title>
 </head>
 <body>
@@ -14,11 +14,8 @@
 		textarea{width:100%;resize:none;box-sizing:border-box;}
 	</style>
 	<h1>unicode converter</h1>
-	String<textarea id="s"></textarea>
-	<div style="text-align:center;">
-		<button id="jbtn">　↓　</button>
-		<button id="kbtn">　↑　</button>
-	</div>
+	string<textarea id="s"></textarea>
+	<hr>
 	UTF-8<textarea id="u8"></textarea>
 	UTF-16<textarea id="u16"></textarea>
 	base64(UTF-8)<textarea id="b8"></textarea>
@@ -40,19 +37,29 @@
 			x=x.slice(0,x.length-x.length%b);
 			return x.split(new RegExp(`(.{${b}})`)).filter(y=>y).map(y=>parseInt(y,2));
 		};
-		jbtn.onclick=()=>{
+		s.oninput=()=>{
 			u8.value=[...new TextEncoder().encode(s.value)].map(x=>'%'+('0'+x.toString(16)).slice(-2)).join('');
 			u16.value=s.value.split('').map(y=>'\\u'+('000'+y.codePointAt(0).toString(16)).slice(-4)).join('');
 			b8.value=b64e([...new TextEncoder().encode(s.value)],8);
 			b16.value=b64e(s.value.split('').map(x=>x.codePointAt(0)),16);
-			[u8,u16,b8,b16].forEach(x=>x.oninput());
+			autosize.update(s);
+			[u8,u16,b8,b16].forEach(x=>autosize.update(x));
 		};
-		kbtn.onclick=()=>{
-			if(b16.value)s.value=unescape(b64d(b16.value,16).map(x=>'%u'+('000'+x.toString(16)).slice(-4)).join(''));
-			else if(b8.value)s.value=new TextDecoder().decode(Uint8Array.from(b64d(b8.value,8)));
-			else if(u16.value)s.value=unescape(u16.value.replace(/\\u/g,'%u'));
-			else if(u8.value)s.value=new TextDecoder().decode(Uint8Array.from(u8.value.split('%').filter(x=>x).map(x=>parseInt(x,16))));
-			s.oninput();
+		u8.oninput=()=>{
+			s.value=new TextDecoder().decode(Uint8Array.from(u8.value.split('%').filter(x=>x).map(x=>parseInt(x,16))));
+			autosize.update(u8);autosize.update(s);
+		};
+		u16.oninput=()=>{
+			s.value=unescape(u16.value.replace(/\\u/g,'%u'));
+			autosize.update(u16);autosize.update(s);
+		};
+		b8.oninput=()=>{
+			s.value=new TextDecoder().decode(Uint8Array.from(b64d(b8.value,8)));
+			autosize.update(b8);autosize.update(s);
+		};
+		b16.oninput=()=>{
+			s.value=unescape(b64d(b16.value,16).map(x=>'%u'+('000'+x.toString(16)).slice(-4)).join(''));
+			autosize.update(b16);autosize.update(s);
 		};
 	</script>
 </body>
