@@ -5,7 +5,6 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 		<title>sky_seq indev</title>
 		<link rel="preload" href="https://cdn.jsdelivr.net/npm/tone/build/Tone.js" as="script">
-		<link rel="preload" href="https://cdn.jsdelivr.net/npm/sortablejs/Sortable.min.js" as="script">
 	</head>
 	<body>
 		<script src="https://mcbeeringi.github.io/sky/style.js" async></script>
@@ -14,12 +13,13 @@
 			html,body{height:100%;margin:0;position:relative;}textarea{width:100%;height:50vh;resize:none;box-sizing:border-box;}
 			.disp{position:relative;}.disp>*{vertical-align:bottom;}
 			#c{image-rendering:crisp-edges;width:100%;height:240px;background:#000a repeating-linear-gradient(#fffc,#fffc 16px,#fff8 16px,#fff8 48px,#fffa 48px,#fffa 64px,#fff8 64px,#fff8 80px,#fffa 80px,#fffa 96px,#fff8 96px,#fff8 112px);}
-			#scr{width:100%;height:100%;position:absolute;top:0;overflow-x:scroll;scrollbar-width:thin;scrollbar-color:#0008 #0000;}#scr>div{height:10px;}
-			#scr::webkit-scrollbar{background:#0000;height:8px;}#scr::webkit-scrollbar-thumb{background:#0008;border-radius:8px;}
+			#scr{width:100%;height:100%;position:absolute;top:0;overflow-x:scroll;scrollbar-width:thin;scrollbar-color:#0008 #0000;}#scr::webkit-scrollbar{background-color:#0000;height:8px;}#scr::webkit-scrollbar-thumb{background-color:#0008;border-radius:8px;}
+			#scrw{height:10px;}
+			#selbox{position:absolute;background-color:#fff4;pointer-events:none;border:1px solid #fff8;display:none;}
 		</style>
 		<div class="disp">
 			<canvas id="c"></canvas>
-			<div id="scr"><div></div></div>
+			<div id="scr"><div id="scrw"></div><div id="selbox"></div></div>
 		</div>
 		<textarea id="dat"></textarea>
 		<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
@@ -27,9 +27,8 @@
 			'use strict';
 			const i2n=['-9','-7','-5','-4','-2','0','2','3','5','7','8','10','12','14','15'],
 			n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
-			ctx=c.getContext('2d'),res=window.devicePixelRatio||1;
-			ctx.imageSmoothingEnabled=false;
-			const frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
+			ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
+			frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
 				ct.fillStyle=col;
 				ct.beginPath();
 				ct.moveTo(x,y+rl);ct.arc(x+rl,y+rl,rl,Math.PI,Math.PI*1.5);
@@ -75,10 +74,48 @@
 					return pos;
 				}
 			};
+			let sel={active:{}};
+			ctx.imageSmoothingEnabled=false;
 			//ctx.fillStyle='#888';ctx.fillRect(0,0,c.width,c.height);
-			dat.oninput=()=>scr.children[0].style.width=a2c(JSON.parse(dat.value||0),1)+'px';
+			dat.oninput=()=>scrw.style.width=a2c(JSON.parse(dat.value||0),1)+'px';
 			(onresize=()=>{c.width=c.parentNode.clientWidth*res;c.height=240*res;ctx.scale(res,res);dat.oninput();})();
 			scr.onscroll=()=>a2c(JSON.parse(dat.value||0));
+			const movefx=()=>{
+				const sb=()=>{
+					selbox.style.left=Math.min(sel.x1,sel.x2)+'px';selbox.style.top=Math.min(sel.y1,sel.y2)+'px';
+					selbox.style.width=Math.abs(sel.x1-sel.x2)+'px';selbox.style.height=Math.abs(sel.y1-sel.y2)+'px';
+					selbox.style.display='block';
+				},
+				bscr=()=>{
+					let p=sel.cx-scr.clientWidth*.5;
+					if(Math.abs(p)>scr.clientWidth*.5-64)scr.scrollLeft+=(p-Math.sign(p)*(scr.clientWidth*.5-64))*.3;
+				};
+				sb();
+				if(!sel.active.scroll)sel.active.scroll=setInterval(bscr,30);
+			};
+			scr.addEventListener('mousedown',e=>{sel.active.main=true;[sel.x1,sel.y1]=[e.clientX+scr.scrollLeft+window.scrollX,e.clientY+window.scrollY];});
+			scr.addEventListener('mousemove',e=>{
+				if(sel.active.main){
+					sel.cx=e.clientX+window.scrollX;
+					[sel.x2,sel.y2]=[sel.cx+scr.scrollLeft,e.clientY+window.scrollY];
+					movefx();
+				}
+			});
+			window.addEventListener('mouseup',()=>{sel.active.main=false;selbox.style.display='';clearInterval(sel.active.scroll);sel.active.scroll=0;});
+			scr.addEventListener('touchstart',e=>{if(!sel.active.main)sel.active.pre=setTimeout(()=>{sel.active.main=e.touches[0].identifier;[sel.x1,sel.y1]=[e.touches[0].clientX+scr.scrollLeft+window.scrollX,e.touches[0].clientY+window.scrollY];},200);});
+			scr.addEventListener('touchmove',e=>{
+				clearTimeout(sel.active.pre);
+				for(let i in e.changedTouches){let x=e.changedTouches[i];
+					if(x.identifier==sel.active.main){
+						e.preventDefault();
+						sel.cx=x.clientX+window.scrollX;
+						[sel.x2,sel.y2]=[sel.cx+scr.scrollLeft,x.clientY+window.scrollY];
+						movefx();
+						break;
+					}
+				}
+			});
+			['touchend','touchcancel'].forEach(x=>window.addEventListener(x,e=>{clearTimeout(sel.active.pre);if(Array.from(e.changedTouches,y=>y.identifier).includes(sel.active.main))dispatchEvent(new Event('mouseup'));}));
 
 			dat.value=`["-4","",["-4","-4"],["-4","-4"],["-9,-4,3","","-4,-2","-2"],["-7,-2,5","","3,-2","5"],["-5,0,7","","0,10","10"],["-5,-2,12","","-2,7","5"],["-9,-4,3","3","-4,7","7"],["-7,-2,5","3","-2,3","5"],["-5,0,7","","0,10",""],["-5,-2,7","","-2",""],["-9,-4,3","","-4,-2",""],["-7,-2,5","","-2,3","5"],["0,-5,7","","0,10",""],["-5,-2,7","","-2,5",""],["-9,-4,3","","-4,7",""],["-7,-2,5","","-2,7",""],["-9,-5,3","","-5,-2",""],["-9,-5","","7","10"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-5,0,3,7","","0",""],["-5,-2,3,7","","3,-2,5","3"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-9,-5,3","","-5,-2",""],["-9,-5,3","","3,5","3,10,7"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-5,0,3,7","","0",""],["-5,-2,3,7","","3,-2,5","3"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,14,10",""],["-5,-2,15,10,3","","-2,3,7","5"],["-9,-4,0","","7,3,-4",""],["-7,-2,2,5,10","","-2,7,3","5"],["-9,-5,3","","-5,-2",""],["-9,-5,0","","-2",""],["-9,-4","7,3"],["","-4","7,3",""],["5,-7,-2,2","","3","-2"],["2","","5,2,-2",""],["3,-5,0","","","0"],["","-2"],["-2,-5","-4"],["-5","-5"],["-9,-4","7,3"],["7,3","-4","7,3",""],["5,-7,-2,2","3"],["2","-2,-7"],["-2,-5,0","7,3"],["5","3,-5,0"],["7,2,-2,5,-5",""],["5,-2,2,-5","3"],["-9,-4","-2"],["7,-9,-4,3","10,7,3"],["-7,-2","7,3"],["2,-2,-7","3"],["-5,0","-2"],["7,3,-5,0","10,7,3"],["-5,-2","7,3"],["2,-5,-2","5"],["3,-9,-4","","","-4"],["","-2,-4"],["3,-4,-9",""],["-4","3"],["5,-7,-2,2","3"],["8,-7,-2,5","8,5"],["7,3","-4,-7"],["2","2,-7,-5"],["3,-5,0","3"],["3","-2,-5,0"],["5,-9,-4,2",""],["3,-4","3"],["5,-7,-2,2","3"],["3","8,-7,-2,5"],["7,-2,-9,3",""],["7,-5,2,5","5","3","2"],["3,-5,0","","","0"],["3","7,-5,0,3"],["10,-4,-9,7,3","3"],["3","3,-4,-9"],["5,-7,2,-2","7,3"],["5,2,-7,-2","3"],["3,-2,-9",""],["2","2,-5,-7"],["3,-5,0","3"],["3","-2,-5,0"],["5,-9,-4,2",""],["3,-4","3"],["5,-7,-2,2","3"],["3","8,-7,-2,5"],["7,-2,-9,3",""],["7,-5,2,5","5","3","2"],["3,-5,0","","","0"],["3","7,-5,0,3"],["-5,-2,8,5","7,3"],["-5,-2,5","3"],["-9,-4,5,3",""],["-9,-4","-2"],["-4,-9,-2","-2"],["-4,-9,7,3","5,3"],["-7,-2,5,2",""],["3","-7,2,-2"],["-7,2,-4",""],["-5,-7,7,3","3"],["-9,-4,3","","-4,-2","-2"],["-7,-2,5,2","","3,-2","5"],["-5,0,7,3","","0,10,7,3","10,7,3"],["-5,-2,12,7,3","","-2,7,3","5"],["-9,-4,3","3","-4,7,3","7,3"],["-7,-2,5,2","3","-2,3","5,2"],["-5,0,7,3","","0,10,3,7",""],["-5,-2,7,3","","-2",""],["-9,-4,3","","-4,-2",""],["-7,-2,5,2","","-2,3","5"],["0,-5,7,3","","0,10,3,7",""],["-5,-2,7,3","","-2,5,3","3"],["-9,-4,3","","-4,7,3",""],["-7,-2,5,2","","-2,7,5,2",""],["-9,-5,3","","-5,-2",""],["-9,-5","","0","2"],["-9,-4,3","","-4,-2","-2"],["-7,-2,5,2","","3,-2","5"],["-5,0,7,3","","0,10,7,3","10,7,3"],["-5,-2,12,7,3","","-2,7,3","5"],["-9,-4,3","3","-4,7,3","7,3"],["-7,-2,5,2","3","-2,3","5,2"],["-5,0,7,3","","0,10,3,7",""],["-5,-2,7,3","","-2",""],["-9,-4,3","","-4,-2",""],["-7,-2,5,2","","-2,3","5"],["0,-5,7,3","","0,10,3,7",""],["-5,-2,7,3","","-2,5,3",""],["-9,-4,3","","-4,7,3",""],["-7,-2,5,2","","-2,7,5,2",""],["-9,-5,3","","-5,-2",""],["-9,-5","","7,3","7,3,10"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-5,0,3,7","","0",""],["-5,-2,3,7","","3,-2,5","3"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-9,-5,3","","-5,-2",""],["-9,-5,3","","3,5","3,10,7"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-5,0,3,7","","0",""],["-5,-2,3,7","","3,-2,5","3"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,14,10",""],["-5,-2,15,10,3","","-2,3,7","5"],["-9,-4,0","","7,3,-4",""],["-7,-2,2,5,10","","-2,7,3","5"],["-9,-5,3","","-5,-2",""],["-5,-9",""],"","","",""]`;
 			dat.oninput();
