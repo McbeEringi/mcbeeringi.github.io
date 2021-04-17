@@ -5,7 +5,7 @@
 		<title>McbeEringi src2img</title>
 	</head>
 	<body>
-		<script src="https://cdn.jsdelivr.net/npm/@nidi/html2canvas/dist/html2canvas.min.js"></script>
+		<script src="../src/dconv.js"></script>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/atom-one-dark.min.css">
 		<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"></script>
 		<style>
@@ -27,11 +27,21 @@
 				reader.addEventListener('load',()=>{
 					out.textContent=reader.result;
 					hljs.highlightAll();
-					html2canvas(out,{backgroundColor:null}).then(c=>c.toBlob(b=>{
+					/*html2canvas(out,{backgroundColor:null})*/
+					dconv.toCanvas(out).then(c=>c.toBlob(b=>{
 						console.log(b);
-						const a=document.createElement('a');a.href=URL.createObjectURL(b);
-						a.textContent=a.download=`${inp.files[0].name}.${b.type.match(/\/\w+$/)[0].slice(1)}`;
-						dl.appendChild(a);dl.appendChild(document.createElement('br'));
+						if(b){
+							const a=document.createElement('a');a.href=URL.createObjectURL(b);
+							a.textContent=a.download=`${inp.files[0].name}.${b.type.match(/\/\w+$/)[0].slice(1)}`;
+							dl.appendChild(a);dl.appendChild(document.createElement('br'));
+						}else{
+							dconv.toSvgUrl(out).then(d=>{
+								console.log(d);
+								const a=document.createElement('a');a.href=d;
+								a.textContent=a.download=`${inp.files[0].name}.svg`;
+								dl.appendChild(a);dl.appendChild(document.createElement('br'));
+							});
+						}
 					}));
 				});
 				reader.readAsText(inp.files[0]);
