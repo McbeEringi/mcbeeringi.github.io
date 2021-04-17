@@ -17,6 +17,7 @@
 		canvas:<HTMLCanvasElement> (optional default=document.createElement('canvas'))
 	};
 
+	to get effect from <link>, you have to set cors
 	example…https://mcbeeringi.github.io/apps/s2i_.html
 */
 let dconv={};
