@@ -85,9 +85,9 @@
 			scr.onscroll=()=>a2c(JSON.parse(dat.value||0));
 			const movefx=()=>{
 				const bscr=()=>{
-					let p=sel.cx-scr.clientWidth*.5;
-					if(Math.abs(p)>scr.clientWidth*.5-64){
-						p=(p-Math.sign(p)*(scr.clientWidth*.5-64))*.3;
+					let p=sel.cx-window.innerWidth*.5;
+					if(Math.abs(p)>window.innerWidth*.5-64){
+						p=(p-Math.sign(p)*(window.innerWidth*.5-64))*.3;
 						scr.scrollLeft+=p;
 						sel.x2+=p;
 					}
@@ -98,8 +98,8 @@
 			scr.addEventListener('mousedown',e=>{sel.active.main=true;[sel.x1,sel.y1]=[e.clientX+scr.scrollLeft+window.scrollX,e.clientY+window.scrollY];});
 			scr.addEventListener('mousemove',e=>{
 				if(sel.active.main){
-					sel.cx=e.clientX+window.scrollX;
-					[sel.x2,sel.y2]=[sel.cx+scr.scrollLeft,e.clientY+window.scrollY];
+					sel.cx=e.clientX;
+					[sel.x2,sel.y2]=[e.clientX+window.scrollX+scr.scrollLeft,e.clientY+window.scrollY];
 					movefx();
 				}
 			});
@@ -107,15 +107,14 @@
 			scr.addEventListener('touchstart',e=>{if(!sel.active.main)sel.active.pre=setTimeout(()=>{sel.active.main=e.touches[0].identifier;[sel.x1,sel.y1]=[e.touches[0].clientX+scr.scrollLeft+window.scrollX,e.touches[0].clientY+window.scrollY];},200);});
 			scr.addEventListener('touchmove',e=>{
 				clearTimeout(sel.active.pre);
-				for(let i in e.changedTouches){let x=e.changedTouches[i];
+				Array.from(e.changedTouches).forEach(x=>{
 					if(x.identifier==sel.active.main){
 						e.preventDefault();
-						sel.cx=x.clientX+window.scrollX;
-						[sel.x2,sel.y2]=[sel.cx+scr.scrollLeft,x.clientY+window.scrollY];
+						sel.cx=x.clientX;
+						[sel.x2,sel.y2]=[x.clientX+window.scrollX+scr.scrollLeft,x.clientY+window.scrollY];
 						movefx();
-						break;
 					}
-				}
+				});
 			});
 			['touchend','touchcancel'].forEach(x=>window.addEventListener(x,e=>{clearTimeout(sel.active.pre);if(Array.from(e.changedTouches,y=>y.identifier).includes(sel.active.main))dispatchEvent(new Event('mouseup'));}));
 
