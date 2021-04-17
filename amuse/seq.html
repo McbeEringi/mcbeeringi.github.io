@@ -82,6 +82,7 @@
 			//ctx.fillStyle='#888';ctx.fillRect(0,0,c.width,c.height);
 			dat.oninput=()=>scrw.style.width=a2c(JSON.parse(dat.value||0),1)+'px';
 			(onresize=()=>{c.width=c.parentNode.clientWidth*res;c.height=240*res;ctx.scale(res,res);dat.oninput();})();
+			scr.onwheel=e=>{e.preventDefault();scr.scrollLeft+=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;}
 			scr.onscroll=()=>a2c(JSON.parse(dat.value||0));
 			const movefx=()=>{
 				const bscr=()=>{
