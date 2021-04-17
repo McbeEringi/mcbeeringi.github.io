@@ -4,45 +4,51 @@
 	last modified 2021/4/17
 
 	dconv={
-		getDocStyle( e <HTMLElement>, cfg <Object>),
-		toSvgStr( e <HTMLElement>, cfg <Object>),
-		toSvgEl( e <HTMLElement>, cfg <Object>),
-		toSvgBlob( e <HTMLElement>, cfg <Object>),
-		toImgEl( e <HTMLElement>, cfg <Object>),
-		toCanvas( e <HTMLElement>, cfg <Object>)
+		getStyle(),
+		toSvgStr( elem <HTMLElement>, config <Object>),		>> "<svg xmlns="htt…"
+		toSvgUrl( elem <HTMLElement>, config <Object>),		>> "data:image/svg+…"
+		toImg( elem <HTMLElement>, config <Object>),		>> <img width="cfg.width*cfg.scale" height="cfg.height*cfg.scale" src="dconv.toSvgUrl()">
+		toCanvas( elem <HTMLElement>, config <Object>)		>> <canvas width="cfg.width*cfg.scale" height="cfg.height*cfg.scale">
 	};
-	cfg={
-		width:<Number> (optional),
-		height:<Number> (optional),
-		scale:<Number> (optional),
-		canvas:<HTMLCanvasElement> (optional)
+	config={
+		width:<Number> (optional default=window.getComputedStyle(elem).width),
+		height:<Number> (optional default=window.getComputedStyle(elem).height),
+		scale:<Number> (optional default=window.devicePixelRatio),
+		canvas:<HTMLCanvasElement> (optional default=document.createElement('canvas'))
 	};
 */
 let dconv={};
 (()=>{
 	'use strict';
-	dconv.getDocStyle=()=>Array.from(document.getElementsByTagName('style'),x=>x.outerHTML).join('');
-	dconv.toSvgStr=(e,cfg={})=>{
+	dconv.getStyle=()=>Array.from(document.styleSheets,x=>Array.from(x.rules,y=>y.cssText).join('')).join('');
+	dconv.cfgFb=(e,cfg)=>{
 		let tmp=window.getComputedStyle(e);
 		if(!cfg.width)cfg.width=Number(tmp.width.slice(0,-2));
 		if(!cfg.height)cfg.height=Number(tmp.height.slice(0,-2));
-		if(!cfg.scale)cfg.scale=window.devicePicelRatio;
-return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cfg.width*cfg.scale} ${cfg.height*cfg.scale}" width="${cfg.width*cfg.scale}" height="${cfg.height*cfg.scale}">
-	${dconv.getDocStyle()}
+		if(!cfg.scale)cfg.scale=window.devicePixelRatio;
+		return cfg;
+	};
+	dconv.toSvgStr=(e,cfg={})=>{
+		cfg=dconv.cfgFb(e,cfg);
+return`<svg xmlns="http://www.w3.org/2000/svg" width="${cfg.width*cfg.scale}" height="${cfg.height*cfg.scale}">
 	<foreignObject x="0" y="0" width="100%" height="100%">
+		<html xmlns="http://www.w3.org/1999/xhtml" style="transform:scale(${cfg.scale});transform-origin:top left;">
+		<style>pre,code{white-space:pre;}${dconv.getStyle()}</style>
 		${e.outerHTML}
+		</html>
 	</foreignObject>
 </svg>`;
 	};
-	dconv.toSvgEl=(e,cfg)=>new DOMParser().parseFromString(dconv.toSvgStr(e,cfg),'image/svg+xml').childNodes[0];
-	dconv.toSvgBlob=(e,cfg)=>new Blob([dconv.toSvgStr(e,cfg)],{type:'image/svg+xml'});
-	dconv.toImgEl=(e,cfg)=>new Promise((res,rej)=>{
-		let img=new Image();img.crossOrigin='Anonymous';
-		img.onload=()=>{URL.revokeObjectURL(img.src);res(img);};img.onerror=rej;
-		img.src=URL.createObjectURL(dconv.toSvgBlob(e,cfg));
+	dconv.toSvgUrl=(e,cfg)=>`data:image/svg+xml;charset=utf-8,${encodeURIComponent(dconv.toSvgStr(e,cfg))}`;
+	dconv.toImg=(e,cfg)=>new Promise((res,rej)=>{
+		cfg=dconv.cfgFb(e,cfg);let img=new Image();img.onload=()=>res(img);img.onerror=rej;
+		[img.width,img.height]=[cfg.width*cfg.scale,cfg.height*cfg.scale];img.src=dconv.toSvgUrl(e,cfg);
 	});
 	dconv.toCanvas=(e,cfg={})=>new Promise((res,rej)=>{
 		if(!cfg.canvas)cfg.canvas=document.createElement('canvas');
-		dconv.toImgEl(e,cfg).then(img=>{cfg.canvas.getContext('2d').drawImage(img,0,0);res(cfg.canvas);}).catch(rej);
+		dconv.toImg(e,cfg).then(img=>{
+			[cfg.canvas.width,cfg.canvas.height]=[img.width,img.height];
+			cfg.canvas.getContext('2d').drawImage(img,0,0);res(cfg.canvas);
+		}).catch(rej);
 	});
 })();
