@@ -16,6 +16,8 @@
 		scale:<Number> (optional default=window.devicePixelRatio),
 		canvas:<HTMLCanvasElement> (optional default=document.createElement('canvas'))
 	};
+
+	example…https://mcbeeringi.github.io/apps/s2i.html
 */
 let dconv={};
 (()=>{
@@ -32,10 +34,8 @@ let dconv={};
 		cfg=dconv.cfgFb(e,cfg);
 return`<svg xmlns="http://www.w3.org/2000/svg" width="${cfg.width*cfg.scale}" height="${cfg.height*cfg.scale}">
 	<foreignObject x="0" y="0" width="100%" height="100%">
-		<html xmlns="http://www.w3.org/1999/xhtml" style="transform:scale(${cfg.scale});transform-origin:top left;">
 		<style>pre,code{white-space:pre;}${dconv.getStyle()}</style>
-		${e.outerHTML}
-		</html>
+		<html xmlns="http://www.w3.org/1999/xhtml" style="transform:scale(${cfg.scale});transform-origin:top left;">${e.outerHTML}</html>
 	</foreignObject>
 </svg>`;
 	};
