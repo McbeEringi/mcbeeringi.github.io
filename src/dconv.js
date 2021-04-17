@@ -1,6 +1,6 @@
 /*
 	dconv.js
-	(c)2021 McbeEringi MITLicense
+	(c)2021 McbeEringi CC0
 	last modified 2021/4/17
 
 	dconv={
