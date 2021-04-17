@@ -1,6 +1,6 @@
 /*
 	dconv.js
-	© 2021 McbeEringi MITLicense
+	(c)2021 McbeEringi MITLicense
 	last modified 2021/4/17
 
 	dconv={
@@ -23,7 +23,7 @@ let dconv={};
 	'use strict';
 	dconv.getDocStyle=()=>Array.from(document.getElementsByTagName('style'),x=>x.outerHTML).join('');
 	dconv.toSvgStr=(e,cfg={})=>{
-		let tmp=window.getComputedStyle(x);
+		let tmp=window.getComputedStyle(e);
 		if(!cfg.width)cfg.width=Number(tmp.width.slice(0,-2));
 		if(!cfg.height)cfg.height=Number(tmp.height.slice(0,-2));
 		if(!cfg.scale)cfg.scale=window.devicePicelRatio;
@@ -35,7 +35,7 @@ return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cfg.width*cfg.scal
 </svg>`;
 	};
 	dconv.toSvgEl=(e,cfg)=>new DOMParser().parseFromString(dconv.toSvgStr(e,cfg),'image/svg+xml').childNodes[0];
-	dconv.toSvgBlob=(e,cfg)=>new Blob(dconv.toSvgStr(e,cfg){type:'image/svg+xml'});
+	dconv.toSvgBlob=(e,cfg)=>new Blob([dconv.toSvgStr(e,cfg)],{type:'image/svg+xml'});
 	dconv.toImgEl=(e,cfg)=>new Promise((res,rej)=>{
 		let img=new Image();img.crossOrigin='Anonymous';
 		img.onload=()=>{URL.revokeObjectURL(img.src);res(img);};img.onerror=rej;
