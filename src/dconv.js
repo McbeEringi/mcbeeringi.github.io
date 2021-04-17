@@ -34,7 +34,7 @@ return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cfg.width*cfg.scal
 	</foreignObject>
 </svg>`;
 	};
-	dconv.toSvgEl=(e,cfg)=>new DOMParser().parseFromString(dconv.toSvgStr(e,cfg)'image/svg+xml').childNodes[0];
+	dconv.toSvgEl=(e,cfg)=>new DOMParser().parseFromString(dconv.toSvgStr(e,cfg),'image/svg+xml').childNodes[0];
 	dconv.toSvgBlob=(e,cfg)=>new Blob(dconv.toSvgStr(e,cfg){type:'image/svg+xml'});
 	dconv.toImgEl=(e,cfg)=>new Promise((res,rej)=>{
 		let img=new Image();img.crossOrigin='Anonymous';
