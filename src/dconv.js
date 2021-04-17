@@ -33,8 +33,8 @@ let dconv={};
 	dconv.toSvgStr=(e,cfg={})=>{
 		cfg=dconv.cfgFb(e,cfg);
 return`<svg xmlns="http://www.w3.org/2000/svg" width="${cfg.width*cfg.scale}" height="${cfg.height*cfg.scale}">
+	<style>pre,code{white-space:pre;}${dconv.getStyle()}</style>
 	<foreignObject x="0" y="0" width="100%" height="100%">
-		<style>pre,code{white-space:pre;}${dconv.getStyle()}</style>
 		<html xmlns="http://www.w3.org/1999/xhtml" style="transform:scale(${cfg.scale});transform-origin:top left;">${e.outerHTML}</html>
 	</foreignObject>
 </svg>`;
