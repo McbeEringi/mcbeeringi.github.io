@@ -22,7 +22,7 @@
 let dconv={};
 (()=>{
 	'use strict';
-	dconv.getStyle=()=>Array.from(document.styleSheets,x=>Array.from(x.rules,y=>y.cssText).join('')).join('');
+	dconv.getStyle=()=>Array.from(document.styleSheets,x=>x.rules?Array.from(x.rules,y=>y.cssText).join(''):'').join('');
 	dconv.cfgFb=(e,cfg)=>{
 		let tmp=window.getComputedStyle(e);
 		if(!cfg.width)cfg.width=Number(tmp.width.slice(0,-2));
