@@ -17,7 +17,7 @@
 		canvas:<HTMLCanvasElement> (optional default=document.createElement('canvas'))
 	};
 
-	example…https://mcbeeringi.github.io/apps/s2i.html
+	example…https://mcbeeringi.github.io/apps/s2i_.html
 */
 let dconv={};
 (()=>{
