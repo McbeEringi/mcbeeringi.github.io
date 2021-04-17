@@ -45,7 +45,7 @@
 						let z=y[yi];
 						if(typeof z=='object'){
 							let tmp=pos,sel_=[];pos+=13;sel_[0]=pos-scr.scrollLeft;
-							core(z);sel_[1]=pos-1-scr.scrollLeft;pos+=12;
+							core(z);sel_[1]=pos-scr.scrollLeft-1;pos+=12;
 							if(pos>0&&tmp<w){
 								sel_[3]=Math.min(sel.x1,sel.x2);sel_[4]=Math.max(sel.x1,sel.x2)
 								sel_=((sel_[3]<sel_[0])+(sel_[3]<sel_[1])+(sel_[1]<sel_[4])+(sel_[0]<sel_[4]))>2&&sel.active.main;
