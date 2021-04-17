@@ -35,12 +35,10 @@
 							a.textContent=a.download=`${inp.files[0].name}.${b.type.match(/\/\w+$/)[0].slice(1)}`;
 							dl.appendChild(a);dl.appendChild(document.createElement('br'));
 						}else{
-							dconv.toSvgUrl(out).then(d=>{
-								console.log(d);
-								const a=document.createElement('a');a.href=d;
-								a.textContent=a.download=`${inp.files[0].name}.svg`;
-								dl.appendChild(a);dl.appendChild(document.createElement('br'));
-							});
+							const a=document.createElement('a');a.href=dconv.toSvgUrl(out);
+							console.log(a.href);
+							a.textContent=a.download=`${inp.files[0].name}.svg`;
+							dl.appendChild(a);dl.appendChild(document.createElement('br'));
 						}
 					}));
 				});
