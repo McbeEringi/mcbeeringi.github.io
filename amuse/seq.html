@@ -15,16 +15,16 @@
 			#c{image-rendering:crisp-edges;width:100%;height:240px;background:#000a repeating-linear-gradient(#fffc,#fffc 16px,#fff8 16px,#fff8 48px,#fffa 48px,#fffa 64px,#fff8 64px,#fff8 80px,#fffa 80px,#fffa 96px,#fff8 96px,#fff8 112px);}
 			#scr{width:100%;height:100%;position:absolute;top:0;overflow-x:scroll;scrollbar-width:thin;scrollbar-color:#0008 #0000;}#scr::webkit-scrollbar{background-color:#0000;height:8px;}#scr::webkit-scrollbar-thumb{background-color:#0008;border-radius:8px;}
 			#scrw{height:10px;}
-			#selbox{position:absolute;background-color:#fff4;pointer-events:none;border:1px solid #fff8;display:none;}
 		</style>
 		<div class="disp">
 			<canvas id="c"></canvas>
-			<div id="scr"><div id="scrw"></div><div id="selbox"></div></div>
+			<div id="scr"><div id="scrw"></div></div>
 		</div>
 		<textarea id="dat"></textarea>
 		<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
 		<script>
 			'use strict';
+			let sel={active:{}};
 			const i2n=['-9','-7','-5','-4','-2','0','2','3','5','7','8','10','12','14','15'],
 			n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
 			ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
@@ -50,7 +50,7 @@
 							pos+=1;
 						}else{
 							if(pos>-15&&pos<w){
-								frr(ctx,'#0004',pos,0,16,240,4,4);
+								frr(ctx,(Math.min(sel.x1,sel.x2)<pos+16+scr.scrollLeft&&pos+scr.scrollLeft<Math.max(sel.x1,sel.x2))?'#8004':'#0004',pos,0,16,240,4,4);
 								if(z)z.split(',').forEach(n=>{
 									let tmp=false;
 									if(n2i[n]==undefined){
@@ -71,27 +71,29 @@
 				if(x&&Array.isArray(x)){
 					core(x);pos+=w*.5;
 					note.forEach(y=>frr(ctx,y[0]?'#fea8':'#fea',y[1],y[2],14,14,4));
+					if(sel.active.main){
+						let tmp=[sel.x1-scr.scrollLeft,sel.y1,sel.x2-sel.x1,sel.y2-sel.y1];
+						ctx.fillStyle='#fff4';ctx.fillRect(...tmp);ctx.strokeStyle='#fff8';ctx.strokeRect(...tmp);
+					}
 					return pos;
 				}
 			};
-			let sel={active:{}};
 			ctx.imageSmoothingEnabled=false;
 			//ctx.fillStyle='#888';ctx.fillRect(0,0,c.width,c.height);
 			dat.oninput=()=>scrw.style.width=a2c(JSON.parse(dat.value||0),1)+'px';
 			(onresize=()=>{c.width=c.parentNode.clientWidth*res;c.height=240*res;ctx.scale(res,res);dat.oninput();})();
 			scr.onscroll=()=>a2c(JSON.parse(dat.value||0));
 			const movefx=()=>{
-				const sb=()=>{
-					selbox.style.left=Math.min(sel.x1,sel.x2)+'px';selbox.style.top=Math.min(sel.y1,sel.y2)+'px';
-					selbox.style.width=Math.abs(sel.x1-sel.x2)+'px';selbox.style.height=Math.abs(sel.y1-sel.y2)+'px';
-					selbox.style.display='block';
-				},
-				bscr=()=>{
+				const bscr=()=>{
 					let p=sel.cx-scr.clientWidth*.5;
-					if(Math.abs(p)>scr.clientWidth*.5-64)scr.scrollLeft+=(p-Math.sign(p)*(scr.clientWidth*.5-64))*.3;
+					if(Math.abs(p)>scr.clientWidth*.5-64){
+						p=(p-Math.sign(p)*(scr.clientWidth*.5-64))*.3;
+						scr.scrollLeft+=p;
+						sel.x2+=p;
+					}
 				};
-				sb();
-				if(!sel.active.scroll)sel.active.scroll=setInterval(bscr,30);
+				if(!sel.active.scroll)sel.active.scroll=setInterval(bscr,40);
+				a2c(JSON.parse(dat.value||0));
 			};
 			scr.addEventListener('mousedown',e=>{sel.active.main=true;[sel.x1,sel.y1]=[e.clientX+scr.scrollLeft+window.scrollX,e.clientY+window.scrollY];});
 			scr.addEventListener('mousemove',e=>{
@@ -101,7 +103,7 @@
 					movefx();
 				}
 			});
-			window.addEventListener('mouseup',()=>{sel.active.main=false;selbox.style.display='';clearInterval(sel.active.scroll);sel.active.scroll=0;});
+			window.addEventListener('mouseup',()=>{sel.active.main=false;a2c(JSON.parse(dat.value||0));clearInterval(sel.active.scroll);sel.active.scroll=0;});
 			scr.addEventListener('touchstart',e=>{if(!sel.active.main)sel.active.pre=setTimeout(()=>{sel.active.main=e.touches[0].identifier;[sel.x1,sel.y1]=[e.touches[0].clientX+scr.scrollLeft+window.scrollX,e.touches[0].clientY+window.scrollY];},200);});
 			scr.addEventListener('touchmove',e=>{
 				clearTimeout(sel.active.pre);
