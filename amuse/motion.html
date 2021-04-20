@@ -46,6 +46,8 @@ const render=()=>{
 	ctx.fillStyle='#88f2';ctx.fillRect(1023,854,2,2);
 	ctx.fillStyle='#88f'; ctx.fillRect(1023,854-mo_a.z*47.5,2,2);
 	ctx.fillStyle='#fff2';ctx.fillRect(1023,341,2,2);ctx.fillRect(1023,683,2,2);
+	
+	ctx.fillStyle='#fff'; ctx.fillRect(1023,1023-Number(log3.textContent)*30,2,2);
 };
 const momain=()=>{
 	window.addEventListener('devicemotion',e=>{
@@ -55,7 +57,7 @@ const momain=()=>{
 		log.textContent=`motion : ${e.interval}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
 R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.rotationRate.beta.toFixed(2)).slice(-6)}\ngamma:${('_ '+e.rotationRate.gamma.toFixed(2)).slice(-6)}`;
-		log3.textContent=Math.sqrt(new Array(3).fill(0).map((x,i)=>mo_a[['x','y','z'][i]]).reduce((a,x)=>a+x*x,0));
+		log3.textContent=Math.round(Math.sqrt(new Array(3).fill(0).map((x,i)=>mo_a[['x','y','z'][i]]).reduce((a,x)=>a+x*x,0))*100)/100;
 	});
 	setInterval(()=>{
 		v.forEach((x,i)=>{
