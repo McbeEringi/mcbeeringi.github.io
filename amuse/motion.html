@@ -21,7 +21,7 @@
 		<div id="rot">
 			↑
 			<div style="background:#f884;transform:rotateY(90deg);"></div>
-			<div style="background:#8f84;"><pre id="log">build: 2104200</pre><pre id="log2"></pre></div>
+			<div style="background:#8f84;"><pre id="log">build: 2104201</pre><pre id="log2"></pre></div>
 			<div style="background:#88f4;transform:rotateX(90deg);"></div>
 		</div>
 	</div>
@@ -39,13 +39,13 @@ const render=()=>{
 	imgd=ctx.getImageData(0,0,canvas.width,canvas.height);
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.putImageData(imgd,-1,0);
-	ctx.fillStyle='#f002';ctx.fillRect(1023,170,2,2);
+	/*ctx.fillStyle='#f002';ctx.fillRect(1023,170,2,2);
 	ctx.fillStyle='#f00'; ctx.fillRect(1023,170-mo_a.x*47.5,2,2);
 	ctx.fillStyle='#0f02';ctx.fillRect(1023,512,2,2);
 	ctx.fillStyle='#0f0'; ctx.fillRect(1023,512-mo_a.y*47.5,2,2);
 	ctx.fillStyle='#88f2';ctx.fillRect(1023,854,2,2);
 	ctx.fillStyle='#88f'; ctx.fillRect(1023,854-mo_a.z*47.5,2,2);
-	ctx.fillStyle='#fff2';ctx.fillRect(1023,341,2,2);ctx.fillRect(1023,683,2,2);
+	ctx.fillStyle='#fff2';ctx.fillRect(1023,341,2,2);ctx.fillRect(1023,683,2,2);*/
 	
 	ctx.fillStyle='#fff'; ctx.fillRect(1023,1023-Number(log3.textContent)*30,2,2);
 };
