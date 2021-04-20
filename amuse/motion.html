@@ -21,7 +21,7 @@
 		<div id="rot">
 			↑
 			<div style="background:#f884;transform:rotateY(90deg);"></div>
-			<div style="background:#8f84;"><pre id="log">build: 2103192</pre><pre id="log2"></pre></div>
+			<div style="background:#8f84;"><pre id="log">build: 2104200</pre><pre id="log2"></pre></div>
 			<div style="background:#88f4;transform:rotateX(90deg);"></div>
 		</div>
 	</div>
@@ -55,12 +55,7 @@ const momain=()=>{
 		log.textContent=`motion : ${e.interval}
 AG\nx:${('_ '+e.accelerationIncludingGravity.x.toFixed(2)).slice(-6)}\ny:${('_ '+e.accelerationIncludingGravity.y.toFixed(2)).slice(-6)}\nz:${('_ '+e.accelerationIncludingGravity.z.toFixed(2)).slice(-6)}
 R\nalpha:${('_ '+e.rotationRate.alpha.toFixed(2)).slice(-6)}\n beta:${('_ '+e.rotationRate.beta.toFixed(2)).slice(-6)}\ngamma:${('_ '+e.rotationRate.gamma.toFixed(2)).slice(-6)}`;
-	});
-};
-const ormain=()=>{
-	window.addEventListener('deviceorientation',e=>{
-		o_log.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
-		rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${-e.alpha*(window.navigator.userAgent.match(/(Apple|Safari|Firefox)/i)?-1:1)}deg)`;
+		log3.textContent=Math.sqrt(new Array(3).fill(0).map((x,i)=>mo_a[['x','y','z'][i]]).reduce((a,x)=>a+x*x,0));
 	});
 	setInterval(()=>{
 		v.forEach((x,i)=>{
@@ -69,8 +64,14 @@ const ormain=()=>{
 			x+=a*.5;
 		});
 		atmp=[[],[],[]];
-		log3.textContent='V(km/h)\n'+v.map(x=>(x*3.6).toFixed(6)).join('\n');
+		//log3.textContent='V(km/h)\n'+v.map(x=>(x*3.6).toFixed(6)).join('\n');
 	},500);
+};
+const ormain=()=>{
+	window.addEventListener('deviceorientation',e=>{
+		o_log.textContent=`orientation : ${e.absolute}\nalpha:${e.alpha.toFixed(2)}\n beta:${e.beta.toFixed(2)}\ngamma:${e.gamma.toFixed(2)}`;
+		rot.style.transform=`rotateX(${-e.gamma}deg)rotateY(${-e.beta}deg)rotateZ(${-e.alpha*(window.navigator.userAgent.match(/(Apple|Safari|Firefox)/i)?-1:1)}deg)`;
+	});
 };
 const reqp=()=>{
 	contentWrapper.onclick=()=>{};
