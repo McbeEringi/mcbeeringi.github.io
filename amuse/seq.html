@@ -37,7 +37,7 @@
 			seq=new Tone.Sequence((time,note)=>{
 				note=note.split(',');
 				let p=pos2p(Tone.Transport.position),
-				pind=Object.values(calced.p).findIndex(x=>p<x)-1;
+				pind=Object.values(calced.p).findIndex(x=>Math.abs(x-p)<1&&p<x)-1;
 				if(-2<pind){
 					console.log(p);
 					dispCur.style.opacity='';
