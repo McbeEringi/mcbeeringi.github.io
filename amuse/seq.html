@@ -15,13 +15,16 @@
 			#c{image-rendering:crisp-edges;width:100%;height:240px;background:#000a repeating-linear-gradient(#fffc,#fffc 16px,#fff8 16px,#fff8 48px,#fffa 48px,#fffa 64px,#fff8 64px,#fff8 80px,#fffa 80px,#fffa 96px,#fff8 96px,#fff8 112px);}
 			#scr{width:100%;height:100%;position:absolute;top:0;overflow-x:scroll;scrollbar-width:thin;scrollbar-color:#0008 #0000;}#scr::webkit-scrollbar{background-color:#0000;height:8px;}#scr::webkit-scrollbar-thumb{background-color:#0008;border-radius:8px;}
 			#scrw{height:100%;}
+			#dispCur{position:absolute;height:100%;width:16px;background-color:#aef8;left:16px;transition:.1s;}
 		</style>
 		<div class="disp">
 			<canvas id="c"></canvas>
-			<div id="scr"><div id="scrw"></div></div>
+			<div id="scr"><div id="scrw"><div id="dispCur"></div></div></div>
 		</div>
+		<button id="playbtn">play/pause</button><button id="stopbtn">stop</button>
 		<textarea id="dat"></textarea>
-		<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/tone/build/Tone.js"></script>
+		<!--<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>-->
 		<script>
 			'use strict';
 			let calced={};
@@ -29,6 +32,21 @@
 			n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
 			pos2p=pos_=>{let tmp=pos_.split(':').map(x=>Number(x));return tmp[0]*Tone.Transport.timeSignature+tmp[1]+tmp[2]*.25;},
 			p2pos=p_=>`${Math.floor(p_/Tone.Transport.timeSignature)}:${Math.floor(p_)%Tone.Transport.timeSignature}:${(p_*4)%4}`,
+			n2Hz=x=>440*Math.pow(2,Number(x)/12),//C4~C6
+			synth=new Tone.PolySynth().toDestination(),
+			seq=new Tone.Sequence((time,note)=>{
+				note=note.split(',');
+				let p=pos2p(Tone.Transport.position),
+				pind=Object.values(calced.p).findIndex(x=>p<x)-1;
+				if(-2<pind){
+					console.log(p);
+					dispCur.style.opacity='';
+					dispCur.style.left=`${Object.keys(calced.p)[pind]}px`;
+				}else dispCur.style.opacity=0;
+				if(note[0]){
+					synth.triggerAttackRelease(note.map(n2Hz),/*'1m'*/'8n',time,.8);
+				}
+			},[],'4n').start(0),
 			ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
 			frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
 				ct.fillStyle=col;
@@ -40,9 +58,9 @@
 				ct.fill();
 			},
 			a2c=(x,b)=>{
-				let pos=b?0:-scr.scrollLeft,note=[];
+				let pos=-scr.scrollLeft,note=[];
 				const w=c.parentNode.clientWidth,
-				calc=calced.scr==undefined||Math.abs(calced.scr-scr.scrollLeft)>128,
+				calc=calced.scr==undefined||Math.abs(calced.scr-scr.scrollLeft)>128||b,
 				core=(y,p=0,l=1,ind='')=>{
 					let odl=1/l;
 					for(let yi in y){
@@ -66,7 +84,7 @@
 								});
 							}
 							if(-128<pos&&pos<w+128){
-								if(calc)calced.d[ind+yi]=p;
+								if(calc)calced.p[pos+scr.scrollLeft]=calced.d[ind+yi]=p;
 								ctx.fillText(p.toFixed(2),pos,16,16);ctx.fillText(ind+yi,pos,32,16);
 							}
 							pos+=17;
@@ -75,27 +93,47 @@
 						p+=odl;
 					}
 				};
-				if(!b)ctx.clearRect(0,0,w,240);
+				ctx.clearRect(0,0,w,240);
 				pos+=16;
-				if(calc){calced.scr=scr.scrollLeft;calced.d={};}
+				if(calc){calced.scr=scr.scrollLeft;calced.d={};calced.p={};}
 				if(x&&Array.isArray(x)){
 					core(x);pos+=w*.5;
 					note.forEach(y=>frr(ctx,y[0]?'#fea8':'#fea',y[1],y[2],14,14,4));
 					if(calc)console.log(calced);
-					return pos;
+					return pos+scr.scrollLeft;
 				}
 			};
 
+			scr.onclick=e=>{
+				let cp=e.clientX+window.scrollX+scr.scrollLeft,
+				np=Object.keys(calced.p).find(x=>x<=cp&&cp<Number(x)+16);
+				console.log({cursor:cp,fixed:np});
+				if(np==undefined)return;
+				dispCur.style.left=`${np}px`;
+				Tone.Transport.position=p2pos(calced.p[np]);
+			};
+			playbtn.onclick=e=>{
+				Tone.Transport[Tone.Transport.state!='started'?'start':'pause']();
+			};
+			stopbtn.onclick=e=>{
+				Tone.Transport.stop();
+			};
+			document.onkeydown=e=>{
+				if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;
+				switch(e.code){
+					case'Space':e.preventDefault();playbtn.onclick();break;
+				}
+			};
 
 			dat.value=`["-4","",["-4","-4"],["-4","-4"],["-9,-4,3","","-4,-2","-2"],["-7,-2,5","","3,-2","5"],["-5,0,7","","0,10","10"],["-5,-2,12","","-2,7","5"],["-9,-4,3","3","-4,7","7"],["-7,-2,5","3","-2,3","5"],["-5,0,7","","0,10",""],["-5,-2,7","","-2",""],["-9,-4,3","","-4,-2",""],["-7,-2,5","","-2,3","5"],["0,-5,7","","0,10",""],["-5,-2,7","","-2,5",""],["-9,-4,3","","-4,7",""],["-7,-2,5","","-2,7",""],["-9,-5,3","","-5,-2",""],["-9,-5","","7","10"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-5,0,3,7","","0",""],["-5,-2,3,7","","3,-2,5","3"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-9,-5,3","","-5,-2",""],["-9,-5,3","","3,5","3,10,7"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-5,0,3,7","","0",""],["-5,-2,3,7","","3,-2,5","3"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,14,10",""],["-5,-2,15,10,3","","-2,3,7","5"],["-9,-4,0","","7,3,-4",""],["-7,-2,2,5,10","","-2,7,3","5"],["-9,-5,3","","-5,-2",""],["-9,-5,0","","-2",""],["-9,-4","7,3"],["","-4","7,3",""],["5,-7,-2,2","","3","-2"],["2","","5,2,-2",""],["3,-5,0","","","0"],["","-2"],["-2,-5","-4"],["-5","-5"],["-9,-4","7,3"],["7,3","-4","7,3",""],["5,-7,-2,2","3"],["2","-2,-7"],["-2,-5,0","7,3"],["5","3,-5,0"],["7,2,-2,5,-5",""],["5,-2,2,-5","3"],["-9,-4","-2"],["7,-9,-4,3","10,7,3"],["-7,-2","7,3"],["2,-2,-7","3"],["-5,0","-2"],["7,3,-5,0","10,7,3"],["-5,-2","7,3"],["2,-5,-2","5"],["3,-9,-4","","","-4"],["","-2,-4"],["3,-4,-9",""],["-4","3"],["5,-7,-2,2","3"],["8,-7,-2,5","8,5"],["7,3","-4,-7"],["2","2,-7,-5"],["3,-5,0","3"],["3","-2,-5,0"],["5,-9,-4,2",""],["3,-4","3"],["5,-7,-2,2","3"],["3","8,-7,-2,5"],["7,-2,-9,3",""],["7,-5,2,5","5","3","2"],["3,-5,0","","","0"],["3","7,-5,0,3"],["10,-4,-9,7,3","3"],["3","3,-4,-9"],["5,-7,2,-2","7,3"],["5,2,-7,-2","3"],["3,-2,-9",""],["2","2,-5,-7"],["3,-5,0","3"],["3","-2,-5,0"],["5,-9,-4,2",""],["3,-4","3"],["5,-7,-2,2","3"],["3","8,-7,-2,5"],["7,-2,-9,3",""],["7,-5,2,5","5","3","2"],["3,-5,0","","","0"],["3","7,-5,0,3"],["-5,-2,8,5","7,3"],["-5,-2,5","3"],["-9,-4,5,3",""],["-9,-4","-2"],["-4,-9,-2","-2"],["-4,-9,7,3","5,3"],["-7,-2,5,2",""],["3","-7,2,-2"],["-7,2,-4",""],["-5,-7,7,3","3"],["-9,-4,3","","-4,-2","-2"],["-7,-2,5,2","","3,-2","5"],["-5,0,7,3","","0,10,7,3","10,7,3"],["-5,-2,12,7,3","","-2,7,3","5"],["-9,-4,3","3","-4,7,3","7,3"],["-7,-2,5,2","3","-2,3","5,2"],["-5,0,7,3","","0,10,3,7",""],["-5,-2,7,3","","-2",""],["-9,-4,3","","-4,-2",""],["-7,-2,5,2","","-2,3","5"],["0,-5,7,3","","0,10,3,7",""],["-5,-2,7,3","","-2,5,3","3"],["-9,-4,3","","-4,7,3",""],["-7,-2,5,2","","-2,7,5,2",""],["-9,-5,3","","-5,-2",""],["-9,-5","","0","2"],["-9,-4,3","","-4,-2","-2"],["-7,-2,5,2","","3,-2","5"],["-5,0,7,3","","0,10,7,3","10,7,3"],["-5,-2,12,7,3","","-2,7,3","5"],["-9,-4,3","3","-4,7,3","7,3"],["-7,-2,5,2","3","-2,3","5,2"],["-5,0,7,3","","0,10,3,7",""],["-5,-2,7,3","","-2",""],["-9,-4,3","","-4,-2",""],["-7,-2,5,2","","-2,3","5"],["0,-5,7,3","","0,10,3,7",""],["-5,-2,7,3","","-2,5,3",""],["-9,-4,3","","-4,7,3",""],["-7,-2,5,2","","-2,7,5,2",""],["-9,-5,3","","-5,-2",""],["-9,-5","","7,3","7,3,10"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-5,0,3,7","","0",""],["-5,-2,3,7","","3,-2,5","3"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-9,-5,3","","-5,-2",""],["-9,-5,3","","3,5","3,10,7"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,7",""],["-5,-2,3","","-2,7,3",""],["-9,-4,3,5","","7,3,-4",""],["-7,-2,2,5","","-2,2,5,10",""],["-5,0,3,7","","0",""],["-5,-2,3,7","","3,-2,5","3"],["-9,-4,3,12,7","","3,7,-4,12",""],["-7,-2,12,3,7","","-2,3,10,7","3,7"],["-5,0,3,5","","0,3,14,10",""],["-5,-2,15,10,3","","-2,3,7","5"],["-9,-4,0","","7,3,-4",""],["-7,-2,2,5,10","","-2,7,3","5"],["-9,-5,3","","-5,-2",""],["-5,-9",""],"","","",""]`;
 
 
 			ctx.imageSmoothingEnabled=false;
 			//ctx.fillStyle='#888';ctx.fillRect(0,0,c.width,c.height);
-			dat.oninput=()=>scrw.style.width=a2c(JSON.parse(dat.value||0),1)+'px';
+			dat.oninput=()=>{seq.events=JSON.parse(dat.value);scrw.style.width=a2c(seq.events,1)+'px';}
 			(onresize=()=>{c.width=c.parentNode.clientWidth*res;c.height=240*res;ctx.scale(res,res);dat.oninput();})();
 			scr.onwheel=e=>{e.preventDefault();scr.scrollLeft+=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;};
-			scr.onscroll=()=>a2c(JSON.parse(dat.value||0));
+			scr.onscroll=()=>a2c(seq.events);
 		</script>
 	</body>
 </html>
