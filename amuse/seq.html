@@ -113,6 +113,7 @@
 				Tone.Transport.position=p2pos(calced.p[np]);
 			};
 			playbtn.onclick=e=>{
+				Tone.start();
 				Tone.Transport[Tone.Transport.state!='started'?'start':'pause']();
 			};
 			stopbtn.onclick=e=>{
