@@ -108,6 +108,7 @@
 				np=calced.dat.find(x=>x.pos<=cp&&cp<Number(x.pos)+16);
 				console.log({cursor:cp,fixed:np});
 				if(np==undefined)return;
+				dispCur.style.display='';
 				dispCur.style.left=`${np.pos}px`;
 				Tone.Transport.position=p2pos(np.p);
 			};
