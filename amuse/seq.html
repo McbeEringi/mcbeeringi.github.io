@@ -32,17 +32,17 @@
 			n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
 			pos2p=pos_=>{let tmp=pos_.split(':').map(x=>Number(x));return tmp[0]*Tone.Transport.timeSignature+tmp[1]+tmp[2]*.25;},
 			p2pos=p_=>`${Math.floor(p_/Tone.Transport.timeSignature)}:${Math.floor(p_)%Tone.Transport.timeSignature}:${(p_*4)%4}`,
-			n2Hz=x=>440*Math.pow(2,Number(x)/12),//C4~C6
+			n2Hz=x=>440*Math.pow(2,Number(x-2)/12),//C4~C6
 			synth=new Tone.PolySynth().toDestination(),
 			seq=new Tone.Sequence((time,note)=>{
 				note=note.split(',');
-				let p=pos2p(Tone.Transport.position),
-				pind=Object.values(calced.p).findIndex(x=>Math.abs(x-p)<1&&p<x)-1;
-				if(-2<pind){
+				let p=pos2p(Tone.Transport.position)%seq.events.length,
+				pind=calced.dat.findIndex(x=>Math.abs(x.p-p)<1&&p<x.p)-1;
+				if(-1<pind){
 					console.log(p);
-					dispCur.style.opacity='';
-					dispCur.style.left=`${Object.keys(calced.p)[pind]}px`;
-				}else dispCur.style.opacity=0;
+					dispCur.style.display='';
+					dispCur.style.left=`${calced.dat[pind].pos}px`;
+				}else dispCur.style.display='none';
 				if(note[0]){
 					synth.triggerAttackRelease(note.map(n2Hz),/*'1m'*/'8n',time,.8);
 				}
@@ -61,14 +61,13 @@
 				let pos=-scr.scrollLeft,note=[];
 				const w=c.parentNode.clientWidth,
 				calc=calced.scr==undefined||Math.abs(calced.scr-scr.scrollLeft)>128||b,
-				core=(y,p=0,l=1,ind='')=>{
+				core=(y,p=0,l=1,ind=[])=>{
 					let odl=1/l;
-					for(let yi in y){
-						let z=y[yi];
+					for(let[yi,z]of y.entries()){
 						if(typeof z=='object'){
 							let tmp=pos;pos+=13;
-							core(z,p,l*z.length,`${ind}${yi}-`);pos+=12;
-							if(0<pos&&tmp<w)frr(ctx,'#0004',tmp,0,pos-tmp,240,4);//ctx.fillText(p.toFixed(2),tmp,16,pos-tmp);ctx.fillText(ind+yi,tmp,32,pos-tmp);
+							core(z,p,l*z.length,[...ind,yi]);pos+=12;
+							if(0<pos&&tmp<w)frr(ctx,'#0004',tmp,0,pos-tmp,240,4);
 							pos+=1;
 						}else{
 							if(-15<pos&&pos<w){
@@ -84,8 +83,8 @@
 								});
 							}
 							if(-128<pos&&pos<w+128){
-								if(calc)calced.p[pos+scr.scrollLeft]=calced.d[ind+yi]=p;
-								ctx.fillText(p.toFixed(2),pos,16,16);ctx.fillText(ind+yi,pos,32,16);
+								if(calc)calced.dat.push({ind:[...ind,yi],p:p,pos:pos+scr.scrollLeft});
+								ctx.fillText(p.toFixed(2),pos,16,16);ctx.fillText([...ind,yi],pos,32,16);
 							}
 							pos+=17;
 						}
@@ -95,7 +94,7 @@
 				};
 				ctx.clearRect(0,0,w,240);
 				pos+=16;
-				if(calc){calced.scr=scr.scrollLeft;calced.d={};calced.p={};}
+				if(calc){calced.scr=scr.scrollLeft;calced.dat=[];}
 				if(x&&Array.isArray(x)){
 					core(x);pos+=w*.5;
 					note.forEach(y=>frr(ctx,y[0]?'#fea8':'#fea',y[1],y[2],14,14,4));
@@ -106,11 +105,11 @@
 
 			scr.onclick=e=>{
 				let cp=e.clientX+window.scrollX+scr.scrollLeft,
-				np=Object.keys(calced.p).find(x=>x<=cp&&cp<Number(x)+16);
+				np=calced.dat.find(x=>x.pos<=cp&&cp<Number(x.pos)+16);
 				console.log({cursor:cp,fixed:np});
 				if(np==undefined)return;
-				dispCur.style.left=`${np}px`;
-				Tone.Transport.position=p2pos(calced.p[np]);
+				dispCur.style.left=`${np.pos}px`;
+				Tone.Transport.position=p2pos(np.p);
 			};
 			playbtn.onclick=e=>{
 				Tone.start();
