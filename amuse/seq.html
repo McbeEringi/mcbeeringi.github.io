@@ -18,7 +18,7 @@
 			#dispCur{position:absolute;height:100%;width:16px;background-color:#aef8;left:16px;transition:.1s;}
 		</style>
 		<div class="disp">
-			<canvas id="c">CanvasAPI is not supported on this browser.</canvas>
+			<canvas id="c">JavaScript seems disabled</canvas>
 			<div id="scr"><div id="scrw"><div id="dispCur"></div></div></div>
 		</div>
 		<button id="playbtn">play/pause</button><button id="stopbtn">stop</button>
@@ -47,15 +47,19 @@
 				sytar(note,time);
 			},[],'4n').start(0),
 			curset=p=>{
+				let tmp;
 				if(!p){
-					p=pos2p(Tone.Transport.position)%seq.events.length;
-					p=calced.dat.slice().reverse().find(x=>Math.abs(x.p-p)<1&&p>=x.p);
+					tmp=pos2p(Tone.Transport.position)%seq.events.length
+					p=calced.dat.slice().reverse().find(x=>Math.abs(x.p-tmp)<1&&tmp>=x.p);
 				}
 				if(p){
 					console.log(p);
 					dispCur.style.display='';
 					dispCur.style.left=`${p.pos}px`;
-				}else dispCur.style.display='none';
+				}else{
+					console.log(tmp<calced.dat[0].p?'←':'→');
+					dispCur.style.display='none';
+				}
 			},
 			ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
 			frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
@@ -70,7 +74,8 @@
 			a2c=(x,b)=>{
 				let pos=-scr.scrollLeft,note=[];
 				const w=c.parentNode.clientWidth,
-				calc=calced.scr==undefined||Math.abs(calced.scr-scr.scrollLeft)>256||b,
+				pad=256,
+				calc=calced.scr==undefined||Math.abs(calced.scr-scr.scrollLeft)>pad||b,
 				core=(y,p=0,l=1,ind=[])=>{
 					let odl=1/l;
 					for(let[yi,z]of y.entries()){
@@ -92,13 +97,13 @@
 									note.push([tmp,pos+1,225-Number(n2i[n])*16]);//240-16+1
 								});
 							}
-							if(-256<pos&&pos<w+256){
+							if(-pad<pos&&pos<w+pad){
 								if(calc)calced.dat.push({ind:[...ind,yi],p:p,pos:pos+scr.scrollLeft});
 								ctx.fillText(p.toFixed(2),pos,16,16);ctx.fillText([...ind,yi],pos,32,16);
 							}
 							pos+=17;
 						}
-						if(pos>w+256&&!b)break;
+						if(pos>w+pad&&!b)break;
 						p+=odl;
 					}
 				};
