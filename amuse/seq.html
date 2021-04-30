@@ -32,8 +32,9 @@
 			n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
 			pos2p=pos_=>{let tmp=pos_.split(':').map(x=>Number(x));return tmp[0]*Tone.Transport.timeSignature+tmp[1]+tmp[2]*.25;},
 			p2pos=p_=>`${Math.floor(p_/Tone.Transport.timeSignature)}:${Math.floor(p_)%Tone.Transport.timeSignature}:${(p_*4)%4}`,
-			n2Hz=x=>440*Math.pow(2,Number(x-2)/12),//C4~C6
-			synth=new Tone.PolySynth().toDestination(),
+			n2Hz=x=>440*Math.pow(2,Number(x-2)/12)*2,//C4~C6
+			stdli=(a,b=a+1,s={})=>{for(let i=a;i<=b;i++){s[`d#${i}`]=`ds${i}.mp3`;s[`a${i}`]=`a${i}.mp3`;}return s;},
+			synth=new Tone.Sampler(stdli(4,6,{'a3':'a3.mp3','d#7':'ds7.mp3'}),()=>{},'https://mcbeeringi.github.io/sky/audio/instr/musicbox/').toDestination(),
 			seq=new Tone.Sequence((time,note)=>{
 				note=note.split(',');
 				let p=pos2p(Tone.Transport.position)%seq.events.length,
@@ -44,7 +45,7 @@
 					dispCur.style.left=`${calced.dat[pind].pos}px`;
 				}else dispCur.style.display='none';
 				if(note[0]){
-					synth.triggerAttackRelease(note.map(n2Hz),/*'1m'*/'8n',time,.8);
+					synth.triggerAttackRelease(note.map(n2Hz),'1m',time,1);
 				}
 			},[],'4n').start(0),
 			ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
