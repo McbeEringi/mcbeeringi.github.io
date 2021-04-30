@@ -21,7 +21,7 @@
 			<canvas id="c">JavaScript seems disabled</canvas>
 			<div id="scr"><div id="scrw"><div id="dispCur"></div></div></div>
 		</div>
-		<button id="playbtn">play/pause</button><button id="stopbtn">stop</button>
+		<button id="playbtn">play/pause</button><button id="stopbtn">stop</button><button onclick="tstep(-1);">←</button><button onclick="tstep(1);">→</button>
 		<textarea id="dat"></textarea>
 		<script src="https://cdn.jsdelivr.net/npm/tone/build/Tone.js"></script>
 		<!--<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>-->
@@ -105,7 +105,7 @@
 			curset=p=>{
 				let tmp;
 				if(!p){
-					tmp=pos2p(Tone.Transport.position)%seq.events.length
+					tmp=pos2p(Tone.Transport.position)%seq.events.length;
 					p=calced.dat.slice().reverse().find(x=>Math.abs(x.p-tmp)<1&&tmp>=x.p);
 				}
 				if(p){
@@ -116,16 +116,25 @@
 					console.log(tmp<calced.dat[0].p?'←':'→');
 					dispCur.style.display='none';
 				}
+			},
+			curpset=x=>{
+				if(x==undefined)return;
+				curset(x);Tone.Transport.position=p2pos(x.p);
+				if(trstat())sytar(x.ind.reduce((a,y)=>a[y],seq.events));
+			},
+			tstep=x=>{
+				if(dispCur.style.display=='none')return;
+				Tone.Transport.pause();
+				let tmp=dispCur.style.left.slice(0,-2)||16;
+				tmp=calced.dat[calced.dat.findIndex(y=>tmp==y.pos)+x];
+				curpset(tmp);
 			};
 
 			scr.onclick=e=>{
 				let cp=e.clientX+window.scrollX+scr.scrollLeft,
 				np=calced.dat.find(x=>x.pos<=cp&&cp<Number(x.pos)+16);
 				console.log({cursor:cp,fixed:np});
-				if(np==undefined)return;
-				curset(np);
-				Tone.Transport.position=p2pos(np.p);
-				if(trstat())sytar(np.ind.reduce((a,x)=>a[x],seq.events));
+				curpset(np);
 			};
 			playbtn.onclick=e=>{
 				Tone.start();
@@ -138,6 +147,8 @@
 				if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;
 				switch(e.code){
 					case'Space':e.preventDefault();playbtn.onclick();break;
+					case'ArrowLeft':e.preventDefault();tstep(e.shiftKey?-10:-1);break;
+					case'ArrowRight':e.preventDefault();tstep(e.shiftKey?10:1);break;
 				}
 			};
 
@@ -149,7 +160,7 @@
 			dat.oninput=()=>{seq.events=JSON.parse(dat.value);scrw.style.width=a2c(seq.events,1)+'px';}
 			(onresize=()=>{c.width=c.parentNode.clientWidth*res;c.height=240*res;ctx.scale(res,res);dat.oninput();})();
 			scr.onwheel=e=>{e.preventDefault();scr.scrollLeft+=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;};
-			scr.onscroll=()=>a2c(seq.events);
+			scr.addEventListener('scroll',()=>a2c(seq.events),{passive:true});
 		</script>
 	</body>
 </html>
