@@ -28,40 +28,7 @@
 		<script>
 			'use strict';
 			let calced={};
-			const i2n=['-9','-7','-5','-4','-2','0','2','3','5','7','8','10','12','14','15'],
-			n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
-			pos2p=pos_=>{let tmp=pos_.split(':').map(x=>Number(x));return tmp[0]*Tone.Transport.timeSignature+tmp[1]+tmp[2]*.25;},
-			p2pos=p_=>`${Math.floor(p_/Tone.Transport.timeSignature)}:${Math.floor(p_)%Tone.Transport.timeSignature}:${(p_*4)%4}`,
-			n2Hz=x=>440*Math.pow(2,Number(x-2)/12)*2,//C4~C6
-			trstat=()=>Tone.Transport.state!='started',
-			stdli=(a,b=a+1,s={})=>{for(let i=a;i<=b;i++){s[`d#${i}`]=`ds${i}.mp3`;s[`a${i}`]=`a${i}.mp3`;}return s;},
-			synth=new Tone.Sampler(stdli(4,6,{'a3':'a3.mp3','d#7':'ds7.mp3'}),()=>{},'https://mcbeeringi.github.io/sky/audio/instr/musicbox/').toDestination(),
-			sytar=(n,t)=>{
-				n=n.split(',');
-				if(n[0]){
-					synth.triggerAttackRelease(n.map(n2Hz),'1m',t,1);
-				}
-			},
-			seq=new Tone.Sequence((time,note)=>{
-				curset();
-				sytar(note,time);
-			},[],'4n').start(0),
-			curset=p=>{
-				let tmp;
-				if(!p){
-					tmp=pos2p(Tone.Transport.position)%seq.events.length
-					p=calced.dat.slice().reverse().find(x=>Math.abs(x.p-tmp)<1&&tmp>=x.p);
-				}
-				if(p){
-					console.log(p);
-					dispCur.style.display='';
-					dispCur.style.left=`${p.pos}px`;
-				}else{
-					console.log(tmp<calced.dat[0].p?'←':'→');
-					dispCur.style.display='none';
-				}
-			},
-			ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
+			const ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
 			frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
 				ct.fillStyle=col;
 				ct.beginPath();
@@ -115,6 +82,39 @@
 					note.forEach(y=>frr(ctx,y[0]?'#fea8':'#fea',y[1],y[2],14,14,4));
 					if(calc){console.log(calced);curset();}
 					return pos+scr.scrollLeft;
+				}
+			},
+			i2n=['-9','-7','-5','-4','-2','0','2','3','5','7','8','10','12','14','15'],
+			n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
+			pos2p=pos_=>{let tmp=pos_.split(':').map(x=>Number(x));return tmp[0]*Tone.Transport.timeSignature+tmp[1]+tmp[2]*.25;},
+			p2pos=p_=>`${Math.floor(p_/Tone.Transport.timeSignature)}:${Math.floor(p_)%Tone.Transport.timeSignature}:${(p_*4)%4}`,
+			n2Hz=x=>440*Math.pow(2,Number(x-2)/12)*2,//C4~C6
+			trstat=()=>Tone.Transport.state!='started',
+			stdli=(a,b=a+1,s={})=>{for(let i=a;i<=b;i++){s[`d#${i}`]=`ds${i}.mp3`;s[`a${i}`]=`a${i}.mp3`;}return s;},
+			synth=new Tone.Sampler(stdli(4,6,{'a3':'a3.mp3','d#7':'ds7.mp3'}),()=>{},'https://mcbeeringi.github.io/sky/audio/instr/musicbox/').toDestination(),
+			sytar=(n,t)=>{
+				n=n.split(',');
+				if(n[0]){
+					synth.triggerAttackRelease(n.map(n2Hz),'1m',t,1);
+				}
+			},
+			seq=new Tone.Sequence((time,note)=>{
+				curset();
+				sytar(note,time);
+			},[],'4n').start(0),
+			curset=p=>{
+				let tmp;
+				if(!p){
+					tmp=pos2p(Tone.Transport.position)%seq.events.length
+					p=calced.dat.slice().reverse().find(x=>Math.abs(x.p-tmp)<1&&tmp>=x.p);
+				}
+				if(p){
+					console.log(p);
+					dispCur.style.display='';
+					dispCur.style.left=`${p.pos}px`;
+				}else{
+					console.log(tmp<calced.dat[0].p?'←':'→');
+					dispCur.style.display='none';
 				}
 			};
 
