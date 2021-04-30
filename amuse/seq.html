@@ -37,17 +37,22 @@
 			synth=new Tone.Sampler(stdli(4,6,{'a3':'a3.mp3','d#7':'ds7.mp3'}),()=>{},'https://mcbeeringi.github.io/sky/audio/instr/musicbox/').toDestination(),
 			seq=new Tone.Sequence((time,note)=>{
 				note=note.split(',');
-				let p=pos2p(Tone.Transport.position)%seq.events.length,
-				pind=calced.dat.findIndex(x=>Math.abs(x.p-p)<1&&p<x.p)-1;
-				if(-1<pind){
-					console.log(p);
-					dispCur.style.display='';
-					dispCur.style.left=`${calced.dat[pind].pos}px`;
-				}else dispCur.style.display='none';
+				curset();
 				if(note[0]){
 					synth.triggerAttackRelease(note.map(n2Hz),'1m',time,1);
 				}
 			},[],'4n').start(0),
+			curset=p=>{
+				if(!p){
+					p=pos2p(Tone.Transport.position)%seq.events.length;
+					p=[...calced.dat].reverse().find(x=>Math.abs(x.p-p)<1&&p>=x.p);
+				}
+				console.log(p);
+				if(p){
+					dispCur.style.display='';
+					dispCur.style.left=`${p.pos}px`;
+				}else dispCur.style.display='none';
+			},
 			ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
 			frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
 				ct.fillStyle=col;
@@ -99,7 +104,7 @@
 				if(x&&Array.isArray(x)){
 					core(x);pos+=w*.5;
 					note.forEach(y=>frr(ctx,y[0]?'#fea8':'#fea',y[1],y[2],14,14,4));
-					if(calc)console.log(calced);
+					if(calc){console.log(calced);curset();}
 					return pos+scr.scrollLeft;
 				}
 			};
@@ -109,8 +114,7 @@
 				np=calced.dat.find(x=>x.pos<=cp&&cp<Number(x.pos)+16);
 				console.log({cursor:cp,fixed:np});
 				if(np==undefined)return;
-				dispCur.style.display='';
-				dispCur.style.left=`${np.pos}px`;
+				curset(np);
 				Tone.Transport.position=p2pos(np.p);
 			};
 			playbtn.onclick=e=>{
