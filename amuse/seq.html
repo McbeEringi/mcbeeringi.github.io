@@ -116,7 +116,7 @@
 					dispCur.style.left=`${p.pos}px`;
 				}else{
 					tmp=calced.dat[Math.round((calced.dat.length-1)*.5)].p-tmp;
-					curinfo.textContent=(tmp>0?'←':'→').repeat(tmp*.1);
+					curinfo.textContent=(tmp>0?'←':'→').repeat(Math.abs(tmp*.1));
 					clearTimeout(timer.curinfo);
 					timer.curinfo=setTimeout(()=>curinfo.textContent='',1000);
 					dispCur.style.display='none';
