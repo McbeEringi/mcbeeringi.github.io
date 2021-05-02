@@ -29,7 +29,7 @@
 		<!--<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>-->
 		<script>
 			'use strict';
-			let calced={},timer={};
+			let calced={},timer={},scrolling=false;
 			const ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
 			frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
 				ct.fillStyle=col;
@@ -102,6 +102,7 @@
 			},
 			seq=new Tone.Sequence((time,note)=>{
 				curset();
+				scrset();
 				sytar(note,time);
 			},[],'4n').start(0),
 			curset=p=>{
@@ -116,7 +117,7 @@
 					dispCur.style.left=`${p.pos}px`;
 				}else{
 					tmp=calced.dat[Math.round((calced.dat.length-1)*.5)].p-tmp;
-					dispinfo.textContent=tmp>0?`← ${tmp}`:`${-tmp} →`;
+					dispinfo.textContent=tmp>0?`← ${tmp.toFixed(1)}`:`${-tmp.toFixed(1)} →`;
 					clearTimeout(timer.dispinfo);
 					timer.dispinfo=setTimeout(()=>dispinfo.textContent='',1000);
 					dispCur.style.display='none';
@@ -127,12 +128,20 @@
 				curset(x);Tone.Transport.position=p2pos(x.p);
 				if(trstat())sytar(x.ind.reduce((a,y)=>a[y],seq.events));
 			},
+			scrset=()=>{
+				if(dispCur.style.display=='none'||scrolling)return;
+				let tmp=Number(dispCur.style.left.slice(0,-2)),pad=48;
+				switch((tmp<scr.scrollLeft-16+pad)+(tmp<scr.scrollLeft+scr.clientWidth-pad)){
+					case 0:scr.scrollLeft=tmp-pad;break;
+					case 2:scr.scrollLeft=tmp-scr.clientWidth+16+pad;break;
+				}
+			},
 			tstep=x=>{
 				let tmp=dispCur.style.left.slice(0,-2)||16;
 				tmp=calced.dat[calced.dat.findIndex(y=>tmp==y.pos)+x];
-				if(scr.scrollLeft-16>tmp.pos||tmp.pos>scr.scrollLeft+scr.clientWidth)return 0;
+				if(!tmp||scr.scrollLeft-16>tmp.pos||tmp.pos>scr.scrollLeft+scr.clientWidth)return 0;
 				Tone.Transport.pause();
-				curpset(tmp);
+				curpset(tmp);scrset();
 				return 1;
 			};
 
@@ -148,7 +157,7 @@
 				Tone.Transport[trstat()?'start':'pause']();
 			};
 			stopbtn.onclick=e=>{
-				Tone.Transport.stop();curset();
+				Tone.Transport.stop();scr.scrollLeft=0;curset();
 			};
 			document.onkeydown=e=>{
 				if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;
@@ -166,8 +175,12 @@
 			//ctx.fillStyle='#888';ctx.fillRect(0,0,c.width,c.height);
 			dat.oninput=()=>{seq.events=JSON.parse(dat.value);scrw.style.width=a2c(seq.events,1)+'px';}
 			(onresize=()=>{c.width=c.parentNode.clientWidth*res;c.height=240*res;ctx.scale(res,res);dat.oninput();})();
-			scr.onwheel=e=>{e.preventDefault();scr.scrollLeft+=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;};
-			scr.addEventListener('scroll',()=>a2c(seq.events),{passive:true});
+			{
+				const tmp=()=>{scrolling=true;clearTimeout(timer.scrilling);timer.scrilling=setTimeout(()=>scrolling=false,500);};
+				scr.addEventListener('wheel',e=>{e.preventDefault();scr.scrollLeft+=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;tmp();});
+				scr.addEventListener('pointermove',tmp,{passive:true});
+				scr.addEventListener('scroll',()=>a2c(seq.events),{passive:true});
+			}
 		</script>
 	</body>
 </html>
