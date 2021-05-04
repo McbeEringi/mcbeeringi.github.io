@@ -17,6 +17,13 @@
 			#scrw{height:100%;}
 			#dispCur{position:absolute;height:100%;width:16px;background-color:#aef8;left:16px;transition:.1s;}
 			#dispinfo{position:absolute;width:100%;top:0;text-align:center;color:#aef;opacity:.7;pointer-events:none;}
+			.kbPanel{position:relative;width:min(100%,400px);}.kbPanel::before{content:"";display:block;padding-top:60%;}
+			#kb{position:absolute;top:0;bottom:0;left:0;right:0;box-shadow:0 0 0 2px #fff inset;border-radius:8px;}
+			#kb>p{display:inline-block;vertical-align:bottom;width:20%;height:33.33%;margin:0;position:relative;--bgc:#ccc;}
+			#kb>p::before,#kb>p::after{content:"";position:absolute;top:8%;left:8%;width:84%;height:84%;pointer-events:none;}
+			#kb>p::before{border-radius:20%;background-color:var(--bgc);}#kb>p::after{content:"test";}
+			#kb>p:nth-of-type(5n-3),#kb>p:nth-of-type(5n-1){--bgc:#888;}
+			#kb>p:nth-of-type(7n+1){--bgc:#fea;}
 		</style>
 		<div class="disp">
 			<canvas id="c">JavaScript seems disabled</canvas>
@@ -24,6 +31,13 @@
 			<div id="dispinfo"></div>
 		</div>
 		<button id="playbtn">play/pause</button><button id="stopbtn">stop</button><button onclick="tstep(-1);">←</button><button onclick="tstep(1);">→</button>
+		<div class="kbPanel">
+			<div id="kb">
+				<p></p><p></p><p></p><p></p><p></p>
+				<p></p><p></p><p></p><p></p><p></p>
+				<p></p><p></p><p></p><p></p><p></p>
+			</div>
+		</div>
 		<textarea id="dat"></textarea>
 		<script src="https://cdn.jsdelivr.net/npm/tone/build/Tone.js"></script>
 		<!--<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>-->
