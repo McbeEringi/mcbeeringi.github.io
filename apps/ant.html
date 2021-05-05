@@ -6,32 +6,45 @@
 </head>
 <body>
 <style>
-	:root{background-color:#222;image-rendering:crisp-edges;image-rendering:pixelated;}
-	#c{width:100%;}
+	:root{background-color:#222;color:#fff;tab-size:2;image-rendering:crisp-edges;image-rendering:pixelated;}
+	#c{width:100%;}textarea{width:100%;}
 </style>
+size:<input id="size" type="number" value="512"><br>
+ants:{p:[x,y],r:rad/PI}<textarea id="ants">[
+	{"p":[256,256],"r":0}
+]</textarea><br>
+grid:{c:"rrggbbaa",r:rad/PI}<textarea id="grid">[
+	{"c":"00000000","r":-0.5},
+	{"c":"ff0000ff","r":-0.5},
+	{"c":"00ff00ff","r":0.5},
+	{"c":"0000ffff","r":0.5},
+	{"c":"ffff00ff","r":-0.5},
+	{"c":"ff00ffff","r":0.5},
+	{"c":"00ffffff","r":-0.5},
+	{"c":"ffffffff","r":0.5}
+]</textarea>
+<button onclick="init()">set</button>
+<button onclick="if(!timer)timer=setInterval(main,1);">run</button>
+<button onclick="clearInterval(timer);timer=0;">stop</button>
+<pre id="log"></pre>
 <canvas id="c"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
 <script>
-c.width=c.height=512;
-let pli=[
-		{p:[256,256],r:0}
-	],
-	ctx=c.getContext('2d'),
-	colli=[
-		{c:'00000000',r:-0.5},
-		{c:'ff0000ff',r:-0.5},
-		{c:'00ff00ff',r:0.5},
-		{c:'0000ffff',r:0.5},
-		{c:'ffff00ff',r:-0.5},
-		{c:'ff00ffff',r:0.5},
-		{c:'00ffffff',r:-0.5},
-		{c:'ffffffff',r:0.5}
-	];
+let ctx=c.getContext('2d'),pli,colli,timer;
 ctx.imageSmoothingEnabled=false;
-ctx.fillStyle=`#${colli[0].c}`;
-ctx.fillRect(0,0,c.width,c.height);
-const main=()=>{
+[ants,grid].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+const init=()=>{
+	c.width=c.height=size.value;
+	pli=JSON.parse(ants.value);
+	colli=JSON.parse(grid.value);
+	ctx.fillStyle=`#${colli[0].c}`;
+	ctx.fillRect(0,0,c.width,c.height);
+},
+main=()=>{
+	log.textContent='';
 	pli.forEach(x=>{
 		let tmp=Array.from(ctx.getImageData(...x.p,1,1).data,y=>y.toString(16).padStart(2,'0')).join('');
+		log.textContent+=`${JSON.stringify(x)}\n\t${tmp}`;
 		tmp=colli.findIndex(x=>x.c==tmp);
 		if(tmp<0)ctx.clearRect(...x.p,1,1);
 		else{
@@ -44,7 +57,8 @@ const main=()=>{
 		}
 	});
 };
-setInterval(main,1);
+init();
+timer=setInterval(main,1);
 </script>
 </body>
 </html>
