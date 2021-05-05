@@ -34,6 +34,7 @@ let ctx=c.getContext('2d'),pli,colli,timer;
 ctx.imageSmoothingEnabled=false;
 [ants,grid].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 const init=()=>{
+	log.textContent='';
 	c.width=c.height=size.value;
 	pli=JSON.parse(ants.value);
 	colli=JSON.parse(grid.value);
@@ -43,15 +44,16 @@ const init=()=>{
 main=()=>{
 	log.textContent='';
 	pli.forEach(x=>{
-		let tmp=Array.from(ctx.getImageData(...x.p,1,1).data,y=>y.toString(16).padStart(2,'0')).join('');
+		let p=x.p.map(Math.floor),
+		tmp=Array.from(ctx.getImageData(...p,1,1).data,y=>y.toString(16).padStart(2,'0')).join('');
 		log.textContent+=`${JSON.stringify(x)}\n\t${tmp}`;
 		tmp=colli.findIndex(x=>x.c==tmp);
-		if(tmp<0)ctx.clearRect(...x.p,1,1);
+		if(tmp<0)ctx.clearRect(...p,1,1);
 		else{
 			tmp=[tmp,(tmp+1)%colli.length];
 			ctx.fillStyle=`#${colli[tmp[1]].c}`;
-			ctx.clearRect(...x.p,1,1)
-			ctx.fillRect(...x.p,1,1);
+			ctx.clearRect(...p,1,1)
+			ctx.fillRect(...p,1,1);
 			x.r=(x.r+colli[tmp[0]].r)%2;
 			x.p=[x.p[0]+Math.cos(x.r*Math.PI),x.p[1]+Math.sin(x.r*Math.PI)];
 		}
