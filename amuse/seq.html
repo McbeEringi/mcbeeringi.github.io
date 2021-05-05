@@ -18,12 +18,12 @@
 			#dispCur{position:absolute;height:100%;width:16px;background-color:#aef8;left:16px;transition:.1s;}
 			#dispinfo{position:absolute;width:100%;top:0;text-align:center;color:#aef;opacity:.7;pointer-events:none;}
 			.kbPanel{position:relative;width:min(100%,400px);}.kbPanel::before{content:"";display:block;padding-top:60%;}
-			#kb{position:absolute;top:0;bottom:0;left:0;right:0;box-shadow:0 0 0 2px #fff inset;border-radius:8px;}
+			#kb{position:absolute;top:0;bottom:0;left:0;right:0;box-shadow:0 0 0 2px #fff inset;border-radius:8px;touch-action:none;perspective:1000px;}
 			#kb>p{display:inline-block;vertical-align:bottom;width:20%;height:33.33%;margin:0;position:relative;--bgc:#ccc;}
-			#kb>p::before,#kb>p::after{content:"";position:absolute;top:8%;left:8%;width:84%;height:84%;pointer-events:none;}
+			#kb>p::before,#kb>p::after{content:"";position:absolute;top:8%;left:8%;width:84%;height:84%;pointer-events:none;transition:.2s;}
+			#kb>p:nth-of-type(5n-3),#kb>p:nth-of-type(5n-1){--bgc:#888;}#kb>p:nth-of-type(7n+1){--bgc:#fea;}
 			#kb>p::before{border-radius:20%;background-color:var(--bgc);}#kb>p::after{content:"test";}
-			#kb>p:nth-of-type(5n-3),#kb>p:nth-of-type(5n-1){--bgc:#888;}
-			#kb>p:nth-of-type(7n+1){--bgc:#fea;}
+			#kb>p.a::before{transform:scale(.8);}#kb>p.a::after{transform:scale(.8)rotateY(360deg);}#kb>p.a::before,#kb>p:not(.a)::after{transition:unset;}
 		</style>
 		<div class="disp">
 			<canvas id="c">JavaScript seems disabled</canvas>
@@ -173,12 +173,30 @@
 			stopbtn.onclick=e=>{
 				Tone.Transport.stop();scr.scrollLeft=0;curset();
 			};
+			[...kb.children].forEach((x,i)=>{
+				const keyfx=e=>{
+					e.preventDefault();
+					if(x.classList.toggle('a')){
+						Tone.start();
+						synth.triggerAttackRelease(n2Hz(i2n[i]));
+					}else{
+
+					}
+				}
+				x.addEventListener('touchstart',keyfx,{passive:false});
+				x.addEventListener('mousedown',keyfx,{passive:false});
+			});
 			document.onkeydown=e=>{
 				if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;
 				switch(e.code){
 					case'Space':e.preventDefault();playbtn.onclick();break;
 					case'ArrowLeft':Tone.start();if(tstep(e.shiftKey?-8:-1))e.preventDefault();break;
 					case'ArrowRight':Tone.start();if(tstep(e.shiftKey?8:1))e.preventDefault();break;
+					default:
+						const keymap=Array.from('QWERTASDFGZXCVB',x=>`Key${x}`);
+						if(keymap.includes(e.code)&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey){
+							kb.children[keymap.indexOf(e.code)].dispatchEvent(new Event('mousedown'));
+						}
 				}
 			};
 
