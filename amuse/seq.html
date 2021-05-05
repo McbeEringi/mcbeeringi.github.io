@@ -18,12 +18,17 @@
 			#dispCur{position:absolute;height:100%;width:16px;background-color:#aef8;left:16px;transition:.1s;}
 			#dispinfo{position:absolute;width:100%;top:0;text-align:center;color:#aef;opacity:.7;pointer-events:none;}
 			.kbPanel{position:relative;width:min(100%,400px);}.kbPanel::before{content:"";display:block;padding-top:60%;}
-			#kb{position:absolute;top:0;bottom:0;left:0;right:0;box-shadow:0 0 0 2px #fff inset;border-radius:8px;touch-action:none;perspective:1000px;}
-			#kb>p{display:inline-block;vertical-align:middle;width:20%;height:33.33%;margin:0;position:relative;--bgp:"◇";}
+			#kb{position:absolute;top:0;bottom:0;left:0;right:0;background-color:#0004;border-radius:8px;touch-action:none;perspective:1000px;}
+			#kb>p{display:inline-block;vertical-align:middle;width:20%;height:33.33%;margin:0;position:relative;--bp:-100% 0;}
 			#kb>p::before,#kb>p::after{content:"";position:absolute;top:8%;left:8%;width:84%;height:84%;pointer-events:none;transition:.2s;}
-			#kb>p:nth-of-type(5n-3),#kb>p:nth-of-type(5n-1){--bgp:"○";}#kb>p:nth-of-type(7n+1){--bgp:"◆";}
-			#kb>p::before{border-radius:20%;background-color:#0004;box-shadow:0 0 8px #0006;}#kb>p::after{content:var(--bgp);}
+			#kb>p:nth-of-type(5n-3),#kb>p:nth-of-type(5n-1){--bp:-200% 0;}#kb>p:nth-of-type(7n+1){--bp:0 0;}
+			#kb>p::before{border-radius:20%;background-color:#0004;box-shadow:0 0 8px #0006;}#kb>p::after{content:"";}
 			#kb>p.a::before{transform:scale(.8);}#kb>p.a::after{transform:scale(.8)rotateY(360deg);}#kb>p.a::before,#kb>p:not(.a)::after{transition:unset;}
+
+			.grid{position:relative;display:inline-block;width:48px;height:48px;margin:2px;background-color:#4448;color:#0000;text-shadow:none;border:none;border-radius:25%;box-shadow:0 0 8px #4448;text-align:center;vertical-align:middle;outline:none;padding:0;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);touch-action:manipulation;}
+			.grid:not(input){cursor:pointer;}.grid:active{background-color:#8888;}.grid:disabled{filter:grayscale(1)opacity(.5);}.bg{transition:.1s;}.showtxt{color:#caf0f6;font-size:18px;}
+
+			#kb>p::after,.bg{background-image:url(seq.svg);background-size:800%;background-position:var(--bp);}
 		</style>
 		<div class="disp">
 			<canvas id="c">JavaScript seems disabled</canvas>
