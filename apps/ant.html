@@ -34,19 +34,19 @@ let ctx=c.getContext('2d'),pli,colli,timer;
 ctx.imageSmoothingEnabled=false;
 [ants,grid].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 const init=()=>{
-	log.textContent='';
 	c.width=c.height=size.value;
 	pli=JSON.parse(ants.value);
 	colli=JSON.parse(grid.value);
 	ctx.fillStyle=`#${colli[0].c}`;
 	ctx.fillRect(0,0,c.width,c.height);
+	log.textContent='';
 },
 main=()=>{
 	log.textContent='';
 	pli.forEach(x=>{
 		let p=x.p.map(Math.floor),
 		tmp=Array.from(ctx.getImageData(...p,1,1).data,y=>y.toString(16).padStart(2,'0')).join('');
-		log.textContent+=`${JSON.stringify(x)}\n\t${tmp}`;
+		log.textContent+=`${JSON.stringify(x)}\n\t${tmp}\n`;
 		tmp=colli.findIndex(x=>x.c==tmp);
 		if(tmp<0)ctx.clearRect(...p,1,1);
 		else{
