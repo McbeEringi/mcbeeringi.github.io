@@ -40,7 +40,7 @@ const init=()=>{
 main=()=>{
 	log.textContent='';
 	pli.forEach(x=>{
-		let p=x.p.map(Math.floor),
+		let p=x.p.map(Math.round),
 		tmp=Array.from(ctx.getImageData(...p,1,1).data,y=>y.toString(16).padStart(2,'0')).join('');
 		log.textContent+=`${JSON.stringify(x)}\n\t${tmp}\n`;
 		tmp=colli.findIndex(x=>x.c==tmp);
