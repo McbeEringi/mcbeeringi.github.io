@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<title>McbeEringi langton's ant</title>
+</head>
+<body>
+<style>
+	:root{background-color:#222;image-rendering:crisp-edges;image-rendering:pixelated;}
+	#c{width:100%;}
+</style>
+<canvas id="c"></canvas>
+<script>
+c.width=c.height=512;
+let pli=[
+		{p:[256,256],r:0}
+	],
+	ctx=c.getContext('2d'),
+	colli=[
+		{c:'00000000',r:-0.5},
+		{c:'ff0000ff',r:-0.5},
+		{c:'00ff00ff',r:0.5},
+		{c:'0000ffff',r:0.5},
+		{c:'ffff00ff',r:-0.5},
+		{c:'ff00ffff',r:0.5},
+		{c:'00ffffff',r:-0.5},
+		{c:'ffffffff',r:0.5}
+	];
+ctx.imageSmoothingEnabled=false;
+ctx.fillStyle=`#${colli[0].c}`;
+ctx.fillRect(0,0,c.width,c.height);
+const main=()=>{
+	pli.forEach(x=>{
+		let tmp=Array.from(ctx.getImageData(...x.p,1,1).data,y=>y.toString(16).padStart(2,'0')).join('');
+		tmp=colli.findIndex(x=>x.c==tmp);
+		if(tmp<0)ctx.clearRect(...x.p,1,1);
+		else{
+			tmp=[tmp,(tmp+1)%colli.length];
+			ctx.fillStyle=`#${colli[tmp[1]].c}`;
+			ctx.clearRect(...x.p,1,1)
+			ctx.fillRect(...x.p,1,1);
+			x.r=(x.r+colli[tmp[0]].r)%2;
+			x.p=[x.p[0]+Math.cos(x.r*Math.PI),x.p[1]+Math.sin(x.r*Math.PI)];
+		}
+	});
+};
+setInterval(main,1);
+</script>
+</body>
+</html>
