@@ -46,18 +46,21 @@ speed:<input id="spd" type="range" min="1" max="512" step="1" value="128">
 <canvas id="c"></canvas>
 <script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
 <script>
-let ctx=c.getContext('2d'),pli,colli,rotli,timer,tick=0;
+let ctx=c.getContext('2d'),pli,colli,rotli,timer,tick;
 ctx.imageSmoothingEnabled=false;
 [ants,rot,grid].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 const bhex=(l=1)=>new Array(l).fill().map(()=>Math.floor(Math.random()*0xff).toString(16).padStart(2,'0')).join(''),
 init=()=>{
-	c.width=c.height=size.value;
-	pli=JSON.parse(ants.value);
-	colli=JSON.parse(grid.value).map(x=>{if(!x.c)x.c=`${bhex(3)}ff`;return x;});
-	rotli=JSON.parse(rot.value);
-	ctx.fillStyle=`#${colli[0].c}`;
-	ctx.fillRect(0,0,c.width,c.height);
-	log.textContent='init success.';
+	try{
+		tick=0
+		c.width=c.height=size.value;
+		pli=JSON.parse(ants.value);
+		colli=JSON.parse(grid.value).map(x=>{if(!x.c)x.c=`${bhex(3)}ff`;return x;});
+		rotli=JSON.parse(rot.value);
+		ctx.fillStyle=`#${colli[0].c}`;
+		ctx.fillRect(0,0,c.width,c.height);
+		log.textContent='init success.';
+	}catch(e){log.textContent=`init failed.\n${e}`;}
 },
 main=()=>{
 	for(i=0;i<spd.value;i++)
