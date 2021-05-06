@@ -9,16 +9,22 @@
 	:root{background-color:#222;color:#fff;tab-size:2;image-rendering:crisp-edges;image-rendering:pixelated;}
 	#c{width:100%;}textarea{width:100%;}
 </style>
-size:<input id="size" type="number" value="512"><br>
-ants:{p:[x,y],r:rad/PI}<textarea id="ants">[
+ants:{p:[x,y],r:rotindex[-length~length]}<textarea id="ants">[
 	{"p":[256,256],"r":0}
-]</textarea><br>
-grid:{c:"rrggbbaa",r:rad/PI}<textarea id="grid">[
-	{"c":"00000000","r":-0.5},
-	{"c":"ff0000ff","r":0.5},
-	{"c":"00ff00ff","r":-0.5},
-	{"c":"0000ffff","r":0.5}
 ]</textarea>
+rot:[x,y]<textarea id="rot">[
+	[0,1],
+	[1,0],
+	[0,-1],
+	[-1,0]
+]</textarea>
+grid:{c:"rrggbbaa",r:rotindex[-length~length]}<textarea id="grid">[
+	{"c":"00000000","r":1},
+	{"c":"ff0000ff","r":-1},
+	{"c":"00ff00ff","r":1},
+	{"c":"0000ffff","r":-1}
+]</textarea>
+size:<input id="size" type="number" value="512">
 <button onclick="init()">set</button>
 <button onclick="if(!timer)timer=setInterval(main,1);">run</button>
 <button onclick="clearInterval(timer);timer=0;">stop</button>
@@ -26,13 +32,14 @@ grid:{c:"rrggbbaa",r:rad/PI}<textarea id="grid">[
 <canvas id="c"></canvas>
 <script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
 <script>
-let ctx=c.getContext('2d'),pli,colli,timer;
+let ctx=c.getContext('2d'),pli,colli,rotli,timer;
 ctx.imageSmoothingEnabled=false;
-[ants,grid].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+[ants,rot,grid].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 const init=()=>{
 	c.width=c.height=size.value;
 	pli=JSON.parse(ants.value);
 	colli=JSON.parse(grid.value);
+	rotli=JSON.parse(rot.value);
 	ctx.fillStyle=`#${colli[0].c}`;
 	ctx.fillRect(0,0,c.width,c.height);
 	log.textContent='';
@@ -50,8 +57,8 @@ main=()=>{
 			ctx.fillStyle=`#${colli[tmp[1]].c}`;
 			ctx.clearRect(...p,1,1)
 			ctx.fillRect(...p,1,1);
-			x.r=(x.r+colli[tmp[0]].r)%2;
-			x.p=[x.p[0]+Math.cos(x.r*Math.PI),x.p[1]+Math.sin(x.r*Math.PI)];
+			x.r=(x.r+colli[tmp[0]].r+rotli.length)%rotli.length;
+			x.p=[x.p[0]+rotli[x.r][0],x.p[1]+rotli[x.r][1]];
 		}
 	});
 };
