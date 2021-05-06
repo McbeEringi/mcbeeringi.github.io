@@ -38,7 +38,7 @@ grid:{c:"rrggbbaa",r:rotindex[-length~length]}<textarea id="grid">[
 
 ]</textarea>
 size:<input id="size" type="number" value="512">
-speed:<input id="spd" type="range" min="1" max="512" step="1" value="256">
+speed:<input id="spd" type="range" min="1" max="512" step="1" value="128">
 <button onclick="init()">set</button>
 <button onclick="if(!timer)timer=setInterval(main,1);">run</button>
 <button onclick="clearInterval(timer);timer=0;log.textContent=`tick: ${tick}\npos:\n${pli.map(x=>x.p.join(', ')).join('\n')}`;">stop</button>
