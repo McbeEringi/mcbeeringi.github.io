@@ -18,23 +18,12 @@ rot:[x,y]<textarea id="rot">[
 	[0,-1],
 	[-1,0]
 ]</textarea>
-grid:{c:"rrggbbaa",r:rotindex[-length~length]}<textarea id="grid">[
-	{"c":"00000000","r": 1},
-	{"r":-1},
-	{"r": 1},
-	{"r": 1},
-	{"r":-1},
-	{"r":-1},
-	{"r": 1},
-	{"r": 1},
-	{"r": 1},
-	{"r": 1},
-	{"r": 1},
-	{"r":-1},
-	{"r": 1},
-	{"r": 1},
-	{"r":-1},
-	{"r":-1}
+grid:{c:"rrggbbaa",r:rotindex[-length~length]}||rotindex[-length~length]<textarea id="grid">[
+	{"c":"00000000","r":1},
+	-1,1,1,-1,
+	-1,1,1,1,
+	1,1,-1,1,
+	1,-1,-1
 
 ]</textarea>
 size:<input id="size" type="number" value="512">
@@ -55,7 +44,7 @@ init=()=>{
 		tick=0
 		c.width=c.height=size.value;
 		pli=JSON.parse(ants.value);
-		colli=JSON.parse(grid.value).map(x=>{if(!x.c)x.c=`${bhex(3)}ff`;return x;});
+		colli=JSON.parse(grid.value).map(x=>{if(typeof x=='number')x={r:x};if(!x.c)x.c=`${bhex(3)}ff`;return x;});
 		rotli=JSON.parse(rot.value);
 		ctx.fillStyle=`#${colli[0].c}`;
 		ctx.fillRect(0,0,c.width,c.height);
