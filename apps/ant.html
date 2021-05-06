@@ -19,51 +19,66 @@ rot:[x,y]<textarea id="rot">[
 	[-1,0]
 ]</textarea>
 grid:{c:"rrggbbaa",r:rotindex[-length~length]}<textarea id="grid">[
-	{"c":"00000000","r":1},
-	{"c":"ff0000ff","r":-1},
-	{"c":"00ff00ff","r":1},
-	{"c":"0000ffff","r":-1}
+	{"c":"00000000","r": 1},
+	{"r":-1},
+	{"r": 1},
+	{"r": 1},
+	{"r":-1},
+	{"r":-1},
+	{"r": 1},
+	{"r": 1},
+	{"r": 1},
+	{"r": 1},
+	{"r": 1},
+	{"r":-1},
+	{"r": 1},
+	{"r": 1},
+	{"r":-1},
+	{"r":-1}
+
 ]</textarea>
 size:<input id="size" type="number" value="512">
+speed:<input id="spd" type="range" min="1" max="512" step="1" value="256">
 <button onclick="init()">set</button>
 <button onclick="if(!timer)timer=setInterval(main,1);">run</button>
-<button onclick="clearInterval(timer);timer=0;">stop</button>
+<button onclick="clearInterval(timer);timer=0;log.textContent=`tick: ${tick}\npos:\n${pli.map(x=>x.p.join(', ')).join('\n')}`;">stop</button>
 <pre id="log"></pre>
 <canvas id="c"></canvas>
 <script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
 <script>
-let ctx=c.getContext('2d'),pli,colli,rotli,timer;
+let ctx=c.getContext('2d'),pli,colli,rotli,timer,tick=0;
 ctx.imageSmoothingEnabled=false;
 [ants,rot,grid].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
-const init=()=>{
+const bhex=(l=1)=>new Array(l).fill().map(()=>Math.floor(Math.random()*0xff).toString(16).padStart(2,'0')).join(''),
+init=()=>{
 	c.width=c.height=size.value;
 	pli=JSON.parse(ants.value);
-	colli=JSON.parse(grid.value);
+	colli=JSON.parse(grid.value).map(x=>{if(!x.c)x.c=`${bhex(3)}ff`;return x;});
 	rotli=JSON.parse(rot.value);
 	ctx.fillStyle=`#${colli[0].c}`;
 	ctx.fillRect(0,0,c.width,c.height);
-	log.textContent='';
+	log.textContent='init success.';
 },
 main=()=>{
-	log.textContent='';
+	for(i=0;i<spd.value;i++)
 	pli.forEach(x=>{
-		let p=x.p.map(Math.round),
-		tmp=Array.from(ctx.getImageData(...p,1,1).data,y=>y.toString(16).padStart(2,'0')).join('');
-		log.textContent+=`${JSON.stringify(x)}\n\t${tmp}\n`;
+		x.p=x.p.map(y=>(y+c.width)%c.width);
+		let tmp=Array.from(ctx.getImageData(...x.p,1,1).data,y=>y.toString(16).padStart(2,'0')).join('');
 		tmp=colli.findIndex(x=>x.c==tmp);
-		if(tmp<0)ctx.clearRect(...p,1,1);
+		if(tmp<0)ctx.clearRect(...x.p,1,1);
 		else{
 			tmp=[tmp,(tmp+1)%colli.length];
 			ctx.fillStyle=`#${colli[tmp[1]].c}`;
-			ctx.clearRect(...p,1,1)
-			ctx.fillRect(...p,1,1);
+			ctx.clearRect(...x.p,1,1)
+			ctx.fillRect(...x.p,1,1);
 			x.r=(x.r+colli[tmp[0]].r+rotli.length)%rotli.length;
 			x.p=[x.p[0]+rotli[x.r][0],x.p[1]+rotli[x.r][1]];
 		}
 	});
+	tick+=Number(spd.value);
+	log.textContent=`tick: ${tick}`;
 };
 init();
-timer=setInterval(main,1);
 </script>
 </body>
 </html>
