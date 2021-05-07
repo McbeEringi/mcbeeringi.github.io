@@ -187,6 +187,7 @@
 			};
 			[...kb.children].forEach((x,i)=>{
 				const keyfx=e=>{
+					e.preventDefault();
 					let tmp=pos2p(Tone.Transport.position)%seq.events.length;
 					tmp=calced.dat.slice().reverse().find(x=>Math.abs(x.p-tmp)<1&&tmp>=x.p);
 					if(tstat()&&!curstat(tmp.pos)){
@@ -203,8 +204,8 @@
 						a2c(seq.events);
 					}else synth.triggerAttackRelease(n2Hz(i2n[i]));
 				}
-				x.addEventListener('touchstart',keyfx,{passive:false});
-				x.addEventListener('mousedown',keyfx,{passive:false});
+				x.addEventListener('touchstart',keyfx);
+				x.addEventListener('mousedown',keyfx);
 			});
 			document.onkeydown=e=>{
 				if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;
