@@ -118,6 +118,7 @@
 			seq=new Tone.Sequence((time,note)=>{
 				curset();
 				scrset();
+				kbset(note);
 				sytar(note,time);
 			},[],'4n').start(0),
 			curset=p=>{
@@ -151,13 +152,21 @@
 					case 2:scr.scrollLeft=tmp-scr.clientWidth+16+pad;break;
 				}
 			},
+			kbset=(x='')=>{
+				let tmp=x.split(',');
+				[...kb.children].forEach((y,i)=>y.classList[tmp.includes(i2n[i])?'add':'remove']('a'));
+			},
 			tstep=x=>{
 				let tmp=dispCur.style.left.slice(0,-2)||16;
 				tmp=calced.dat[calced.dat.findIndex(y=>tmp==y.pos)+x];
 				if(!tmp||scr.scrollLeft-16>tmp.pos||tmp.pos>scr.scrollLeft+scr.clientWidth)return 0;
 				Tone.Transport.pause();
 				curpset(tmp);scrset();
+				kbset(tmp.ind.reduce((a,x)=>a[x],seq.events));
 				return 1;
+			},
+			init=()=>{
+				
 			};
 
 			scr.onclick=e=>{
@@ -166,6 +175,7 @@
 				np=calced.dat.find(x=>x.pos<=cp&&cp<Number(x.pos)+16);
 				console.log({cursor:cp,fixed:np});
 				curpset(np);
+				kbset(np.ind.reduce((a,x)=>a[x],seq.events));
 			};
 			playbtn.onclick=e=>{
 				Tone.start();
@@ -176,7 +186,6 @@
 			};
 			[...kb.children].forEach((x,i)=>{
 				const keyfx=e=>{
-					e.preventDefault();
 					if(x.classList.toggle('a')){
 						Tone.start();
 						synth.triggerAttackRelease(n2Hz(i2n[i]));
