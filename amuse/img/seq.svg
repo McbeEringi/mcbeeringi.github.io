@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="128" viewBox="0 0 1024 128">
+	<defs>
+    <filter id="sh">
+      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#f00"/>
+    </filter>
+	</defs>
+	<g>
+		<path d="M0,0m64,9l55,55l-55,55l-55,-55zm39,55a39,39,0,1,0,0,.0001z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
+		<path d="M128,0m64,15l49,49l-49,49l-49,-49z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
+		<path d="M256,0m64,25a39,39,0,1,0,.0001,0z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
+	</g>
+	<g>
+		<!--play/pause--><path d="M384,0m16,32l0,64l48,-32zm48,0l0,64l16,0l0,-64zm32,0l0,64l16,0l0,-64z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
+		<!--stop--><path d="M512,0m32,32l0,64l64,0l0,-64z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
+		<!--forward--><path d="M640,0m16,32l0,64l8,0l0,-64zm16,0l0,64l8,0l0,-64zm16,0l0,64l64,-32z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
+		<!--undo--><path d="M768,0m41.37,41.37m0,45.26a32,32,0,1,0,0,-45.26l-4,4m0,-16l0,16l16,0" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
+		<!--note--><text x="920" y="96" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);font-family:sans-serif;font-size:80px;">♫</text>
+	</g>
+</svg>
