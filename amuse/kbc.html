@@ -47,7 +47,7 @@ zxcvb</textarea>
 								size:size*.9*mix(1,.8,ssx)
 							};
 							kbctx.shadowBlur=8;
-							frr(kbctx,kbdat.b[i*5+j]?'#fea':'#0004',dat.left,dat.top,dat.size,dat.size,size*.2);
+							frr(kbctx,`rgba(${mix(0,255,ssx)},${mix(0,224,ssx)},${mix(0,160,ssx)},${mix(.25,1,ssx)})`,dat.left,dat.top,dat.size,dat.size,size*.2);
 							kbctx.shadowBlur=0;
 							kbctx.drawImage(img,
 								(j%2==1?128:(i<<1==j?0:256)),0,128,128,
