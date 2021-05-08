@@ -219,18 +219,15 @@ main.bpm=120;
 init();window.onresize();log.textContent='build: 2105090';
 
 if(window.navigator.userAgent.includes('Safari'))
-requestIdleCallback(()=>
-	//fetch('img/seq.svg').then(x=>x.text()).then(x=>
+requestIdleCallback(()=>//fetch('img/seq.svg').then(x=>x.text()).then(x=>
 	{
 		let img=new Image();
 		img.onload=()=>{
-			let c=document.createElement('canvas'),
-				ctx=c.getContext('2d');
+			let c=document.createElement('canvas'),ctx=c.getContext('2d');
 			ctx.imageSmoothingEnabled=false;
 			c.width=img.naturalWidth;c.height=img.naturalHeight;
 			ctx.drawImage(img,0,0);
 			document.body.insertAdjacentHTML('beforeend',`<style>#kb>p::after,.bg{background-image:url(${c.toDataURL()});}</style>`);
-			//c.toBlob(b=>document.body.insertAdjacentHTML('beforeend',`<style>#kb>p::after,.bg{background-image:url(${URL.createObjectURL(b)});}</style>`);
 		};
 		img.src='img/seq.svg';//`data:image/svg+xml;base64,${btoa(unescape(encodeURI(x)))}`;
 	}//)
