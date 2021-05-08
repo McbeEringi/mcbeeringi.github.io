@@ -9,8 +9,8 @@
 	</head>
 	<body>
 		<script src="https://mcbeeringi.github.io/sky/style.js" async></script>
+		<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js" defer></script>
 		<script src="https://cdn.jsdelivr.net/npm/tone/build/Tone.js" defer></script>
-		<!--<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>-->
 		<script src="seq.js" defer></script>
 		<style>
 			:root{user-select:none;-webkit-user-select:none;}[contenteditable],.usa{user-select:auto;-webkit-user-select:auto;}
@@ -35,6 +35,7 @@
 			#kb>p::after,.bg{background-image:url(img/seq.svg);background-size:800%;background-position:var(--bp);}
 			#dtrs:checked~* #kb>p::before,#dtrs:checked~* #kb>p::after,#dtrs:checked~* #dispCur{transition:unset;}
 		</style>
+		<style id="sty"></style>
 		<input type="checkbox" id="dtrs">
 		<div class="disp">
 			<canvas id="c">JavaScript seems disabled</canvas>
