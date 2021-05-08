@@ -43,7 +43,7 @@
 		<!--<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>-->
 		<script>
 			'use strict';
-			let main={},calced={},timer={},scrolling=false,urstack;
+			let main={},calced,timer={},scrolling=false,urstack;
 			const ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
 			frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
 				ct.fillStyle=col;
@@ -54,7 +54,7 @@
 				ct.lineTo(x+rl,y+dy);ct.arc(x+rl,y+dy-rl,rl,Math.PI*.5,Math.PI);
 				ct.fill();
 			},
-			a2c=(x=main.scores,b)=>{
+			a2c=(b)=>{
 				let pos=-scr.scrollLeft,note=[];
 				const w=c.parentNode.clientWidth,
 				pad=256,
@@ -93,12 +93,10 @@
 				ctx.clearRect(0,0,w,240);
 				pos+=16;
 				if(calc){calced.scr=scr.scrollLeft;calced.dat=[];}
-				if(x&&Array.isArray(x)){
-					core(x);pos+=w*.5;
-					note.forEach(y=>frr(ctx,y[0]?'#fea8':'#fea',y[1],y[2],14,14,4));
-					if(calc){console.log(calced);curset();}
-					return pos+scr.scrollLeft;
-				}
+				core(main.scores);pos+=w*.5;
+				note.forEach(y=>frr(ctx,y[0]?'#fea8':'#fea',y[1],y[2],14,14,4));
+				if(calc){console.log(calced);let tmp=curset();if(tmp)kbset(ind2n(tmp.ind));else kbset();}
+				return pos+scr.scrollLeft;
 			},
 			i2n=['-9','-7','-5','-4','-2','0','2','3','5','7','8','10','12','14','15'],
 			n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
@@ -108,6 +106,7 @@
 			ind2n=x=>x.reduce((a,y)=>a[y],main.scores),
 			tstat=()=>Tone.Transport.state!='started',
 			curstat=x=>!x||scr.scrollLeft-16>x.pos||x.pos>scr.scrollLeft+scr.clientWidth,
+			ms2se=()=>{clearTimeout(timer.main2seq);timer.main2seq=setTimeout(()=>{seq.events=main.scores;console.log('scores updated')},300);},
 			stdli=(a,b=a+1,s={})=>{for(let i=a;i<=b;i++){s[`d#${i}`]=`ds${i}.mp3`;s[`a${i}`]=`a${i}.mp3`;}return s;},
 			synth=new Tone.Sampler(stdli(4,6,{'a3':'a3.mp3','d#7':'ds7.mp3'}),()=>{},'https://mcbeeringi.github.io/sky/audio/instr/musicbox/').toDestination(),
 			sytar=(n,t)=>{
@@ -173,14 +172,15 @@
 				while(x<0){if(urstack[0].length){urstack[2].unshift(urstack[1]);urstack[1]=urstack[0].pop();x++;tmp=true;console.log('undo');Function(`${urstack[1][0]}${urstack[1][2]}`)();}else{break;}}
 				while(0<x){if(urstack[2].length){urstack[0].push(urstack[1]);urstack[1]=urstack[2].shift();x--;tmp=true;console.log('redo');Function(`${urstack[1][0]}${urstack[1][1]}`)();}else{break;}}
 				if(tmp){
-					clearTimeout(timer.main2seq);
-					timer.main2seq=setTimeout(()=>{seq.events=main.scores;a2c();let tmp=curset();if(tmp)kbset(ind2n(tmp.ind));else kbset();},300);
+					a2c(1);
+					ms2se();
 				}
 			},
 			init=()=>{
 				seq.events=main.scores;
-				urstack=[[],['main.scores=',null,JSON.stringify(main.scores)],[]]
-				scrw.style.width=a2c(main.scores,1)+'px';
+				urstack=[[],['main.scores=',null,JSON.stringify(main.scores)],[]];
+				calced={};
+				scrw.style.width=a2c(1)+'px';
 				stopbtn.onclick();
 			};
 
@@ -215,9 +215,7 @@
 						}
 						let cmd=[`main.scores[${tmp.ind.join('][')}]=`,`'${arr.join(',')}'`];
 						Function(cmd[0]+cmd[1])();urset(cmd.concat(`'${ind2n(tmp.ind)}'`));
-						clearTimeout(timer.main2seq);
-						timer.main2seq=setTimeout(()=>seq.events=main.scores,300);
-						a2c();
+						ms2se();a2c();
 					}else synth.triggerAttackRelease(n2Hz(i2n[i]));
 				}
 				x.addEventListener('touchstart',keyfx);
