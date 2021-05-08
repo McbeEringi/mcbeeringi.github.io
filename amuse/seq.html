@@ -35,7 +35,7 @@
 			<div id="scr"><div id="scrw"><div id="dispCur"></div></div></div>
 			<div id="dispinfo"></div>
 		</div>
-		<button id="playbtn">play/pause</button><button id="stopbtn">stop</button><button onclick="tstep(-1);">←</button><button onclick="tstep(1);">→</button>
+		<button id="playbtn">play/pause</button><button id="stopbtn">stop</button><button onclick="tstep(-1);">←</button><button onclick="tstep(1);">→</button><button onclick="urdo(-1);">undo</button><button onclick="urdo(1);">redo</button>
 		<div class="kbPanel">
 			<div id="kb"><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p></div>
 		</div>
@@ -43,7 +43,7 @@
 		<!--<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>-->
 		<script>
 			'use strict';
-			let main={},calced={},timer={},scrolling=false,urstack=[[],'',[]];
+			let main={},calced={},timer={},scrolling=false,urstack;
 			const ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
 			frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
 				ct.fillStyle=col;
@@ -167,18 +167,19 @@
 				kbset(tmp.ind.reduce((a,x)=>a[x],main.scores));
 				return 1;
 			},
-			urset=x=>{urstack[2]=[];urstack[0].push(urstack[1]);urstack[1]=x;let tmp=urstack[0].length-Number(localStorage.seq_undoMax);if(tmp>0)urstack[0]=urstack[0].slice(tmp);console.log(x)},
+			urset=x=>{urstack[2]=[];urstack[0].push(urstack[1]);urstack[1]=x;while(urstack[0].length>Number(localStorage.seq_urMax))urstack[0].shift();console.log(x)},
 			urdo=x=>{
 				let tmp=false;
-				while(x<0){if(urstack[0].length){urstack[2].unshift(urstack[1]);urstack[1]=urstack[0].pop();x++;tmp=true;console.log('undo');Function(urstack[1])();}else{break;}}
-				while(0<x){if(urstack[2].length){urstack[0].push(urstack[1]);urstack[1]=urstack[2].shift();x--;tmp=true;console.log('redo');Function(urstack[1])();}else{break;}}
+				while(x<0){if(urstack[0].length){urstack[2].unshift(urstack[1]);urstack[1]=urstack[0].pop();x++;tmp=true;console.log('undo');Function(`${urstack[1][0]}${urstack[1][2]}`)();}else{break;}}
+				while(0<x){if(urstack[2].length){urstack[0].push(urstack[1]);urstack[1]=urstack[2].shift();x--;tmp=true;console.log('redo');Function(`${urstack[1][0]}${urstack[1][1]}`)();}else{break;}}
 				if(tmp){
 					clearTimeout(timer.main2seq);
-					timer.main2seq=setTimeout(()=>{seq.events=main.scores;a2c();let tmp=curset();if(tmp)kbset(ind2n(tmp.ind));},300);
+					timer.main2seq=setTimeout(()=>{seq.events=main.scores;a2c();let tmp=curset();if(tmp)kbset(ind2n(tmp.ind));else kbset();},300);
 				}
 			},
 			init=()=>{
 				seq.events=main.scores;
+				urstack=[[],['main.scores=',null,JSON.stringify(main.scores)],[]]
 				scrw.style.width=a2c(main.scores,1)+'px';
 				stopbtn.onclick();
 			};
@@ -212,8 +213,8 @@
 						}else{
 							arr=arr.filter(y=>y!=i2n[i]);
 						}
-						let cmd=`main.scores[${tmp.ind.join('][')}]='${arr.join(',')}'`;
-						Function(cmd)();urset(cmd);
+						let cmd=[`main.scores[${tmp.ind.join('][')}]=`,`'${arr.join(',')}'`];
+						Function(cmd[0]+cmd[1])();urset(cmd.concat(`'${ind2n(tmp.ind)}'`));
 						clearTimeout(timer.main2seq);
 						timer.main2seq=setTimeout(()=>seq.events=main.scores,300);
 						a2c();
@@ -236,7 +237,7 @@
 				}
 			};
 			{
-				ctx.imageSmoothingEnabled=false;
+				ctx.imageSmoothingEnabled=false;localStorage.seq_urMax=128;
 				window.onresize=()=>{c.width=c.parentNode.clientWidth*res;c.height=240*res;ctx.scale(res,res);a2c();};
 				const tmp=()=>{scrolling=true;clearTimeout(timer.scrilling);timer.scrilling=setTimeout(()=>scrolling=false,500);};
 				scr.addEventListener('wheel',e=>{e.preventDefault();scr.scrollLeft+=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;tmp();});
