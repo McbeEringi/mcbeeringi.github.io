@@ -229,8 +229,8 @@ requestIdleCallback(()=>
 			ctx.imageSmoothingEnabled=false;
 			c.width=img.naturalWidth;c.height=img.naturalHeight;
 			ctx.drawImage(img,0,0);
-			sty.textContent+=`#kb>p::after,.bg{background-image:url(${c.toDataURL()});}`;
-			//c.toBlob(b=>sty.textContent+=`#kb>p::after,.bg{background-image:url(${URL.createObjectURL(b)});}`);
+			document.body.insertAdjacentHTML('beforeend',`<style>#kb>p::after,.bg{background-image:url(${c.toDataURL()});}</style>`);
+			//c.toBlob(b=>document.body.insertAdjacentHTML('beforeend',`<style>#kb>p::after,.bg{background-image:url(${URL.createObjectURL(b)});}</style>`);
 		};
 		img.src='img/seq.svg';//`data:image/svg+xml;base64,${btoa(unescape(encodeURI(x)))}`;
 	}//)
