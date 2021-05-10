@@ -72,9 +72,9 @@ sytar=(n,t)=>{
 	}
 },
 seq=new Tone.Sequence((time,note)=>{
-	Tone.Draw.schedule(() => {
+	//Tone.Draw.schedule(() => {
 		curset();scrset();kbset(note);
-	},time);
+	//},time);
 	sytar(note,time);
 },[],'4n').start(0),
 curset=p=>{
