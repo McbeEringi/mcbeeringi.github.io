@@ -114,15 +114,14 @@ kbset=(x='')=>{
 	[...kb.children].forEach((y,i)=>y.classList[tmp.includes(i2n[i])?'add':'remove']('a'));
 },
 tstep=x=>{
-	/*
 	let tmp=dispCur.style.left.slice(0,-2)||16;
 	tmp=calced.dat.findIndex(y=>tmp==y.pos);
 	if(tmp<0)return 0;tmp=calced.dat[tmp+x];
-	*/
+	/*
 	let tmp=pos2p();
 	tmp=calced.dat.slice().reverse().findIndex(y=>Math.abs(y.p-tmp)<1&&tmp>=y.p);
 	if(tmp<0)return 0;tmp=calced.dat[calced.dat.length-1-tmp+x];
-	
+	*/
 	if(curstat(tmp))return 0;
 	Tone.Transport.pause();dtrs.checked=false;
 	curpset(tmp);scrset();
