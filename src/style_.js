@@ -8,7 +8,7 @@ a:visited{color:#caf;}a:visited:hover{color:#a8f;}a:visited:active{color:#84f;}
 #bg{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-16;pointer-events:none;user-select:none;-webkit-user-select:none;}
 .stuff>a{display:inline-block;width:150px;margin:5px;vertical-align:top;transition:.2s;white-space:pre-wrap;}
 @media(max-width:504px){.stuff{text-align:center;}}
-.stuff>a::before{content:"";display:block;height:150px;border-radius:20%;background:no-repeat center/100% var(--img);background-color:var(--col);}
+.stuff>a::before{content:"";display:block;height:150px;border-radius:20%;background:no-repeat center/cover var(--img);background-color:var(--col);}
 .stuff>a::after{content:var(--entxt,var(--txt));display:inline-block;font-size:small;text-decoration:none;color:#fff;width:100%;}.stuff:lang(ja)>a::after{content:var(--txt);}
 .stuff>a:hover,.stuff>a:focus{transform:scale(1.05);filter:brightness(1.2)saturate(1.2)drop-shadow(0 0 8px #fea);}
 
