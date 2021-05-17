@@ -77,11 +77,12 @@ seq=new Tone.Sequence((time,note)=>{
 	//},time);
 	sytar(note,time);
 },[],'4n').start(0),
+cnear=p=>calced.dat.reduce((a,x,i)=>Math.abs(p-x.p)<(a.x?Math.abs(p-a.x.p):1)?{x,i}:a,{}),
 curset=p=>{
 	let tmp;
 	if(!p){
 		tmp=pos2p();
-		p=calced.dat.slice().reverse().find(x=>Math.abs(x.p-tmp)<1&&tmp>=x.p);
+		p=cnear(tmp).x;
 	}
 	if(p){
 		console.log(p);
@@ -114,14 +115,9 @@ kbset=(x='')=>{
 	[...kb.children].forEach((y,i)=>y.classList[tmp.includes(i2n[i])?'add':'remove']('a'));
 },
 tstep=x=>{
-	let tmp=dispCur.style.left.slice(0,-2)||16;
-	tmp=calced.dat.findIndex(y=>tmp==y.pos);
-	if(tmp<0)return 0;tmp=calced.dat[tmp+x];
-	/*
 	let tmp=pos2p();
-	tmp=calced.dat.slice().reverse().findIndex(y=>Math.abs(y.p-tmp)<1&&tmp>=y.p);
-	if(tmp<0)return 0;tmp=calced.dat[calced.dat.length-1-tmp+x];
-	*/
+	tmp=cnear(tmp).i;
+	if(tmp==undefined)return 0;tmp=calced.dat[tmp+x];
 	if(curstat(tmp))return 0;
 	Tone.Transport.pause();dtrs.checked=false;
 	curpset(tmp);scrset();
@@ -171,7 +167,7 @@ redobtn.onclick=()=>urdo(1);
 	const keyfx=e=>{
 		e.preventDefault();
 		let tmp=pos2p();
-		tmp=calced.dat.slice().reverse().find(x=>Math.abs(x.p-tmp)<1&&tmp>=x.p);
+		tmp=cnear(tmp).x;
 		if(tstat()&&!curstat(tmp)){
 			let arr=ind2n(tmp.ind).split(',').filter(y=>y);
 			if(x.classList.toggle('a')){
@@ -218,7 +214,7 @@ main.scores=["-10,-22","","","",["-17,-29","-10","-5","-2","-5","-10"],["-17","-
 ;
 main.sc=-3;
 main.bpm=90;
-init();window.onresize();log.textContent='build: 2105170';
+init();window.onresize();log.textContent='build: 2105171';
 
 if(window.navigator.userAgent.includes('Safari'))
 requestIdleCallback(()=>//fetch('img/seq.svg').then(x=>x.text()).then(x=>
