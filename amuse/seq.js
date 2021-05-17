@@ -56,7 +56,7 @@ a2c=(b)=>{
 },
 i2n=['-9','-7','-5','-4','-2','0','2','3','5','7','8','10','12','14','15'],
 n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
-pos2p=pos_=>{let tmp=pos_.split(':').map(x=>Number(x));return tmp[0]*Tone.Transport.timeSignature+tmp[1]+tmp[2]*.25;},
+pos2p=pos_=>{let tmp=pos_.split(':').map(x=>Number(x));return(tmp[0]*Tone.Transport.timeSignature+tmp[1]+tmp[2]*.25)%main.scores.length;},
 p2pos=p_=>`${Math.floor(p_/Tone.Transport.timeSignature)}:${Math.floor(p_)%Tone.Transport.timeSignature}:${(p_*4)%4}`,
 n2Hz=x=>440*Math.pow(2,(Number(x)+main.sc)/12)*2,//C4~C6
 ind2n=x=>x.reduce((a,y)=>a[y],main.scores),
@@ -80,7 +80,7 @@ seq=new Tone.Sequence((time,note)=>{
 curset=p=>{
 	let tmp;
 	if(!p){
-		tmp=pos2p(Tone.Transport.position)%main.scores.length;
+		tmp=pos2p(Tone.Transport.position);
 		p=calced.dat.slice().reverse().find(x=>Math.abs(x.p-tmp)<1&&tmp>=x.p);
 	}
 	if(p){
@@ -114,14 +114,15 @@ kbset=(x='')=>{
 	[...kb.children].forEach((y,i)=>y.classList[tmp.includes(i2n[i])?'add':'remove']('a'));
 },
 tstep=x=>{
+	/*
 	let tmp=dispCur.style.left.slice(0,-2)||16;
 	tmp=calced.dat.findIndex(y=>tmp==y.pos);
 	if(tmp<0)return 0;tmp=calced.dat[tmp+x];
-	/*
-	let tmp=pos2p(Tone.Transport.position)%main.scores.length;
+	*/
+	let tmp=pos2p(Tone.Transport.position);
 	tmp=calced.dat.slice().reverse().findIndex(y=>Math.abs(y.p-tmp)<1&&tmp>=y.p);
 	if(tmp<0)return 0;tmp=calced.dat[calced.dat.length-1-tmp+x];
-	*/
+	
 	if(curstat(tmp))return 0;
 	Tone.Transport.pause();dtrs.checked=false;
 	curpset(tmp);scrset();
@@ -170,7 +171,7 @@ redobtn.onclick=()=>urdo(1);
 [...kb.children].forEach((x,i)=>{
 	const keyfx=e=>{
 		e.preventDefault();
-		let tmp=pos2p(Tone.Transport.position)%main.scores.length;
+		let tmp=pos2p(Tone.Transport.position);
 		tmp=calced.dat.slice().reverse().find(x=>Math.abs(x.p-tmp)<1&&tmp>=x.p);
 		if(tstat()&&!curstat(tmp)){
 			let arr=ind2n(tmp.ind).split(',').filter(y=>y);
@@ -218,7 +219,7 @@ main.scores=["-10,-22","","","",["-17,-29","-10","-5","-2","-5","-10"],["-17","-
 ;
 main.sc=-3;
 main.bpm=90;
-init();window.onresize();log.textContent='build: 2105091';
+init();window.onresize();log.textContent='build: 2105170';
 
 if(window.navigator.userAgent.includes('Safari'))
 requestIdleCallback(()=>//fetch('img/seq.svg').then(x=>x.text()).then(x=>
