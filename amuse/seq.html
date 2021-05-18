@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-	<head>
+	<head prefix="og: http://ogp.me/ns#">
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 		<title>sky_seq indev</title>
@@ -41,12 +41,18 @@
 			<div id="scr"><div id="scrw"><div id="dispCur"></div></div></div>
 			<div id="dispinfo"></div>
 		</div>
-		      <button id="playbtn" class="grid bg" style="--bp:-300% 0;">play/pause
+		         <button id="playbtn" class="grid bg" style="--bp:-300% 0;">play/pause
 		</button><button id="stopbtn" class="grid bg" style="--bp:-400% 0;">stop
 		</button><button onclick="tstep(-1);" class="grid bg" style="--bp:-500% 0;transform:scaleX(-1);">←
 		</button><button onclick="tstep(1);" class="grid bg" style="--bp:-500% 0;">→
 		</button><button id="undobtn" class="grid bg" style="--bp:-600% 0;">undo
 		</button><button id="redobtn" class="grid bg" style="--bp:-600% 0;transform:scaleX(-1);">redo
+		</button><br><button id="selbtn" class="grid bg showtxt" style="--bp:-700% 0;">select
+		</button><button id="cutbtn" class="grid bg showtxt" style="--bp:-700% 0;">cut
+		</button><button id="copybtn" class="grid bg showtxt" style="--bp:-700% 0;">copy
+		</button><button id="pastebtn" class="grid bg showtxt" style="--bp:-700% 0;">paste
+		</button><button id="addnbtn" class="grid bg showtxt" style="--bp:-700% 0;">note
+		</button><button id="addwbtn" class="grid bg showtxt" style="--bp:-700% 0;">wrapper
 		</button>
 		<div class="kbPanel">
 			<div id="kb"><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p></div>
