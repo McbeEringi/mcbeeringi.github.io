@@ -4,29 +4,29 @@
       <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#f00"/>
     </filter>
 	</defs>
-	<g>
-		<path d="M0,0m64,9l55,55l-55,55l-55,-55zm39,55a39,39,0,1,0,0,.0001z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-		<path d="M128,0m64,15l49,49l-49,49l-49,-49z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-		<path d="M256,0m64,25a39,39,0,1,0,.0001,0z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
+	<style>
+		path,text{fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);font-family:sans-serif;font-size:80px;}
+	</style>
+	<g><!--keys-->
+		<path d="M0,0m64,9l55,55l-55,55l-55,-55zm39,55a39,39,0,1,0,0,.0001z"/>
+		<path d="M128,0m64,15l49,49l-49,49l-49,-49z"/>
+		<path d="M256,0m64,25a39,39,0,1,0,.0001,0z"/>
+	</g>
+	<g><!--play/pause stop forward-->
+		<path d="M384,0m16,32v64l48,-32zm48,0v64h16v-64zm32,0v64h16v-64z"/>
+		<path d="M512,0m32,32v64h64v-64z"/>
+		<path d="M640,0m16,32v64h8v-64zm16,0v64h8v-64zm16,0v64l64,-32z"/>
+	</g>
+	<g><!--undo note-->
+		<path d="M768,0m41.37,41.37m0,45.26a32,32,0,1,0,0,-45.26l-4,4m0,-16v16h16"/>
+		<text x="920" y="96">♫</text>
+	</g>
+	<g><!--cut copy paste-->
+		<path d="M0,128m64,64m18,9a18,12,26.6,1,0,0.01,0l-66,-33a48,24,0,0,1,0,48l66,-33a18,12,-26.6,1,1,0.01,0"/>
+		<path d="M128,128m37,33h32l16,16v52l-48,0z"/><path d="M128,128m43,27h48v68" stroke-dasharray="7"/>
+		<path d="M256,128m38,34h32l16,16v52l-48,0z M256,128m42,26h15v-6h24v6h15v74"/>
 	</g>
 	<g>
-		<!--play/pause--><path d="M384,0m16,32l0,64l48,-32zm48,0l0,64l16,0l0,-64zm32,0l0,64l16,0l0,-64z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-		<!--stop--><path d="M512,0m32,32l0,64l64,0l0,-64z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-		<!--forward--><path d="M640,0m16,32l0,64l8,0l0,-64zm16,0l0,64l8,0l0,-64zm16,0l0,64l64,-32z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-	</g>
-	<g>
-		<!--undo--><path d="M768,0m41.37,41.37m0,45.26a32,32,0,1,0,0,-45.26l-4,4m0,-16l0,16l16,0" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-		<!--note--><text x="920" y="96" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);font-family:sans-serif;font-size:80px;">♫</text>
-	</g>
-	<g>
-		<!--cut--><path d="M0,128m64,64m18,9a18,12,26.6,1,0,0.01,0l-66,-33a48,24,0,0,1,0,48l66,-33a18,12,-26.6,1,1,0.01,0" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-		<!--copy-->
-			<path d="M128,128m37,33l48,0l0,68l-48,0z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-			<path d="M128,128m43,27l48,0l0,68" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);" stroke-dasharray="7"/>
-		<!--paste-->
-			<path d="M256,128m38,34l48,0l0,68l-48,0z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-			<path d="M256,128m42,26l15,0l0,-6l24,0l0,6l15,0l0,74" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
-		<!--cursor-->
-		<path d="M384,128m48,32v52l12,-11l11,25l9,-4l-11,-25h17z" style="fill:#0000;stroke:#fea;stroke-width:3;filter:url(#sh);"/>
+		<!--cursor--><path d="M384,128m48,32v52l12,-11l11,25l9,-4l-11,-25h17z"/>
 	</g>
 </svg>
