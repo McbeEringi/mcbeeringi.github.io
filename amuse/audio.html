@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<title></title>
+</head>
+<body>
+<style>
+
+</style>
+<pre id="log"></pre>
+<script>
+'use strict';
+const AudioContext=window.AudioContext || window.webkitAudioContext;
+class WebAudio{
+	constructor(){
+		this.ctx=new AudioContext();
+		this.s={};
+	}
+	add(x){
+		for(let i in x){
+			let s=this.ctx.createBufferSource();
+			this.s[i]=s;
+			fetch(x[i]).then(r=>r.arrayBuffer()).then(b=>{
+				this.ctx.decodeAudioData(b,d=>{
+				  s.buffer=d;
+					s.playbackRate.value=Math.pow(2,3/12);
+					//s.loop=true;
+					s.onended=()=>console.log(s);
+				});
+			});
+		}
+	}
+	trigger(x){
+		for(let v of x){
+			if(this.s[v]){
+				//this.s[v].stop();
+				this.s[v].start();
+			}
+		}
+	}
+	gain(x){
+		const gain=this.ctx.createGain();
+		gain.gain.value=x;
+		return gain;
+	}
+}
+let a=new WebAudio();
+a.add({test:'main.mp3'});
+setTimeout(()=>{
+	a.s.test.connect(a.gain(.2)).connect(a.ctx.destination);
+	a.trigger(['test']);
+},500);
+</script>
+</body>
+</html>
