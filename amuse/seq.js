@@ -213,7 +213,7 @@ main.sc=-2;
 main.bpm=120;
 init();window.onresize();log.textContent='build: 2105171';
 
-if(window.navigator.userAgent.includes('Safari'))
+if(['Chrome','Safari'].findIndex(x=>window.navigator.userAgent.includes(x)))
 requestIdleCallback(()=>//fetch('img/seq.svg').then(x=>x.text()).then(x=>
 	{
 		let img=new Image();
