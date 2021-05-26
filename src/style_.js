@@ -32,13 +32,11 @@ footer,.box{width:100%;background:#8888;border-radius:8px;box-sizing:border-box;
 <header>
 	<a href="https://mcbeeringi.github.io">McbeEringi</a>
 	<nav>
-		<input type="checkbox" id="hnavcb"><label for="hnavcb"></label>
-		<div>
+		<input type="checkbox" id="hnavcb"><label for="hnavcb"></label><div>
 			<a href="https://mcbeeringi.github.io/sky">Sky</a>
 			<a href="https://mcbeeringi.github.io/apps">Apps</a>
 			<a class="lang"></a>
-		</div>
-	</nav>
+		</div></nav>
 </header>`);
 if(!localStorage.bg_star)localStorage.bg_star=JSON.stringify([0,0].map(x=>new Array(128).fill(0).map(Math.random)));
 const palette=[
