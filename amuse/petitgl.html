@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<style>
+			:root{background:#222;color:#fff;}
+		</style>
+		<canvas id="canvas" width="800" height="512"></canvas>
+		<script src="../src/petitgl.js"></script>
+		<script>
+			const t0=new Date();
+				main=new PetitGL(canvas)
+				.compile(
+					'test',//program name
+					`attribute vec2 UV;
+					attribute vec4 COLOR;
+					varying vec2 uv;
+					varying vec4 color;
+					void main(){
+						color=COLOR;
+						gl_Position=vec4(UV,0,1);
+					}`,//vsh
+					`precision mediump float;
+					uniform float time;
+					uniform sampler2D tex0;
+					uniform vec2 tex0res;
+					varying vec2 uv;
+					varying vec4 color;
+					void main(){
+						gl_FragColor=texture2D(tex0,gl_FragCoord.xy/tex0res);//*vec4(sin(time+vec3(0,2.1,4.2))*.5+.5,1);
+					}`//fsh
+				)
+				.att(
+					'test',//program name
+					[//attriubte list
+						{name:'UV',data:[-1,-1, 1,-1, -1,1, 1,1],length:2},
+						{name:'COLOR',data:[1,0,0,1, 0,1,0,1, 0,0,1,1, 1,1,1,1],length:4}
+					],
+					[0,1,2, 3,2,1]//index
+				)
+				.defUni(
+					'test',
+					[
+						{name:'time',type:'float'},
+						{name:'tex0',type:'tex'},
+						{name:'tex0res',type:'vec2'}
+					]
+				).tex(
+					[
+						{texname:'sky',url:'../img/tateshina.png'}
+					]
+				),
+				loop=()=>{
+					requestAnimationFrame(loop);
+					main
+					.draw('test')
+					.uni(
+						'test',
+						[
+							{name:'time',data:[(new Date()-t0)*.001]},
+							{name:'tex0',data:'sky',rname:'tex0res'}
+						]
+					);
+				};loop();
+		</script>
+	</body>
+</html>
