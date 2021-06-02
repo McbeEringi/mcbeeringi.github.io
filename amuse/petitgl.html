@@ -5,32 +5,40 @@
 		<title></title>
 	</head>
 	<body>
-		<style>
-			:root{background:#222;color:#fff;}
-		</style>
-		<canvas id="canvas" width="800" height="512"></canvas>
+		<style>:root{background:#222;color:#fff;}</style>
+		<a href="../src/petitgl.js">PetitGL</a>
 		<script src="../src/petitgl.js"></script>
 		<script>
 			const t0=new Date();
-				main=new PetitGL(canvas)
+				main=new PetitGL()
+				.resize(800,512)
 				.compile(
 					'test',//program name
-					`attribute vec2 UV;
-					attribute vec4 COLOR;
-					varying vec2 uv;
-					varying vec4 color;
-					void main(){
-						color=COLOR;
-						gl_Position=vec4(UV,0,1);
-					}`,//vsh
+					`attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}`,//vsh
 					`precision mediump float;
-					uniform float time;
+					uniform highp float time;
+					uniform vec2 res;
 					uniform sampler2D tex0;
-					uniform vec2 tex0res;
-					varying vec2 uv;
-					varying vec4 color;
+					mat2 rot(float t){return mat2(cos(t),-sin(t),sin(t),cos(t));}
+					vec3 img(sampler2D tex,vec2 p,vec3 r){//r = vec3(radius,rot,rot per col)
+						p=(p-.5)*rot(r.y);
+						vec2 rt=vec2(0,-r.x);
+						mat2 r120=mat2(-.5,-.866,.866,-.5);
+						mat2 rz=rot(r.z);
+						vec2 pr=p+rt;rt*=r120;
+						vec2 pg=p+rt;rt*=r120;
+						vec2 pb=p+rt;
+						return vec3(
+							texture2D(tex,pr*rz+.5).r,
+							texture2D(tex,pg*rz+.5).g,
+							texture2D(tex,pb*rz+.5).b
+						);
+					}
 					void main(){
-						gl_FragColor=texture2D(tex0,gl_FragCoord.xy/tex0res);//*vec4(sin(time+vec3(0,2.1,4.2))*.5+.5,1);
+						vec2 p=gl_FragCoord.xy/res;
+						vec3 diffuse=img(tex0,p,vec3(sin(time)*.1,time*.25,-time*.25));
+						diffuse=pow(diffuse,sin(time+vec3(0,2.1,4.2))*.25+.5);
+						gl_FragColor=vec4(diffuse,1);
 					}`//fsh
 				)
 				.att(
@@ -46,7 +54,8 @@
 					[
 						{name:'time',type:'float'},
 						{name:'tex0',type:'tex'},
-						{name:'tex0res',type:'vec2'}
+						{name:'tex0res',type:'vec2'},
+						{name:'res',type:'vec2'}
 					]
 				).tex(
 					[
@@ -61,10 +70,12 @@
 						'test',
 						[
 							{name:'time',data:[(new Date()-t0)*.001]},
-							{name:'tex0',data:'sky',rname:'tex0res'}
+							{name:'tex0',data:'sky',rname:'tex0res'},
+							{name:'res',data:[main.c.width,main.c.height]}
 						]
 					);
 				};loop();
+				document.body.appendChild(main.c);
 		</script>
 	</body>
 </html>
