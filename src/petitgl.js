@@ -10,7 +10,7 @@ class PetitGL{
 		this.gl=gl;this.c=c;
 		this.log='';this.prg_={};
 		this.uni_={};this.tex_={};
-		this.ibol={};
+		this.ibol={};this.buffer_={};
 		return this;
 	}
 	resize(w,h){this.c.width=w;this.c.height=h;this.gl.viewport(0,0,this.c.width,this.c.height);return this;}
@@ -26,6 +26,16 @@ class PetitGL{
 		gl.attachShader(prg,v);gl.attachShader(prg,f);gl.linkProgram(prg);
 		console.log(prg);
 		return{sta:gl.getProgramParameter(prg,gl.LINK_STATUS),dat:prg,log:gl.getProgramInfoLog(prg)};
+	}
+	_mip(gl,w,h){
+		if(((w&(w-1))==0)&&((h&(h-1))==0))gl.generateMipmap(gl.TEXTURE_2D);
+		else{
+			console.log('mipmap canceled');
+			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+		}
+		gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
 	}
 	compile(name,vsh,fsh){
 		this.log='';
@@ -48,15 +58,7 @@ class PetitGL{
 				gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
 				gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);
 				let nw=img.naturalWidth,nh=img.naturalHeight;
-				if(((nw&(nw-1))==0)&&((nh&(nh-1))==0))
-					gl.generateMipmap(gl.TEXTURE_2D);
-				else{
-					console.log('tex mipmap canceled');
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-				}
-				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
-				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+				this._mip(this.gl,nw,nh);
 				gl.bindTexture(gl.TEXTURE_2D,null);
 				console.log(img,tex);
 				return{tex:tex,size:[nw,nh]};
@@ -111,12 +113,30 @@ class PetitGL{
 		}
 		return this;
 	}
-	draw(name,fb){
+	buffer(bname,texname,w,h){
+		let f=gl.createFramebuffer(),d=gl.createRenderbuffer(),t=gl.createTexture();
+		gl.bindFramebuffer(gl.FRAMEBUFFER,f);
+		gl.bindRenderbuffer(gl.RENDERBUFFER,d);
+		gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,w,h);
+		gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,d);
+		gl.bindTexture(gl.TEXTURE_2D,t);
+		gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+		this._mip(this.gl,w,h);
+		gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
+		gl.bindTexture(gl.TEXTURE_2D,null);
+		gl.bindRenderbuffer(gl.RENDERBUFFER,null);
+		gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+		this.buffer_[bname]={f,d,t};
+		if(this.tex_[texname])console.log(`${this.tex_[texname]} is overwritten by buffer ${bname}`);
+		this.tex_[texname]={tex:t,size:[w,h]};
+		return this;
+	}
+	draw(name,init=true,bname){
 		this.gl.useProgram(this.prg_[name].dat);
-		if(fb)this.gl.bindFramebuffer(this.gl.FRAMEBUFFER,fb.f);
-		this.gl.clearColor(0,0,0,0);this.gl.clearDepth(1);this.gl.clear(this.gl.COLOR_BUFFER_BIT|this.gl.DEPTH_BUFFER_BIT);
+		if(bname)this.gl.bindFramebuffer(this.gl.FRAMEBUFFER,this.buffer_[bname].f);
+		if(init)this.gl.clearColor(0,0,0,0);this.gl.clearDepth(1);this.gl.clear(this.gl.COLOR_BUFFER_BIT|this.gl.DEPTH_BUFFER_BIT);
 		this.gl.drawElements(this.gl.TRIANGLES,this.ibol[name],this.gl.UNSIGNED_SHORT,0);
-		if(fb)this.gl.bindFramebuffer(this.gl.FRAMEBUFFER,null);
+		if(bname)this.gl.bindFramebuffer(this.gl.FRAMEBUFFER,null);
 		else this.gl.flush();
 		return this;
 	}
