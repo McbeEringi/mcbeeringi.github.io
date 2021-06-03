@@ -72,22 +72,24 @@ class PetitGL{
 	}
 	att(name,atts,iboi){//atts: [...{name,data,length}]
 		console.log(atts);
-		let aloc=atts.map(x=>this.gl.getAttribLocation(this.prg_[name].dat,x.name)),
-			vbo=atts.map(()=>this.gl.createBuffer());
+		let gl=this.gl,
+			aloc=atts.map(x=>gl.getAttribLocation(this.prg_[name].dat,x.name)),
+			vbo=atts.map(()=>gl.createBuffer());
 		for(let i=0;i<atts.length;i++){
-			this.gl.bindBuffer(this.gl.ARRAY_BUFFER,vbo[i]);
-			this.gl.enableVertexAttribArray(aloc[i]);
-			this.gl.vertexAttribPointer(aloc[i],atts[i].length,this.gl.FLOAT,false,0,0);
-			this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(atts[i].data),this.gl.STATIC_DRAW);
-			this.gl.bindBuffer(this.gl.ARRAY_BUFFER,null);
+			gl.bindBuffer(gl.ARRAY_BUFFER,vbo[i]);
+			gl.enableVertexAttribArray(aloc[i]);
+			gl.vertexAttribPointer(aloc[i],atts[i].length,gl.FLOAT,false,0,0);
+			gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(atts[i].data),gl.STATIC_DRAW);
+			gl.bindBuffer(gl.ARRAY_BUFFER,null);
 		}
-		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,this.gl.createBuffer());//ibo
-		this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,new Int16Array(iboi),this.gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,gl.createBuffer());//ibo
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Int16Array(iboi),gl.STATIC_DRAW);
 		this.ibol[name]=iboi.length;
 		return this;
 	}
 	uni(name,unis){//unis: [...{name,data(,rname)}], data: Array,texname
-		let fi={
+		let gl=this.gl,
+			fi={
 				float:'uniform1fv',vec2:'uniform2fv',vec3:'uniform3fv',vec4:'uniform4fv',
 				int:'uniform1iv',ivec2:'uniform2iv',ivec3:'uniform3iv',ivec4:'uniform4iv'
 			},m={
@@ -95,16 +97,16 @@ class PetitGL{
 			},texi=0;
 		for(const x of unis){
 			let [loc,type]=this.uni_[name][x.name],tmp;
-			if(tmp=fi[type])this.gl[tmp](loc,x.data);
-			else if(tmp=m[type])this.gl[tmp](loc,false,x.data);
+			if(tmp=fi[type])gl[tmp](loc,x.data);
+			else if(tmp=m[type])gl[tmp](loc,false,x.data);
 			else if(type=='tex'){
 				if(!this.tex_[x.data]){console.log(`"${x.data}" might be loading or not defined.`);continue;}
-				this.gl.activeTexture(this.gl['TEXTURE'+texi]);
-				this.gl.bindTexture(this.gl.TEXTURE_2D,this.tex_[x.data].tex);
-				this.gl.uniform1i(loc,texi);
+				gl.activeTexture(gl['TEXTURE'+texi]);
+				gl.bindTexture(gl.TEXTURE_2D,this.tex_[x.data].tex);
+				gl.uniform1i(loc,texi);
 				if(x.rname){
 					[loc,type]=this.uni_[name][x.rname];
-					if(type=='vec2')this.gl.uniform2fv(loc,this.tex_[x.data].size);
+					if(type=='vec2')gl.uniform2fv(loc,this.tex_[x.data].size);
 					else console.log(`tex resolution type must be vec2. "${x.rname}" skipped.`);
 				}
 				texi++;
@@ -113,31 +115,32 @@ class PetitGL{
 		}
 		return this;
 	}
-	buffer(bname,texname,w,h){
-		let f=gl.createFramebuffer(),d=gl.createRenderbuffer(),t=gl.createTexture();
+	buffer(bname,texname,w=this.c.width,h=this.c.height){
+		let gl=this.gl,f=gl.createFramebuffer(),d=gl.createRenderbuffer(),t=gl.createTexture();
 		gl.bindFramebuffer(gl.FRAMEBUFFER,f);
 		gl.bindRenderbuffer(gl.RENDERBUFFER,d);
 		gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,w,h);
 		gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,d);
 		gl.bindTexture(gl.TEXTURE_2D,t);
 		gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
-		this._mip(this.gl,w,h);
+		this._mip(gl,w,h);
 		gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
 		gl.bindTexture(gl.TEXTURE_2D,null);
 		gl.bindRenderbuffer(gl.RENDERBUFFER,null);
 		gl.bindFramebuffer(gl.FRAMEBUFFER,null);
 		this.buffer_[bname]={f,d,t};
-		if(this.tex_[texname])console.log(`${this.tex_[texname]} is overwritten by buffer ${bname}`);
+		if(this.tex_[texname])console.log(`${this.tex_[texname]} is overwritten by buffer ${bname}.`);
 		this.tex_[texname]={tex:t,size:[w,h]};
 		return this;
 	}
 	draw(name,init=true,bname){
-		this.gl.useProgram(this.prg_[name].dat);
-		if(bname)this.gl.bindFramebuffer(this.gl.FRAMEBUFFER,this.buffer_[bname].f);
-		if(init)this.gl.clearColor(0,0,0,0);this.gl.clearDepth(1);this.gl.clear(this.gl.COLOR_BUFFER_BIT|this.gl.DEPTH_BUFFER_BIT);
-		this.gl.drawElements(this.gl.TRIANGLES,this.ibol[name],this.gl.UNSIGNED_SHORT,0);
-		if(bname)this.gl.bindFramebuffer(this.gl.FRAMEBUFFER,null);
-		else this.gl.flush();
+		let gl=this.gl;
+		gl.useProgram(this.prg_[name].dat);
+		if(bname)gl.bindFramebuffer(gl.FRAMEBUFFER,this.buffer_[bname].f);
+		if(init)gl.clearColor(0,0,0,0);gl.clearDepth(1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+		gl.drawElements(gl.TRIANGLES,this.ibol[name],gl.UNSIGNED_SHORT,0);
+		if(bname)gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+		else gl.flush();
 		return this;
 	}
 }
