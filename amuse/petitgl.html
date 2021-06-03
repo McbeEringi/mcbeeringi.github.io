@@ -9,45 +9,34 @@
 		<a href="../src/petitgl.js">PetitGL</a>
 		<script src="../src/petitgl.js"></script>
 		<script>
+		let btex=0;
 			const t0=new Date();
 				main=new PetitGL()
 				.resize(800,512)
+				.tex(
+					[
+						{texname:'texture0',url:'../img/winter.jpg'}
+					]
+				)
+				.buffer('buff0','b0tex').buffer('buff1','b1tex')
 				.compile(
 					'test',//program name
 					`attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}`,//vsh
-					`precision mediump float;
-					uniform highp float time;
-					uniform vec2 res;
-					uniform sampler2D tex0;
-					mat2 rot(float t){return mat2(cos(t),-sin(t),sin(t),cos(t));}
-					vec3 img(sampler2D tex,vec2 p,vec3 r){//r = vec3(radius,rot,rot per col)
-						p=(p-.5)*rot(r.y);
-						vec2 rt=vec2(0,-r.x);
-						mat2 r120=mat2(-.5,-.866,.866,-.5);
-						mat2 rz=rot(r.z);
-						vec2 pr=p+rt;rt*=r120;
-						vec2 pg=p+rt;rt*=r120;
-						vec2 pb=p+rt;
-						return vec3(
-							texture2D(tex,pr*rz+.5).r,
-							texture2D(tex,pg*rz+.5).g,
-							texture2D(tex,pb*rz+.5).b
-						);
-					}
+					`precision mediump float;uniform highp float time;uniform vec2 res;
+					uniform sampler2D tex0;uniform vec2 tex0res;uniform sampler2D buffer;
 					void main(){
-						vec2 p=gl_FragCoord.xy/res;
-						vec3 diffuse=img(tex0,p,vec3(sin(time)*.1,time*.25,-time*.25));
-						diffuse=pow(diffuse,sin(time+vec3(0,2.1,4.2))*.25+.5);
-						gl_FragColor=vec4(diffuse,1);
+						vec4 col=texture2D(buffer,gl_FragCoord.xy/res);
+						col+=texture2D(tex0,fract(gl_FragCoord.xy/tex0res+vec2(time*.1,0)));
+						col*=.5;
+						gl_FragColor=col;
 					}`//fsh
 				)
 				.att(
-					'test',//program name
-					[//attriubte list
+					'test',
+					[
 						{name:'UV',data:[-1,-1, 1,-1, -1,1, 1,1],length:2}
-						//{name:'COLOR',data:[1,0,0,1, 0,1,0,1, 0,0,1,1, 1,1,1,1],length:4}
 					],
-					[0,1,2, 3,2,1]//index
+					[0,1,2, 3,2,1]//ibo
 				)
 				.defUni(
 					'test',
@@ -55,25 +44,25 @@
 						{name:'time',type:'float'},
 						{name:'tex0',type:'tex'},
 						{name:'tex0res',type:'vec2'},
-						{name:'res',type:'vec2'}
-					]
-				).tex(
-					[
-						{texname:'sky',url:'../img/tateshina.png'}
+						{name:'res',type:'vec2'},
+						{name:'buffer',type:'tex'}
 					]
 				),
 				loop=()=>{
 					requestAnimationFrame(loop);
 					main
-					.draw('test')
 					.uni(
 						'test',
 						[
 							{name:'time',data:[(new Date()-t0)*.001]},
-							{name:'tex0',data:'sky',rname:'tex0res'},
-							{name:'res',data:[main.c.width,main.c.height]}
+							{name:'tex0',data:'texture0',rname:'tex0res'},
+							{name:'res',data:[main.c.width,main.c.height]},
+							{name:'buffer',data:'btex'+Number(btex)}
 						]
-					);
+					)
+					.draw('test')
+					.draw('test',1,'buff'+Number(btex));
+					btex=!btex;
 				};loop();
 				document.body.appendChild(main.c);
 		</script>
