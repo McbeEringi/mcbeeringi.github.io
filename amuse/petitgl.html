@@ -15,23 +15,22 @@
 				.resize(800,512)
 				.tex(
 					[
-						{texname:'texture0',url:'../img/winter.jpg'}
+						{texname:'texture0',url:'img/corn.png'}
 					]
 				)
-				.buffer('buff0','b0tex').buffer('buff1','b1tex')
+				.buffer('buff0','btex0').buffer('buff1','btex1')
 				.compile(
 					'test',//program name
 					`attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}`,//vsh
 					`precision mediump float;uniform highp float time;uniform vec2 res;
 					uniform sampler2D tex0;uniform vec2 tex0res;uniform sampler2D buffer;
 					void main(){
-						vec4 col=texture2D(buffer,gl_FragCoord.xy/res);
-						col+=texture2D(tex0,fract(gl_FragCoord.xy/tex0res+vec2(time*.1,0)));
-						col*=.5;
-						gl_FragColor=col;
+						vec4 prev=texture2D(buffer,gl_FragCoord.xy/res);
+						vec4 now=texture2D(tex0,fract(gl_FragCoord.xy/tex0res+vec2(time*.3,0)));
+						gl_FragColor=mix(prev,now,now.a);
 					}`//fsh
 				)
-				.att(
+				.defAtt(
 					'test',
 					[
 						{name:'UV',data:[-1,-1, 1,-1, -1,1, 1,1],length:2}
@@ -61,7 +60,7 @@
 						]
 					)
 					.draw('test')
-					.draw('test',1,'buff'+Number(btex));
+					.draw('test','buff'+Number(!btex));
 					btex=!btex;
 				};loop();
 				document.body.appendChild(main.c);

@@ -7,10 +7,9 @@ class PetitGL{
 		gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE);
 		if(gl.getExtension('OES_standard_derivatives'))console.log('OES_standard_derivatives');
 		console.log(gl);
-		this.gl=gl;this.c=c;
-		this.log='';this.prg_={};
-		this.uni_={};this.tex_={};
-		this.ibol={};this.buffer_={};
+		this.gl=gl;this.c=c;this.log='';this.prg_={};
+		this.uni_={};this.tex_={};this.ibo_={};
+		this.buffer_={};this.att_={};
 		return this;
 	}
 	resize(w,h){this.c.width=w;this.c.height=h;this.gl.viewport(0,0,this.c.width,this.c.height);return this;}
@@ -45,12 +44,6 @@ class PetitGL{
 		else this.log+=`${name} vsh:\n${vsh.log}\n${name} fsh:\n${fsh.log}\n\n`;
 		return this;
 	}
-	defUni(name,unis){//unis: [...{name,type}], type: "float,vec2,vec3,vec4,int,ivec2,ivec3,ivec4,mat2,mat3,mat4,tex"
-		let tmp={};
-		for(const x of unis)tmp[x.name]=[this.gl.getUniformLocation(this.prg_[name].dat,x.name),x.type];
-		this.uni_[name]=tmp;
-		return this;
-	}
 	tex(urls){//urls: [...{texname,url}]
 		const core=(gl,img)=>{
 				let tex=gl.createTexture();
@@ -70,21 +63,34 @@ class PetitGL{
 		}
 		return this;
 	}
-	att(name,atts,iboi){//atts: [...{name,data,length}]
-		console.log(atts);
-		let gl=this.gl,
-			aloc=atts.map(x=>gl.getAttribLocation(this.prg_[name].dat,x.name)),
-			vbo=atts.map(()=>gl.createBuffer());
-		for(let i=0;i<atts.length;i++){
-			gl.bindBuffer(gl.ARRAY_BUFFER,vbo[i]);
-			gl.enableVertexAttribArray(aloc[i]);
-			gl.vertexAttribPointer(aloc[i],atts[i].length,gl.FLOAT,false,0,0);
-			gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(atts[i].data),gl.STATIC_DRAW);
+	defAtt(name,atts,iboi){//atts: [...{name,data,length}]
+		let gl=this.gl,tmp={},ibo=gl.createBuffer();
+		for(const x of atts){
+			let vbo=gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
+			gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(x.data),gl.STATIC_DRAW);
+			gl.bindBuffer(gl.ARRAY_BUFFER,null);
+			tmp[x.name]={loc:gl.getAttribLocation(this.prg_[name].dat,x.name),vbo,length:x.length};
+		}
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Int16Array(iboi),gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,null);
+		this.att_[name]=tmp;this.ibo_[name]={dat:ibo,length:iboi.length};
+		return this;
+	}
+	defUni(name,unis){//unis: [...{name,type}], type: "float,vec2,vec3,vec4,int,ivec2,ivec3,ivec4,mat2,mat3,mat4,tex"
+		let tmp={};
+		for(const x of unis)tmp[x.name]=[this.gl.getUniformLocation(this.prg_[name].dat,x.name),x.type];
+		this.uni_[name]=tmp;
+		return this;
+	}
+	att(name,atts){//atts: [...{name,data}]
+		const gl=this.gl;
+		for(const x of atts){
+			gl.bindBuffer(gl.ARRAY_BUFFER,this.att_[name][x.name].vbo);
+			gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(x.data),gl.STATIC_DRAW);
 			gl.bindBuffer(gl.ARRAY_BUFFER,null);
 		}
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,gl.createBuffer());//ibo
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Int16Array(iboi),gl.STATIC_DRAW);
-		this.ibol[name]=iboi.length;
 		return this;
 	}
 	uni(name,unis){//unis: [...{name,data(,rname)}], data: Array,texname
@@ -133,12 +139,20 @@ class PetitGL{
 		this.tex_[texname]={tex:t,size:[w,h]};
 		return this;
 	}
-	draw(name,init=true,bname){
-		let gl=this.gl;
+	draw(name,bname){
+		const gl=this.gl;
 		gl.useProgram(this.prg_[name].dat);
 		if(bname)gl.bindFramebuffer(gl.FRAMEBUFFER,this.buffer_[bname].f);
-		if(init)gl.clearColor(0,0,0,0);gl.clearDepth(1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-		gl.drawElements(gl.TRIANGLES,this.ibol[name],gl.UNSIGNED_SHORT,0);
+		gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);//gl.clearColor(0,0,0,0);gl.clearDepth(1);
+		for(const i in this.att_[name]){
+			const tmp=this.att_[name][i];
+			gl.bindBuffer(gl.ARRAY_BUFFER,tmp.vbo);
+			gl.enableVertexAttribArray(tmp.loc);
+			gl.vertexAttribPointer(tmp.loc,tmp.length,gl.FLOAT,false,0,0);
+			gl.bindBuffer(gl.ARRAY_BUFFER,null);
+		}
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,this.ibo_[name].dat);
+		gl.drawElements(gl.TRIANGLES,this.ibo_[name].length,gl.UNSIGNED_SHORT,0);
 		if(bname)gl.bindFramebuffer(gl.FRAMEBUFFER,null);
 		else gl.flush();
 		return this;
