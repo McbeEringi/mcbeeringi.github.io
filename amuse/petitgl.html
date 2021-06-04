@@ -26,7 +26,7 @@
 					uniform sampler2D tex0;uniform vec2 tex0res;uniform sampler2D buffer;
 					void main(){
 						vec4 prev=texture2D(buffer,gl_FragCoord.xy/res);
-						vec4 now=texture2D(tex0,fract(gl_FragCoord.xy/tex0res+vec2(time*.3,0)));
+						vec4 now=texture2D(tex0,fract(gl_FragCoord.xy/tex0res+vec2(time*.2+cos(time*4.)*.1,sin(time*4.)*.1)));
 						gl_FragColor=mix(prev,now,now.a);
 					}`//fsh
 				)
