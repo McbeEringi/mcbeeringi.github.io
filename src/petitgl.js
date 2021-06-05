@@ -44,7 +44,7 @@ class PetitGL{
 		else this.log+=`${name} vsh:\n${vsh.log}\n${name} fsh:\n${fsh.log}\n\n`;
 		return this;
 	}
-	tex(urls){//urls: [...{texname,url}]
+	tex(urls){//urls: [...{texname,url,fx}]
 		const core=(gl,img)=>{
 				let tex=gl.createTexture();
 				gl.bindTexture(gl.TEXTURE_2D,tex);
@@ -58,7 +58,7 @@ class PetitGL{
 			};
 		for(const x of urls){
 			const img=new Image();
-			img.onload=()=>this.tex_[x.texname]=core(this.gl,img);
+			img.onload=()=>{let tmp=core(this.gl,img);this.tex_[x.texname]=tmp;if(x.fx)x.fx(tmp);};
 			img.src=x.url;
 		}
 		return this;
@@ -106,7 +106,7 @@ class PetitGL{
 			if(tmp=fi[type])gl[tmp](loc,x.data);
 			else if(tmp=m[type])gl[tmp](loc,false,x.data);
 			else if(type=='tex'){
-				if(!this.tex_[x.data]){console.log(`"${x.data}" might be loading or not defined.`);continue;}
+				if(!this.tex_[x.data])continue;
 				gl.activeTexture(gl['TEXTURE'+texi]);
 				gl.bindTexture(gl.TEXTURE_2D,this.tex_[x.data].tex);
 				gl.uniform1i(loc,texi);
