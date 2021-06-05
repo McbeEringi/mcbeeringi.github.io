@@ -12,19 +12,19 @@
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/theme/monokai.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.js"></script>
-		<script src="https://mcbeeringi.github.io/src/cm-glsl.js"></script>
+		<script src="../../src/cm-glsl.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/matchbrackets.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/closebrackets.min.js"></script>
-		<script src="https://mcbeeringi.github.io/src/webgl.js"></script>
+		<script src="../../src/petitgl.js"></script>
 		<style>
 			:root,input{background:#222;color:#fff;font-family:monospace;image-rendering:pixelated;user-select:none;-webkit-user-select:none;}
-			:link,:visited{color:#fff;}.dn{display:none;}
+			:link,:visited{color:#fff;}.dn{display:none;}pre{white-space:pre-wrap;margin:0;}
 			.usa,input,.CodeMirror{user-select:auto;-webkit-user-select:auto;}.cmt{opacity:.5;user-select:none;-webkit-user-select:none;}
 			html,body{margin:0;height:100%;overflow:hidden;position:relative;}
 			#prv,#fsh,.disp,.cfg{margin:0;width:100%;height:100%;position:absolute;object-fit:contain;}
 			.disp{height:calc(100% - 128px);}.cfg{height:128px;margin;0;bottom:0;overflow:scroll;white-space:nowrap;scroll-snap-type:x mandatory;}
 			.cfg ::-webkit-scrollbar{display:none;}.cfg *{scrollbar-width:none;}
-			label[for="ercb"]{display:inline-block;position:absolute;top:0;right:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;}
+			label[for="ercb"]{display:inline-block;position:absolute;top:0;left:0;z-index:10;white-space:pre-wrap;font-size:10.5px;color:#f44;background:#2228;width:100%;transition:.2s;}
 			#fsh{font-size:11px;transition:.2s;}.CodeMirror{height:100%;}.cm-s-monokai.CodeMirror,.cm-s-monokai .CodeMirror-gutters{background:#272822aa;}.cm-s-monokai div.CodeMirror-selected{background:#49483e88;}
 			.cm-tab{position:relative;}
 			.cm-tab::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:block;height:1.4px;width:calc(100% - 1.4px);border-radius:.7px;background:#8884;}
@@ -38,7 +38,7 @@
 
 			.btn{display:inline-block;position:relative;margin:4px;padding:4px 8px;border-radius:4px;background:linear-gradient(#666,#444);text-decoration:none;}
 			#edcb:checked~* #fsh{opacity:0;pointer-events:none;}#edcb:checked~* label[for="edcb"],.btn:active{background:#48f;}
-			#ercb:checked~* label[for="ercb"]{width:24px;opacity:.5;}
+			#ercb:checked~* label[for="ercb"]{left:calc(100% - 24px);opacity:.5;}
 			.btn>img{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;}
 		</style>
 
@@ -64,9 +64,10 @@
 				uniform float time;<br>
 				<span class='cmt'>// <span id='tlog'>0.000</span> (<span id='flog'>0.0</span>fps)</span><br>
 				uniform vec2 res;<br>
-				<span class='cmt'>// defined in config>size</span><br>
+				<span class='cmt'>// <span id='slog'></span></span><br>
 				uniform sampler2D tex[0~3];<br>
 				uniform vec2 tex[0~3]res;<br>
+				uniform sampler2D buffer;<br>
 			</div>
 			<div class="file"><input type="file" id="inp0" accept="image/*" onchange="read(this)">tex0<span></span></div>
 			<div class="file"><input type="file" id="inp1" accept="image/*" onchange="read(this)">tex1<span></span></div>
@@ -75,63 +76,78 @@
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2103010<br>
+				build: 2106050<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
-				<div class="btn" onclick="location.href=location.href.replace('/fsh.html','/fsh_.html');">old UI</div>
 			</div>
 		</div>
 
 
 		<script>
 			'use strict';
-			let gl=WebGL.setup(c,true,true),
+			let main=new PetitGL(c),
 				prvctx=prv.getContext('2d'),
 				vsh='attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}',
-				prg=WebGL.compile(gl,vsh,'void main(){gl_FragColor=vec4(0);}'),
 				fsh_e=CodeMirror(fsh,{
 					value:`precision mediump float;
-	uniform float time;
-	uniform vec2 res;
+uniform float time;
+uniform vec2 res;
 	void main(){
-	vec2 p = gl_FragCoord.xy/res;
-	gl_FragColor = vec4(p,sin(time)*.5+.5,1);
+	vec2 p=gl_FragCoord.xy/res;
+	gl_FragColor=vec4(p,sin(time)*.5+.5,1);
 }`,
 					mode:'text/x-glsl',theme:'monokai',
 					lineNumbers:true,//firstLineNumber:2,//lineNumberFormatter:x=>x,
 					tabSize:2,indentWithTabs:true,
 					matchBrackets:true,autoCloseBrackets: true,
 				}),
-				mtim,texture=[],texres=[],t0=new Date(),t=[0,0,0],itim,curdat,tflag;
+				mtim,texture=[],texres=[],t0=new Date(),t=[0,0,0],itim,curdat,tflag,btex=false;
 			fsh_e.on('change',()=>{clearTimeout(itim);itim=setTimeout(()=>{compile();save();},750);});
 
 			prvctx.imageSmoothingEnabled=false;
-			WebGL.attributes(gl,prg,[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1]);
+			main
+				.compile('main',vsh,'void main(){gl_FragColor=vec4(0);}')
+				.defAtt('main',[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1])
+				.buffer('buff0','btex0').buffer('buff1','btex1');
 
 			const llog=x=>log.insertAdjacentHTML('beforeend',x),
 			copy=x=>navigator.clipboard.writeText(x),
 			resize=()=>{
 				let s=isize.value.split(',',2);
-				if(s[0]>0){c.width=s[0];prv.width=s[0];c.height=s[s[1]>0?1:0];prv.height=s[s[1]>0?1:0];}
-				gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
+				if(s[0]>0){prv.width=s[0];prv.height=s[1]||s[0];}
+				main.resize(s[0],s[1]||s[0]);
+				slog.textContent=`vec2(${c.width}, ${c.height})`;
 			},
 			read=x=>{
-				var url=URL.createObjectURL(x.files[0]);
+				let url=URL.createObjectURL(x.files[0]);
 				x.parentNode.style.backgroundImage=`url(${url})`;
-				x=parseInt(x.id.slice(-1));
-				WebGL.texture(gl,url,t=>{
-					texture[x]=t;
-					console.log(x+' loaded as tex',t);
-					window['inp'+x].nextElementSibling.textContent=`uniform vec2 tex${x}res= vec2(${t.width},${t.height});`;
-				});
+				main.tex([
+					{
+						texname:x.id,
+						url,
+						fx:t=>{
+							console.log('tex loaded',x,t);
+							x.nextElementSibling.textContent=`uniform vec2 tex${x.id.slice(-1)}res= vec2(${t.size.join()});`
+						}
+					}
+				]);
 			},
 			compile=()=>{
-				log.textContent='';
-				try{prg=WebGL.compile(gl,vsh,fsh_e.getValue());}
-				catch(e){log.textContent=WebGL.log;}
+				main
+					.compile('main',vsh,fsh_e.getValue())
+					.defUni('main',[
+						{name:'time',type:'float'},
+						{name:'res',type:'vec2'},
+						{name:'tex0',type:'tex'},{name:'tex0res',type:'vec2'},
+						{name:'tex1',type:'tex'},{name:'tex1res',type:'vec2'},
+						{name:'tex2',type:'tex'},{name:'tex2res',type:'vec2'},
+						{name:'tex3',type:'tex'},{name:'tex3res',type:'vec2'},
+						{name:'buffer',type:'tex'},
+					]);
+				log.textContent=main.log;
 			},
-			main=()=>{
+			loop=()=>{
 				clearTimeout(mtim);
-				mtim=setTimeout(main,1000/(Number(ifps.value)||30));
+				mtim=setTimeout(loop,1000/(Number(ifps.value)||30));
 				t[0]=((new Date()-t0)*.001)%3600;
 				if(t[0]-t[2]>.1){
 					flog.textContent=(1/(t[0]-t[1])).toFixed(1);
@@ -139,19 +155,19 @@
 				}
 				t[1]=t[0];
 
-				WebGL.uniforms(gl,prg,[
-					{name:'time',type:'1f',data:t[0]},
-					{name:'res',type:'2f',data:[c.width,c.height]},
-					{name:'tex0',type:'tex',rname:'tex0res',data:texture[0]},
-					{name:'tex1',type:'tex',rname:'tex1res',data:texture[1]},
-					{name:'tex2',type:'tex',rname:'tex2res',data:texture[2]},
-					{name:'tex3',type:'tex',rname:'tex3res',data:texture[3]},
-				]);
-				WebGL.draw(gl);
+				main.uni('main',[
+					{name:'time',data:[t[0]]},
+					{name:'res',data:[c.width,c.height]},
+					{name:'tex0',data:'inp0',rname:'tex0res'},
+					{name:'tex1',data:'inp1',rname:'tex1res'},
+					{name:'tex2',data:'inp2',rname:'tex2res'},
+					{name:'tex3',data:'inp3',rname:'tex3res'},
+					{name:'buffer',data:'btex'+Number(btex)}
+				]).draw('main').draw('main','buff'+Number(!btex));
 				prvctx.clearRect(0,0,prv.width,prv.height);
 				prvctx.drawImage(c,0,0,prv.width,prv.height);
 			},
-			thumb=()=>{let tmp=[prv.width,prv.height];prv.width=32;prv.height=32;prvctx.drawImage(c,0,0,prv.width,prv.height);let s=prv.toDataURL();prv.width=tmp[0];prv.height=tmp[1];return s;},
+			thumb=()=>{let tmp=[prv.width,prv.height];prv.width=prv.height=32;prvctx.drawImage(c,0,0,prv.width,prv.height);let s=prv.toDataURL();[prv.width,prv.height]=tmp;return s;},
 			save=()=>{
 				curdat={
 					fsh:fsh_e.getValue(),
@@ -178,7 +194,7 @@
 				fsh_e.setValue(data.fsh,-1);
 				if(data.size[0])isize.value=data.size.join(',');
 				if(data.fps)ifps.value=data.fps;
-			})();resize();compile();main();
+			})();resize();compile();loop();
 			window.onbeforeunload=e=>{e.preventDefault();return'';};
 		</script>
 	</body>
