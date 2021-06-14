@@ -1,4 +1,4 @@
-let main,calced;
+let main,calced,tims={};
 const ctx=c.getContext('2d'),res=window.devicePixelRatio||1,
 n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
 frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
@@ -61,7 +61,7 @@ init=()=>{
 	calc();
 	draw();
 };
-scr.onscroll=draw;
+scr.addEventListener('scroll',draw,{passive:true})//()=>{if(!tims.scr)tims.scr=setTimeout(()=>{draw();tims.scr=0;},20);}
 {
 	(window.onresize=()=>{
 		c.width=res*c.parentNode.clientWidth;
