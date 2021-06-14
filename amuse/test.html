@@ -14,8 +14,14 @@
 		<style>
 			:root{user-select:none;-webkit-user-select:none;}[contenteditable],.usa{user-select:auto;-webkit-user-select:auto;}
 			html,body{height:100%;margin:0;position:relative;}body>input{display:none;}
-			canvas{width:100%;background-color:#fff8;}
+			.disp{position:relative;}.disp>*{vertical-align:bottom;}.disp::after{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:100%;background-color:#aefc;box-shadow:0 0 4px #0004;}
+			#c{width:100%;height:240px;background:#000a repeating-linear-gradient(#fffc,#fffc 16px,#fff8 16px,#fff8 48px,#fffa 48px,#fffa 64px,#fff8 64px,#fff8 80px,#fffa 80px,#fffa 96px,#fff8 96px,#fff8 112px);}
+			#scr{width:100%;height:100%;position:absolute;top:0;overflow-x:scroll;scrollbar-width:thin;scrollbar-color:#0008 #0000;}#scr::webkit-scrollbar{background-color:#0000;height:8px;}#scr::webkit-scrollbar-thumb{background-color:#0008;border-radius:8px;}
+			#scrw{height:100%;padding:0 50vw;}
 		</style>
-		<canvas id="c"></canvas>
+		<div class="disp">
+			<canvas id="c">JavaScript seems disabled</canvas>
+			<div id="scr"><div id="scrw"></div></div>
+		</div>
 	</body>
 </html>
