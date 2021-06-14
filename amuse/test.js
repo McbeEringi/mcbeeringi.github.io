@@ -43,7 +43,7 @@ draw=()=>{
 	});
 	calced.note.forEach(x=>{
 		if(0<x.pos+16+pos&&x.pos+pos<w){
-			frr(ctx,'#0004',x.pos+pos,0,16,240,4);
+			frr(ctx,Math.abs(x.pos-scr.scrollLeft+8)<=8?'#aef8':'#0004',x.pos+pos,0,16,240,4);
 			let note=x.ind.reduce((a,y)=>a[y],main.scores);
 			if(note)
 				note.split(',').forEach(n=>{
