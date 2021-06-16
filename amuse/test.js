@@ -2,13 +2,13 @@
 let main,calced,tims={};
 const ctx=c.getContext('2d'),res=window.devicePixelRatio||1,cfg={pad:12,w:16},
 n2i={'-9':'0','-8':'0.5','-7':'1','-6':'1.5','-5':'2','-4':'3','-3':'3.5','-2':'4','-1':'4.5','0':'5','1':'5.5','2':'6','3':'7','4':'7.5','5':'8','6':'8.5','7':'9','8':'10','9':'10.5','10':'11','11':'11.5','12':'12','13':'12.5','14':'13','15':'14'},
-frr=(ct,col,x,y,dx,dy,rl=0,rr=rl)=>{
+frr=(ct,col,x,y,dx,dy,r=0)=>{
 	ct.fillStyle=col;
 	ct.beginPath();
-	ct.moveTo(x,y+rl);ct.arc(x+rl,y+rl,rl,Math.PI,Math.PI*1.5);
-	ct.lineTo(x+dx-rr,y);ct.arc(x+dx-rr,y+rr,rr,Math.PI*1.5,0);
-	ct.lineTo(x+dx,y+dy-rr);ct.arc(x+dx-rr,y+dy-rr,rr,0,Math.PI*.5);
-	ct.lineTo(x+rl,y+dy);ct.arc(x+rl,y+dy-rl,rl,Math.PI*.5,Math.PI);
+	ct.moveTo(x,y+r);ct.arc(x+r,y+r,r,Math.PI,Math.PI*1.5);
+	ct.lineTo(x+dx-r,y);ct.arc(x+dx-r,y+r,r,Math.PI*1.5,0);
+	ct.lineTo(x+dx,y+dy-r);ct.arc(x+dx-r,y+dy-r,r,0,Math.PI*.5);
+	ct.lineTo(x+r,y+dy);ct.arc(x+r,y+dy-r,r,Math.PI*.5,Math.PI);
 	ct.fill();
 },
 calc=()=>{
