@@ -20,7 +20,7 @@ calc=()=>{
 				let tmp=pos;
 				pos+=13;
 				core(y,l*y.length,p,[...ind,i]);
-				pos+=13;
+				pos+=12;
 				calced.box.push({pos:tmp,ind:[...ind,i],dx:pos-tmp});
 			}
 			else{
@@ -38,24 +38,24 @@ draw=()=>{
 	if(!calced)return;
 	let w=c.parentNode.clientWidth,pos=w*.5-scr.scrollLeft;
 	ctx.clearRect(0,0,w,240);
-	calced.box.forEach(x=>{
-		if(0<x.pos+x.dx+pos&&x.pos+pos<w)frr(ctx,'#4444',x.pos+pos,0,x.dx,240,4);
-	});
-	calced.note.forEach(x=>{
-		if(0<x.pos+16+pos&&x.pos+pos<w){
-			frr(ctx,Math.abs(x.pos-scr.scrollLeft+8)<=8?'#aef8':'#0004',x.pos+pos,0,16,240,4);
-			let note=x.ind.reduce((a,y)=>a[y],main.scores);
-			if(note)
-				note.split(',').forEach(n=>{
-					let col='#fea';
-					if(n2i[n]==undefined){
-						n=Number(n);col='#fea8';
-						if(n>0)n=(n+9)%24-9;else n=(n+10)%24+14;
-					}
-					frr(ctx,col,x.pos+1+pos,225-Number(n2i[String(n)])*16,14,14,4);//240-16+1
-				});
-		}
-	});
+	for(let x of calced.box){
+		if(x.pos+x.dx+pos<0)continue;if(w<x.pos+pos)break;
+		frr(ctx,'#4444',x.pos+pos,0,x.dx,240,4);
+	}
+	for(let x of calced.note){
+		if(x.pos+16+pos<0)continue;if(w<x.pos+pos)break;
+		frr(ctx,Math.abs(x.pos-scr.scrollLeft+8)<=8?'#aef8':'#0004',x.pos+pos,0,16,240,4);
+		let note=x.ind.reduce((a,y)=>a[y],main.scores);
+		if(note)
+			note.split(',').forEach(n=>{
+				let col='#fea';
+				if(n2i[n]==undefined){
+					n=Number(n);col='#fea8';
+					if(n>0)n=(n+9)%24-9;else n=(n+10)%24+14;
+				}
+				frr(ctx,col,x.pos+1+pos,225-Number(n2i[String(n)])*16,14,14,4);//240-16+1
+			});
+	}
 },
 init=()=>{
 	calc();
