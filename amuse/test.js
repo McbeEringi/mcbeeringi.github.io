@@ -42,13 +42,15 @@ draw=()=>{
 	for(let x of calced.box){
 		if(x.pos+x.dx+pos<0)continue;if(w<x.pos+pos)break;
 		frr(ctx,'#4444',x.pos+pos,0,x.dx,240,4);
-		let cur;
-		if(Math.abs(cur=x.pos-scr.scrollLeft+cfg.pad2)<=cfg.pad2){
-			cur=cur>0;
-			ins=[x.pos+pos+(cur?-2:cfg.pad-1),0];
-		}else if(Math.abs(cur=x.pos-scr.scrollLeft+x.dx-cfg.pad2)<=cfg.pad2){
-			cur=cur>0;
-			ins=[x.pos+x.dx+pos+(cur?-cfg.pad-2:-1),0];
+		if(Math.abs(x.pos-scr.scrollLeft+x.dx*.5)<=x.dx*.5){
+			let cur;
+			if(scr.scrollLeft<=x.pos+cfg.pad){
+				cur=x.pos-scr.scrollLeft+cfg.pad2>0;
+				ins=[x.pos+pos+(cur?-2:cfg.pad-1),0];
+			}else if(x.pos+x.dx-cfg.pad<=scr.scrollLeft){
+				cur=x.pos-scr.scrollLeft+x.dx-cfg.pad2>0;
+				ins=[x.pos+x.dx+pos+(cur?-cfg.pad-2:-1),0];
+			}
 		}
 	}
 	for(let x of calced.note){
