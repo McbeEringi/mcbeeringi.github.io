@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi md</title>
+	<link rel="preload" href="https://cdn.jsdelivr.net/npm/marked/marked.min.js" as="script">
+</head>
+<body>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	<style>
+		:root,input{font-family:sans-serif;}*{max-width:100%;}pre,code:not(pre>code){background-color:#8882;}th,td{padding:8px;border:1px solid #888c;}h1,h2{border-bottom:2px solid #8884;padding:16px 8px;}body>:first-child{margin-top:0;}
+		input{font-size:medium;width:100%;box-sizing:border-box;background-color:#0000;outline:none;border:none;border-bottom:2px solid #888c;transition:.2s;}input::placeolder{color:#8888;}input:focus{border-bottom:2px solid #48f;}
+		@media(prefers-color-scheme:dark){:root,input{background-color:#222;color:#fff;}:link{color:#aef;}:link:hover{color:#8af;}:link:active{color:#48f;}:visited{color:#caf;}:visited:hover{color:#a8f;}:visited:active{color:#84f;}}
+	</style>
+	<script>
+		let url;
+		if(url=location.hash.slice(1)){url=decodeURIComponent(url);document.title=url.match(/[^\/]+$/)[0];fetch(url).then(x=>x.text()).then(x=>document.body.insertAdjacentHTML('afterbegin',marked(x,{baseUrl:url})));}
+		else document.body.insertAdjacentHTML('afterbegin',`<h1>Markdown viewer</h1><input placeholder="https://example.com/markdown.md" onchange="location.hash='#'+encodeURIComponent(this.value);location.reload();"></input><br><br>powerd by <a href="https://github.com/markedjs/marked">marked.js</a>`);
+	</script>
+	<noscript>JavaScript seems disabled.</noscript>
+</body>
+</html>
