@@ -15,7 +15,7 @@
 	</style>
 	<script>
 		let url;
-		if(url=location.hash.slice(1)){url=decodeURIComponent(url);document.title=url.match(/[^\/]+$/)[0];fetch(url).then(x=>x.text()).then(x=>document.body.insertAdjacentHTML('afterbegin',marked(x,{baseUrl:url})));}
+		if(url=location.hash.slice(1)){url=decodeURIComponent(url);document.title=url.match(/[^\/]+$/)[0];fetch(url,{mode:'cors'}).then(x=>x.text()).then(x=>document.body.insertAdjacentHTML('afterbegin',marked(x,{baseUrl:url})));}
 		else document.body.insertAdjacentHTML('afterbegin',`<h1>Markdown viewer</h1><input placeholder="https://example.com/markdown.md" onchange="location.hash='#'+encodeURIComponent(this.value);location.reload();"></input><br><br>powerd by <a href="https://github.com/markedjs/marked">marked.js</a>`);
 	</script>
 	<noscript>JavaScript seems disabled.</noscript>
