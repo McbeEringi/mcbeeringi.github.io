@@ -6,12 +6,14 @@
 		<link rel="stylesheet" href="../src/menu.css">
 		<link rel="stylesheet" href="../src/toggle.css">
 		<style media="screen">
-			div.n{min-height:200px;width:100%;margin:10px 0;border:3px dashed #f88;}
-			div.n:nth-child(2n){border:3px dashed #88f;}
+		:root{background-color:#222;color:#fff;}
+			body>div{min-height:200px;width:100%;margin:10px 0;border:3px dashed #f88;}
+			body>div:nth-child(2n){border:3px dashed #88f;}
 		</style>
 	</head>
 	<body>
-		<div class="n">1 <br>
+		<div>
+			1<br>
 			<svg width="50px" height="25px">
 			  <path d="M0 25 A25 25 0 1 1 50 25" fill="#888" stroke="none"/>
 			</svg><br>
@@ -37,10 +39,20 @@
 			<svg width="24" height="24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.7501 2.75C12.7501 2.33579 12.4143 2 12.0001 2C11.5859 2 11.2501 2.33579 11.2501 2.75V4.49988H9.27578C8.92472 4.49988 8.58177 4.60547 8.29149 4.80292L6.59552 5.9566C6.55406 5.98481 6.50506 5.9999 6.45491 5.9999H2.35254C1.93833 5.9999 1.60254 6.33568 1.60254 6.7499C1.60254 7.16411 1.93833 7.4999 2.35254 7.4999H3.9311L0.563156 15.1797C0.430844 15.4814 0.519455 15.8502 0.77327 16.0599C0.853707 16.1244 0.934125 16.185 1.08202 16.2814C1.2676 16.4024 1.53431 16.5591 1.87449 16.7144C2.55462 17.025 3.53598 17.3335 4.75001 17.3335C5.96404 17.3335 6.9454 17.025 7.62553 16.7144C7.9657 16.5591 8.23242 16.4024 8.418 16.2814C8.56718 16.1842 8.64774 16.1234 8.72881 16.0582C8.98638 15.8445 9.07126 15.4861 8.93686 15.1797L5.56892 7.4999H6.45491C6.80598 7.4999 7.14893 7.39431 7.4392 7.19685L9.13517 6.04317C9.17664 6.01496 9.22563 5.99988 9.27578 5.99988H11.2501V20.5H6.76294C6.34873 20.5 6.01294 20.8358 6.01294 21.25C6.01294 21.6642 6.34873 22 6.76294 22H17.2373C17.6515 22 17.9873 21.6642 17.9873 21.25C17.9873 20.8358 17.6515 20.5 17.2373 20.5H12.7501V5.99988H14.7241C14.7743 5.99988 14.8233 6.01496 14.8647 6.04317L16.5607 7.19686C16.851 7.39431 17.1939 7.4999 17.545 7.4999H18.4311L15.0632 15.1797C14.9245 15.4959 15.0196 15.866 15.2937 16.0761C15.3051 16.0847 15.2926 16.0753 15.2947 16.0769C15.3251 16.0994 15.3557 16.1216 15.3869 16.143C15.4389 16.1787 15.5118 16.2266 15.6045 16.2825C15.7898 16.3942 16.0557 16.5385 16.3944 16.6814C17.0716 16.9673 18.046 17.25 19.25 17.25C20.454 17.25 21.4284 16.9673 22.1056 16.6814C22.4443 16.5385 22.7102 16.3942 22.8955 16.2825C23.0444 16.1927 23.125 16.1366 23.2063 16.0761C23.4804 15.866 23.5756 15.4959 23.4369 15.1797L20.0689 7.4999H21.6474C22.0616 7.4999 22.3974 7.16411 22.3974 6.7499C22.3974 6.33568 22.0616 5.9999 21.6474 5.9999H17.545C17.4949 5.9999 17.4459 5.98481 17.4044 5.9566L15.7084 4.80292C15.4181 4.60546 15.0752 4.49988 14.7241 4.49988H12.7501V2.75ZM2.19297 15.1981C2.2826 15.2468 2.38432 15.2982 2.49753 15.3499C3.02472 15.5907 3.79336 15.8335 4.75001 15.8335C5.70666 15.8335 6.4753 15.5907 7.00249 15.3499C7.1157 15.2982 7.21742 15.2468 7.30705 15.1981L4.75001 9.36742L2.19297 15.1981ZM16.7034 15.1743C16.7855 15.2147 16.877 15.257 16.9776 15.2995C17.5077 15.5232 18.2833 15.75 19.25 15.75C20.2167 15.75 20.9923 15.5232 21.5224 15.2995C21.623 15.257 21.7145 15.2147 21.7966 15.1743L19.25 9.36742L16.7034 15.1743Z"></path></svg>
 
 		</div>
-		<div class="n">2
+		<div>
+			2<br>
 			<img id="imgdl" src="#">
 			<button onclick="imgdl.src=imga">reset</button>
 			<pre id="log"></pre>
+			<script>
+				imga = "data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='40px' height='40px'%3E%3Ccircle r='20' cx='20' cy='20' fill='%23ccc'/%3E%3Cpolygon points='5,28.66 20,2.68 35,28.66' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A";
+				imgb = "data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='40px' height='40px'%3E%3Ccircle r='20' cx='20' cy='20' fill='%23ccc'/%3E%3Cpolygon points='9,11 11,9 20,18 29,9 31,11 22,20 31,29 29,31 20,22 11,31 9,29 18,20' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A";
+
+				var tflag = false;imgdl.src=imga;
+				imgdl.ontouchstart=()=>{log.textContent+='touch ';tflag=true;imgdl.src=imgb;}
+				imgdl.onmousedown=()=>{log.textContent+=(tflag?'//':'')+'down ';if(tflag)tflag=false;else imgdl.src=imgb;}
+				imgdl.onclick=()=>{log.textContent+='click ';}
+			</script>
 			<style media="screen">
 				.neumorph{background:#eee;color:#eee;text-shadow:2px 2px 4px #bbb,-2px -2px 4px #fff;font-size:32px;font-family:monospace;}
 			</style>
@@ -52,7 +64,8 @@
 	font-family:monospace;
 }</pre>
 		</div>
-		<div class="n">3
+		<div>
+			3<br>
 			<input type="checkbox" class="toggle" id="id"><label for="id"><div></div></label>
 
 			<style>
@@ -64,36 +77,36 @@
 			<svg viewBox="0 0 229.18 229.18" class="svgcir"><circle cx="114.59" cy="114.59" r="57.25"></circle></svg>
 
 			<style>
-				.cir{width:128px;height:128px;border-radius:50%;--deg:135deg;background:conic-gradient(#888 var(--deg),#fff var(--deg));transition:.2s;display:inline-block;}
+				.cir{width:128px;height:128px;border-radius:50%;--deg:135deg;background:conic-gradient(#888 var(--deg),#0000 var(--deg));transition:.2s;display:inline-block;}
 				.cir:hover{--deg:360deg;}
 			</style>
 			<div class="cir"></div>
 		</div>
-		<div class="n" style="height:300px;">4<br><img src="https://mcbeeringi.github.io/sky/img/sky.svg" alt="sky.svg"style="background:#214;"></div>
-		<div class="n">5</div>
-
-		<div class="menu">
-			<input type="checkbox" id="menu">
-			<label for="menu"></label>
-			<div><div></div></div>
-			<div>
-				<p>アイウエオ</p>
-				<p>かきくけこ</p>
-				<p>さしすせそ</p>
-				<input type="text" name="" value="test">
+		<div>
+			4<br>
+			<img src="https://mcbeeringi.github.io/sky/img/sky.svg" alt="sky.svg"><br>
+			<div class="menu">
+				<input type="checkbox" id="menu">
+				<label for="menu"></label>
+				<div><div></div></div>
+				<div>
+					<p>アイウエオ</p>
+					<p>かきくけこ</p>
+					<p>さしすせそ</p>
+					<input value="test">
+				</div>
 			</div>
 		</div>
-
-		<div class="n">6</div>
-		<div class="n">7</div>
-		<script>
-			imga = "data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='40px' height='40px'%3E%3Ccircle r='20' cx='20' cy='20' fill='%23ccc'/%3E%3Cpolygon points='5,28.66 20,2.68 35,28.66' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A";
-			imgb = "data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='40px' height='40px'%3E%3Ccircle r='20' cx='20' cy='20' fill='%23ccc'/%3E%3Cpolygon points='9,11 11,9 20,18 29,9 31,11 22,20 31,29 29,31 20,22 11,31 9,29 18,20' fill='%23fff'%3E%3C/polygon%3E%3C/svg%3E%0A";
-
-			var tflag = false;imgdl.src=imga;
-			imgdl.ontouchstart=()=>{log.textContent+='touch ';tflag=true;imgdl.src=imgb;}
-			imgdl.onmousedown=()=>{log.textContent+=(tflag?'//':'')+'down ';if(tflag)tflag=false;else imgdl.src=imgb;}
-			imgdl.onclick=()=>{log.textContent+='click ';}
-		</script>
+		<div>
+			5<br>
+			<style>
+				#mcd{width:64px;height:64px;border-radius:10%;image-rendering:pixelated;animation:bp 4s infinite steps(95);background:#888 no-repeat 0 0/9600% url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA8AAAAAKCAYAAAB7TTfUAAACKUlEQVR42u2bwZHCMAxFuXOlCh/pxeWoEHpyT9pL2PFkwP7eyJBN3ju/8TAgfctOuFwAAAAAAAAAAAAAAAAAAAB2j7ub6Lmyluh5zyulmOg5Ht4ET6o/tZ5H+kPtt5H+BQAAWO9zouelFOv5i+elFMfDEz2lrphz4HeINsGLHt673vV2T6KXe971dk+il/HwJnhS/an1PNIf3+rfkXw5Up4qm6u7dzdzPDy8j3t2puE4cv77y0OG1ne98hwPb8CzrXXKnLNDHo+HiZ6rnvLDLZ6rXm/NynM8PLzdeRaYBxaYV0aextRBa0hYeY6HN8Ez8mr8wCp68ptBUQfg+kK29dvWF7ytWsHDm+RJdTp4AJb7KLLPj3ILJ4fV9XZPopdVr7dm5WXVa6258rLitQpi5Tke3gk9i+w3tX8j8yUy/46Up73b5cpzpV56m/8Lz/HwJngWVM+m5t8e80p5Mv08dCvrLV5Wvd6alZcVr5RirTUrr/k58fAme1KdqnWv9lFUnx8GMUxtZAg7mveuIF54WfF6m29vc8LD2+hZZD2r/fGP80DKvyPm6fL6fBK8rNTL8z9Sr9Zcef5umMDD2+BJ9afWs9of5NXn8kr0Mh7eF720wz6Sc+NUqDcCHKY1r7f5tr5PPLwALx2430KHv5H8I0+1yxKl/t4dQPDwNnppZ/lHXp1s/sPDO0NuwOQwxcPDwztziJOneHjkFXmFh0duAAAAAAAAAABcfgAGO/4l9IQmjwAAAABJRU5ErkJggg==");}
+				@keyframes bp{to{background-position:100% 0;}}
+			</style>
+			textures/ui/mine_chop_dig_animation.png
+			<div id="mcd"></div>
+		</div>
+		<div>6</div>
+		<div>7</div>
 	</body>
 </html>
