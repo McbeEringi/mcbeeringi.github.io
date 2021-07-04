@@ -10,6 +10,19 @@
 		</style>
 		<h1>inverse</h1>
 		<input type="file" id="f" multiple><br><button type="button" id="b">exe</button>
+		<pre>
+//example
+let t='text data',
+fx=()=>{
+	new Blob([t]).arrayBuffer()
+		.then(b=>new Blob([new Int8Array(b).map(y=>~y).buffer]))
+		.then(b=>b.arrayBuffer())
+		.then(b=>new Blob([new Int8Array(b).map(y=>~y).buffer]).text())
+		.then(s=>t=s);
+	console.log(t);
+};
+setInterval(fx,50);
+		</pre>
 		<script>
 			b.onclick=()=>
 				[...f.files].forEach(x=>
