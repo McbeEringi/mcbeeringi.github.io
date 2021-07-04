@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>McbeEringi inverse</title>
+	</head>
+	<body>
+		<style>
+			:root{font-family:monospace;background:#222;color:#fff;}
+		</style>
+		<h1>inverse</h1>
+		<input type="file" id="f" multiple><br><button type="button" id="b">exe</button>
+		<script>
+			b.onclick=()=>
+				[...f.files].forEach(x=>
+					x.arrayBuffer().then(b=>new Int8Array(b).map(y=>~y).buffer).then(b=>{
+						let a=document.createElement('a');
+						a.download=x.name;a.href=URL.createObjectURL(new Blob([b]));
+						a.click();setTimeout(URL.revokeObjectURL,10000,a.href);
+					})
+				);
+		</script>
+	</body>
+</html>
