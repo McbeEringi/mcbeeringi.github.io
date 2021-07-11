@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>McbeEringi xor</title>
+	</head>
+	<body>
+		<style>
+			:root{font-family:monospace;background:#222;color:#fff;}:link{color:#aef;}
+		</style>
+		<h1>xor</h1>
+		<input type="file" id="f" multiple><br>
+		<input value="0b11111111" id="i"><br>
+		<button type="button" id="b">exe</button>
+		<div id="s"></div>
+		<pre>
+//example
+let t='text data',
+fx=()=>{
+	cont k=0b11111111;
+	new Blob([t]).arrayBuffer()
+		.then(b=>new Blob([new Int8Array(b).map(y=>y^k).buffer]))
+		.then(b=>b.arrayBuffer())
+		.then(b=>new Blob([new Int8Array(b).map(y=>y^k).buffer]).text())
+		.then(s=>t=s);
+	console.log(t);
+};
+setInterval(fx,50);
+		</pre>
+		<script>
+			b.onclick=()=>{
+				const k=Number(i.value);
+				[...f.files].forEach(x=>
+					x.arrayBuffer().then(b=>new Int8Array(b).map(y=>y^k).buffer).then(b=>{
+						let a=document.createElement('a');
+						a.textContent=a.download=x.name;a.href=URL.createObjectURL(new Blob([b]));
+						setTimeout(()=>{URL.revokeObjectURL(a.href);s.removeChild(a);},30000);s.appendChild(a);
+					})
+				)
+			};
+		</script>
+	</body>
+</html>
