@@ -1,0 +1,22 @@
+{
+	"name":"calculator",
+	"short_name":"calc",
+	"description":"by @McbeEringi",
+	"icons":[{
+			"src":"img/calc.png",
+			"sizes":"512x512",
+			"type":"image/png"
+		},{
+			"src":"img/calc_192.png",
+			"sizes":"192x192",
+			"type":"image/png",
+			"purpose":"any maskable"
+		}],
+	"scope":"/others/calc/",
+	"start_url":"index.html",
+	"display":"fullscreen",
+	"theme_color":"orange",
+	"background_color":"#222",
+	"categories":["utilities"],
+	"orientation":"any"
+}
