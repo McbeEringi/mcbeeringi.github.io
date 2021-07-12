@@ -3,7 +3,7 @@
 const cacheName='ocr_cache0',STATIC_DATA=[
 	'ocr.html',
 	'https://cdn.jsdelivr.net/npm/tesseract.js',
-	'ocr_/test.png'
+	'test.png'
 ];
 
 self.addEventListener('install',(e)=>{
