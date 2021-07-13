@@ -28,47 +28,75 @@
 	</head>
 	<body>
 		<style>
-			:root{background-color:#222;color:#fff;font-family:sans-serif;font-size:x-large;}html,body,.wrap{margin:0;height:100%;}
-			.wrap{
-				display:grid;
-			}
+			:root{background-color:#ddc;font-family:sans-serif;font-size:48px;}html,body{margin:0;height:100%;}
+			.aspect{position:relative;}.aspect::before{content:"";display:block;padding-top:var(--ar);}.aspect>*{position:absolute;top:0;width:100%;height:100%;}
 			.kb{
 				user-select:none;-webkit-user-select:none;
 				display:grid;
-				grid-template-columns:repeat(4,1fr);
-				grid-row:2/3;
+				font-size:min(32px,7vmin);line-height:100%;
+				text-align:center;
+				white-space:nowrap;
 			}
-			.kb>div{
-				background-color:#444;
-				box-sizing:border-box;
-				padding:8px;
-				margin:8px;
+			.kb>*{
+				display:inline-block;
+				background-color:#333;
+				color:#ddc;
+				margin:10%;
 				border-radius:16px;
 			}
-			div.orange{background-color:orange;}
-			#disp{grid-row:1/2;}
-			#fxkb0,#fxkb1{display:none;}
-			@media(orientation:landscape){
-				#fxkb0,#fxkb1{display:unset;}
-			}
+			.kb>*::before{content:"";display:block;height:calc(50% - min(16px,3.5vmin));}
+			.kb>*:active{opacity:.7;}
+			.b{background-color:#68b;}.r{background-color:#c67;}.s{background-color:#888;}
+			#disp{box-sizing:border-box;padding:8px;background-color:#9a8;text-align:right;}
+			#numkb{touch-action:none;grid-template-columns:repeat(5,1fr);grid-template-rows:4fr repeat(5,5fr);}
+
+			@media(orientation:landscape){}
 		</style>
-		<div class="wrap">
-			<div id="disp">
-				bruh
-			</div>
-			<div id="fxkb0" class="kb">
-				fxkb0
-			</div>
-			<div id="fxkb1" class="kb">
-				fxkb1
-			</div>
+		<div id="disp" style="max-width:480px;">12.3</div>
+		<div class="aspect" style="--ar:90%;max-width:480px;">
 			<div id="numkb" class="kb">
-				<div class="gray">C</div><div class="gray">+/-</div><div class="gray">%</div><div class="orange">/</div>
-				<div>7</div><div>8</div><div>9</div><div class="orange">*</div>
-				<div>4</div><div>5</div><div>6</div><div class="orange">-</div>
-				<div>1</div><div>2</div><div>3</div><div class="orange">+</div>
-				<div style="grid-column:1/3;">0</div><div>.</div><div class="orange">=</div>
+				<p style="background-color:#0000;opacity:.4;">🍒🍋</p><p class="s">%</p><p class="s">√</p><p class="s">▶︎</p><p class="s">GT</p>
+				<p class="b">MC</p><p class="b">MR</p><p class="b">M−</p><p class="b">M+</p><p class="s">÷</p>
+				<p class="s">+∕−</p><p>7</p><p>8</p><p>9</p><p class="s">×</p>
+				<p class="r">C</p><p>4</p><p>5</p><p>6</p><p class="s">−</p>
+				<p class="r">AC</p><p>1</p><p>2</p><p>3</p><p style="grid-column:5;grid-row:5/7;" class="s">+</p>
+				<p>0</p><p>00</p><p>.</p><p>=</p>
 			</div>
 		</div>
+		<script>
+			'use strict';
+			const fx={
+				'🍒🍋':x=>alert(x),
+				'1':x=>alert(x),
+				'2':x=>alert(x),
+				'3':x=>alert(x),
+				'4':x=>alert(x),
+				'5':x=>alert(x),
+				'6':x=>alert(x),
+				'7':x=>alert(x),
+				'8':x=>alert(x),
+				'9':x=>alert(x),
+				'0':x=>alert(x),
+				'00':x=>alert(x),
+				'.':x=>alert(x),
+				'+':x=>alert(x),
+				'−':x=>alert(x),
+				'×':x=>alert(x),
+				'÷':x=>alert(x),
+				'+∕−':x=>alert(x),
+				'%':x=>alert(x),
+				'√':x=>alert(x),
+				'▶︎':x=>alert(x),
+				'GT':x=>alert(x),
+				'MC':x=>alert(x),
+				'MR':x=>alert(x),
+				'M−':x=>alert(x),
+				'M+':x=>alert(x),
+				'=':x=>alert(x),
+				'C':x=>alert(x),
+				'AC':x=>alert(x)
+			};
+			[...numkb.children].forEach(x=>x.onpointerdown=fx[x.textContent]||(()=>alert(x.textContent)));
+		</script>
 	</body>
 </html>
