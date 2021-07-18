@@ -23,7 +23,7 @@
 			<li>ノイズの種類</li>
 			<li>fbmで雲</li>
 		</ul>
-		<p style="text-align:right;">2020/4/26 作成 <br>2020/4/27 更新 <br></p>
+		<p style="text-align:right;">2020/4/26 作成 <br>2021/7/18 更新 <br></p>
 		<br>
 		<div>
 			<h2 class="box">ノイズの種類</h2>
@@ -76,8 +76,8 @@ return mix(
 				ランダムなベクトルを作るので出力がvec2のハッシュ関数を使います <br>
 				パーリンノイズという名がついています <br>
 				<pre>長いのでコードは↓から</pre>
-				<a href="https://mcbeeringi.github.io/others/gl.html?vsh=VU9BDoJADHxNLyQCWSTAUVwOGOMSNHI0qAhNZJfgQtTXW8AYuXQy006nzbVu8dzpAphdYVk1hH1xWRIkYh8fYrEDJwR71Um8qbYmvc710M5EuuXHOMqSVGymmT5vXyjLaQUjaL66wutoRAnMBxaAN8hgB0McOPwvzXy-Dd8kn2WBGy4oaU3F5eBFxAc6stFd3k-JeqBGJX97ZmcZ8x_A4x8=&fsh=pVLbbsIwDP2avFARclnX9nEUJu1hb3ufKuglUtugtKDC189O6GUFCaZJUeI4x-fYsQ8m3alG6ZoIVqi8OMCZlTppiVwT9nasVaZNdfMo2NfH59ZhTok5qzoH3yndCTgOzo9PzlEkTSEkESHcJQJgixAROFyEDrYgcgOH8F9pT-AenD8zyQ6EwyvWqiEn5UxyImLwoMmuJosCqwLrF5nn2Pa654ptQvR86TwpqZTTCJO2R1NPxG0M7TrPRgB0AcbljIagS46Jr1bEXy85Cbac-BtbJe4nrfZAVCWqtjzRUPz1k7JyLLXU2qDUNJceZm5_5A6smeCaSuu2aNoUgCGjUDLHDRFDHIb2rd2rLDs26RBfqQ5TthhY7uo-cNbZMCs9l4DTwQ1aENthcc1A3eUdDL4MEm49kuBPSPCZBPwL7WZqfyiIP1EQ_19BDyT4TGJSEFg4iR71p13Ny-93k-SxLvU4EkD2MmYwNBxZ-DgVweYH&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1">WebGL</a><br>
-				<iframe class='gl' src='https://mcbeeringi.github.io/others/gl.html?vsh=VU9BDoJADHxNLyQCWSTAUVwOGOMSNHI0qAhNZJfgQtTXW8AYuXQy006nzbVu8dzpAphdYVk1hH1xWRIkYh8fYrEDJwR71Um8qbYmvc710M5EuuXHOMqSVGymmT5vXyjLaQUjaL66wutoRAnMBxaAN8hgB0McOPwvzXy-Dd8kn2WBGy4oaU3F5eBFxAc6stFd3k-JeqBGJX97ZmcZ8x_A4x8=&fsh=pVLbbsIwDP2avFARclnX9nEUJu1hb3ufKuglUtugtKDC189O6GUFCaZJUeI4x-fYsQ8m3alG6ZoIVqi8OMCZlTppiVwT9nasVaZNdfMo2NfH59ZhTok5qzoH3yndCTgOzo9PzlEkTSEkESHcJQJgixAROFyEDrYgcgOH8F9pT-AenD8zyQ6EwyvWqiEn5UxyImLwoMmuJosCqwLrF5nn2Pa654ptQvR86TwpqZTTCJO2R1NPxG0M7TrPRgB0AcbljIagS46Jr1bEXy85Cbac-BtbJe4nrfZAVCWqtjzRUPz1k7JyLLXU2qDUNJceZm5_5A6smeCaSuu2aNoUgCGjUDLHDRFDHIb2rd2rLDs26RBfqQ5TthhY7uo-cNbZMCs9l4DTwQ1aENthcc1A3eUdDL4MEm49kuBPSPCZBPwL7WZqfyiIP1EQ_19BDyT4TGJSEFg4iR71p13Ny-93k-SxLvU4EkD2MmYwNBxZ-DgVweYH&fps=20&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1&stuff=none'></iframe><br>
+				<a href="https://mcbeeringi.github.io/apps/webgl/index.html?vsh=VU9BDoJADHxNLyQCWSTAUVwOGOMSNHI0qAhNZJfgQtTXW8AYuXQy006nzbVu8dzpAphdYVk1hH1xWRIkYh8fYrEDJwR71Um8qbYmvc710M5EuuXHOMqSVGymmT5vXyjLaQUjaL66wutoRAnMBxaAN8hgB0McOPwvzXy-Dd8kn2WBGy4oaU3F5eBFxAc6stFd3k-JeqBGJX97ZmcZ8x_A4x8=&fsh=pVPLbsIwEPwaX4gwfjQEjiVQqYfeeq8iyMNSiJEDKOHru-tNIDxaKlWybGc9ntkdb3YuXZva2IopUZi82MGalTbZM71g4vVQmcy67d2hEp_vHyvCHBPXmiqH2DFdK1h2FMcjChRJXSjN1Ay-NQJgmiMiItwcA2LE9BIWFU55T0AHFM9csgbhWYf1asjJpdCSqRgiuBXdVswjrwLjiiwgto3tuWKfEG9PTaA113p4w6X7g6sG4v4Ob5rA3wDoCDanFjeKjyUmPpmwcDGWLFpJFi59lTj3vlXW1ClZQV6BXG9DF8tKyBHw1qHcMJ8e4BDQ-_EAUHeIEQ1AnecppBlyuBNIwR_WujUNVuqDMOiT_Lp5yFlWBqQ4Q9uF9zv2nUHOqzhz4zsExs_0NJ7Ry6f08ooeDODNjdLfC5FPC5H_KeR3enlFPygEty292A89drRmgw-YmMr36qWz8vLrzSV5bEtsqu6PAsGXS459Y2I_BTwkTXnpkGj5DQ==&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1">WebGL</a><br>
+				<iframe class="gl" src="https://mcbeeringi.github.io/apps/webgl/index.html?vsh=VU9BDoJADHxNLyQCWSTAUVwOGOMSNHI0qAhNZJfgQtTXW8AYuXQy006nzbVu8dzpAphdYVk1hH1xWRIkYh8fYrEDJwR71Um8qbYmvc710M5EuuXHOMqSVGymmT5vXyjLaQUjaL66wutoRAnMBxaAN8hgB0McOPwvzXy-Dd8kn2WBGy4oaU3F5eBFxAc6stFd3k-JeqBGJX97ZmcZ8x_A4x8=&fsh=pVPLbsIwEPwaX4gwfjQEjiVQqYfeeq8iyMNSiJEDKOHru-tNIDxaKlWybGc9ntkdb3YuXZva2IopUZi82MGalTbZM71g4vVQmcy67d2hEp_vHyvCHBPXmiqH2DFdK1h2FMcjChRJXSjN1Ay-NQJgmiMiItwcA2LE9BIWFU55T0AHFM9csgbhWYf1asjJpdCSqRgiuBXdVswjrwLjiiwgto3tuWKfEG9PTaA113p4w6X7g6sG4v4Ob5rA3wDoCDanFjeKjyUmPpmwcDGWLFpJFi59lTj3vlXW1ClZQV6BXG9DF8tKyBHw1qHcMJ8e4BDQ-_EAUHeIEQ1AnecppBlyuBNIwR_WujUNVuqDMOiT_Lp5yFlWBqQ4Q9uF9zv2nUHOqzhz4zsExs_0NJ7Ry6f08ooeDODNjdLfC5FPC5H_KeR3enlFPygEty292A89drRmgw-YmMr36qWz8vLrzSV5bEtsqu6PAsGXS459Y2I_BTwkTXnpkGj5DQ==&fps=30&c_rot=1.57,1.57,0&c_os=0.0,0.0,3.0&model=1&stuff=1"></iframe><br>
 				まだ四角いですね <br>
 				補完する点は4点である必要が無いので3点にします <br>
 				これにより高速化が図れます <br>
