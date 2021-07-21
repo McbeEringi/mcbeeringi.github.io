@@ -34,6 +34,7 @@ footer,.box{width:100%;background:#8888;border-radius:8px;box-sizing:border-box;
 	<nav>
 		<input type="checkbox" id="hnavcb"><label for="hnavcb"></label><div>
 			<a href="https://mcbeeringi.github.io/sky">Sky</a>
+			<a href="https://mcbeeringi.github.io/esbe-3g">ESBE_3G</a>
 			<a href="https://mcbeeringi.github.io/apps">Apps</a>
 			<a class="lang"></a>
 		</div></nav>
