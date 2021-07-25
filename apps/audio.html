@@ -27,7 +27,7 @@
 			<input type="range" id="rdec" value="-0" min="-4" max="4" step="0.5">reverb decay<br>
 		</div>
 		<br>
-		<div id="micwrap"><button id="micbtn">display mic</button></div>
+		<label>display mic: <input type="checkbox" id="miccb"></label><br>
 		<br>
 		<details>
 			<summary>FFT</summary><br>
@@ -40,9 +40,10 @@
 		<canvas id="wfc"></canvas><br>
 		powered by <a href="https://tonejs.github.io/">Tonejs</a>
 		<script>
-			let player,pbr,msg=['choose your audio file.'],toneFFT=new Tone.FFT(),toneWf=new Tone.Waveform();
+			'use strict';
+			let player,mic,pbr,msg=['choose your audio file.'],toneFFT=new Tone.FFT(),toneWf=new Tone.Waveform();
 			const
-				res=window.devicePixelRatio||1;
+				res=window.devicePixelRatio||1,
 				fftctx=fftc.getContext('2d'),
 				wfctx=wfc.getContext('2d'),
 				rev=new Tone.Reverb(),
@@ -90,15 +91,18 @@
 			stopbtn.onclick=()=>Tone.Transport.stop();
 			prebtn.onclick=()=>Tone.Transport.seconds-=5;
 			postbtn.onclick=()=>Tone.Transport.seconds+=5;
-			micbtn.onclick=()=>(async ()=>mic=new Tone.UserMedia())()
-				.then(()=>mic.open())
-				.then(()=>{
-					mic.connect(toneFFT);
-					mic.connect(toneWf);
-					micwrap.textContent='';
-					micwrap.insertAdjacentHTML('beforeend','<label>mic mute: <input type="checkbox" id="micm"></label>')
-					micm.onchange=()=>mic.mute=micm.checked;
-				}).catch(e=>micwrap.textContent=e);
+			miccb.onchange=()=>{
+				if(miccb.checked)
+					(async ()=>{
+						if(!mic){
+							mic=new Tone.UserMedia();
+							mic.connect(toneFFT);
+							mic.connect(toneWf);
+						}
+						mic.open();
+					})().catch(console.log);
+				else mic.close();
+			};
 
 			wfc.height=fftc.height=256*res;
 			wfc.width=fftc.width=1024*res;
