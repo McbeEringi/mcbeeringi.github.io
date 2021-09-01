@@ -19,10 +19,10 @@ header>nav{right:0;margin-right:8px;}#hnavcb{display:none;}
 @media(max-width:512px){
 	header>nav{margin-right:unset;}
 	#hnavcb~label{display:inline-block;width:48px;height:48px;background:#0006;border-radius:8px;background:no-repeat top right #0006;touch-action:manipulation;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48px'%3E%3Cpath d='M10,14l28,0m-28,10l28,0m-28,10l28,0' stroke='%23fff' stroke-width='1.5px'/%3E%3C/svg%3E");}
-	#hnavcb~div{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)scale(.7);box-sizing:border-box;padding:32px 16px;width:50vw;border-radius:16px;text-align:center;background:#4448;opacity:0;pointer-events:none;transition:.2s;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
+	#hnavcb~div{position:absolute;top:0;right:0;transform:scale(.5);transform-origin:top right;box-sizing:border-box;padding:32px;border-radius:8px;text-align:center;background:#4448;opacity:0;pointer-events:none;transition:.2s;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 	#hnavcb~div>*{display:block;font-size:x-large;}
 	#hnavcb:checked~label{position:fixed;top:0;left:0;width:100vw;height:100vh;border-radius:unset;background-image:unset;}
-	#hnavcb:checked~div{opacity:1;pointer-events:unset;transform:translate(-50%,-50%)scale(1);}
+	#hnavcb:checked~div{opacity:1;pointer-events:unset;transform:scale(1)translateY(56px);}
 }
 .lang{display:inline-block;vertical-align:middle;min-width:20px;height:20px;margin:4px;filter:grayscale(1);background:no-repeat center url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20px' height='20px'%3E%3Ccircle r='9' cx='10' cy='10' style='fill:transparent;stroke:%23aef;stroke-width:1'/%3E%3Cellipse cx='10' cy='10' rx='5' ry='9' style='fill:transparent;stroke:%23aef;stroke-width:1'/%3E%3Cpath d='M10,1 L10,19 M2.2,5 L17.8,5 M1,10 L19,10 M2.5,15 L17.8,15' style='stroke:%23aef;stroke-width:1'/%3E%3C/svg%3E");}.lang:hover{filter:grayscale(0);}
 footer,.box{width:100%;background:#8888;border-radius:8px;box-sizing:border-box;padding:16px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}footer,.c{text-align:center;}footer{margin-top:16px;}
