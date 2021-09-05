@@ -1,7 +1,8 @@
 /*
- * made by @McbeEringi cc0
- *
- *usage
- * <input type="checkbox" class="toggle" id="id"><label for="id"><div></div></label>
+ *  Designed by @McbeEringi cc0
+ *  usage: <input type="checkbox" class="toggle" style="--size:<length(height)>;">
  */
-.toggle{display:none;}.toggle+label{display:inline-block;margin:auto 1px;width:50px;height:29px;border-radius:14.5px;background-color:#8888;box-shadow:0 0 4px 0 #0008 inset;transition:.5s;}.toggle+label *{margin:0 auto;position:relative;top:1px;width:27px;height:27px;background-color:#fff;border-radius:50%;box-shadow:0 0 4px 0 #0004;left:-10.5px;transition:.2s;}.toggle:checked+label{background-color:#4f4;}.toggle:checked+label *{left:10.5px;}
+ input[type=checkbox].toggle{--size:24px;appearance:none;-webkit-appearance:none;outline:none;display:inline-block;width:calc(var(--size)*1.62);height:var(--size);border-radius:calc(var(--size)*0.5);position:relative;vertical-align:middle;background-color:#666;transition:.1s;}
+ input[type=checkbox].toggle::before{content:"";display:block;width:var(--size);height:var(--size);border-radius:50%;position:absolute;top:0;left:0;transform:scale(.85);background-color:#fff;transition:.1s;}
+ input[type=checkbox]:checked.toggle{background-color:#6f6;}
+ input[type=checkbox]:checked.toggle::before{left:calc(var(--size)*0.62);}
