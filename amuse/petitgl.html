@@ -18,7 +18,12 @@
 						{texname:'texture0',url:'img/corn.png'}
 					]
 				)
-				.buffer('buff0','btex0').buffer('buff1','btex1')
+				.buffer(
+					[
+						{bname:'buff0',texname:'btex0'},
+						{bname:'buff1',texname:'btex1'}
+					]
+				)
 				.compile(
 					'test',//program name
 					`attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}`,//vsh
@@ -27,7 +32,7 @@
 					void main(){
 						vec4 prev=texture2D(buffer,gl_FragCoord.xy/res);
 						vec4 now=texture2D(tex0,fract(gl_FragCoord.xy/tex0res+vec2(time*.2+cos(time*4.)*.1,sin(time*4.)*.1)));
-						gl_FragColor=mix(prev,now,now.a);
+						gl_FragColor=mix(prev,now,now.a)-.01;
 					}`//fsh
 				)
 				.defAtt(

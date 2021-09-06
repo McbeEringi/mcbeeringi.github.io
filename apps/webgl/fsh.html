@@ -76,7 +76,7 @@
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2106170<br>
+				build: 2109060<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 			</div>
 		</div>
@@ -107,7 +107,7 @@ uniform vec2 res;
 			main
 				.compile('main',vsh,'void main(){gl_FragColor=vec4(0);}')
 				.defAtt('main',[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1])
-				.buffer('buff0','btex0').buffer('buff1','btex1');
+				.buffer([{bname:'buff0',texname:'btex0'},{bname:'buff1',texname:'btex1'}]);
 
 			const llog=x=>log.insertAdjacentHTML('beforeend',x),
 			copy=x=>navigator.clipboard.writeText(x),
