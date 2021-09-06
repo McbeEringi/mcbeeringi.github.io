@@ -1,19 +1,20 @@
 //Created by @McbeEringi CC0
-//build: 2109060
+//build: 2109061
 //example: https://mcbeeringi.github.io/amuse/petitgl.html
 'use strict'
 class PetitGL{
-	constructor(c=document.createElement('canvas')){
+	constructor(c=document.createElement('canvas'),col=[0,0,0,0]){
 		let gl=c.getContext('webgl',{preserveDrawingBuffer:true})||c.getContext('experimental-webgl',{preserveDrawingBuffer:true});
-		gl.clearColor(0,0,0,0);
+		gl.clearColor(...col);
 		gl.enable(gl.CULL_FACE);gl.frontFace(gl.CCW);
 		gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearDepth(1);
 		gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE);
 		if(gl.getExtension('OES_standard_derivatives'))console.log('OES_standard_derivatives');
 		console.log(gl);
-		this.gl=gl;this.c=c;this.log='';this.prg_={};
-		this.uni_={};this.tex_={};this.ibo_={};
-		this.buffer_={};this.att_={};
+		this.gl=gl;this.c=c;this.log='';this.col=col;
+		this.prg_={};this.buffer_={};
+		this.uni_={};this.tex_={};
+		this.ibo_={};this.att_={};
 		return this;
 	}
 	resize(w,h){this.c.width=w;this.c.height=h;this.gl.viewport(0,0,this.c.width,this.c.height);return this;}
@@ -103,7 +104,7 @@ class PetitGL{
 				float:'uniform1fv',vec2:'uniform2fv',vec3:'uniform3fv',vec4:'uniform4fv',
 				int:'uniform1iv',ivec2:'uniform2iv',ivec3:'uniform3iv',ivec4:'uniform4iv'
 			},m={
-				mat2:'uniformMatrixfv',mat3:'uniformMatrixfv',mat4:'uniformMatrixfv'
+				mat2:'uniformMatrix2fv',mat3:'uniformMatrix3fv',mat4:'uniformMatrix4fv'
 			},texi=0;
 		for(const x of unis){
 			let [loc,type]=this.uni_[name][x.name],tmp;
@@ -150,7 +151,7 @@ class PetitGL{
 		const gl=this.gl;
 		gl.useProgram(this.prg_[name].dat);
 		if(bname)gl.bindFramebuffer(gl.FRAMEBUFFER,this.buffer_[bname].f);
-		gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);//gl.clearColor(0,0,0,0);gl.clearDepth(1);
+		gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);//gl.clearColor(...this.col);gl.clearDepth(1);
 		for(const i in this.att_[name]){
 			const tmp=this.att_[name][i];
 			gl.bindBuffer(gl.ARRAY_BUFFER,tmp.vbo);

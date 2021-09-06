@@ -13,7 +13,7 @@
 		<script type="text/javascript" src="../../src/deflate.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js"></script>
 		<script type="text/javascript" src="models.js"></script>
-		<script type="text/javascript" src="../../src/webgl.js"></script>
+		<script type="text/javascript" src="../../src/petitgl.js"></script>
 		<link rel="stylesheet" href="../../src/menu.css">
 		<link rel="stylesheet" href="../../src/toggle.css">
 		<style>
@@ -33,7 +33,7 @@
 		</style>
 
 
-		<canvas id="canvas">JavaScriptが無効になっているようです…</canvas><br>
+		<canvas id="c">JavaScriptが無効になっているようです…</canvas><br>
 		<div id="stuff">
 			<div align="center">
 				<form id="model" style="background-color:#444;" onchange="radio();">
@@ -118,6 +118,7 @@ void main(){
 						powered by WebGL1.0 <br>
 						special thanks to <a href="https://wgld.org" target="_blank">wgld.org</a> <br>
 						display: 1600px * 900px <br>
+						build: 2109060 <br>
 						<a href="fsh.html">fsh sandbox</a><br>
 						<a href="https://twitter.com/mcbeeringi" target="_blank">@McbeEringi</a>.｡:+*
 					</p>
@@ -125,7 +126,7 @@ void main(){
 			</div>
 		</div>
 		<script>
-			var vsh = ace.edit('vsh',{
+			const ecfg={
 				//readOnly: true,
 				showInvisibles: true,
 				theme: 'ace/theme/monokai',
@@ -136,19 +137,9 @@ void main(){
 				wrap: true,
 				useSoftTabs: false,
 				tabSize: 2
-			});
-			var fsh = ace.edit('fsh',{
-				//readOnly: true,
-				showInvisibles: true,
-				theme: 'ace/theme/monokai',
-				mode: 'ace/mode/glsl',
-				minLines: 16,
-				maxLines: 32,
-				fontSize: 12,
-				wrap: true,
-				useSoftTabs: false,
-				tabSize: 2
-			});
+			},
+			vsh=ace.edit('vsh',ecfg),
+			fsh=ace.edit('fsh',ecfg);
 			function url_i(){
 				// https://qiita.com/tonkatu_tanaka/items/99d167ded9330dbc4019
 				var pair=location.search.substring(1);
@@ -198,91 +189,81 @@ void main(){
 
 
 			// https://wgld.org
-			var c = document.getElementById('canvas');
-			c.width = 1600;c.height = 900;
-			var gl = WebGL.setup(c),prg;
-			var glpre = '#define round(x) floor(x+.5)\n';
+			c.width=1600;c.height=900;
+			let glpre='#define round(x) floor(x+.5)\n',
+				pos, col, uv1, index,
+				FOG_COLOR=[.70,.82,.98,1.],
+				gl=new PetitGL(c,FOG_COLOR),
+				m=new matIV(),
+				WORLD=m.identity(m.create()),
+				VIEW=m.identity(m.create()),
+				PROJ=m.identity(m.create()),
+				WORLDVIEWPROJ=m.identity(m.create()),
+				TIME=0,
+				fps=document.getElementById('fps').value,
+				c_c=document.getElementById('c_c').value.split(','),
+				c_rot=document.getElementById('c_rot').value,c_rot_,
+				c_os=document.getElementById('c_os').value,c_os_,
+				prc;//二重起動防止
+			const compile=()=>{
+					gl
+						.compile('main',glpre+vsh.getValue(),glpre+fsh.getValue())
+						.defUni('main',[
+							{name:'WORLDVIEWPROJ',type:'mat4'},
+							{name:'TIME',type:'float'},
+							{name:'FOG_COLOR',type:'vec4'},
+							{name:'CURRENT_COLOR',type:'vec4'},
+							{name:'TEXTURE_0',type:'tex'},
+							{name:'TEXTURE_1',type:'tex'}
+						]);
+					log.innerText=gl.log;
+				},
+				radio=()=>{
+					({pos,col,uv1,index}=models(Number(model.model.value)));
+					gl.defAtt(
+						'main',
+						[
+							{name:'POSITION',data:pos,length:4},
+							{name:'COLOR',data:col,length:4},
+							{name:'TEXCOORD_1',data:uv1,length:2}
+						],
+						index//ibo
+					)
+				},
+				main=()=>{
+					clearTimeout(prc);
+					TIME+=1/fps;
 
-			const compile=()=>prg=WebGL.compile(gl,glpre+vsh.getValue(),glpre+fsh.getValue());
-			compile();//シェダープログラム生成
+					c_os_=Function(`return[${c_os}]`)();
+					m.lookAt([0,0,c_os_[2]], [c_os_[0],c_os_[1],0], [0,1,0], VIEW);//ビュー座標変換行列
+					m.perspective(70, c.width/c.height, 0.1, 100, PROJ);//プロジェクション座標変換行列
+					m.multiply(PROJ, VIEW, WORLDVIEWPROJ);
+					m.identity(WORLD);
+					c_rot_=Function(`return[${c_rot}]`)();
+					m.rotate(WORLD, c_rot_[0], [1, 0, 0], WORLD);//ワールド座標変換行列
+					m.rotate(WORLD, c_rot_[1], [0, 1, 0], WORLD);
+					m.rotate(WORLD, c_rot_[2], [0, 0, 1], WORLD);
+					m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
+					gl.uni('main',[
+						{name:'WORLDVIEWPROJ',data:WORLDVIEWPROJ},
+						{name:'TIME',data:[TIME]},
+						{name:'FOG_COLOR',data:FOG_COLOR},
+						{name:'CURRENT_COLOR',data:c_c},
+						{name:'TEXTURE_0',data:'tex0'},
+						{name:'TEXTURE_1',data:'tex1'}
+					]);
 
-			var POSITION = gl.getAttribLocation(prg, 'POSITION');//attributeLocationの取得
-			var COLOR = gl.getAttribLocation(prg, 'COLOR');
-			var TEXCOORD_1 = gl.getAttribLocation(prg, 'TEXCOORD_1');
+					gl.draw('main');
+					prc=setTimeout(main,1000/fps);
+				};
 
-			var pos, col, index;
-			var pos_v = gl.createBuffer();
-			var col_v = gl.createBuffer();
-			var uv1_v = gl.createBuffer();
-			att([pos_v, col_v, uv1_v], [POSITION,COLOR,TEXCOORD_1], [4,4,2]);
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());//ibo
-			radio();
-
-			var m = new matIV();
-			var WORLD = m.identity(m.create());
-			var VIEW = m.identity(m.create());
-			var PROJ = m.identity(m.create());
-			var WORLDVIEWPROJ = m.identity(m.create());
-
-			var FOG_COLOR = [.70,.82,.98,1.];
-			gl.clearColor(.70,.82,.98,1.);
-			var TIME = 0;
-			var fps = document.getElementById('fps').value;
-			var c_c = document.getElementById('c_c').value.split(',');
-			var c_rot = document.getElementById('c_rot').value,c_rot_;
-			var c_os = document.getElementById('c_os').value,c_os_;
-			var texture = ['tex/TEXTURE_0.png','tex/TEXTURE_1.png'];
-			texture.forEach((x,i)=>WebGL.texture(gl,x,y=>texture[i]=y));
-			var prc;//二重起動防止
-			function main(){
-				clearTimeout(prc);
-				TIME+=1/fps;
-
-				c_os_ = eval('['+c_os+']');
-				m.lookAt([0,0,c_os_[2]], [c_os_[0],c_os_[1],0], [0,1,0], VIEW);//ビュー座標変換行列
-				m.perspective(70, c.width / c.height, 0.1, 100, PROJ);//プロジェクション座標変換行列
-				m.multiply(PROJ, VIEW, WORLDVIEWPROJ);
-				m.identity(WORLD);
-				c_rot_ = eval('['+c_rot+']');
-				m.rotate(WORLD, c_rot_[0], [1, 0, 0], WORLD);//ワールド座標変換行列
-				m.rotate(WORLD, c_rot_[1], [0, 1, 0], WORLD);
-				m.rotate(WORLD, c_rot_[2], [0, 0, 1], WORLD);
-				m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
-				log.innerText=WebGL.log;
-				WebGL.uniforms(gl,prg,[
-					{name:'WORLDVIEWPROJ',type:'mat4',data:WORLDVIEWPROJ},
-					{name:'TIME',type:'1f',data:TIME},
-					{name:'FOG_COLOR',type:'4f',data:FOG_COLOR},
-					{name:'CURRENT_COLOR',type:'4f',data:c_c},
-					{name:'TEXTURE_0',type:'tex',data:texture[0]},
-					{name:'TEXTURE_1',type:'tex',data:texture[1]}
+				gl.tex([
+					{texname:'tex0',url:'tex/TEXTURE_0.png'},
+					{texname:'tex1',url:'tex/TEXTURE_1.png'}
 				]);
-
-				WebGL.draw(gl);
-				prc =setTimeout(main, 1000/fps);
-			}
+			compile();//シェダープログラム生成
+			radio();
 			main();
-
-			function radio(){
-				model(document.getElementById('model').model.value);//models.js
-				gl.bindBuffer(gl.ARRAY_BUFFER, pos_v);
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
-				gl.bindBuffer(gl.ARRAY_BUFFER, col_v);
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(col), gl.STATIC_DRAW);
-				gl.bindBuffer(gl.ARRAY_BUFFER, null);
-				gl.bindBuffer(gl.ARRAY_BUFFER, uv1_v);
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uv1), gl.STATIC_DRAW);
-				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(index), gl.STATIC_DRAW);
-				gl.ilength=index.length;
-			}
-			function att(vbo, attL, attS){
-				for(var i in vbo){//引数として受け取った配列を処理する
-					gl.bindBuffer(gl.ARRAY_BUFFER, vbo[i]);//バッファをバインドする
-					gl.enableVertexAttribArray(attL[i]);//attributeLocationを有効にする
-					gl.vertexAttribPointer(attL[i], attS[i], gl.FLOAT, false, 0, 0);//attributeLocationを通知し登録する
-					gl.bindBuffer(gl.ARRAY_BUFFER, null);//バッファのバインドを無効化
-				}
-			}
 		</script>
 	</body>
 </html>
