@@ -1,3 +1,7 @@
+//Created by @McbeEringi CC0
+//build: 2109060
+//example: https://mcbeeringi.github.io/amuse/petitgl.html
+'use strict'
 class PetitGL{
 	constructor(c=document.createElement('canvas')){
 		let gl=c.getContext('webgl',{preserveDrawingBuffer:true})||c.getContext('experimental-webgl',{preserveDrawingBuffer:true});
@@ -93,7 +97,7 @@ class PetitGL{
 		}
 		return this;
 	}
-	uni(name,unis){//unis: [...{name,data(,rname)}], data: Array,texname
+	uni(name,unis){//unis: [...{name,data(,rname)}], data: Array||texname
 		let gl=this.gl,
 			fi={
 				float:'uniform1fv',vec2:'uniform2fv',vec3:'uniform3fv',vec4:'uniform4fv',
@@ -121,22 +125,25 @@ class PetitGL{
 		}
 		return this;
 	}
-	buffer(bname,texname,w=this.c.width,h=this.c.height){
-		let gl=this.gl,f=gl.createFramebuffer(),d=gl.createRenderbuffer(),t=gl.createTexture();
-		gl.bindFramebuffer(gl.FRAMEBUFFER,f);
-		gl.bindRenderbuffer(gl.RENDERBUFFER,d);
-		gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,w,h);
-		gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,d);
-		gl.bindTexture(gl.TEXTURE_2D,t);
-		gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
-		this._mip(gl,w,h);
-		gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
-		gl.bindTexture(gl.TEXTURE_2D,null);
-		gl.bindRenderbuffer(gl.RENDERBUFFER,null);
-		gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-		this.buffer_[bname]={f,d,t};
-		if(this.tex_[texname])console.log(`${this.tex_[texname]} is overwritten by buffer ${bname}.`);
-		this.tex_[texname]={tex:t,size:[w,h]};
+	buffer(buffs){//buffs: [...{bname,texname(,w,h)}]
+		const gl=this.gl;
+		for(const x of buffs){
+			let f=gl.createFramebuffer(),d=gl.createRenderbuffer(),t=gl.createTexture(),w=x.w||this.c.width,h=x.h||this.c.height;
+			gl.bindFramebuffer(gl.FRAMEBUFFER,f);
+			gl.bindRenderbuffer(gl.RENDERBUFFER,d);
+			gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,w,h);
+			gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,d);
+			gl.bindTexture(gl.TEXTURE_2D,t);
+			gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+			this._mip(gl,w,h);
+			gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
+			gl.bindTexture(gl.TEXTURE_2D,null);
+			gl.bindRenderbuffer(gl.RENDERBUFFER,null);
+			gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+			this.buffer_[x.bname]={f,d,t};
+			if(this.tex_[x.texname])console.log(`${this.tex_[x.texname]} is overwritten by buffer ${x.bname}.`);
+			this.tex_[x.texname]={tex:t,size:[w,h]};
+		}
 		return this;
 	}
 	draw(name,bname){
