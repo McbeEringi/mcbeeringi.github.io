@@ -13,7 +13,7 @@
 		<script type="text/javascript" src="../../src/deflate.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js"></script>
 		<script type="text/javascript" src="models.js"></script>
-		<script type="text/javascript" src="../../src/petitgl.js"></script>
+		<script type="text/javascript" src="../../petitgl/petitgl.js"></script>
 		<link rel="stylesheet" href="../../src/menu.css">
 		<link rel="stylesheet" href="../../src/toggle.css">
 		<style>
@@ -258,8 +258,8 @@ void main(){
 				};
 
 				gl.tex([
-					{texname:'tex0',url:'tex/TEXTURE_0.png'},
-					{texname:'tex1',url:'tex/TEXTURE_1.png'}
+					{name:'tex0',url:'tex/TEXTURE_0.png'},
+					{name:'tex1',url:'tex/TEXTURE_1.png'}
 				]);
 			compile();//シェダープログラム生成
 			radio();
