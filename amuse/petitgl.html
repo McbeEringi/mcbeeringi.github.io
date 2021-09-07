@@ -6,8 +6,8 @@
 	</head>
 	<body>
 		<style>:root{background:#222;color:#fff;}</style>
-		<a href="../src/petitgl.js">PetitGL</a>
-		<script src="../src/petitgl.js"></script>
+		<a href="../petitgl/petitgl.js">PetitGL</a>
+		<script src="../petitgl/petitgl.js"></script>
 		<script>
 		let btex=0;
 			const t0=new Date();
@@ -15,13 +15,13 @@
 				.resize(800,512)
 				.tex(
 					[
-						{texname:'texture0',url:'img/corn.png'}
+						{name:'texture0',url:'img/corn.png'}
 					]
 				)
 				.buffer(
 					[
-						{bname:'buff0',texname:'btex0'},
-						{bname:'buff1',texname:'btex1'}
+						{name:'buff0',tex:'btex0'},
+						{name:'buff1',tex:'btex1'}
 					]
 				)
 				.compile(
