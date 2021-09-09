@@ -76,7 +76,7 @@
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2109090<br>
+				build: 2109091<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 			</div>
 		</div>
@@ -116,7 +116,7 @@ uniform vec2 res;
 			resize=()=>{
 				let s=isize.value.split(',',2);
 				if(s[0]>0){prv.width=s[0];prv.height=s[1]||s[0];}
-				main.resize(s[0],s[1]||s[0]);
+				main.resize(s[0],s[1]||s[0]).buffer([{name:'buff0',tex:'btex0'},{name:'buff1',tex:'btex1'}]);
 				slog.textContent=`vec2(${c.width}, ${c.height})`;
 			},
 			read=x=>{
