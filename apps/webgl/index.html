@@ -13,7 +13,7 @@
 		<script type="text/javascript" src="../../src/deflate.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js"></script>
 		<script type="text/javascript" src="models.js"></script>
-		<script type="text/javascript" src="https://mcbeeringi.github.io/petitgl/petitgl_.js"></script>
+		<script type="text/javascript" src="https://mcbeeringi.github.io/petitgl/petitgl.js?"></script>
 		<link rel="stylesheet" href="../../src/menu.css">
 		<link rel="stylesheet" href="../../src/toggle.css">
 		<style>
@@ -118,7 +118,7 @@ void main(){
 						powered by WebGL1.0 <br>
 						special thanks to <a href="https://wgld.org" target="_blank">wgld.org</a> <br>
 						display: 1600px * 900px <br>
-						build: 2109060 <br>
+						build: 2109090 <br>
 						<a href="fsh.html">fsh sandbox</a><br>
 						<a href="https://twitter.com/mcbeeringi" target="_blank">@McbeEringi</a>.｡:+*
 					</p>
@@ -209,26 +209,20 @@ void main(){
 					gl
 						.compile('main',glpre+vsh.getValue(),glpre+fsh.getValue())
 						.defUni('main',[
-							{name:'WORLDVIEWPROJ',type:'mat4'},
-							{name:'TIME',type:'float'},
-							{name:'FOG_COLOR',type:'vec4'},
-							{name:'CURRENT_COLOR',type:'vec4'},
-							{name:'TEXTURE_0',type:'tex'},
-							{name:'TEXTURE_1',type:'tex'}
+							'WORLDVIEWPROJ','TIME','FOG_COLOR','CURRENT_COLOR',
+							'TEXTURE_0','TEXTURE_1',
 						]);
 					log.innerText=gl.log;
 				},
 				radio=()=>{
 					({pos,col,uv1,index}=models(Number(model.model.value)));
-					gl.defAtt(
-						'main',
-						[
-							{name:'POSITION',data:pos,length:4},
-							{name:'COLOR',data:col,length:4},
-							{name:'TEXCOORD_1',data:uv1,length:2}
-						],
-						index//ibo
-					)
+					gl.att([
+						{name:'pos',data:pos,slice:4},
+						{name:'col',data:col,slice:4},
+						{name:'uv1',data:uv1,slice:2}
+					]).ibo([
+						{name:'ibo',data:index}
+					]);
 				},
 				main=()=>{
 					clearTimeout(prc);
@@ -245,24 +239,29 @@ void main(){
 					m.rotate(WORLD, c_rot_[2], [0, 0, 1], WORLD);
 					m.multiply(WORLDVIEWPROJ, WORLD, WORLDVIEWPROJ);
 					gl.uni('main',[
-						{name:'WORLDVIEWPROJ',data:WORLDVIEWPROJ},
-						{name:'TIME',data:[TIME]},
-						{name:'FOG_COLOR',data:FOG_COLOR},
-						{name:'CURRENT_COLOR',data:c_c},
-						{name:'TEXTURE_0',data:'tex0'},
-						{name:'TEXTURE_1',data:'tex1'}
+						{loc:'WORLDVIEWPROJ',data:WORLDVIEWPROJ,type:'m'},
+						{loc:'TIME',data:[TIME],type:'f'},
+						{loc:'FOG_COLOR',data:FOG_COLOR,type:'f'},
+						{loc:'CURRENT_COLOR',data:c_c,type:'f'},
+						{loc:'TEXTURE_0',data:'tex0'},
+						{loc:'TEXTURE_1',data:'tex1'}
 					]);
-
-					gl.draw('main');
+					gl.draw('main',[
+						{loc:'POSITION',att:'pos'},
+						{loc:'COLOR',att:'col'},
+						{loc:'TEXCOORD_1',att:'uv1'}
+					],'ibo').flush();
 					prc=setTimeout(main,1000/fps);
 				};
 
-				gl.tex([
-					{name:'tex0',url:'tex/TEXTURE_0.png'},
-					{name:'tex1',url:'tex/TEXTURE_1.png'}
-				]);
 			compile();//シェダープログラム生成
 			radio();
+			gl.tex([
+				{name:'tex0',url:'tex/TEXTURE_0.png'},
+				{name:'tex1',url:'tex/TEXTURE_1.png'}
+			]).defAtt('main',[
+				'POSITION','COLOR','TEXCOORD_1'
+			]);
 			main();
 		</script>
 	</body>

@@ -15,7 +15,7 @@
 		<script src="../../src/cm-glsl.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/matchbrackets.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/closebrackets.min.js"></script>
-		<script src="https://mcbeeringi.github.io/petitgl/petitgl_.js"></script>
+		<script src="https://mcbeeringi.github.io/petitgl/petitgl.js"></script>
 		<style>
 			:root,input{background:#222;color:#fff;font-family:monospace;image-rendering:crisp-edges;user-select:none;-webkit-user-select:none;}
 			:link,:visited{color:#fff;}.dn{display:none;}pre{white-space:pre-wrap;margin:0;}
@@ -76,7 +76,7 @@
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2109080<br>
+				build: 2109090<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 			</div>
 		</div>
@@ -105,8 +105,10 @@ uniform vec2 res;
 
 			prvctx.imageSmoothingEnabled=false;
 			main
+				.att([{name:'_uv',data:[-1,-1,1,-1,-1,1,1,1],slice:2}])
+				.ibo([{name:'ibo',data:[0,1,2,3,2,1]}])
 				.compile('main',vsh,'void main(){gl_FragColor=vec4(0);}')
-				.defAtt('main',[{name:'UV',data:[-1,-1,1,-1,-1,1,1,1],length:2}],[0,1,2,3,2,1])
+				.defAtt('main',['UV'],)
 				.buffer([{name:'buff0',tex:'btex0'},{name:'buff1',tex:'btex1'}]);
 
 			const llog=x=>log.insertAdjacentHTML('beforeend',x),
@@ -135,13 +137,11 @@ uniform vec2 res;
 				main
 					.compile('main',vsh,fsh_e.getValue())
 					.defUni('main',[
-						{name:'time',type:'float'},
-						{name:'res',type:'vec2'},
-						{name:'tex0',type:'tex'},{name:'tex0res',type:'vec2'},
-						{name:'tex1',type:'tex'},{name:'tex1res',type:'vec2'},
-						{name:'tex2',type:'tex'},{name:'tex2res',type:'vec2'},
-						{name:'tex3',type:'tex'},{name:'tex3res',type:'vec2'},
-						{name:'buffer',type:'tex'},
+						'time','res','buffer',
+						'tex0','tex0res',
+						'tex1','tex1res',
+						'tex2','tex2res',
+						'tex3','tex3res'
 					]);
 				log.textContent=main.log;
 			},
@@ -156,14 +156,14 @@ uniform vec2 res;
 				t[1]=t[0];
 
 				main.uni('main',[
-					{name:'time',data:[t[0]]},
-					{name:'res',data:[c.width,c.height]},
-					{name:'tex0',data:'inp0',rname:'tex0res'},
-					{name:'tex1',data:'inp1',rname:'tex1res'},
-					{name:'tex2',data:'inp2',rname:'tex2res'},
-					{name:'tex3',data:'inp3',rname:'tex3res'},
-					{name:'buffer',data:'btex'+Number(btex)}
-				]).draw('main').draw('main','buff'+Number(!btex));
+					{loc:'time',data:[t[0]],type:'f'},
+					{loc:'res',data:[c.width,c.height],type:'f'},
+					{loc:'tex0',data:'inp0',rname:'tex0res'},
+					{loc:'tex1',data:'inp1',rname:'tex1res'},
+					{loc:'tex2',data:'inp2',rname:'tex2res'},
+					{loc:'tex3',data:'inp3',rname:'tex3res'},
+					{loc:'buffer',data:'btex'+Number(btex)}
+				]).draw('main',[{loc:'UV',att:'_uv'}],'ibo').draw('main',[{loc:'UV',att:'_uv'}],'ibo','buff'+Number(!btex)).flush();
 				prvctx.clearRect(0,0,prv.width,prv.height);
 				prvctx.drawImage(c,0,0,prv.width,prv.height);
 			},
