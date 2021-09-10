@@ -8,9 +8,10 @@
 	<body onclick="fsc();">
 		<script src="https://mcbeeringi.github.io/petitgl/petitgl.js"></script>
 		<style>
-			:root{background-color:#000;color:#fff;font-family:monospace;font-size:2em}
+			:root{background-color:#000;color:#fff;font-family:monospace;font-size:4em}
 			th{background-color:#8886;}td{box-sizing:border-box;border:2px solid #8888;background-color:#8888;}
-			#wrap{display:flex;align-items:start;}
+			th,td{white-space:nowrap;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}*::-webkit-scrollabr{display:none;}
+			#wrap{display:flex;align-items:start;overflow:scroll;}
 			#c{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-1;}
 		</style>
 		<canvas id="c"></canvas>
