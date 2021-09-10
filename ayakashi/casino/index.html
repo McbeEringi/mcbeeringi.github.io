@@ -30,7 +30,7 @@
 				},
 				main=()=>{
 					log.textContent="更新中…";
-					fetch('rank.json').then(x=>x.json()).then(x=>{
+					fetch(`rank.json?${new Date()}`).then(x=>x.json()).then(x=>{
 						wrap.textContent='';
 						for(const i in x){
 							const d=x[i].map((y,j)=>`<tr><th>${count(j+1)}</th><td>${y}</td></tr>`).join('');
