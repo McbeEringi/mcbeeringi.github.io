@@ -34,10 +34,10 @@
 				main=()=>{
 					log.textContent+='\t更新中…';
 					fetch(`rank.json?${Date.now()}`).then(x=>x.json()).then(dat=>{
-						if(version!=dat.version)setTimeout(()=>location.reload(true),5000);
+						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),2000);
 						wrap.textContent='';
 						dat.tables.forEach(x=>{
-							x.data=x.data.sort((a,b)=>Math.sign(b[0]-a[0]));
+							x.data=x.data.sort((a,b)=>Math.sign(b[0]-a[0])).slice(0,x.max);
 							[...new Array(Math.ceil(x.data.length/x.wrap)).keys()].forEach(i=>{
 								const starts=x.wrap*i,
 									a=x.data.slice(starts,starts+x.wrap).map((y,j)=>{
@@ -45,7 +45,7 @@
 										return`<tr><th>${count(j+1+starts)}</th>${b.join('')}</tr>`;
 									}),
 									c=x.head.map(y=>`<th>${y}</th>`);
-									wrap.insertAdjacentHTML('beforeend',`<table><tr><th>${x.name}</th>${c.join('')}</tr>${a.join('')}</table>`);
+									wrap.insertAdjacentHTML('beforeend',`<table><tr><th>${x.name[i%x.name.length]}</th>${c.join('')}</tr>${a.join('')}</table>`);
 							});
 						});
 						log.textContent=`${new Date().toLocaleTimeString()} 現在`;
