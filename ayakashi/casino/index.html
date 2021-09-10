@@ -8,14 +8,16 @@
 	<body>
 		<script src="https://mcbeeringi.github.io/petitgl/petitgl.js"></script>
 		<style>
-			:root{background-color:#000;color:#fff;font-family:monospace;font-size:max(16px,4vmin);}*::-webkit-scrollabr{display:none;}
+			:root{background-color:#000;color:#fff;font-family:monospace;font-size:max(16px,4vmin);text-shadow:2px 2px 0 #000;}*::-webkit-scrollabr{display:none;}
 			th{background-color:#8886;}td{box-sizing:border-box;border:2px solid #8888;background-color:#8888;}
-			th,td{white-space:nowrap;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
+			th,td{white-space:nowrap;border-radius:4px;padding:0 16px;text-align:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 			#wrap{display:flex;align-items:start;overflow:scroll;}
 			#c{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-1;}
 			#qr{float:right;image-rendering:crisp-edges;}
+			img[src*=qr]{position:fixed;bottom:8px;right:8px;width:64px;height:auto;border-radius:8px;}
 		</style>
 		<canvas id="c"></canvas>
+		<img src="qr.png" alt="qrcode" width="1" height="1">
 		<h1 onclick="fsc();">Casino in Tsuku Vegas</h1>
 		<pre id="log">更新</pre>
 		<div id="wrap">please enable javascript</div>
@@ -49,7 +51,7 @@
 			let btex;
 				const t0=new Date(),
 					gl=new PetitGL(c,[0,0,0,1])
-					.resize(innerWidth*.8,innerHeight*.8)
+					.resize(innerWidth,innerHeight)
 					.buffer([
 						{name:'buff0',tex:'btex0'},
 						{name:'buff1',tex:'btex1'}
@@ -118,7 +120,7 @@ void main(){
 						]
 					),
 					loop=()=>{
-						requestAnimationFrame(loop);
+						setTimeout(requestAnimationFrame,125,loop);//8fps
 						gl
 						.uni(
 							'test',
