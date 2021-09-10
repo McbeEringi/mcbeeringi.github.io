@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 		<title>casino in tsuku vegas rank</title>
 	</head>
-	<body>
+	<body onclick="fsc();">
 		<script src="https://mcbeeringi.github.io/petitgl/petitgl.js"></script>
 		<style>
 			:root{background-color:#000;color:#fff;font-family:monospace;font-size:2em}
@@ -22,9 +22,9 @@
 			const count=x=>x+['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=()=>{
 					let doc=window.document,docEl=doc.documentElement;
-					let init=docEl.requestFullscreen||docEl.mozRequestFullScreen||docEl.webkitRequestFullScreen||docEl.msRequestFullscreen;
-					let exit=doc.exitFullscreen||doc.mozCancelFullScreen||doc.webkitExitFullscreen||doc.msExitFullscreen;
-					if(doc.fullscreenElement||doc.mozFullScreenElement||doc.webkitFullscreenElement||doc.msFullscreenElement)exit.call(doc);
+					let init=docEl.requestFullscreen||docEl.webkitRequestFullScreen;
+					let exit=doc.exitFullscreen||doc.webkitExitFullscreen;
+					if(doc.fullscreenElement||doc.webkitFullscreenElement)exit.call(docEl);
 					else init.call(docEl);
 				},
 				main=()=>{
@@ -38,7 +38,7 @@
 						log.textContent=`${new Date().toLocaleString()} 更新`
 					});
 				};
-			setInterval(main,20000);main();//fsc();
+			setInterval(main,20000);main();
 
 
 			let btex;
