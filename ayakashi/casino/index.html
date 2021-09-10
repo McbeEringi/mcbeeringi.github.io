@@ -8,22 +8,23 @@
 	<body>
 		<script src="https://mcbeeringi.github.io/petitgl/petitgl.js"></script>
 		<style>
-			:root{background-color:#000;color:#fff;font-family:monospace;font-size:max(16px,4vmin);text-shadow:2px 2px 0 #000;}*::-webkit-scrollabr{display:none;}
+			:root{background-color:#000;color:#fff;font-family:monospace;font-size:max(16px,4vmin);text-shadow:2px 2px 0 #000;}
 			th{background-color:#8886;}td{box-sizing:border-box;border:2px solid #8888;background-color:#8888;}
 			th,td{white-space:nowrap;border-radius:4px;padding:0 16px;text-align:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
-			#wrap{display:flex;align-items:start;overflow:scroll;}
+			#wrap{display:flex;align-items:start;flex-wrap:wrap;}
+			#log{white-space:pre-wrap;}
 			#c{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-1;}
-			#qr{float:right;image-rendering:crisp-edges;}
 			img[src*=qr]{position:fixed;bottom:8px;right:8px;width:64px;height:auto;border-radius:8px;}
 		</style>
 		<canvas id="c"></canvas>
 		<img src="qr.png" alt="qrcode" width="1" height="1">
 		<h1 onclick="fsc();">Casino in Tsuku Vegas</h1>
-		<pre id="log">更新</pre>
+		<pre id="log"></pre>
 		<div id="wrap">please enable javascript</div>
 		<script>
 			'use strict'
-			const count=x=>x+['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
+			const version=0,
+				count=x=>x+['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=(e=document.documentElement)=>{
 					if(document.fullscreenElement||document.webkitFullscreenElement)
 						(document.exitFullscreen||document.webkitExitFullscreen).call(document);
@@ -32,16 +33,21 @@
 				},
 				main=()=>{
 					log.textContent+='\t更新中…';
-					fetch(`rank.json?${Date.now()}`).then(x=>x.json()).then(x=>{
+					fetch(`rank.json?${Date.now()}`).then(x=>x.json()).then(dat=>{
+						if(version!=dat.version)setTimeout(()=>location.reload(true),5000);
 						wrap.textContent='';
-						for(const i in x){
-							const a=x[i].sort((a,b)=>Math.sign(b[0]-a[0])).map((y,j)=>{
-								const tag=j==0?'th':'td',
-									b=y.map(z=>`<${tag}>${z}</${tag}>`);
-								return`<tr><th>${j==0?i:count(j)}</th>${b.join('')}</tr>`;
+						dat.tables.forEach(x=>{
+							x.data=x.data.sort((a,b)=>Math.sign(b[0]-a[0]));
+							[...new Array(Math.ceil(x.data.length/x.wrap)).keys()].forEach(i=>{
+								const starts=x.wrap*i,
+									a=x.data.slice(starts,starts+x.wrap).map((y,j)=>{
+										const b=y.map(z=>`<td>${z}</td>`);
+										return`<tr><th>${count(j+1+starts)}</th>${b.join('')}</tr>`;
+									}),
+									c=x.head.map(y=>`<th>${y}</th>`);
+									wrap.insertAdjacentHTML('beforeend',`<table><tr><th>${x.name}</th>${c.join('')}</tr>${a.join('')}</table>`);
 							});
-							wrap.insertAdjacentHTML('beforeend',`<table>${a.join('')}</table>`);
-						}
+						});
 						log.textContent=`${new Date().toLocaleTimeString()} 現在`;
 					});
 				};
