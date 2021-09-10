@@ -3,40 +3,44 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1">
-		<title>casino in tsuku vegas rank</title>
+		<title>Casino in Tsuku Vegas</title>
 	</head>
-	<body onclick="fsc();">
+	<body>
 		<script src="https://mcbeeringi.github.io/petitgl/petitgl.js"></script>
 		<style>
-			:root{background-color:#000;color:#fff;font-family:monospace;font-size:4em}
+			:root{background-color:#000;color:#fff;font-family:monospace;font-size:max(16px,4vmin);}*::-webkit-scrollabr{display:none;}
 			th{background-color:#8886;}td{box-sizing:border-box;border:2px solid #8888;background-color:#8888;}
-			th,td{white-space:nowrap;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}*::-webkit-scrollabr{display:none;}
+			th,td{white-space:nowrap;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 			#wrap{display:flex;align-items:start;overflow:scroll;}
 			#c{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-1;}
+			#qr{float:right;image-rendering:crisp-edges;}
 		</style>
 		<canvas id="c"></canvas>
-		<h1>Casino in Tsuku Vegas</h1>
-		<pre id="log"></pre>
-		<div id="wrap"></div>
+		<h1 onclick="fsc();">Casino in Tsuku Vegas</h1>
+		<pre id="log">更新</pre>
+		<div id="wrap">please enable javascript</div>
 		<script>
 			'use strict'
 			const count=x=>x+['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
-				fsc=()=>{
-					let doc=window.document,docEl=doc.documentElement;
-					let init=docEl.requestFullscreen||docEl.webkitRequestFullScreen;
-					let exit=doc.exitFullscreen||doc.webkitExitFullscreen;
-					if(doc.fullscreenElement||doc.webkitFullscreenElement)exit.call(docEl);
-					else init.call(docEl);
+				fsc=(e=document.documentElement)=>{
+					if(document.fullscreenElement||document.webkitFullscreenElement)
+						(document.exitFullscreen||document.webkitExitFullscreen).call(document);
+					else
+						(e.requestFullscreen||e.webkitRequestFullScreen).call(e);
 				},
 				main=()=>{
-					log.textContent="更新中…";
+					log.textContent+='\t更新中…';
 					fetch(`rank.json?${Date.now()}`).then(x=>x.json()).then(x=>{
 						wrap.textContent='';
 						for(const i in x){
-							const d=x[i].map((y,j)=>`<tr><th>${count(j+1)}</th><td>${y}</td></tr>`).join('');
-							wrap.insertAdjacentHTML('beforeend',`<table><tr><th>${i}</th><th>NAME</th></tr>${d}</table>`);
+							const a=x[i].sort((a,b)=>Math.sign(b[0]-a[0])).map((y,j)=>{
+								const tag=j==0?'th':'td',
+									b=y.map(z=>`<${tag}>${z}</${tag}>`);
+								return`<tr><th>${j==0?i:count(j)}</th>${b.join('')}</tr>`;
+							});
+							wrap.insertAdjacentHTML('beforeend',`<table>${a.join('')}</table>`);
 						}
-						log.textContent=`${new Date().toLocaleString()} 更新`
+						log.textContent=`${new Date().toLocaleTimeString()} 現在`;
 					});
 				};
 			setInterval(main,20000);main();
@@ -45,10 +49,7 @@
 			let btex;
 				const t0=new Date(),
 					gl=new PetitGL(c,[0,0,0,1])
-					.resize(innerWidth,innerHeight)
-					.tex([
-						{name:'texture0',url:'../ayakashi.jpg'}
-					])
+					.resize(innerWidth*.8,innerHeight*.8)
 					.buffer([
 						{name:'buff0',tex:'btex0'},
 						{name:'buff1',tex:'btex1'}
@@ -63,6 +64,7 @@
 						'test',//program name
 						`attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}`,//vsh
 						`precision highp float;
+uniform sampler2D buffer;
 uniform float time;
 uniform vec2 res;
 
@@ -93,10 +95,12 @@ void main(){
 	vec2 st=gl_FragCoord.xy/res;
 	vec2 uv=st*2.-1.;uv.x*=res.x/res.y;
 
-	float dist=1./abs((voronoi(uv*16.+time)+perlin(uv*.5-time*.1)*8.)*16.);
-	vec3 col=sin(time+vec3(0,2.1,4.2)+perlin(uv*.5+time*.05)*4.)*.5+.5;
+	float dist=1./abs((voronoi(uv*32.-vec2(0,time))+perlin(uv-time*.1)*8.)*16.);
+	vec3 col=sin(time*.1+vec3(0,2.1,4.2)+perlin(uv+time*.1)*4.)*.5+.5;
 
-	gl_FragColor =vec4(dist*col*1.5,1);
+	vec4 diffuse=mix(vec4(dist*col*1.5,1),texture2D(buffer,st),0.95);
+	diffuse.rgb=mix(vec3(0),diffuse.rgb,step(.2,dot(vec3(1),diffuse.rgb)));
+	gl_FragColor=diffuse;
 }`//fsh
 					)
 					.defAtt(
@@ -109,8 +113,6 @@ void main(){
 						'test',
 						[
 							'time',
-							'tex0',
-							'tex0res',
 							'res',
 							'buffer',
 						]
@@ -122,7 +124,6 @@ void main(){
 							'test',
 							[
 								{loc:'time',data:[(new Date()-t0)*.001],type:'f'},
-								{loc:'tex0',data:'texture0',rname:'tex0res'},
 								{loc:'res',data:[gl.c.width,gl.c.height],type:'f'},
 								{loc:'buffer',data:'btex'+Number(btex)}
 							]
