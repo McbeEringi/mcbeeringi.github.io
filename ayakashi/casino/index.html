@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>casino in tsuku vegas rank</title>
+	</head>
+	<body>
+		<style>
+			:root{background-color:#fff;color:#000;font-family:monospace;font-size:2em}
+			th{background-color:#8884;}td{box-sizing:border-box;border:2px solid #8888;}
+			#wrap{display:flex;align-items:start;}
+		</style>
+		<h1>Casino in Tsuku Vegas</h1>
+		<pre id="log"></pre>
+		<div id="wrap">
+
+		</div>
+		<script>
+			'use strict'
+			const count=x=>x+['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
+				fsc=()=>{
+					let doc=window.document,docEl=doc.documentElement;
+					let init=docEl.requestFullscreen||docEl.mozRequestFullScreen||docEl.webkitRequestFullScreen||docEl.msRequestFullscreen;
+					let exit=doc.exitFullscreen||doc.mozCancelFullScreen||doc.webkitExitFullscreen||doc.msExitFullscreen;
+					if(doc.fullscreenElement||doc.mozFullScreenElement||doc.webkitFullscreenElement||doc.msFullscreenElement)exit.call(doc);
+					else init.call(docEl);
+				},
+				main=()=>{
+					fetch('rank.json').then(x=>x.json()).then(x=>{
+						wrap.textContent='';
+						for(const i in x){
+							const d=x[i].map((y,j)=>`<tr><th>${count(j+1)}</th><td>${y}</td></tr>`).join('');
+							wrap.insertAdjacentHTML('beforeend',`<table><tr><th>${i}</th><th>NAME</th></tr>${d}</table>`);
+						}
+					});
+				};
+			setInterval(main,60000);main();//fsc();
+		</script>
+	</body>
+</html>
