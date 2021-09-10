@@ -6,16 +6,17 @@
 		<title>casino in tsuku vegas rank</title>
 	</head>
 	<body>
+		<script src="https://mcbeeringi.github.io/petitgl/petitgl.js"></script>
 		<style>
-			:root{background-color:#fff;color:#000;font-family:monospace;font-size:2em}
-			th{background-color:#8884;}td{box-sizing:border-box;border:2px solid #8888;}
+			:root{background-color:#000;color:#fff;font-family:monospace;font-size:2em}
+			th{background-color:#8886;}td{box-sizing:border-box;border:2px solid #8888;background-color:#8888;}
 			#wrap{display:flex;align-items:start;}
+			#c{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-1;}
 		</style>
+		<canvas id="c"></canvas>
 		<h1>Casino in Tsuku Vegas</h1>
 		<pre id="log"></pre>
-		<div id="wrap">
-
-		</div>
+		<div id="wrap"></div>
 		<script>
 			'use strict'
 			const count=x=>x+['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
@@ -27,15 +28,109 @@
 					else init.call(docEl);
 				},
 				main=()=>{
+					log.textContent="更新中…";
 					fetch('rank.json').then(x=>x.json()).then(x=>{
 						wrap.textContent='';
 						for(const i in x){
 							const d=x[i].map((y,j)=>`<tr><th>${count(j+1)}</th><td>${y}</td></tr>`).join('');
 							wrap.insertAdjacentHTML('beforeend',`<table><tr><th>${i}</th><th>NAME</th></tr>${d}</table>`);
 						}
+						log.textContent=`${new Date().toLocaleString()} 更新`
 					});
 				};
-			setInterval(main,60000);main();//fsc();
+			setInterval(main,20000);main();//fsc();
+
+
+			let btex;
+				const t0=new Date(),
+					gl=new PetitGL(c,[0,0,0,1])
+					.resize(innerWidth,innerHeight)
+					.tex([
+						{name:'texture0',url:'../ayakashi.jpg'}
+					])
+					.buffer([
+						{name:'buff0',tex:'btex0'},
+						{name:'buff1',tex:'btex1'}
+					])
+					.att([
+						{name:'_uv',data:[-1,-1, 1,-1, -1,1, 1,1],slice:2}
+					])
+					.ibo([
+						{name:'ibo',data:[0,1,2, 3,2,1]}
+					])
+					.compile(
+						'test',//program name
+						`attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}`,//vsh
+						`precision highp float;
+uniform float time;
+uniform vec2 res;
+
+vec2 hash22(vec2 p){
+	vec3 p3=fract(vec3(p.xyx)*vec3(.1031,.1030,.0973));
+	p3+=dot(p3,p3.yzx+33.33);
+	return fract((p3.xx+p3.yz)*p3.zy);
+}
+vec2 hash(vec2 p,float a){
+	p+=time*a+dot(hash22(p),vec2(1));
+	return mix(hash22(floor(p)),hash22(ceil(p)),smoothstep(0.,1.,fract(p)));
+}
+float voronoi(vec2 p){
+	vec2 g=floor(p);vec2 f=fract(p);float dist=1.;
+	for(int y=-1;y<=1;y++)for(int x=-1;x<=1;x++)
+		dist=min(dist,distance(vec2(x,y)+hash(g+vec2(x,y),1.),f));
+	return dist;
+}
+float perlin(vec2 p){
+	vec2 g=floor(p);vec2 f=fract(p);vec2 s=smoothstep(0.,1.,f);const float a=.2;
+	return mix(
+		mix(dot(hash(g+vec2(0,0),a),f-vec2(0,0)),dot(hash(g+vec2(1,0),a),f-vec2(1,0)),s.x),
+		mix(dot(hash(g+vec2(0,1),a),f-vec2(0,1)),dot(hash(g+vec2(1,1),a),f-vec2(1,1)),s.x),
+	s.y);
+}
+
+void main(){
+	vec2 st=gl_FragCoord.xy/res;
+	vec2 uv=st*2.-1.;uv.x*=res.x/res.y;
+
+	float dist=1./abs((voronoi(uv*16.+time)+perlin(uv*.5-time*.1)*8.)*16.);
+	vec3 col=sin(time+vec3(0,2.1,4.2)+perlin(uv*.5+time*.05)*4.)*.5+.5;
+
+	gl_FragColor =vec4(dist*col*1.5,1);
+}`//fsh
+					)
+					.defAtt(
+						'test',
+						[
+							'UV'
+						]
+					)
+					.defUni(
+						'test',
+						[
+							'time',
+							'tex0',
+							'tex0res',
+							'res',
+							'buffer',
+						]
+					),
+					loop=()=>{
+						requestAnimationFrame(loop);
+						gl
+						.uni(
+							'test',
+							[
+								{loc:'time',data:[(new Date()-t0)*.001],type:'f'},
+								{loc:'tex0',data:'texture0',rname:'tex0res'},
+								{loc:'res',data:[gl.c.width,gl.c.height],type:'f'},
+								{loc:'buffer',data:'btex'+Number(btex)}
+							]
+						)
+						.draw('test',[{loc:'UV',att:'_uv'}],'ibo').flush()
+						.draw('test',[{loc:'UV',att:'_uv'}],'ibo','buff'+Number(!btex));
+						btex=!btex;
+					};
+			loop();
 		</script>
 	</body>
 </html>
