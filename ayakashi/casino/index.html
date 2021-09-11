@@ -24,7 +24,7 @@
 		<span class="qr">スマホから見れるよ!→ <img src="qr.png" alt="qrcode" width="1" height="1"></span>
 		<script>
 			'use strict'
-			const version=1,
+			const version=2,
 				count=x=>x+'位',//['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=(e=document.documentElement)=>{
 					if(document.fullscreenElement||document.webkitFullscreenElement)
@@ -34,7 +34,7 @@
 				},
 				main=()=>{
 					log.textContent+='\t更新中…';
-					fetch(`https://script.google.com/macros/s/AKfycbwf5fGRuTEp3E3eZnW_1Dl84H2SSwPkBGQccSPv7oFuo1c6PQNHrq1gF06DXdlL_UmN2g/exec`,{mode:'no-cors'}).then(x=>x.json()).then(dat=>{
+					fetch(`dat.json`).then(x=>x.json()).then(dat=>{
 						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),5000);
 						wrap.textContent='';
 						const total=dat.tables[0].data.length;
