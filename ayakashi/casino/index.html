@@ -24,7 +24,7 @@
 		<span class="qr">スマホから見れるよ!→ <img src="qr.png" alt="qrcode" width="1" height="1"></span>
 		<script>
 			'use strict'
-			const version=0,
+			const version=1,
 				count=x=>x+'位',//['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=(e=document.documentElement)=>{
 					if(document.fullscreenElement||document.webkitFullscreenElement)
@@ -35,7 +35,7 @@
 				main=()=>{
 					log.textContent+='\t更新中…';
 					fetch(`https://script.google.com/a/macros/sgh-tsukuba.org/s/AKfycbxJpr5qMharcHjDCNQuJzk-22535aQCklINn2uGcvr850aAXRCThDorz35JmlGVbOgHRA/exec`,{mode:'no-cors'}).then(x=>x.json()).then(dat=>{
-						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),2000);
+						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),5000);
 						wrap.textContent='';
 						const total=dat.tables[0].data.length;
 						dat.tables.forEach(x=>{
@@ -53,7 +53,7 @@
 						log.textContent=`${new Date().toLocaleTimeString()} 現在 来場者数:${total}人`;
 					});
 				};
-			setInterval(main,20000);
+			setInterval(main,30000);
 			main();
 
 
