@@ -34,7 +34,7 @@
 				},
 				main=()=>{
 					log.textContent+='\t更新中…';
-					fetch(`https://script.google.com/a/macros/sgh-tsukuba.org/s/AKfycbxog6X2znCYDWyhBb2Oox6VhaclzE7z9ANht6DtqfeU_dn3BfV4FyaPn_XBVononRczvQ/exec`).then(x=>x.json()).then(dat=>{
+					fetch(`dat.json?${Date.now()}`).then(x=>x.json()).then(dat=>{
 						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),5000);
 						wrap.textContent='';
 						dat.tables.forEach(x=>{
@@ -52,7 +52,7 @@
 						log.textContent=`${new Date().toLocaleTimeString()} 現在`;
 					});
 				};
-			setInterval(main,60000);
+			setInterval(main,30000);
 			main();
 
 
