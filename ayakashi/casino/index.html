@@ -19,12 +19,15 @@
 		</style>
 		<canvas id="c"></canvas>
 		<h1 onclick="fsc();">Casino in Tsuku Vegas</h1>
-		<pre id="log"></pre>
+		<pre id="info"></pre>
 		<div id="wrap"></div>
-		<span class="qr">スマホから見れるよ!→ <img src="qr.png" alt="qrcode" width="1" height="1"></span>
+		<pre id="log"></pre>
+		<span class="qr"><img src="qr.png" alt="qrcode" width="1" height="1"></span>
 		<script>
 			'use strict'
 			const version=3,
+				day1='https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=0&single=true&output=tsv',
+				day2='https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=384445718&single=true&output=tsv',
 				count=x=>x+'位',//['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=(e=document.documentElement)=>{
 					if(document.fullscreenElement||document.webkitFullscreenElement)
@@ -33,44 +36,40 @@
 						(e.requestFullscreen||e.webkitRequestFullScreen).call(e);
 				},
 				main=()=>{
-					log.textContent+='\t更新中…';
-					fetch(`dat.json?${Date.now()}`).then(x=>x.json()).then(dat=>{
-						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),5000);
+					log.textContent+='更新中…';
+					fetch(day1).then(x=>x.text()).then(x=>{
+						x=x.split('\n').map(y=>y.split('\t'));
+						x={
+							...JSON.parse(x[0][0]),
+							head:x[1],
+							body:x.slice(2).sort((a,b)=>Math.sign(b[0]-a[0]))
+						};
+						if(version!=x.version){setTimeout(()=>location.search=Date.now(),10000);log.textContent+='アップデートが見つかりました';return;}
 						wrap.textContent='';
-						const total=dat.tables[0].data.length;
-						dat.tables.forEach(x=>{
-							x.data=x.data.sort((a,b)=>Math.sign(b[0]-a[0])).slice(0,x.max);
-							[...new Array(Math.ceil(x.data.length/x.wrap)).keys()].forEach(i=>{
-								const starts=x.wrap*i,
-									a=x.data.slice(starts,starts+x.wrap).map((y,j)=>{
-										const b=y.map(z=>`<td>${z}</td>`);
-										return`<tr><th>${count(j+1+starts)}</th>${b.join('')}</tr>`;
-									}),
-									c=x.head.map(y=>`<th>${y}</th>`);
-									wrap.insertAdjacentHTML('beforeend',`<table><tr><th>${x.name[i%x.name.length]}</th>${c.join('')}</tr>${a.join('')}</table>`);
-							});
+						const tmp=x.body.slice(0,x.max);
+						[...new Array(Math.ceil(tmp.length/x.wrap)).keys()].forEach(i=>{
+							const starts=x.wrap*i,
+								a=tmp.slice(starts,starts+x.wrap).map((y,j)=>{
+									const b=y.map(z=>`<td>${z}</td>`);
+									return`<tr><th>${count(j+1+starts)}</th>${b.join('')}</tr>`;
+								}),
+								c=x.head.map(y=>`<th>${y}</th>`);
+							wrap.insertAdjacentHTML('beforeend',`<table><tr><th>🃏</th>${c.join('')}</tr>${a.join('')}</table>`);
 						});
-						log.textContent=`${new Date().toLocaleTimeString()} 現在 来場者数:${total}人`;
-					});
+						info.textContent=`${new Date().toLocaleTimeString()} 現在 ${x.body.length}人が賭ケグルイました!`;
+						log.textContent='';
+					}).catch(e=>log.textContent=e);
 				};
-			setInterval(main,30000);
 			main();
+			setInterval(main,60000);
 
 
 			let btex;
-				const t0=new Date(),
-					gl=new PetitGL(c,[0,0,0,1])
+				const gl=new PetitGL(c,[0,0,0,1])
 					.resize(innerWidth,innerHeight)
-					.buffer([
-						{name:'buff0',tex:'btex0'},
-						{name:'buff1',tex:'btex1'}
-					])
-					.att([
-						{name:'_uv',data:[-1,-1, 1,-1, -1,1, 1,1],slice:2}
-					])
-					.ibo([
-						{name:'ibo',data:[0,1,2, 3,2,1]}
-					])
+					.buffer([{name:'buff0',tex:'btex0'},{name:'buff1',tex:'btex1'}])
+					.att([{name:'_uv',data:[-1,-1, 1,-1, -1,1, 1,1],slice:2}])
+					.ibo([{name:'ibo',data:[0,1,2, 3,2,1]}])
 					.compile(
 						'test',//program name
 						`attribute vec2 UV;void main(){gl_Position=vec4(UV,0,1);}`,//vsh
@@ -80,6 +79,7 @@ uniform float time;
 uniform vec2 res;
 
 vec2 hash22(vec2 p){
+	p+=512.;
 	vec3 p3=fract(vec3(p.xyx)*vec3(.1031,.1030,.0973));
 	p3+=dot(p3,p3.yzx+33.33);
 	return fract((p3.xx+p3.yz)*p3.zy);
@@ -114,27 +114,15 @@ void main(){
 	gl_FragColor=diffuse;
 }`//fsh
 					)
-					.defAtt(
-						'test',
-						[
-							'UV'
-						]
-					)
-					.defUni(
-						'test',
-						[
-							'time',
-							'res',
-							'buffer',
-						]
-					),
+					.defAtt('test',['UV'])
+					.defUni('test',['time','res','buffer']),
 					loop=()=>{
 						setTimeout(requestAnimationFrame,125,loop);//8fps
 						gl
 						.uni(
 							'test',
 							[
-								{loc:'time',data:[(new Date()-t0)*.001],type:'f'},
+								{loc:'time',data:[(Date.now()*.001)%3600],type:'f'},
 								{loc:'res',data:[gl.c.width,gl.c.height],type:'f'},
 								{loc:'buffer',data:'btex'+Number(btex)}
 							]
