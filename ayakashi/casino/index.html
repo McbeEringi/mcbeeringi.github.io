@@ -20,7 +20,7 @@
 		<canvas id="c"></canvas>
 		<h1 onclick="fsc();">Casino in Tsuku Vegas</h1>
 		<pre id="log"></pre>
-		<div id="wrap">please enable javascript</div>
+		<div id="wrap"></div>
 		<span class="qr">スマホから見れるよ!→ <img src="qr.png" alt="qrcode" width="1" height="1"></span>
 		<script>
 			'use strict'
@@ -34,8 +34,8 @@
 				},
 				main=()=>{
 					log.textContent+='\t更新中…';
-					fetch(`rank.json?${Date.now()}`).then(x=>x.json()).then(dat=>{
-						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),2000);
+					fetch(`https://script.google.com/a/macros/sgh-tsukuba.org/s/AKfycbwVDyu7_Z0LZge9n4hfMRt-bthz1gUSQAxRRyXfKEcS/dev`).then(x=>x.json()).then(dat=>{
+						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),5000);
 						wrap.textContent='';
 						dat.tables.forEach(x=>{
 							x.data=x.data.sort((a,b)=>Math.sign(b[0]-a[0])).slice(0,x.max);
@@ -52,7 +52,7 @@
 						log.textContent=`${new Date().toLocaleTimeString()} 現在`;
 					});
 				};
-			//setInterval(main,20000);
+			setInterval(main,60000);
 			main();
 
 
