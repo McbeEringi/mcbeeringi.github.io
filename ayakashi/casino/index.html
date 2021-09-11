@@ -34,7 +34,7 @@
 				},
 				main=()=>{
 					log.textContent+='\t更新中…';
-					fetch(`dat.json`).then(x=>x.json()).then(dat=>{
+					fetch(`dat.json`,{mode:'no-cors'}).then(x=>x.json()).then(dat=>{
 						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),2000);
 						wrap.textContent='';
 						const total=dat.tables[0].data.length;
