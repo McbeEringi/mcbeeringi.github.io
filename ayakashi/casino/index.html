@@ -15,7 +15,7 @@
 			pre{white-space:pre-wrap;}
 			#c{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-1;}
 			.qr{position:fixed;bottom:8px;right:8px;}
-			img[src*=qr]{width:64px;height:auto;border-radius:8px;vertical-align:middle;}
+			img[src*=qr]{width:80px;height:auto;border-radius:8px;vertical-align:middle;}
 		</style>
 		<canvas id="c"></canvas>
 		<h1 onclick="fsc();">Casino in Tsuku Vegas</h1>
@@ -24,7 +24,7 @@
 		<span class="qr">スマホから見れるよ!→ <img src="qr.png" alt="qrcode" width="1" height="1"></span>
 		<script>
 			'use strict'
-			const version=4,
+			const version=5,
 				count=x=>x+'位',//['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=(e=document.documentElement)=>{
 					if(document.fullscreenElement||document.webkitFullscreenElement)
@@ -35,7 +35,7 @@
 				main=()=>{
 					log.textContent+='\t更新中…';
 					fetch(`dat.json?${Date.now()}`).then(x=>x.json()).then(dat=>{
-						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),5000);
+						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),2000);
 						wrap.textContent='';
 						dat.tables.forEach(x=>{
 							x.data=x.data.sort((a,b)=>Math.sign(b[0]-a[0])).slice(0,x.max);
@@ -52,7 +52,7 @@
 						log.textContent=`${new Date().toLocaleTimeString()} 現在`;
 					});
 				};
-			setInterval(main,30000);
+			setInterval(main,20000);
 			main();
 
 
