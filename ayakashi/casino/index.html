@@ -26,8 +26,10 @@
 		<script>
 			'use strict'
 			const version=3,
-				day1='https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=0&single=true&output=tsv',
-				day2='https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=384445718&single=true&output=tsv',
+				url=[
+					'https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=0&single=true&output=tsv',
+					'https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=384445718&single=true&output=tsv'
+				],
 				count=x=>x+'位',//['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=(e=document.documentElement)=>{
 					if(document.fullscreenElement||document.webkitFullscreenElement)
@@ -37,14 +39,14 @@
 				},
 				main=()=>{
 					log.textContent+='更新中…';
-					fetch(day1).then(x=>x.text()).then(x=>{
+					fetch(url[0],{cache:'no-cache'}).then(x=>x.text()).then(x=>{
 						x=x.split('\n').map(y=>y.split('\t'));
 						x={
 							...JSON.parse(x[0][0]),
 							head:x[1],
 							body:x.slice(2).sort((a,b)=>Math.sign(b[0]-a[0]))
 						};
-						if(version!=x.version){setTimeout(()=>location.search=Date.now(),10000);log.textContent+='アップデートが見つかりました';return;}
+						if(version!=x.version){setTimeout(()=>location.search=Date.now(),5000);log.textContent+='アップデートが見つかりました';return;}
 						wrap.textContent='';
 						const tmp=x.body.slice(0,x.max);
 						[...new Array(Math.ceil(tmp.length/x.wrap)).keys()].forEach(i=>{
@@ -61,7 +63,7 @@
 					}).catch(e=>log.textContent=e);
 				};
 			main();
-			setInterval(main,60000);
+			setInterval(main,30000);
 
 
 			let btex;
