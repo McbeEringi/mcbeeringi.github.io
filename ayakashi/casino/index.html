@@ -24,7 +24,7 @@
 		<span class="qr">スマホから見れるよ!→ <img src="qr.png" alt="qrcode" width="1" height="1"></span>
 		<script>
 			'use strict'
-			const version=5,
+			const version=6,
 				count=x=>x+'位',//['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=(e=document.documentElement)=>{
 					if(document.fullscreenElement||document.webkitFullscreenElement)
@@ -34,7 +34,7 @@
 				},
 				main=()=>{
 					log.textContent+='\t更新中…';
-					fetch(`dat.json?${Date.now()}`).then(x=>x.json()).then(dat=>{
+					fetch(`https://script.googleusercontent.com/a/macros/sgh-tsukuba.org/echo?user_content_key=K0q-YEpqOrlREYVegiIUzMdMW43elfpdp9pKevt1lvV3DhcbLNAvxvjaSMAZn2uwMOFF0YEnQFRuqynRxTVjoW2yGg4YzQqtm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_nRPgeZU6HP8NrkQntFT7njX7KIZzpa_A606TFosF_cnZvRwti3DwlNO_riirVqqEEcaZ-bgiJTEmcEUYp14sZuraPFhpeZZhMTlhSSH2KWY&lib=MUTBXwdaK-kNwkgC2j5UtqASV8lJLtV1R`).then(x=>x.json()).then(dat=>{
 						if(version!=dat.version)setTimeout(()=>location.search=Date.now(),2000);
 						wrap.textContent='';
 						dat.tables.forEach(x=>{
