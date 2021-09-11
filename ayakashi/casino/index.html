@@ -18,14 +18,14 @@
 			img[src*=qr]{width:64px;height:auto;border-radius:8px;vertical-align:middle;}
 		</style>
 		<canvas id="c"></canvas>
-		<span class="qr">スマホから見れるよ!→ <img src="qr.png" alt="qrcode" width="1" height="1"></span>
 		<h1 onclick="fsc();">Casino in Tsuku Vegas</h1>
 		<pre id="log"></pre>
 		<div id="wrap">please enable javascript</div>
+		<span class="qr">スマホから見れるよ!→ <img src="qr.png" alt="qrcode" width="1" height="1"></span>
 		<script>
 			'use strict'
 			const version=1,
-				count=x=>x+['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
+				count=x=>x+'位',//['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=(e=document.documentElement)=>{
 					if(document.fullscreenElement||document.webkitFullscreenElement)
 						(document.exitFullscreen||document.webkitExitFullscreen).call(document);
