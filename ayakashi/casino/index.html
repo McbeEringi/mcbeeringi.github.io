@@ -19,16 +19,18 @@
 		</style>
 		<canvas id="c"></canvas>
 		<h1 onclick="fsc();">Casino in Tsuku Vegas</h1>
+		3-4 "Casino in Tsuku Vegas"は<br>
+		総合2位装飾1位を獲得することができました!<br>
+		ご来場 投票いただき有難うございます<br>
 		<pre id="info"></pre>
 		<div id="wrap"></div>
-		<pre id="log"></pre>
 		<span class="qr"><img src="qr.png" alt="qrcode" width="1" height="1"></span>
 		<script>
 			'use strict'
 			const version=3,
 				url=[
-					'https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=0&single=true&output=tsv',
-					'https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=384445718&single=true&output=tsv'
+					'day1.tsv',//'https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=0&single=true&output=tsv',
+					'day2.tsv'//'https://docs.google.com/spreadsheets/d/e/2PACX-1vSxUnoOCtJnDbi7wD6mFNB4bBswsZMy8LKMzJgKp1LyZp0QQoRapAOTVJtIIvdSd9vnQSCco4nV90kn/pub?gid=384445718&single=true&output=tsv'
 				],
 				count=x=>x+'位',//['st','nd','rd','th'][[3,0,1,2,3,3,3,3,3,3][x%10]],
 				fsc=(e=document.documentElement)=>{
@@ -37,17 +39,17 @@
 					else
 						(e.requestFullscreen||e.webkitRequestFullScreen).call(e);
 				},
-				main=()=>{
-					log.textContent+='更新中…';
-					fetch(url[0],{cache:'no-cache'}).then(x=>x.text()).then(x=>{
+				main=(day=0)=>{
+					fetch(url[day],{cache:'no-cache'}).then(x=>x.text()).then(x=>{
 						x=x.split('\n').map(y=>y.split('\t'));
 						x={
 							...JSON.parse(x[0][0]),
 							head:x[1],
 							body:x.slice(2).sort((a,b)=>Math.sign(b[0]-a[0]))
 						};
-						if(version!=x.version){setTimeout(()=>location.search=Date.now(),5000);log.textContent+='アップデートが見つかりました';return;}
-						wrap.textContent='';
+						if(version!=x.version){setTimeout(()=>location.search=Date.now(),5000);return;}
+						//wrap.textContent='';
+						info.textContent+=`${day+1}日目: ${x.body.length}人が賭ケグルイました!\n`;
 						const tmp=x.body.slice(0,x.max);
 						[...new Array(Math.ceil(tmp.length/x.wrap)).keys()].forEach(i=>{
 							const starts=x.wrap*i,
@@ -56,14 +58,13 @@
 									return`<tr><th>${count(j+1+starts)}</th>${b.join('')}</tr>`;
 								}),
 								c=x.head.map(y=>`<th>${y}</th>`);
-							wrap.insertAdjacentHTML('beforeend',`<table><tr><th>🃏</th>${c.join('')}</tr>${a.join('')}</table>`);
+							wrap.insertAdjacentHTML('beforeend',`<table><tr><th>${day+1}日目</th>${c.join('')}</tr>${a.join('')}</table>`);
 						});
-						info.textContent=`${new Date().toLocaleTimeString()} 現在 ${x.body.length}人が賭ケグルイました!`;
-						log.textContent='';
 					}).catch(e=>log.textContent=e);
 				};
-			main();
-			setInterval(main,30000);
+			main(0);
+			main(1);
+			//setInterval(main,30000);
 
 
 			let btex;
