@@ -39,8 +39,9 @@
 					else
 						(e.requestFullscreen||e.webkitRequestFullScreen).call(e);
 				},
-				main=(day=0)=>{
-					fetch(url[day],{cache:'no-cache'}).then(x=>x.text()).then(x=>{
+				main=()=>{
+					//log.textContent+='更新中…';
+					fetch(url[1],{cache:'no-cache'}).then(x=>x.text()).then(x=>{
 						x=x.split('\n').map(y=>y.split('\t'));
 						x={
 							...JSON.parse(x[0][0]),
