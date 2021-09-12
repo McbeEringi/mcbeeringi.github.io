@@ -39,7 +39,7 @@
 				},
 				main=()=>{
 					log.textContent+='更新中…';
-					fetch(url[0],{cache:'no-cache'}).then(x=>x.text()).then(x=>{
+					fetch(url[1],{cache:'no-cache'}).then(x=>x.text()).then(x=>{
 						x=x.split('\n').map(y=>y.split('\t'));
 						x={
 							...JSON.parse(x[0][0]),
