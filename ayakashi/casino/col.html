@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>penlight alt</title>
+		<meta name="theme-color">
+	</head>
+	<body>
+		<style>
+			html,body{margin:0;height:100%;font-size:15vw}form{opacity:.1;}input{display:none;}
+		</style>
+		<form id="form" onchange="main();">
+			<label><input type="radio" name="col" value="0">B</label>
+			<label><input type="radio" name="col" value="1">G</label>
+			<label><input type="radio" name="col" value="2" checked>W</label>
+			<label><input type="radio" name="col" value="3">R</label>
+			<label><input type="radio" name="col" value="4">Y</label>
+			<label><input type="radio" name="col" value="5">M</label>
+		</form>
+		<script>
+			const main=()=>document.querySelector('[name*=col]').content=document.body.style.backgroundColor='#'+['44f','4f4','fff','f44','ff4','f4f'][form.col.value];
+			main();
+		</script>
+	</body>
+</html>
