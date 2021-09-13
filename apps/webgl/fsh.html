@@ -76,7 +76,7 @@
 			<div>
 				powered by WebGL1.0<br>
 				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2109091<br>
+				build: 2109140<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 			</div>
 		</div>
@@ -163,7 +163,7 @@ uniform vec2 res;
 					{loc:'tex2',data:'inp2',rname:'tex2res'},
 					{loc:'tex3',data:'inp3',rname:'tex3res'},
 					{loc:'buffer',data:'btex'+Number(btex)}
-				]).draw('main',[{loc:'UV',att:'_uv'}],'ibo').draw('main',[{loc:'UV',att:'_uv'}],'ibo','buff'+Number(!btex)).flush();
+				]).draw('main',[{loc:'UV',att:'_uv'}],'ibo').draw('main',[{loc:'UV',att:'_uv'}],'ibo',true,'buff'+Number(!btex)).flush();
 				prvctx.clearRect(0,0,prv.width,prv.height);
 				prvctx.drawImage(c,0,0,prv.width,prv.height);
 			},
