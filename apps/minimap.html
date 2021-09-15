@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/atom-one-dark.min.css">
 	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"></script>
 	<style>
-		:root{font-family:monospace;background:#222;color:#fff;tab-size:2;}:link{color:#8cf;}
+		:root{font-family:monospace;background:#222;color:#fff;tab-size:2;image-rendering:pixelated;}:link{color:#8cf;}
 	</style>
 
 	<h1>minimap</h1>
@@ -21,8 +21,36 @@
 	<pre><code id="out">console.log('Hello World!');</code></pre>
 	<script>
 		'use strict';
-		const minimap=e=>{
-
+		const minimap=(e=document.body,c=document.createElement('canvas'))=>{
+			e.style.position='fixed';e.style.top='0';e.style.left='0';e.style.transform='translateX(-100%)';
+			const size=0.2;
+			const ctx=c.getContext('2d'),
+				dat=[],
+				core=x=>{
+					const b=x.getBoundingClientRect(),
+						s=window.getComputedStyle(x);
+					dat.push({
+						box:[
+							b.x+(dat[0]||{box:[0,0,b.width]}).box[2],
+							b.y,
+							b.width,
+							b.height
+						],
+						col0:s.backgroundColor,
+						col1:s.color
+					});
+					[...x.children].forEach(core);
+				};
+				core(e);
+				console.log(dat);
+				c.width=dat[0].box[2]*size;
+				c.height=dat[0].box[3]*size;
+				dat.forEach(x=>{
+					ctx.fillStyle=x.col0;ctx.fillRect(...x.box.map(y=>Math.round(y*size)));
+					if(dat[0].col1!=x.col1)ctx.fillStyle=x.col1;ctx.fillRect(...x.box.map(y=>Math.round(y*size)));
+				});
+				e.style='';
+			return c;
 		};
 		hljs.highlightAll();
 		inp.onchange=()=>{
@@ -30,6 +58,7 @@
 			inp.files[0].text().then(x=>{
 				out.textContent=x;
 				hljs.highlightAll();
+				document.body.appendChild(minimap(out));
 			})
 		};
 	</script>
