@@ -132,7 +132,7 @@ void main(){
 							]
 						)
 						.draw('test',[{loc:'UV',att:'_uv'}],'ibo').flush()
-						.draw('test',[{loc:'UV',att:'_uv'}],'ibo','buff'+Number(!btex));
+						.draw('test',[{loc:'UV',att:'_uv'}],'ibo',true,'buff'+Number(!btex));
 						btex=!btex;
 					};
 			loop();
