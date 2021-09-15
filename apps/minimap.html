@@ -16,50 +16,48 @@
 	</style>
 
 	<h1>minimap</h1>
-	<input type="file" id="inp">
+	<input type="file" id="inp"><br>
 	<div id="dl"></div>
-	<pre><code id="out">console.log('Hello World!');</code></pre>
+	<canvas id="c"></canvas>
+	<pre><code id="out"></code></pre>
 	<script>
 		'use strict';
-		const minimap=(e=document.body,c=document.createElement('canvas'))=>{
-			e.style.position='fixed';e.style.top='0';e.style.left='0';e.style.transform='translateX(-100%)';
-			const size=0.2;
+		const minimap=(e=document.body,size=.5,c=document.createElement('canvas'))=>{
 			const ctx=c.getContext('2d'),
-				dat=[],
+				pre=x=>x.childNodes.forEach(y=>{
+					if(!y.tagName){
+						const el=document.createElement('span');
+						el.insertAdjacentHTML('beforeend',`<span>${y.textContent.replace(/</g,'>').replace(/([\n\r\s\t]+)/g,'</span>$1<span>')}</span>`);
+						y.parentNode.insertBefore(el,y);y.parentNode.removeChild(y);
+					}else pre(y);
+				}),
 				core=x=>{
-					const b=x.getBoundingClientRect(),
-						s=window.getComputedStyle(x);
-					dat.push({
-						box:[
-							b.x+(dat[0]||{box:[0,0,b.width]}).box[2],
-							b.y,
-							b.width,
-							b.height
-						],
-						col0:s.backgroundColor,
-						col1:s.color
-					});
-					[...x.children].forEach(core);
+					const b=x.getBoundingClientRect(),s=window.getComputedStyle(x),
+						fill=()=>ctx.fillRect(...[b.x,b.y,b.width,b.height].map(y=>Math.round(y*size)));
+					ctx.fillStyle=s.backgroundColor;fill();
+					if(!x.children.length&&x.textContent.trim()){ctx.fillStyle=s.color;fill();}
+					else[...x.children].forEach(core);
 				};
-				core(e);
-				console.log(dat);
-				c.width=dat[0].box[2]*size;
-				c.height=dat[0].box[3]*size;
-				dat.forEach(x=>{
-					ctx.fillStyle=x.col0;ctx.fillRect(...x.box.map(y=>Math.round(y*size)));
-					if(dat[0].col1!=x.col1)ctx.fillStyle=x.col1;ctx.fillRect(...x.box.map(y=>Math.round(y*size)));
-				});
-				e.style='';
+			e=e.cloneNode(true);document.body.appendChild(e);
+			e.style.position='fixed';e.style.top='0';e.style.left='0';e.style.visibility='hidden';
+			c.width=e.getBoundingClientRect().width*size;
+			c.height=e.getBoundingClientRect().height*size;
+			pre(e);core(e);e.remove();
 			return c;
+		},
+		main=x=>{
+			out.textContent=x;
+			hljs.highlightAll();
+			minimap(out.parentNode,.5,c).toBlob(b=>{
+				const a=document.createElement('a');a.href=URL.createObjectURL(b);
+				a.textContent=a.download=`${inp.files[0].name}.${b.type.match(/\/\w+$/)[0].slice(1)}`;
+				dl.appendChild(a);dl.appendChild(document.createElement('br'));
+			});
 		};
-		hljs.highlightAll();
+		onload=()=>main(`console.log('Hello World!');`);
 		inp.onchange=()=>{
 			out.classList=(inp.files[0].name.match(/\.\w+$/)||[' plaintext'])[0].slice(1);
-			inp.files[0].text().then(x=>{
-				out.textContent=x;
-				hljs.highlightAll();
-				document.body.appendChild(minimap(out));
-			})
+			inp.files[0].text().then(main);
 		};
 	</script>
 </body>
