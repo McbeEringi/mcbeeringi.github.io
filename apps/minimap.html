@@ -12,19 +12,17 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/atom-one-dark.min.css">
 	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"></script>
 	<style>
-		:root{font-family:monospace;background:#222;color:#fff;tab-size:2;image-rendering:pixelated;}:link{color:#8cf;}
+		:root{font-family:monospace;background:#222;color:#fff;tab-size:2;image-rendering:pixelated;}:link{color:#8cf;}pre{display:inline-block;}
 	</style>
 
 	<h1>minimap</h1>
 	<input type="file" id="inp"><br>
-	<pre id="dl"></pre>
-	<canvas id="c"></canvas>
+	<pre id="dl"></pre><br>
+	<canvas id="c"></canvas><br>
 	<pre><code id="out"></code></pre>
 	<script>
 		'use strict';
 		const minimap=(e=document.documentElement,size=.5,c=document.createElement('canvas'))=>{
-			e=e.cloneNode(true);document.body.appendChild(e);
-			e.style.cssText+='position:fixed;top:0;left:0;visibility:hidden;';
 			const ctx=c.getContext('2d'),
 				pre=x=>x.childNodes.forEach(y=>{
 					if(!y.tagName&&(y.textContent||'').trim()){
@@ -41,6 +39,8 @@
 					else[...x.children].forEach(core);
 				},
 				b=e.getBoundingClientRect();
+			e=e.cloneNode(true);document.body.appendChild(e);
+			e.style.cssText+=`position:fixed;top:0;left:0;visibility:hidden;width:${b.width}px;height:${b.height}px;`;
 			c.width=b.width*size;c.height=b.height*size;
 			pre(e);core(e);e.remove();
 			return c;
