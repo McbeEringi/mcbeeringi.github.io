@@ -50,7 +50,7 @@
 			hljs.highlightAll();
 			minimap(out.parentNode,.5,c).toBlob(b=>{
 				const a=document.createElement('a');
-				a.download=`${inp.files[0].name}.${b.type.match(/\/\w+$/)[0].slice(1)}`a.textContent=`${a.download}\n`;
+				a.download=`${inp.files[0].name}.${b.type.match(/\/\w+$/)[0].slice(1)}`;a.textContent=`${a.download}\n`;
 				a.href=URL.createObjectURL(b);a.onclick=()=>setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},5000);
 				dl.appendChild(a);
 			});
