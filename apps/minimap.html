@@ -25,9 +25,9 @@
 		const minimap=(e=document.body,size=.5,c=document.createElement('canvas'))=>{
 			const ctx=c.getContext('2d'),
 				pre=x=>x.childNodes.forEach(y=>{
-					if(!y.tagName){
+					if(!y.tagName&&(y.textContent||'').trim()){
 						const el=document.createElement('span');
-						el.insertAdjacentHTML('beforeend',`<span>${y.textContent.replace(/</g,'>').replace(/([\n\r\s\t]+)/g,'</span>$1<span>')}</span>`);
+						el.insertAdjacentHTML('beforeend',`<span>${y.textContent.replace(/</g,'>').replace(/([\n\r\s\t]+)/g,'</span>$1<span>')}</span>`.replace(/<span><\/span>/g,''));
 						y.parentNode.insertBefore(el,y);y.parentNode.removeChild(y);
 					}else pre(y);
 				}),
@@ -35,7 +35,7 @@
 					const b=x.getBoundingClientRect(),s=window.getComputedStyle(x),
 						fill=()=>ctx.fillRect(...[b.x,b.y,b.width,b.height].map(y=>Math.round(y*size)));
 					ctx.fillStyle=s.backgroundColor;fill();
-					if(!x.children.length&&x.textContent.trim()){ctx.fillStyle=s.color;fill();}
+					if(!x.children.length){ctx.fillStyle=s.color;fill();}
 					else[...x.children].forEach(core);
 				};
 			e=e.cloneNode(true);document.body.appendChild(e);
