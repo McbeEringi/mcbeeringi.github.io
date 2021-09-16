@@ -23,6 +23,8 @@
 	<script>
 		'use strict';
 		const minimap=(e=document.documentElement,size=.5,c=document.createElement('canvas'))=>{
+			e=e.cloneNode(true);document.body.appendChild(e);
+			e.style.cssText+='position:fixed;top:0;left:0;visibility:hidden;';
 			const ctx=c.getContext('2d'),
 				pre=x=>x.childNodes.forEach(y=>{
 					if(!y.tagName&&(y.textContent||'').trim()){
@@ -39,8 +41,6 @@
 					else[...x.children].forEach(core);
 				},
 				b=e.getBoundingClientRect();
-			e=e.cloneNode(true);document.body.appendChild(e);
-			e.style.cssText+='position:fixed;top:0;left:0;visibility:hidden;';
 			c.width=b.width*size;c.height=b.height*size;
 			pre(e);core(e);e.remove();
 			return c;
