@@ -33,16 +33,21 @@
 				}),
 				core=x=>{
 					const b=x.getBoundingClientRect(),s=window.getComputedStyle(x),
-						fill=()=>ctx.fillRect(...[b.x,b.y,b.width,b.height].map(y=>Math.round(y*size)));
-					ctx.fillStyle=s.backgroundColor;fill();
-					if(!x.children.length){ctx.fillStyle=s.color;fill();}
-					else[...x.children].forEach(core);
+						rect=[b.x,b.y,b.width,b.height].map(y=>Math.round(y*size));
+					if(rect.slice(2,4).every(y=>y)){
+						ctx.fillStyle=s.backgroundColor;ctx.fillRect(...rect);
+						if(!x.children.length){ctx.fillStyle=s.color;ctx.fillRect(...rect);}
+						if(['IMG','CANVAS'].includes(x.tagName))ctx.drawImage(x,...rect);
+					}
+					[...x.children].forEach(core);
 				},
-				b=e.getBoundingClientRect();
+				b=e.getBoundingClientRect(),
+				cv=e.querySelectorAll('canvas');
 			e=e.cloneNode(true);document.body.appendChild(e);
 			e.style.cssText+=`position:fixed;top:0;left:0;visibility:hidden;width:${b.width}px;height:${b.height}px;`;
 			c.width=b.width*size;c.height=b.height*size;
-			pre(e);core(e);e.remove();
+			pre(e);e.querySelectorAll('canvas').forEach((x,i)=>x.getContext('2d').drawImage(cv[i],0,0));
+			core(e);e.remove();
 			return c;
 		},
 		main=x=>{

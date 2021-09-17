@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
+	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi jsbm</title>
+</head>
+<body>
+	<style>
+		:root,textarea{font-family:monospace;background:#222;color:#fff;tab-size:2;image-rendering:pixelated;}
+		textarea{resize:none;width:100%;box-sizing:border-box;word-break:break-all;}
+	</style>
+
+	<h1>JS bookmark</h1>
+	<textarea id="inp"></textarea>
+	<hr>
+	<button id="copy">copy</button>
+	<textarea id="out"></textarea>
+	<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
+	<script>
+		[inp,out].forEach(autosize);
+		inp.oninput=()=>{
+			let i=0,reg=/`[^`]+`/g,tmp=inp.value.match(reg)||[];
+			out.value='javascript:'+encodeURIComponent(inp.value.replace(/[\n\r\t\u2028\u2029]+/g,'').replace(reg,()=>tmp[i++]));
+			[inp,out].forEach(autosize.update);
+		};
+		copy.onclick=()=>navigator.clipboard.writeText(out.value).then(x=>{copy.textContent='copied';setTimeout(()=>copy.textContent='copy',1000);});
+		inp.oninput();
+	</script>
+</body>
+</html>
