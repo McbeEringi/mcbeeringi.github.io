@@ -125,10 +125,12 @@ uniform vec2 res;
 				main.tex([
 					{
 						name:x.id,
-						url,
-						fx:t=>{
-							console.log('tex loaded',x,t);
-							x.nextElementSibling.textContent=`uniform vec2 tex${x.id.slice(-1)}res= vec2(${t.size.join()});`
+						data:{
+							url,
+							type:'img',
+							fx:y=>{console.log('tex loaded',x,y);
+								x.nextElementSibling.textContent=`uniform vec2 tex${x.id.slice(-1)}res= vec2(${y.size.join()});`
+							}
 						}
 					}
 				]);

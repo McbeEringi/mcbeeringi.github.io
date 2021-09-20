@@ -257,8 +257,8 @@ void main(){
 			compile();//シェダープログラム生成
 			radio();
 			gl.tex([
-				{name:'tex0',url:'tex/TEXTURE_0.png'},
-				{name:'tex1',url:'tex/TEXTURE_1.png'}
+				{name:'tex0',data:{url:'tex/TEXTURE_0.png',type:'img'}},
+				{name:'tex1',data:{url:'tex/TEXTURE_1.png',type:'img'}}
 			]).defAtt('main',[
 				'POSITION','COLOR','TEXCOORD_1'
 			]);
