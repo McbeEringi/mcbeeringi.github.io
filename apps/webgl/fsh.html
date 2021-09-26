@@ -160,10 +160,10 @@ uniform vec2 res;
 				main.uni('main',[
 					{loc:'time',data:[t[0]],type:'f'},
 					{loc:'res',data:[c.width,c.height],type:'f'},
-					{loc:'tex0',data:'inp0',rname:'tex0res'},
-					{loc:'tex1',data:'inp1',rname:'tex1res'},
-					{loc:'tex2',data:'inp2',rname:'tex2res'},
-					{loc:'tex3',data:'inp3',rname:'tex3res'},
+					{loc:'tex0',data:'inp0',rloc:'tex0res'},
+					{loc:'tex1',data:'inp1',rloc:'tex1res'},
+					{loc:'tex2',data:'inp2',rloc:'tex2res'},
+					{loc:'tex3',data:'inp3',rloc:'tex3res'},
 					{loc:'buffer',data:'btex'+Number(btex)}
 				]).draw('main',[{loc:'UV',att:'_uv'}],'ibo').draw('main',[{loc:'UV',att:'_uv'}],'ibo',true,'buff'+Number(!btex)).flush();
 				prvctx.clearRect(0,0,prv.width,prv.height);
