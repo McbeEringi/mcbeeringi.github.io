@@ -33,7 +33,7 @@
 					[/others\/sky/i,'sky'],[/apps\/sky/i,'sky'],
 					[/amuse\/js/i,'apps/js'],[/amuse\/jdsm/i,'apps/mc/jdsm'],[/amuse\/seq/i,'sky/seq_'],
 					[/worlds/i,'mc']
-				].reduce((a,x)=>url=a.replace(...x),location.href);
+				].reduce((a,x)=>a.replace(...x),location.href);
 				if(location.href!=url){
 					log.textContent='Redirecting to correct URL\nPlease wait…';
 					location.href=url;
