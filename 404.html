@@ -7,47 +7,23 @@
 		<meta charset='utf-8'>
 		<meta name='viewport' content='width=device-width,initial-scale=1.0'>
 		<title>McbeEringi 404</title>
-		<style media='screen'>
-			:root{background-color:#222;color:#fff;
-				font-family:monospace;text-align:center;
-				overflow-wrap:break-word;
-			}
-			a{text-shadow:0 0 4px #888;}a:link{color:#48f;}a:visited{color:#84f;}
-			.bar{width:100%;height:8px;background-color:#333;}
-			.bar *{height:100%;background-color:#48f;animation: fill 5s linear 0s 1 alternate;}
-			@keyframes fill{0%{width:0;}100%{width:100%;}}
+		<style>
+			:root{background-color:#222;color:#fff;font-family:monospace;text-align:center;}
+			:link{color:#8cf;}:visited{color:#c8f;}pre>h1{font-size:500%;}
 		</style>
 	</head>
 	<body>
-		McbeEringi <br>
-		<div id='pre' style='font-size:150%;'>
-			Redirecting to correct URL <br>
-			Please wait…
-		</div>
-		<div id='error' style='display:none;'>
-			<h1 style='font-size:500%;'>404</h1>
-			<h2>Page not found :(</h2>
-			<p>URL fixing failed</p>
-		</div>
-		<div id='esbefg' style='display:none;font-size:150%;'>
-			ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。 <br>
-			リダイレクトします<br>
-			<div class='bar'><div></div></div>
-			<br>
-			私が後継で開発していた<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2Gはこちら</a>
-		</div>
-		<br><hr><br>
-		<a href='' id='log'></a>
+		McbeEringi
+		<hr>
+		<pre id="log"><h1>404</h1><h2>Page not found :(</h2><a href="https://mcbeeringi.github.io/">back to top</a></pre>
+		<hr>
 		<script>
-			var fixed=location.href;
-			if(fixed.match(/mcbeeringi\.github\.io\/esbe-1g/)){
-				pre.style.display='none';
-				esbefg.style.display='block';
-				fixed='https://nari0978.github.io/1g/'+(fixed.match(/info/i)?'1g-info.html':'1g.html');
-				log.innerText=log.href=fixed;
-				setTimeout(()=>location.href=fixed,5000);
+			if(location.href.match(/mcbeeringi\.github\.io\/esbe-1g/i)){
+				log.textContent='';
+				log.insertAdjacentHTML('beforeend',`ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。\n5秒後にリダイレクトします。\n\nESBEシリーズ\n<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a>\n<a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`)
+				setTimeout(()=>location.href='https://nari0978.github.io/1g/1g.html',5000);
 			}else{
-				[
+				let url=[
 					[/others\/gl/i,'apps/webgl/index'],[/apps\/fsh/i,'apps/webgl/fsh'],
 					[/others\/aes/i,'apps/aes'],[/others\/col/i,'apps/col'],
 					[/others\/unicode/i,'apps/unc'],[/others\/sosu-/i,'apps/sosu-'],
@@ -55,13 +31,13 @@
 					[/others\/bmp/i,'apps/mc/glyph'],[/apps\/mc\/bmp/i,'apps/mc/glyph'],
 					[/others\/arch/i,'apps/mc/arch'],[/others\/poly/i,'apps/mc/poly'],
 					[/others\/sky/i,'sky'],[/apps\/sky/i,'sky'],
-					[/amuse\/js/i,'apps/js'],[/amuse\/jdsm/i,'apps/mc/jdsm'],[/amuse\/seq/i,'sky/seq_']
-				].forEach(x=>fixed=fixed.replace(x[0],x[1]));
-				log.innerText=log.href=fixed;
-				if(location.href==fixed){
-					pre.style.display='none';
-					error.style.display='block';
-				}else location.href=fixed;
+					[/amuse\/js/i,'apps/js'],[/amuse\/jdsm/i,'apps/mc/jdsm'],[/amuse\/seq/i,'sky/seq_'],
+					[/worlds/i,'mc']
+				].reduce((a,x)=>url=a.replace(...x),location.href);
+				if(location.href!=url){
+					log.textContent='Redirecting to correct URL\nPlease wait…';
+					location.href=url;
+				}
 			}
 		</script>
 	</body>
