@@ -4,7 +4,7 @@ document.body.insertAdjacentHTML('afterbegin',`<link rel="stylesheet" href="http
 :root,.style{background:#222;font-family:"M PLUS Rounded 1c",sans-serif;color:#fff;text-shadow:0 0 6px #222,0 0 2px #000;word-wrap:break-word;image-rendering:crisp-edges;image-rendering:pixelated;}
 a:link{color:#aef;}a:link:hover{color:#8af;}a:link:active{color:#48f;}
 a:visited{color:#caf;}a:visited:hover{color:#a8f;}a:visited:active{color:#84f;}
-@media(max-width:512px){li a{display:block;height:24px;padding:8px;margin:8px auto;border-radius:6px;background:#8884;}}
+@media(max-width:512px){li a{display:block;min-height:24px;padding:8px;margin:8px auto;border-radius:6px;background:#8884;}}
 #bg{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-16;pointer-events:none;user-select:none;-webkit-user-select:none;}
 .stuff>a{display:inline-block;width:150px;margin:5px;vertical-align:top;transition:.2s;white-space:pre-wrap;}
 @media(max-width:504px){.stuff{text-align:center;}}
