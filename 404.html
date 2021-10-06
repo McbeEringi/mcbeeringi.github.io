@@ -20,10 +20,10 @@
 		<script>
 			if(location.href.match(/mcbeeringi\.github\.io\/esbe-1g/i)){
 				log.textContent='';
-				log.insertAdjacentHTML('beforeend',`ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。\n5秒後にリダイレクトします。\n\nESBEシリーズ\n<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a>\n<a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`)
+				log.insertAdjacentHTML('beforeend',`ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。\n5秒後にリダイレクトします。\n\nESBEシリーズ\n<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a>\n<a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`);
 				setTimeout(()=>location.href='https://nari0978.github.io/1g/1g.html',5000);
 			}else{
-				let url=[
+				const url=[
 					[/others\/gl/i,'apps/webgl/index'],[/apps\/fsh/i,'apps/webgl/fsh'],
 					[/others\/aes/i,'apps/aes'],[/others\/col/i,'apps/col'],
 					[/others\/unicode/i,'apps/unc'],[/others\/sosu-/i,'apps/sosu-'],
@@ -35,7 +35,8 @@
 					[/worlds/i,'mc']
 				].reduce((a,x)=>a.replace(...x),location.href);
 				if(location.href!=url){
-					log.textContent='Redirecting to correct URL\nPlease wait…';
+					log.textContent='';
+					log.insertAdjacentHTML('beforeend','<h2>Redirecting to correct URL\nPlease wait…<h2>');
 					location.href=url;
 				}
 			}
