@@ -74,9 +74,8 @@
 			<div class="file"><input type="file" id="inp2" accept="image/*" onchange="read(this)">tex2<span></span></div>
 			<div class="file"><input type="file" id="inp3" accept="image/*" onchange="read(this)">tex3<span></span></div>
 			<div>
-				powered by WebGL1.0<br>
-				special thanks to <a href="https://wgld.org">wgld.org</a><br>
-				build: 2109140<br>
+				lib: <a href="https://mcbeeringi.github.io/petitgl">PetitGL</a><br>
+				build: 2110070<br>
 				<a href="https://twitter.com/mcbeeringi">@McbeEringi</a>.｡:+*<br>
 			</div>
 		</div>
@@ -130,7 +129,8 @@ uniform vec2 res;
 							type:'img',
 							fx:y=>{console.log('tex loaded',x,y);
 								x.nextElementSibling.textContent=`uniform vec2 tex${x.id.slice(-1)}res= vec2(${y.size.join()});`
-							}
+							},
+							flush:true
 						}
 					}
 				]);
