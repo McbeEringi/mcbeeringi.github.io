@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-	<head>
-		<meta charset="utf-8">
-		<title>McbeEringi xor</title>
-	</head>
-	<body>
-		<style>
-			:root{font-family:monospace;background:#222;color:#fff;}:link{color:#aef;}
-		</style>
-		<h1>xor</h1>
-		<input type="file" id="f" multiple><br>
-		<input value="0b11111111" id="i"><br>
-		<button type="button" id="b">exe</button>
-		<div id="s"></div>
-		<pre>
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
+	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi xor</title>
+</head>
+<body>
+	<style>
+		:root{font-family:monospace;background:#222;color:#fff;}:link{color:#aef;}
+	</style>
+	<h1>xor</h1>
+	<input type="file" id="f" multiple><br>
+	<input value="0b11111111" id="i"><br>
+	<button type="button" id="b">exe</button>
+	<div id="s"></div>
+	<pre>
 //example
 let t='text data',
 fx=()=>{
@@ -26,18 +30,18 @@ fx=()=>{
 	console.log(t);
 };
 setInterval(fx,50);
-		</pre>
-		<script>
-			b.onclick=()=>{
-				const k=Number(i.value);
-				[...f.files].forEach(x=>
-					x.arrayBuffer().then(b=>new Int8Array(b).map(y=>y^k).buffer).then(b=>{
-						let a=document.createElement('a');
-						a.textContent=a.download=x.name;a.href=URL.createObjectURL(new Blob([b]));
-						setTimeout(()=>{URL.revokeObjectURL(a.href);s.removeChild(a);},30000);s.appendChild(a);
-					})
-				)
-			};
-		</script>
-	</body>
+	</pre>
+	<script>
+		b.onclick=()=>{
+			const k=Number(i.value);
+			[...f.files].forEach(x=>
+				x.arrayBuffer().then(b=>new Int8Array(b).map(y=>y^k).buffer).then(b=>{
+					let a=document.createElement('a');
+					a.textContent=a.download=x.name;a.href=URL.createObjectURL(new Blob([b]));
+					setTimeout(()=>{URL.revokeObjectURL(a.href);s.removeChild(a);},30000);s.appendChild(a);
+				})
+			)
+		};
+	</script>
+</body>
 </html>
