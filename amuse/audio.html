@@ -15,14 +15,22 @@
 	<label>fadeIn: <input type="number" id="fadeIn" value="0.1"></label><br>
 	<label>decay : <input type="number" id="decay" value="1.5"></label><br>
 	<label>cutoff: <input type="number" id="cutFreq" value="10000"></label><br>
-	<button id="genbtn">gen & draw</button><br><br>
+	<button id="genbtn">gen & draw</button><button id="wavbtn">wav</button><br><br>
 	<label>wet: <input type="range" min="0" max="1" step=".0625" id="wet"></label><br>
 	<button id="plbtn">sample</button>
 	<pre id="log"></pre>
 	<script>
 	c.height=1024;c.width=2048;
 	let ab;
-	const cfg={fadeIn:.3,decay:1.5,cut:10000},
+	const toWav=x=>{
+			let ch=x.numberOfChannels,rate=x.sampleRate;
+			if(ch==2){const l=x.getChannelData(0),r=x.getChannelData(1);x=new Float32Array(l.length+r.length);for(let i=0;i<x.length;i++){x[i*2]=l[i];x[i*2+1]=r[i];}}else x=x.getChannelData(0);
+			const b=new ArrayBuffer(44+x.length*2),v=new DataView(b),str=(c,s)=>{for(let i=0;i<s.length;i++)v.setUint8(c+i,s.charCodeAt(i))};
+			str(0,'RIFF');v.setUint32(4,36+x.length*2,true);str(8,'WAVE');
+			str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,rate,true);ch*=2;v.setUint32(28,rate*ch,true);v.setUint16(32,ch,true);v.setUint16(34,16,true);
+			str(36, 'data');v.setUint32(40,x.length*2,true);for(let i=0;i<x.length;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);}
+			return b;
+		},
 		ac=new(window.AudioContext||window.webkitAudioContext)(),
 		rev=ac.createConvolver(),g0=ac.createGain(),g1=ac.createGain(),
 		ctx=c.getContext('2d');
@@ -30,7 +38,7 @@
 		.then(r=>r.arrayBuffer())
 		.then(x=>new Promise(f=>ac.decodeAudioData(x,f)))
 		.then(x=>{ab=x;log.textContent='sample loaded';});
-	genbtn.onclick=()=>{
+	(genbtn.onclick=()=>{
 		((fi,d,cut,rate=ac.sampleRate,ch=2)=>new Promise(f=>{
 			const fr=d*rate,
 				oac=new(window.OfflineAudioContext||window.webkitOfflineAudioContext)(ch,fr,rate),
@@ -53,15 +61,16 @@
 			}
 			ctx.font='32px monospace';ctx.fillStyle='#fff';ctx.fillText('click to play',0,c.height-8);
 		});
-	};
+	})();
 	c.onclick=()=>{const bs=ac.createBufferSource();bs.buffer=rev.buffer;bs.connect(ac.destination);bs.start();};
+	wavbtn.onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([toWav(rev.buffer)]));a.download='impulse_response.wav';a.click();}
+	(wet.oninput=()=>g1.gain.value=1-(g0.gain.value=wet.value))();
 	plbtn.onclick=()=>{
 		const bs=ac.createBufferSource();bs.buffer=ab;
 		bs.connect(rev).connect(g0).connect(ac.destination);
 		bs.connect(g1).connect(ac.destination);
 		bs.start();
 	};
-	(wet.oninput=()=>g1.gain.value=1-(g0.gain.value=wet.value))();
 	</script>
 </body>
 </html>
