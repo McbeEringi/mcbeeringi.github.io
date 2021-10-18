@@ -1,56 +1,67 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html>
 <head>
 	<meta charset="utf-8">
-	<title></title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>audio</title>
 </head>
 <body>
-<style>
-
-</style>
-<pre id="log"></pre>
-<script>
-'use strict';
-const AudioContext=window.AudioContext || window.webkitAudioContext;
-class WebAudio{
-	constructor(){
-		this.ctx=new AudioContext();
-		this.s={};
-	}
-	add(x){
-		for(let i in x){
-			let s=this.ctx.createBufferSource();
-			this.s[i]=s;
-			fetch(x[i]).then(r=>r.arrayBuffer()).then(b=>{
-				this.ctx.decodeAudioData(b,d=>{
-				  s.buffer=d;
-					s.playbackRate.value=Math.pow(2,3/12);
-					//s.loop=true;
-					s.onended=()=>console.log(s);
-				});
-			});
-		}
-	}
-	trigger(x){
-		for(let v of x){
-			if(this.s[v]){
-				//this.s[v].stop();
-				this.s[v].start();
+	<style>
+		:root{background-color:#222;color:#fff;font-family:monospace;}
+		#c{width:100%;max-width:1024px;background-color:#000;}
+	</style>
+	<canvas id="c"></canvas><br>
+	<label>canvas: <input type="checkbox" id="ccb">?fancy:fast</label><br><br>
+	<label>fadeIn: <input type="number" id="fadeIn" value="0.1"></label><br>
+	<label>decay : <input type="number" id="decay" value="1.5"></label><br>
+	<label>cutoff: <input type="number" id="cutFreq" value="10000"></label><br>
+	<button id="genbtn">gen & draw</button><br><br>
+	<label>wet: <input type="range" min="0" max="1" step=".0625" id="wet"></label><br>
+	<button id="plbtn">sample</button>
+	<pre id="log"></pre>
+	<script>
+	c.height=1024;c.width=2048;
+	let ab;
+	const cfg={fadeIn:.3,decay:1.5,cut:10000},
+		ac=new(window.AudioContext||window.webkitAudioContext)(),
+		rev=ac.createConvolver(),g0=ac.createGain(),g1=ac.createGain(),
+		ctx=c.getContext('2d');
+	fetch('main.mp3')
+		.then(r=>r.arrayBuffer())
+		.then(x=>new Promise(f=>ac.decodeAudioData(x,f)))
+		.then(x=>{ab=x;log.textContent='sample loaded';});
+	genbtn.onclick=()=>{
+		((fi,d,cut,rate=ac.sampleRate,ch=2)=>new Promise(f=>{
+			const fr=d*rate,
+				oac=new(window.OfflineAudioContext||window.webkitOfflineAudioContext)(ch,fr,rate),
+				ab=oac.createBuffer(ch,fr,rate),lpf=oac.createBiquadFilter(),g0=oac.createGain(),
+				g1=oac.createGain(),bs=oac.createBufferSource();
+			for(let i=0,view;i<ch;i++){view=ab.getChannelData(i);for(let j=0;j<fr;j++)view[j]=Math.random()*2-1;}
+			lpf.type='lowpass';lpf.frequency.value=cut;lpf.Q.value=0;
+			g0.gain.value=1;g0.gain.exponentialRampToValueAtTime(.01,d*.9).linearRampToValueAtTime(0,d);
+			g1.gain.value=0;g1.gain.linearRampToValueAtTime(1,fi);
+			bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();
+			oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
+		}))(fadeIn.value,decay.value,cutFreq.value).then(x=>{
+			rev.buffer=x;ctx.clearRect(0,0,c.width,c.height);
+			for(let i=0,f=ac.sampleRate*decay.value;i<x.numberOfChannels;i++){
+				ctx.strokeStyle=['#f008','#00f8','#0f08'][i];
+				ctx.beginPath();ctx.moveTo(0,c.height/2);
+				if(ccb.checked)x.getChannelData(i).forEach((y,j)=>ctx.lineTo(j/f*c.width,(y/2+.5)*c.height));
+				else for(let j=0,y=x.getChannelData(i);j<c.width;j+=.2)ctx.lineTo(j,(y[Math.round(f*j/c.width)]/2+.5)*c.height);
+				ctx.stroke();
 			}
-		}
-	}
-	gain(x){
-		const gain=this.ctx.createGain();
-		gain.gain.value=x;
-		return gain;
-	}
-}
-let a=new WebAudio();
-a.add({test:'main.mp3'});
-setTimeout(()=>{
-	a.s.test.connect(a.gain(.2)).connect(a.ctx.destination);
-	a.trigger(['test']);
-},500);
-</script>
+			ctx.font='32px monospace';ctx.fillStyle='#fff';ctx.fillText('click to play',0,c.height-8);
+		});
+	};
+	c.onclick=()=>{const bs=ac.createBufferSource();bs.buffer=rev.buffer;bs.connect(ac.destination);bs.start();};
+	plbtn.onclick=()=>{
+		const bs=ac.createBufferSource();bs.buffer=ab;
+		bs.connect(rev).connect(g0).connect(ac.destination);
+		bs.connect(g1).connect(ac.destination);
+		bs.start();
+	};
+	(wet.oninput=()=>g1.gain.value=1-(g0.gain.value=wet.value))();
+	</script>
 </body>
 </html>
