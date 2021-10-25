@@ -23,7 +23,8 @@
 	<h1>JavaScript</h1>
 	<div id='_cme_'></div>
 	<button onclick="_run_();">run</button>
-	<button onclick="_save_();">copy url</button>
+	<button onclick="_save_();">save</button>
+	<button onclick="_copy_();">copy url</button>
 	<pre id="log"></pre>
 	<script>
 	console.clear=()=>log.textContent='';
@@ -38,7 +39,8 @@
 	_type_=x=>Object.prototype.toString.call(x).slice(8,-1),
 	_time_=()=>{const d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}]`;},
 	_run_=()=>{try{Function(_cm_.getValue())();}catch(e){console.error(e);}},
-	_save_=()=>{location.hash=encodeURIComponent(_cm_.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');navigator.clipboard.writeText(location.href).then(()=>console.log('copied!'));};
+	_save_=()=>{location.hash=encodeURIComponent(_cm_.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');console.log('saved!');},
+	_copy_=(x=location.href)=>navigator.clipboard.writeText(x).then(()=>console.log('copied!'));
 	if(location.hash)_cm_.setValue(decodeURIComponent(location.hash.slice(1)));
 	</script>
 </body>
