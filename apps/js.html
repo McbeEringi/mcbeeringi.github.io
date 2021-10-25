@@ -22,18 +22,21 @@
 		<h1>JavaScript</h1>
 		<div id='e'></div>
 		<button onclick="run();">run</button>
+		<button onclick="save();">save&amp;copy</butt
 		<pre id="log"></pre>
 		<script>
-		let editor=CodeMirror(e,{
+		console.clear=()=>log.textContent='';
+		console.warn=console.info=console.error=console.log=(...x)=>log.textContent+=`${time_()}${x.map(x=>JSON.stringify(x)||x.toString()).join(', ')}\n`;
+		const editor=CodeMirror(e,{
 			value:'console.clear();\nconsole.log(Math.ceil(Math.random()*41));',
 			mode:'javascript',theme:'monokai',
 			lineNumbers:true,tabSize:2,indentWithTabs:true,
 			matchBrackets:true,autoCloseBrackets: true,
-		});
-		const time_=()=>{var d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}] `;},
-		run=()=>{try{eval(editor.getValue());}catch(e){log.textContent=e.toString();}};
-		console.clear=()=>log.textContent='';
-		console.warn=console.info=console.error=console.log=(...x)=>log.textContent+=`${time_()}${x.map(x=>JSON.stringify(x)||x.toString()).join(', ')}\n`;
+		}),
+		time_=()=>{var d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}] `;},
+		run=()=>{try{Function(editor.getValue())();}catch(e){console.error(e);}},
+		save=()=>{location.hash=encodeURIComponent(editor.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');navigator.clipboard.writeText(location.href).then(()=>console.log('copied!'));}
+		if(location.hash)editor.setValue(decodeURIComponent(location.hash.slice(1)));
 		</script>
 	</body>
 </html>
