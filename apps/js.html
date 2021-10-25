@@ -1,42 +1,40 @@
 <!DOCTYPE html>
 <html lang='en' dir='ltr'>
-	<head>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-		<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
-		<meta charset='utf-8'>
-		<meta name="viewport" content="width=device-width,initial-scale=1">
-		<title>McbeEringi JavaScript</title>
-		<style>
-			:root{font-family:monospace;background:#222;color:#fff;}:link{color:#8cf;}:visited{color:#c8f;}
-			#log{background:#333;padding:4px;}
-		</style>
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.css">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/theme/monokai.min.css">
-		<script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/codemirror/mode/javascript/javascript.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/matchbrackets.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/closebrackets.min.js"></script>
-	</head>
-	<body>
-		<h1>JavaScript</h1>
-		<div id='e'></div>
-		<button onclick="run();">run</button>
-		<button onclick="save();">save&amp;copy</butt
-		<pre id="log"></pre>
-		<script>
-		console.clear=()=>log.textContent='';
-		console.warn=console.info=console.error=console.log=(...x)=>log.textContent+=`${time_()}${x.map(x=>JSON.stringify(x)||x.toString()).join(', ')}\n`;
-		const editor=CodeMirror(e,{
-			value:'console.clear();\nconsole.log(Math.ceil(Math.random()*41));',
-			mode:'javascript',theme:'monokai',
-			lineNumbers:true,tabSize:2,indentWithTabs:true,
-			matchBrackets:true,autoCloseBrackets: true,
-		}),
-		time_=()=>{var d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}] `;},
-		run=()=>{try{Function(editor.getValue())();}catch(e){console.error(e);}},
-		save=()=>{location.hash=encodeURIComponent(editor.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');navigator.clipboard.writeText(location.href).then(()=>console.log('copied!'));}
-		if(location.hash)editor.setValue(decodeURIComponent(location.hash.slice(1)));
-		</script>
-	</body>
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
+	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+	<meta charset='utf-8'>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi JavaScript</title>
+	<style>
+		:root{font-family:monospace;background:#222;color:#fff;}:link{color:#8cf;}:visited{color:#c8f;}
+		#log{background:#333;padding:4px;}
+	</style>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/theme/monokai.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/codemirror/mode/javascript/javascript.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/matchbrackets.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/closebrackets.min.js"></script>
+</head>
+<body>
+	<h1>JavaScript</h1>
+	<div id='_cme_'></div>
+	<button onclick="_run_();">run</button>
+	<button onclick="_save_();">copy url</button>
+	<pre id="log"></pre>
+	<script>
+	console.clear=()=>log.textContent='';
+	console.warn=console.info=console.error=console.log=(...x)=>log.textContent+=`[${_time_()}] ${x.map(x=>typeof x+' '+JSON.stringify(x)||x.toString()).join(', ')}\n`;
+	const _cm_=CodeMirror(_cme_,{
+		value:'console.clear();\nconsole.log("Hello World.");',mode:'javascript',theme:'monokai',
+		lineNumbers:true,tabSize:2,indentWithTabs:true,matchBrackets:true,autoCloseBrackets: true,
+	}),
+	_time_=()=>{const d=new Date();return `${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}`;},
+	_run_=()=>{try{Function(_cm_.getValue())();}catch(e){console.error(e);}},
+	_save_=()=>{location.hash=encodeURIComponent(_cm_.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');navigator.clipboard.writeText(location.href).then(()=>console.log('copied!'));};
+	if(location.hash)_cm_.setValue(decodeURIComponent(location.hash.slice(1)));
+	</script>
+</body>
 </html>
