@@ -9,7 +9,8 @@
 	<title>McbeEringi JavaScript</title>
 	<style>
 		:root{font-family:monospace;background:#222;color:#fff;}:link{color:#8cf;}:visited{color:#c8f;}
-		#log{background:#333;padding:4px;}
+		#log{background:#333;padding:4px;white-space:pre-wrap;}
+		#log>span{opacity:.5;}
 	</style>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/theme/monokai.min.css">
@@ -26,12 +27,16 @@
 	<pre id="log"></pre>
 	<script>
 	console.clear=()=>log.textContent='';
-	console.warn=console.info=console.error=console.log=(...x)=>log.textContent+=`[${_time_()}] ${x.map(x=>typeof x+' '+JSON.stringify(x)||x.toString()).join(', ')}\n`;
+	console.warn=console.info=console.error=console.log=(...x)=>{
+		log.insertAdjacentHTML('beforeend',`<span>${_time_()}</span>`);
+		log.insertAdjacentText('beforeend',x.map(x=>`\t${_type_(x)} ${JSON.stringify(x)||x.toString()}`).join(',\n')+'\n');
+	};
 	const _cm_=CodeMirror(_cme_,{
 		value:'console.clear();\nconsole.log("Hello World.");',mode:'javascript',theme:'monokai',
 		lineNumbers:true,tabSize:2,indentWithTabs:true,matchBrackets:true,autoCloseBrackets: true,
 	}),
-	_time_=()=>{const d=new Date();return `${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}`;},
+	_type_=x=>Object.prototype.toString.call(x).slice(8,-1),
+	_time_=()=>{const d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}]`;},
 	_run_=()=>{try{Function(_cm_.getValue())();}catch(e){console.error(e);}},
 	_save_=()=>{location.hash=encodeURIComponent(_cm_.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');navigator.clipboard.writeText(location.href).then(()=>console.log('copied!'));};
 	if(location.hash)_cm_.setValue(decodeURIComponent(location.hash.slice(1)));
