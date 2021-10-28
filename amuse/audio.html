@@ -46,8 +46,8 @@
 				g1=oac.createGain(),bs=oac.createBufferSource();
 			for(let i=0,view;i<ch;i++){view=ab.getChannelData(i);for(let j=0;j<fr;j++)view[j]=Math.random()*2-1;}
 			lpf.type='lowpass';lpf.frequency.value=cut;lpf.Q.value=0;
-			g0.gain.value=1;g0.gain.exponentialRampToValueAtTime(.01,d*.9).linearRampToValueAtTime(0,d);
-			g1.gain.value=0;g1.gain.linearRampToValueAtTime(1,fi);
+			g0.gain.setTargetAtTime(0,0,d*.2);
+			g1.gain.setValueCurveAtTime(new Float32Array([0,1]),0,fi).setValueCurveAtTime(new Float32Array([1,0]),d*.9,d*.1);
 			bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();
 			oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
 		}))(fadeIn.value,decay.value,cutFreq.value).then(x=>{
