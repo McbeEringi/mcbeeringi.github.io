@@ -1,6 +1,6 @@
 //https://github.com/Jam3/audiobuffer-to-wav
 const toWav=x=>{
-	const ch=x.numberOfChannels,rate=x.sampleRate;
+	let ch=x.numberOfChannels,rate=x.sampleRate;
 	if(ch==1)x=x.getChannelData(0);else{const l=x.getChannelData(0),r=x.getChannelData(1);x=new Float32Array(l.length+r.length);for(let i=0;i<x.length;i++){x[i*2]=l[i];x[i*2+1]=r[i];}};
 	const b=new ArrayBuffer(44+x.length*2),v=new DataView(b),str=(c,s)=>{for(let i=0;i<s.length;i++)v.setUint8(c+i,s.charCodeAt(i))};
 	str(0,'RIFF');v.setUint32(4,36+x.length*2,true);str(8,'WAVE');
