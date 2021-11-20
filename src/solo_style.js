@@ -4,7 +4,7 @@ fetch('https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js').then(r=>r.text
 		document.body.insertAdjacentHTML('beforeend',`
 			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" media="print" onload="this.media='all'">
 			<style>
-				.swiper-container{width:90%;height:auto;}.swiper-container img{width:100%;}
+				.swiper-container{overflow:hidden;width:90%;height:auto;}.swiper-container img{width:100%;}
 			</style>
 		`);
 		document.querySelectorAll('.swiper-slide').forEach(x=>{
