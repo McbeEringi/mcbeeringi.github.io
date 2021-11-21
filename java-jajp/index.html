@@ -13,23 +13,36 @@
 		<meta property="og:url" content="https://mcbeeringi.github.io/java-jajp">
 		<meta property="og:image" content="https://mcbeeringi.github.io/img/ja_JP.png">
 		<script src="../src/style.js" async></script>
-		<script src="../src/solo_style.js" async></script>
 	</head>
 	<body>
 		<h1 class="c title">java ja_JP</h1>
 		<div class="box">
-			<div class="swiper-container">
+			<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+			<style>.swiper{width:90%;margin:0 auto;}.swiper-slide{object-fit:contain;}</style>
+			<div class="swiper">
 				<div class="swiper-wrapper">
-					<div class="swiper-slide" data-img="java ja_jp.png"></div>
-					<div class="swiper-slide" data-img="1.jpg"></div>
-					<div class="swiper-slide" data-img="2.jpg"></div>
-					<div class="swiper-slide" data-img="3.jpg"></div>
-					<div class="swiper-slide" data-img="4.jpg"></div>
+					<img class="swiper-slide" src="java ja_jp.png">
+					<img class="swiper-slide" src="1.jpg">
+					<img class="swiper-slide" src="2.jpg">
+					<img class="swiper-slide" src="3.jpg">
+					<img class="swiper-slide" src="4.jpg">
 				</div>
 				<div class="swiper-pagination"></div>
-				<div class="swiper-button-next"></div>
 				<div class="swiper-button-prev"></div>
+				<div class="swiper-button-next"></div>
 			</div>
+			<script>
+				new Swiper('.swiper',{
+					slidesPerView:1,spaceBetween:0,loop:true,centeredSlides:true,
+					breakpoints:{
+						600:{slidesPerView:2,spaceBetween:30}
+					},
+					autoplay:{delay:2500,disableOnInteraction:false,},
+					pagination:{el:'.swiper-pagination',clickable:true},
+					navigation:{nextEl:'.swiper-button-next',prevEl:'.swiper-button-prev'}
+				})
+			</script>
 			<h2>java ja_JPとは？</h2>
 			java版の翻訳<br>
 			java版のテクスチャ<br>
