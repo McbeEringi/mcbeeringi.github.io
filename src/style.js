@@ -24,9 +24,13 @@ header>nav{right:0;margin-right:8px;}#hnavcb{display:none;}
 	#hnavcb:checked~label{position:fixed;top:0;left:0;width:100vw;height:100vh;border-radius:unset;background-image:unset;}
 	#hnavcb:checked~div{opacity:1;pointer-events:unset;transform:scale(1)translateY(56px);}
 }
-.lang{display:inline-block;vertical-align:middle;min-width:20px;height:20px;margin:4px;filter:grayscale(1);background:no-repeat center url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20px' height='20px'%3E%3Ccircle r='9' cx='10' cy='10' style='fill:transparent;stroke:%23aef;stroke-width:1'/%3E%3Cellipse cx='10' cy='10' rx='5' ry='9' style='fill:transparent;stroke:%23aef;stroke-width:1'/%3E%3Cpath d='M10,1 L10,19 M2.2,5 L17.8,5 M1,10 L19,10 M2.5,15 L17.8,15' style='stroke:%23aef;stroke-width:1'/%3E%3C/svg%3E");}.lang:hover{filter:grayscale(0);}
+.lang{display:inline-block;vertical-align:middle;min-width:20px;height:20px;margin:4px;filter:brightness(1.4);background:no-repeat center url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20px' height='20px'%3E%3Ccircle r='9' cx='10' cy='10' style='fill:transparent;stroke:%238af;stroke-width:1'/%3E%3Cellipse cx='10' cy='10' rx='5' ry='9' style='fill:transparent;stroke:%238af;stroke-width:1'/%3E%3Cpath d='M10,1 L10,19 M2.2,5 L17.8,5 M1,10 L19,10 M2.5,15 L17.8,15' style='stroke:%238af;stroke-width:1'/%3E%3C/svg%3E");}.lang:hover{filter:none;}
 footer,.box{width:100%;background:#8888;border-radius:8px;box-sizing:border-box;padding:16px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}footer,.c{text-align:center;}footer{margin-top:16px;}
 .box{background:#8884;}.title{font-size:calc(5vmin + 16px);padding:1.5em 0;}
+.crs{--w:50%;--g:16px;display:flex;box-sizing:border-box;overflow-x:scroll;scroll-snap-type:x mandatory;}
+.crs>*{flex-shrink:0;object-fit:contain;scroll-snap-align:center;width:var(--w);margin:0 var(--g);}
+.crs::before,.crs::after{content:"";display:block;flex-shrink:0;width:calc(calc(50% - var(--g)) - calc(var(--w)/2));}
+@media(max-width:560px){.crs{--w:100%;--g:0;}}
 </style>
 <canvas id="bg" width="256" height="256"></canvas>
 <header>
@@ -96,8 +100,8 @@ setstyle=()=>{
 	<a href="https://github.com/mcbeeringi">GitHub</a><br>
 	<span contenteditable>press KeyZ…</span>
 </footer>`);
-	document.querySelectorAll('.lang').forEach(e=>e.href='https://translate.google.com/translate?sl=ja&tl=en&u='+encodeURIComponent(location.href));
-	document.querySelectorAll('a').forEach(e=>{if(!e.ontouchstart)e.setAttribute('ontouchstart','');});
+	document.querySelectorAll('a.lang').forEach(e=>e.href='https://translate.google.com/translate?sl=ja&tl=en&u='+encodeURIComponent(location.href));
+	document.querySelectorAll('a').forEach(e=>e.addEventListener('touchstart',()=>{},{passive:true}));
 	document.addEventListener('keydown',e=>{if(e.code=='KeyZ')bgplay();},{once:true});
 	document.documentElement.setAttribute('lang',window.navigator.language.slice(0,2));
 };
