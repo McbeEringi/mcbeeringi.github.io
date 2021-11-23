@@ -34,12 +34,12 @@ footer,.box{width:100%;background:#8888;border-radius:8px;box-sizing:border-box;
 </style>
 <canvas id="bg" width="256" height="256"></canvas>
 <header>
-	<a href="https://mcbeeringi.github.io">McbeEringi</a>
+	<a href="https://mcbeeringi.github.io/">McbeEringi</a>
 	<nav>
 		<input type="checkbox" id="hnavcb"><label for="hnavcb"></label><div>
-			<a href="https://mcbeeringi.github.io/sky">Sky</a>
-			<a href="https://mcbeeringi.github.io/mc">MC</a>
-			<a href="https://mcbeeringi.github.io/apps">Apps</a>
+			<a href="https://mcbeeringi.github.io/sky/">Sky</a>
+			<a href="https://mcbeeringi.github.io/mc/">MC</a>
+			<a href="https://mcbeeringi.github.io/apps/">Apps</a>
 			<a class="lang"></a>
 		</div></nav>
 </header>`);
