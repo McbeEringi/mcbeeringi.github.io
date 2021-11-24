@@ -3,7 +3,7 @@
 	--g0:#888;--g1:#8888;--g2:#8884;--g3:#8882;
 	--b0:#48f;--b1:#8af;--b2:#aef;
 	--p0:#84f;--p1:#a8f;--p2:#eaf;
-	background-color:var(--d);image-rendering:crisp-edges;
+	background-color:var(--d);image-rendering:pixelated;
 }
 *{color:var(--w);font-family:sans-serif;}
 :link{color:var(--b2);}:link:hover{color:var(--b1);}:link:active{color:var(--b0);}:visited{color:var(--p2);}:visited:hover{color:var(--p1);}:visited:active{color:var(--p0);}
