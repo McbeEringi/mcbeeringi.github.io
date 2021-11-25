@@ -13,4 +13,3 @@ hr{height:4px;background-color:var(--g1);border-radius:2px;}
 .input{background-color:var(--g3);}.input::placeholder{color:var(--g1);opacity:1;}
 .button{background-color:var(--g2);padding:.5ex 2ex;display:inline-block;text-align:center;}.input:disabled,.button:disabled{filter:saturate(0)opacity(.5);}
 .input:hover,.input:focus,.button:hover{border-bottom-color:var(--b0);}.button:active{background-color:var(--g0);border-bottom-color:var(--b2);}
-.ib>*{display:inline-block;vertical-align:top;}
