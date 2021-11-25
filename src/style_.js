@@ -9,5 +9,6 @@ const _init=()=>{
 	<a href="https://github.com/mcbeeringi"><img src="https://icongr.am/material/github.svg?color=ffffff" alt="github icon" width="32" height="32"></a>
 </footer>`);
 	document.querySelectorAll('a').forEach(e=>e.addEventListener('touchstart',()=>{},{passive:true}));
+	document.documentElement.setAttribute('lang',window.navigator.language.slice(0,2));
 };
 if(document.readyState=='loading')window.addEventListener('DOMContentLoaded',_init,{once:true});else _init();
