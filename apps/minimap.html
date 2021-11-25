@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>McbeEringi minimap</title>
+	<meta name="description" content="utf-8 minimap gen">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
 </head>
 <body>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/atom-one-dark.min.css">
 	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js"></script>
-	<style>
-		:root{font-family:monospace;background:#222;color:#fff;tab-size:2;image-rendering:pixelated;}:link{color:#8cf;}pre{display:inline-block;}
-	</style>
+	<style>pre{display:inline-block;}</style>
 
 	<h1>minimap</h1>
+	<hr>
 	<input type="file" id="inp"><br>
 	<pre id="dl"></pre><br>
 	<canvas id="c"></canvas><br>

@@ -1,53 +1,53 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config', 'UA-145066191-2');</script>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
 	<meta charset="utf-8">
-	<title>McbeEringi brainf</title>
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<meta name="format-detection" content="telephone=no">
+	<title>McbeEringi brainf</title>
+	<meta name="description" content="brainf*** encoder & interpreter">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+	<link rel="stylesheet" href="../src/toggle.css">
 </head>
 <body>
-<style>
-	:root,textarea,input{background:#222;color:#fff;font-family:monospace;user-select:none;-webkit-user-select:none;resize:none;}
-	a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
-	.box{border-left:2px solid #888;padding-left:8px;margin:16px auto;}
-	#out,#srcout{min-height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;user-select:text;-webkit-user-select:text;}
-	#srcout{white-space:pre-wrap;max-height:560px;}
-	.wrapper>*{padding:4px;margin-top:0;font-size:12px;word-break:break-all;}
-	input,textarea{background:#333;border:1px solid #888;user-select:text;-webkit-user-select:text;}
-	textarea{display:block;width:100%;}input{vertical-align:middle;}
-	#mv{height:36px;overflow:scroll;white-space:nowrap;background:#333;position:relative;margin:2px;}
-	#mv div,#mv p{width:32px;height:32px;margin:2px;border-radius:8px;}
-	#mv div{position:absolute;top:0px;left:0;font-size:8px;background:#46f;z-index:1;/*transition:.05s;*/}
-	#mv p{line-height:32px;vertical-align:top;text-align:center;display:inline-block;box-shadow:0 0 0 1px #888 inset;font-size:16px;z-index:2;position:relative;}
-	.wrapper,.wrapper>textarea{position:relative;}.wrapper>pre{position:absolute;top:0;left:0;right:0;white-space:pre-wrap;border:1px solid #0000;pointer-events:none;color:#0000;}
-	.caret{color:#333;background:#fff;border-radius:1px;}
-	*::-webkit-scrollbar{display:none;}*{-ms-overflow-style:none;scrollbar-width:none;}
-	#skipcb:checked+*{display:none;}
-</style>
+	<style>
+		textarea{width:100%;}
+		#out,#srcout{min-height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;user-select:text;-webkit-user-select:text;}
+		#srcout{white-space:pre-wrap;max-height:560px;}
+		.wrapper>*{padding:4px;margin-top:0;font-size:12px;word-break:break-all;}
+		#mv{height:36px;overflow:scroll;white-space:nowrap;background:#333;position:relative;margin:2px;}
+		#mv div,#mv p{width:32px;height:32px;margin:2px;border-radius:8px;}
+		#mv div{position:absolute;top:0px;left:0;font-size:8px;background:var(--b0);z-index:1;/*transition:.05s;*/}
+		#mv p{line-height:32px;vertical-align:top;text-align:center;display:inline-block;box-shadow:0 0 0 1px #888 inset;font-size:16px;z-index:2;position:relative;}
+		.wrapper,.wrapper>textarea{position:relative;}.wrapper>pre{position:absolute;top:0;left:0;right:0;white-space:pre-wrap;border:1px solid #0000;pointer-events:none;color:#0000;}
+		.caret{color:#333;background:#fff;border-radius:1px;}
+		*::-webkit-scrollbar{display:none;}*{-ms-overflow-style:none;scrollbar-width:none;}
+		#skipcb:checked+*{display:none;}
+	</style>
 
-
-<h1>brainf***</h1>
-<div class="box">
+	<h1>brainf***</h1>
+	<hr>
 	<h2>encoder</h2>
 	<pre id="srcout"></pre>
-	<button onclick="srcout.textContent=enmain(eninp.value,mmind.value)">run</button>  <button onclick="romaji(eninp.value).then(x=>srcout.textContent=enmain(x,mmind.value))">run (ja)</button>
-	<label>chained threshold: <input type="number" id="mmind" value="10" min="0" max="127" step="1"> [0~127] less calc <<< less memory</label><br>
+	<button class="button" onclick="srcout.textContent=enmain(eninp.value,mmind.value)">run</button>  <button class="button" onclick="romaji(eninp.value).then(x=>srcout.textContent=enmain(x,mmind.value))">run (ja)</button>
+	<label>chained threshold: <input class="input" type="number" id="mmind" value="10" min="0" max="127" step="1"> [0~127] less calc <<< less memory</label><br>
 	<br>
-	inp: <button onclick="eninp.select();">select all</button><br>
-	<textarea id="eninp">Hello World!</textarea><br>
+	inp: <button class="button" onclick="eninp.select();">select all</button><br>
+	<textarea class="input" id="eninp">Hello World!</textarea><br>
 	morphed by <a href="https://labs.goo.ne.jp/api/jp/morphological-analysis/">goo 形態素解析API</a><br>
-</div>
-<div class="box">
+	<hr>
 	<h2>interpreter</h2>
 	<div id="mv"><div></div><p>0</p></div>
 	<pre id="out"></pre>
-	<button id="btn">run</button> <button id="stopb">stop</button> <label for="skipcb">skip:</label><input type="checkbox" id="skipcb"> <span>speed:<input type="range" id="spd" min="0" max="200" value="20"></span> <br>
-	src: <button id="qbtn">paste &amp; run</button> <button onclick="src.select();">select all</button>
+	<button class="button" id="btn">run</button> <button class="button" id="stopb">stop</button> <label for="skipcb">skip:</label><input type="checkbox" id="skipcb" class="toggle"> <span>speed:<input type="range" id="spd" min="0" max="200" value="20"></span> <br>
+	src: <button class="button" id="qbtn">paste &amp; run</button> <button class="button" onclick="src.select();">select all</button>
 	<div class="wrapper">
-	<textarea id="src" >++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
+	<textarea class="input" id="src" >++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
 >>>>>++.	H
 <<<<+.		e
 +++++++..	ll
@@ -63,176 +63,176 @@
 <[,.]			input</textarea><pre id="srcprv"></pre>
 	</div>
 	<br>
-	","inp: <button onclick="inp.select();">select all</button>
+	","inp: <button class="button" onclick="inp.select();">select all</button>
 	<div class="wrapper">
-	<textarea id="inp">To use input command,
+	<textarea class="input" id="inp">To use input command,
 type here before run.</textarea><pre id="inpprv"></pre>
 	</div>
-</div>
-<pre id="log"></pre>
-build: 2103133<br>
-<iframe src="../amuse/ascii.html" style="border:none;width:100%;" onload="this.height=this.contentWindow.document.body.scrollHeight+24"></iframe>
+	<hr>
+	<pre id="log"></pre>
+	build: 2103133<br>
+	<iframe src="../amuse/ascii.html" style="border:none;width:100%;" onload="this.height=this.contentWindow.document.body.scrollHeight+24"></iframe>
 
-<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jaconv/lib/jaconv.min.js"></script>
-<script>
-'use strict';
-//https://dbaron.org/log/20100309-faster-timeouts
-(function(){
-		var timeouts=[],messageName='zero-timeout-message';
-		function setZeroTimeout(fn){timeouts.push(fn);window.postMessage(messageName,"*");}
-		function handleMessage(event){if(event.source==window&&event.data==messageName){event.stopPropagation();if(timeouts.length>0){var fn=timeouts.shift();fn();}}}
-		window.addEventListener("message",handleMessage,true);
-		window.setZeroTimeout=setZeroTimeout;
-})();
-btn.onclick=()=>{demain();btn.disabled=true;qbtn.disabled=true;}
-qbtn.onclick=()=>navigator.clipboard.readText().then(t=>{if(t){src.value=t;autosize.update(src);skipcb.checked=true;demain();btn.disabled=true;qbtn.disabled=true;}});
-stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
-const copy=e=>navigator.clipboard.writeText(e.target.textContent).then(()=>{e.target.style.background='#48f';setTimeout(()=>e.target.style.background='',100);});
-out.onclick=srcout.onclick=copy;
-[eninp,src,inp].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+	<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jaconv/lib/jaconv.min.js"></script>
+	<script>
+	'use strict';
+	//https://dbaron.org/log/20100309-faster-timeouts
+	(function(){
+			var timeouts=[],messageName='zero-timeout-message';
+			function setZeroTimeout(fn){timeouts.push(fn);window.postMessage(messageName,"*");}
+			function handleMessage(event){if(event.source==window&&event.data==messageName){event.stopPropagation();if(timeouts.length>0){var fn=timeouts.shift();fn();}}}
+			window.addEventListener("message",handleMessage,true);
+			window.setZeroTimeout=setZeroTimeout;
+	})();
+	btn.onclick=()=>{demain();btn.disabled=true;qbtn.disabled=true;}
+	qbtn.onclick=()=>navigator.clipboard.readText().then(t=>{if(t){src.value=t;autosize.update(src);skipcb.checked=true;demain();btn.disabled=true;qbtn.disabled=true;}});
+	stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
+	const copy=e=>navigator.clipboard.writeText(e.target.textContent).then(()=>{e.target.style.background='#48f';setTimeout(()=>e.target.style.background='',100);});
+	out.onclick=srcout.onclick=copy;
+	[eninp,src,inp].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 
-const romaji=x=>fetch('https://labs.goo.ne.jp/api/morph',{
-	method:'POST',mode:'cors',
-	headers:{'Accept':'application/json','Content-Type':'application/json'},
-	body:JSON.stringify({
-		app_id:'57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3',
-		sentence:x
-	})
-}).then(r=>r.json()).then(x=>x.word_list.reduce((a,x)=>a.concat(x),[]).map(x=>(x[2]&&!['Alphabet','Number','Roman'].includes(x[1]))?jaconv.toHebon(jaconv.toHiragana(x[2])).toLowerCase():jaconv.toHanAscii(x[0])).join('')),
-demain=()=>{
-	var s,p,ps,pi,m,l,tmp;
-	const render=all=>{
-		mv.firstChild.style.left=`${36*p}px`;
-		while(mv.childNodes.length-1<m.length)mv.appendChild(document.createElement('p'));
-		if(all)mv.childNodes.forEach((e,i)=>{if(i)e.textContent=m[i-1]});
-		else mv.childNodes[p+1].textContent=m[p];
-		srcprv.innerHTML=src.value.substring(0,ps-1)+(src.value[ps-1]?`<span class="caret">${src.value[ps-1]}</span>`:'');
-		inpprv.innerHTML=inp.value.substring(0,pi-1)+(inp.value[pi-1]?`<span class="caret">${inp.value[pi-1]}</span>`:'');
-	},
-	post=()=>{
-		render(true);
-		btn.disabled=false;qbtn.disabled=false;stopb.disabled=false;skipcb.checked=false;
-		src.readOnly=false;inp.readOnly=false;srcprv.style.display='none';inpprv.style.display='none';
-	},
-	core=()=>{
-		tmp=null;
-		switch(s[ps]){
-			case'>':p++;if(m[p]==undefined)m[p]=0;ps++;break;
-			case'<':if(p>0)p--;else{log.textContent+=ps+': invailed "<". canceled.\n';stopb.disabled=true;}ps++;break;
-			case'+':m[p]++;m[p]&=0xff;ps++;break;
-			case'-':m[p]--;m[p]&=0xff;ps++;break;
-			case'.':out.textContent+=String.fromCharCode(m[p]);ps++;break;
-			case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;log.textContent+=ps+': input empty. use 0 as input.\n';ps++;}else if(tmp>255)pi++;else{m[p]=tmp;pi++;ps++;}tmp=null;break;
-			case'[':l.push(ps);ps++;break;
-			case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.textContent+=ps+': invailed "]". skipped.\n';ps++;}break;
-			default:ps++;tmp=1;break;
-		}
-		if(!tmp&&!skipcb.checked)render();
-		if(ps==s.length||stopb.disabled==true)setTimeout(post,spd.value);
-		else{if(skipcb.checked||tmp){try{core();}catch(e){render(!tmp);setZeroTimeout(core);}}else setTimeout(core,spd.value);}
-	};
-	mv.innerHTML='<div></div><p>0</p>';
-	out.textContent='';log.textContent='';
-	src.readOnly=true;inp.readOnly=true;srcprv.style.display='block';inpprv.style.display='block';
-	s=src.value.split('');p=0;ps=0;pi=0;m=[0];l=[];
-	if(s.length)core();else{log.textContent+='! : no src found.\n';setTimeout(post,spd.value);}
-},
-enmain=(s,md)=>{
-	const round=x=>-Math.sign(x)*Math.round(-Math.abs(x)),
-	freq=inp=>{
-		const joinPair=x=>{
-			var indm=x.reduce((a,y)=>Math.max(y[0],y[1],a),0);
-			console.log('joinPair',x,indm);
-			var ind=new Array(indm+1).fill(null),s=new Array(indm).concat(x[0]);
-			x.shift();ind[s[indm]]=indm;ind[s[indm+1]]=indm+1;
-			var flag=true;
-			while(flag){
-				flag=false;
-				x=x.map((e,i)=>{
-					if(ind[e[0]]&&!ind[e[1]]){
-						if(!(s[ind[e[0]]+1]+1)){s[ind[e[0]]+1]=e[1];ind[e[1]]=ind[e[0]]+1;}//ok
-						else if(!(s[ind[e[0]]-1]+1)){s[ind[e[0]]-1]=e[1];ind[e[1]]=ind[e[0]]-1;}//ok
-					}//doom
-					else if(!ind[e[0]]&&ind[e[1]]){
-						if(!(s[ind[e[1]]+1]+1)){s[ind[e[1]]+1]=e[0];ind[e[0]]=ind[e[1]]+1;}//ok
-						else if(!(s[ind[e[1]]-1]+1)){s[ind[e[1]]-1]=e[0];ind[e[0]]=ind[e[1]]-1;}//ok
-					}//doom
-					else if(!ind[e[0]]&&!ind[e[1]])return e;//pass
-					//else if(ind[e[0]]&&ind[e[1]])//doom
-					flag=true;console.log(e,s,ind);
-				});
-				x=x.filter(y=>y);console.log(x);
+	const romaji=x=>fetch('https://labs.goo.ne.jp/api/morph',{
+		method:'POST',mode:'cors',
+		headers:{'Accept':'application/json','Content-Type':'application/json'},
+		body:JSON.stringify({
+			app_id:'57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3',
+			sentence:x
+		})
+	}).then(r=>r.json()).then(x=>x.word_list.reduce((a,x)=>a.concat(x),[]).map(x=>(x[2]&&!['Alphabet','Number','Roman'].includes(x[1]))?jaconv.toHebon(jaconv.toHiragana(x[2])).toLowerCase():jaconv.toHanAscii(x[0])).join('')),
+	demain=()=>{
+		var s,p,ps,pi,m,l,tmp;
+		const render=all=>{
+			mv.firstChild.style.left=`${36*p}px`;
+			while(mv.childNodes.length-1<m.length)mv.appendChild(document.createElement('p'));
+			if(all)mv.childNodes.forEach((e,i)=>{if(i)e.textContent=m[i-1]});
+			else mv.childNodes[p+1].textContent=m[p];
+			srcprv.innerHTML=src.value.substring(0,ps-1)+(src.value[ps-1]?`<span class="caret">${src.value[ps-1]}</span>`:'');
+			inpprv.innerHTML=inp.value.substring(0,pi-1)+(inp.value[pi-1]?`<span class="caret">${inp.value[pi-1]}</span>`:'');
+		},
+		post=()=>{
+			render(true);
+			btn.disabled=false;qbtn.disabled=false;stopb.disabled=false;skipcb.checked=false;
+			src.readOnly=false;inp.readOnly=false;srcprv.style.display='none';inpprv.style.display='none';
+		},
+		core=()=>{
+			tmp=null;
+			switch(s[ps]){
+				case'>':p++;if(m[p]==undefined)m[p]=0;ps++;break;
+				case'<':if(p>0)p--;else{log.textContent+=ps+': invailed "<". canceled.\n';stopb.disabled=true;}ps++;break;
+				case'+':m[p]++;m[p]&=0xff;ps++;break;
+				case'-':m[p]--;m[p]&=0xff;ps++;break;
+				case'.':out.textContent+=String.fromCharCode(m[p]);ps++;break;
+				case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;log.textContent+=ps+': input empty. use 0 as input.\n';ps++;}else if(tmp>255)pi++;else{m[p]=tmp;pi++;ps++;}tmp=null;break;
+				case'[':l.push(ps);ps++;break;
+				case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.textContent+=ps+': invailed "]". skipped.\n';ps++;}break;
+				default:ps++;tmp=1;break;
 			}
-			return [s.filter(e=>e+1),x];
-		}
-		var inpm=[...new Array(Math.max(...inp)+1).keys()];
-		if(inpm.length<3){console.log('freq skipped',inpm);return inpm;}
-		var arr=inp.map((x,i,c)=>{if(c[i+1])return[x,c[i+1]];})
-			.filter(x=>x&&x[0]!=x[1]).map(x=>x[0]>x[1]?[x[1],x[0]]:x);
-		//freq sort
-		var fq={};arr.forEach(x=>fq[x]=0);
-		var s=arr.filter(x=>++fq[x]==1);
-		s.sort((a,b)=>fq[b]-fq[a]);
-		//arr
-		var tmp,out=[];
-		while(true){
-			tmp=joinPair(s);out=out.concat(tmp[0]);s=tmp[1];
-			if(tmp[1].length==0)break;
-		}
-		out=out.concat(inpm.filter(x=>out.indexOf(x)==-1));console.log('freq',out);
-		return out;
+			if(!tmp&&!skipcb.checked)render();
+			if(ps==s.length||stopb.disabled==true)setTimeout(post,spd.value);
+			else{if(skipcb.checked||tmp){try{core();}catch(e){render(!tmp);setZeroTimeout(core);}}else setTimeout(core,spd.value);}
+		};
+		mv.innerHTML='<div></div><p>0</p>';
+		out.textContent='';log.textContent='';
+		src.readOnly=true;inp.readOnly=true;srcprv.style.display='block';inpprv.style.display='block';
+		s=src.value.split('');p=0;ps=0;pi=0;m=[0];l=[];
+		if(s.length)core();else{log.textContent+='! : no src found.\n';setTimeout(post,spd.value);}
 	},
-	slm=arr=>{
-		var m=Number.POSITIVE_INFINITY,s,tmp;
-		for(var i=4;i<=16;i++){
-			tmp=arr.map(x=>Math.abs(x>127?256-x:x)).map(x=>round(x/i)+x%i).reduce((a,b)=>a+b)+i;
-			if(tmp<m){m=tmp;s=i;}console.log(i,tmp);
-		}
-		console.log('slm',s);
-		return s;
-	};
-
-	s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);console.log('raw',s);
-	var ind=[0],clm=[[s[0]]],tmp={};
-	s.slice(1).forEach((x,i)=>{i++;
-		tmp.mini=-1;tmp.mind=Number(md)+1;
-		clm.forEach((y,j)=>{
-			tmp.last=y[y.length-1];
-			tmp.dist=Math.abs(tmp.last-x);
-			tmp.dist=Math.min(tmp.dist,256-tmp.dist);
-			if(tmp.dist<tmp.mind){
-				tmp.mind=tmp.dist;
-				tmp.mini=j;
+	enmain=(s,md)=>{
+		const round=x=>-Math.sign(x)*Math.round(-Math.abs(x)),
+		freq=inp=>{
+			const joinPair=x=>{
+				var indm=x.reduce((a,y)=>Math.max(y[0],y[1],a),0);
+				console.log('joinPair',x,indm);
+				var ind=new Array(indm+1).fill(null),s=new Array(indm).concat(x[0]);
+				x.shift();ind[s[indm]]=indm;ind[s[indm+1]]=indm+1;
+				var flag=true;
+				while(flag){
+					flag=false;
+					x=x.map((e,i)=>{
+						if(ind[e[0]]&&!ind[e[1]]){
+							if(!(s[ind[e[0]]+1]+1)){s[ind[e[0]]+1]=e[1];ind[e[1]]=ind[e[0]]+1;}//ok
+							else if(!(s[ind[e[0]]-1]+1)){s[ind[e[0]]-1]=e[1];ind[e[1]]=ind[e[0]]-1;}//ok
+						}//doom
+						else if(!ind[e[0]]&&ind[e[1]]){
+							if(!(s[ind[e[1]]+1]+1)){s[ind[e[1]]+1]=e[0];ind[e[0]]=ind[e[1]]+1;}//ok
+							else if(!(s[ind[e[1]]-1]+1)){s[ind[e[1]]-1]=e[0];ind[e[0]]=ind[e[1]]-1;}//ok
+						}//doom
+						else if(!ind[e[0]]&&!ind[e[1]])return e;//pass
+						//else if(ind[e[0]]&&ind[e[1]])//doom
+						flag=true;console.log(e,s,ind);
+					});
+					x=x.filter(y=>y);console.log(x);
+				}
+				return [s.filter(e=>e+1),x];
 			}
+			var inpm=[...new Array(Math.max(...inp)+1).keys()];
+			if(inpm.length<3){console.log('freq skipped',inpm);return inpm;}
+			var arr=inp.map((x,i,c)=>{if(c[i+1])return[x,c[i+1]];})
+				.filter(x=>x&&x[0]!=x[1]).map(x=>x[0]>x[1]?[x[1],x[0]]:x);
+			//freq sort
+			var fq={};arr.forEach(x=>fq[x]=0);
+			var s=arr.filter(x=>++fq[x]==1);
+			s.sort((a,b)=>fq[b]-fq[a]);
+			//arr
+			var tmp,out=[];
+			while(true){
+				tmp=joinPair(s);out=out.concat(tmp[0]);s=tmp[1];
+				if(tmp[1].length==0)break;
+			}
+			out=out.concat(inpm.filter(x=>out.indexOf(x)==-1));console.log('freq',out);
+			return out;
+		},
+		slm=arr=>{
+			var m=Number.POSITIVE_INFINITY,s,tmp;
+			for(var i=4;i<=16;i++){
+				tmp=arr.map(x=>Math.abs(x>127?256-x:x)).map(x=>round(x/i)+x%i).reduce((a,b)=>a+b)+i;
+				if(tmp<m){m=tmp;s=i;}console.log(i,tmp);
+			}
+			console.log('slm',s);
+			return s;
+		};
+
+		s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);console.log('raw',s);
+		var ind=[0],clm=[[s[0]]],tmp={};
+		s.slice(1).forEach((x,i)=>{i++;
+			tmp.mini=-1;tmp.mind=Number(md)+1;
+			clm.forEach((y,j)=>{
+				tmp.last=y[y.length-1];
+				tmp.dist=Math.abs(tmp.last-x);
+				tmp.dist=Math.min(tmp.dist,256-tmp.dist);
+				if(tmp.dist<tmp.mind){
+					tmp.mind=tmp.dist;
+					tmp.mini=j;
+				}
+			});
+			if(tmp.mini==-1){ind[i]=clm.length;clm[ind[i]]=[x];}
+			else{ind[i]=tmp.mini;clm[ind[i]].push(x);}
 		});
-		if(tmp.mini==-1){ind[i]=clm.length;clm[ind[i]]=[x];}
-		else{ind[i]=tmp.mini;clm[ind[i]].push(x);}
-	});
-	console.log('index',ind);console.log('data',clm);
-	var freq_=freq(ind);ind=ind.map(x=>freq_.indexOf(x));clm=freq_.map(x=>clm[x]);
-	console.log('index',ind);console.log('data',clm);//console.log(freq(ind));//shoud be ordered
+		console.log('index',ind);console.log('data',clm);
+		var freq_=freq(ind);ind=ind.map(x=>freq_.indexOf(x));clm=freq_.map(x=>clm[x]);
+		console.log('index',ind);console.log('data',clm);//console.log(freq(ind));//shoud be ordered
 
-	tmp=clm.map(x=>x[0]);
-	md=slm(tmp);
-	tmp=tmp.map((x,i)=>{//near
-		var r=round((x>127?x-256:x)/md);
-		clm[i].unshift(r<0?256+r*md:r*md);
-		return r;
-	});console.log('boot',tmp);
-	s='+'.repeat(md)+'[';
-	tmp.forEach(x=>s+='>'+(x>0?'+':'-').repeat(Math.abs(x)));
-	s+='<'.repeat(tmp.length)+'-]>';
-	ind.forEach((x,i)=>{
-		var p=x-(ind[i-1]||0),to=clm[x][1]-clm[x][0];clm[x].shift();
-		s+=(p>0?'>':'<').repeat(Math.abs(p));
-		p=Math.abs(to);s+=(to>0^p>128?'+':'-').repeat(p>128?256-p:p)+'.';
-		console.log(i,x,s);console.log(clm);
-	});
+		tmp=clm.map(x=>x[0]);
+		md=slm(tmp);
+		tmp=tmp.map((x,i)=>{//near
+			var r=round((x>127?x-256:x)/md);
+			clm[i].unshift(r<0?256+r*md:r*md);
+			return r;
+		});console.log('boot',tmp);
+		s='+'.repeat(md)+'[';
+		tmp.forEach(x=>s+='>'+(x>0?'+':'-').repeat(Math.abs(x)));
+		s+='<'.repeat(tmp.length)+'-]>';
+		ind.forEach((x,i)=>{
+			var p=x-(ind[i-1]||0),to=clm[x][1]-clm[x][0];clm[x].shift();
+			s+=(p>0?'>':'<').repeat(Math.abs(p));
+			p=Math.abs(to);s+=(to>0^p>128?'+':'-').repeat(p>128?256-p:p)+'.';
+			console.log(i,x,s);console.log(clm);
+		});
 
-	console.log('result:',s.length,s);
-	return s+s.length;
-};
-</script>
+		console.log('result:',s.length,s);
+		return s+s.length;
+	};
+	</script>
 </body>
 </html>

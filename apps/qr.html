@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1">
-		<title>MceEringi QRgen</title>
-	</head>
-	<body>
-		<style>
-			:root{background-color:#222;color:#fff;font-family:sans-serif}
-			a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
-			canvas{display:none;}
-			img{width:100%;max-width:320px;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;}
-		</style>
-		<script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
-		<canvas id="qr"></canvas>
-		<h1>QRgen</h1>
-		<textarea id="txt">Hello World!</textarea><br>
-		<input type="color" value="#000" id="cd"><input type="color" value="#ffffff" id="cl"><br>
-		<input type="range" value="1" id="ecl" min="0" max="3" step="1"><br>
-		<button onclick="main();">run</button>
-		<hr>
-		<pre id="log"></pre>
-		<a id="qra"><img src="" alt="QRcode" width="1" height="1" id="qri"></a><br>
-		Powerd by <a href="https://github.com/soldair/node-qrcode">node-qrcode</a>
-		<script>
-			const main=()=>QRCode.toDataURL(txt.value,{errorCorrectionLevel:['S','M','Q','L'][ecl.value],margin:4,scale:8,color:{dark:cd.value,light:cl.value}},(e,x)=>{if(e)log.textContent=e;qra.href=qri.src=x;qra.download=txt.value;});
-			main();
-		</script>
-	</body>
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi QRgen</title>
+	<meta name="description" content="QR code generator">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+</head>
+<body>
+	<style>
+		canvas{display:none;}
+		img{width:100%;max-width:320px;height:auto;}
+	</style>
+	<script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+	<canvas id="qr"></canvas>
+	<h1>QRgen</h1>
+	<hr>
+	<textarea id="txt" class="input">Hello World!</textarea><br>
+	<input type="color" value="#000" id="cd"><input type="color" value="#ffffff" id="cl"><br>
+	<input type="range" value="1" id="ecl" min="0" max="3" step="1"><br>
+	<button onclick="main();" class="button">run</button>
+	<hr>
+	<pre id="log"></pre>
+	<a id="qra"><img src="" alt="QRcode" width="1" height="1" id="qri"></a><br>
+	Powerd by <a href="https://github.com/soldair/node-qrcode">node-qrcode</a>
+	<script>
+		const main=()=>QRCode.toDataURL(txt.value,{errorCorrectionLevel:['S','M','Q','L'][ecl.value],margin:4,scale:8,color:{dark:cd.value,light:cl.value}},(e,x)=>{if(e)log.textContent=e;qra.href=qri.src=x;qra.download=txt.value;});
+		main();
+	</script>
+</body>
 </html>

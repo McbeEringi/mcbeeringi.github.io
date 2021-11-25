@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang='en' dir='ltr'>
 <head>
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
 	<meta charset='utf-8'>
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>McbeEringi JavaScript</title>
+	<meta name="description" content="js sandbox">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+
 	<style>
-		:root{font-family:monospace;background:#222;color:#fff;}:link{color:#8cf;}:visited{color:#c8f;}
 		#log{background:#333;padding:4px;white-space:pre-wrap;overflow-x:scroll;}
 		#log>span{opacity:.5;}
 	</style>
@@ -21,10 +26,11 @@
 </head>
 <body>
 	<h1>JavaScript</h1>
+	<hr>
 	<div id='_cme_'></div>
-	<button onclick="_run_();">run</button>
-	<button onclick="_save_();">save</button>
-	<button onclick="_copy_();">copy url</button>
+	<button onclick="_run_();" class="button">run</button>
+	<button onclick="_save_();" class="button">save</button>
+	<button onclick="_copy_();" class="button">copy url</button>
 	<pre id="log"></pre>
 	<script>
 	console.clear=()=>log.textContent='';
