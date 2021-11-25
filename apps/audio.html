@@ -1,125 +1,128 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-	<head>
-		<meta charset="utf-8">
-		<title></title>
-	</head>
-	<body>
-		<script src="https://cdn.jsdelivr.net/npm/tone/build/Tone.js"></script>
-		<link rel="stylesheet" href="../src/toggle.css">
-		<style>
-			:root{background-color:#222;color:#fff;font-family:monospace;}
-			a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
-			canvas{width:100%;}input{vertical-align:middle;}
-			summary{display:inline-block;}pre{white-space:pre-wrap;}
-			.box{border-left:2px solid #888;padding-left:8px;margin:16px auto;}
-		</style>
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
 
-		<h1>Audio</h1>
-		<div class="box">
-			<input type="file" id="ifile" accept=".mp3,.m4a,.mp4,.wav,.tiff"><br>
-			<pre id="log"></pre>
-			<button id="prebtn">↩️</button>
-			<button id="ppbtn">⏯</button>
-			<button id="stopbtn">⏹</button>
-			<button id="postbtn">↪️</button><br>
-			<br>
-			<input type="range" id="rwet" value="0" min="0" max="1" step="0.0625">reverb strength<br>
-			<input type="range" id="rdec" value="-0" min="-4" max="4" step="0.5">reverb decay<br>
-		</div>
-		<br>
-		<label>display mic: <input type="checkbox" id="miccb" class="toggle"></label><br>
-		<br>
-		<details>
-			<summary>FFT</summary><br>
-			<input type="range" id="hzr" value="-2" min="-5" max="0" step="0.01"><span></span><br>
-			<input type="range" id="dbr" value="8" min="5" max="9" step="0.01"><span></span><br>
-			<input type="range" id="buf" value="0.5" min="0" max="1" step="0.0625">smooth<br>
-			<input type="range" id="opa" value="8" min="0" max="8" step="0.5">opaque<br>
-		</details>
-		<canvas id="fftc"></canvas><br>
-		<canvas id="wfc"></canvas><br>
-		powered by <a href="https://tonejs.github.io/">Tonejs</a>
-		<script>
-			'use strict';
-			let player,mic,pbr,msg=['choose your audio file.'],toneFFT=new Tone.FFT(),toneWf=new Tone.Waveform();
-			const
-				res=window.devicePixelRatio||1,
-				fftctx=fftc.getContext('2d'),
-				wfctx=wfc.getContext('2d'),
-				rev=new Tone.Reverb(),
-				pset=(file)=>{
-					if(!file)return;
-					msg=['loading…'];
-					[ppbtn,stopbtn,prebtn,postbtn].forEach(x=>x.disabled=true);
-					if(player){Tone.Transport.stop();player.dispose();}
-					const url=URL.createObjectURL(file);
-					player=new Tone.Player({
-						url,loop:true,
-						onload:()=>{
-							setTimeout(URL.revokeObjectURL,0,url);
-							player.sync().start(0);
-							[ppbtn,stopbtn,prebtn,postbtn].forEach(x=>x.disabled=false);
-							msg=[`${file.name}	time: `,' '];
-						}
-					}).connect(rev);
-				},
-				main=()=>{
-					requestAnimationFrame(main);
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi audio</title>
+	<meta name="description" content="audio analyser">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
 
-					const fft=[...toneFFT.getValue()],fftw=fftc.width/(fft.length-1)*Math.pow(2,-hzr.value),dbmin=Math.pow(2,dbr.value);
-					fftctx.fillRect(0,0,fftc.width,fftc.height);
-					fftctx.beginPath();
-					fft.forEach((x,i)=>fftctx.lineTo(fftw*i,fftc.height*(1-Math.max(0,x+dbmin)/dbmin)));
-					fftctx.stroke();
+	<link rel="stylesheet" href="../src/style.css">
+	<link rel="stylesheet" href="../src/toggle.css">
+</head>
+<body>
+	<script src="https://cdn.jsdelivr.net/npm/tone/build/Tone.js"></script>
+	<style>canvas{width:100%;}summary{display:inline-block;}pre{white-space:pre-wrap;}</style>
 
-					const wf=[...toneWf.getValue()],wfw=wfc.width/(wf.length-1);
-					wfctx.fillRect(0,0,wfc.width,wfc.height);
-					wfctx.beginPath();
-					wf.forEach((x,i)=>wfctx.lineTo(wfw*i,wfc.height*(x*.5+.5)));
-					wfctx.stroke();
+	<h1>Audio</h1>
+	<hr>
+	<input class="input" type="file" id="ifile" accept=".mp3,.m4a,.mp4,.wav,.tiff"><br>
+	<pre id="log"></pre>
+	<button class="button" id="prebtn">↩️</button>
+	<button class="button" id="ppbtn">⏯</button>
+	<button class="button" id="stopbtn">⏹</button>
+	<button class="button" id="postbtn">↪️</button><br>
+	<br>
+	<input type="range" id="rwet" value="0" min="0" max="1" step="0.0625">reverb strength<br>
+	<input type="range" id="rdec" value="-0" min="-4" max="4" step="0.5">reverb decay<br>
+	<hr>
+	<label>display mic: <input type="checkbox" id="miccb" class="toggle"></label><br>
+	<br>
+	<details>
+		<summary>FFT</summary><br>
+		<input type="range" id="hzr" value="-2" min="-5" max="0" step="0.01"><span></span><br>
+		<input type="range" id="dbr" value="8" min="5" max="9" step="0.01"><span></span><br>
+		<input type="range" id="buf" value="0.5" min="0" max="1" step="0.0625">smooth<br>
+		<input type="range" id="opa" value="8" min="0" max="8" step="0.5">opaque<br>
+	</details>
+	<hr>
+	<canvas id="fftc"></canvas><br>
+	<canvas id="wfc"></canvas><br>
+	powered by <a href="https://tonejs.github.io/">Tonejs</a>
+	<script>
+		'use strict';
+		let player,mic,pbr,msg=['choose your audio file.'],toneFFT=new Tone.FFT(),toneWf=new Tone.Waveform();
+		const
+			res=window.devicePixelRatio||1,
+			fftctx=fftc.getContext('2d'),
+			wfctx=wfc.getContext('2d'),
+			rev=new Tone.Reverb(),
+			pset=(file)=>{
+				if(!file)return;
+				msg=['loading…'];
+				[ppbtn,stopbtn,prebtn,postbtn].forEach(x=>x.disabled=true);
+				if(player){Tone.Transport.stop();player.dispose();}
+				const url=URL.createObjectURL(file);
+				player=new Tone.Player({
+					url,loop:true,
+					onload:()=>{
+						setTimeout(URL.revokeObjectURL,0,url);
+						player.sync().start(0);
+						[ppbtn,stopbtn,prebtn,postbtn].forEach(x=>x.disabled=false);
+						msg=[`${file.name}	time: `,' '];
+					}
+				}).connect(rev);
+			},
+			main=()=>{
+				requestAnimationFrame(main);
 
-					log.textContent=msg[0]+(msg[1]?Tone.Transport.seconds.toFixed(2)+msg[1]:'');
-				};
+				const fft=[...toneFFT.getValue()],fftw=fftc.width/(fft.length-1)*Math.pow(2,-hzr.value),dbmin=Math.pow(2,dbr.value);
+				fftctx.fillRect(0,0,fftc.width,fftc.height);
+				fftctx.beginPath();
+				fft.forEach((x,i)=>fftctx.lineTo(fftw*i,fftc.height*(1-Math.max(0,x+dbmin)/dbmin)));
+				fftctx.stroke();
 
-			rev.connect(toneFFT);
-			rev.connect(toneWf);
-			rev.toDestination();
+				const wf=[...toneWf.getValue()],wfw=wfc.width/(wf.length-1);
+				wfctx.fillRect(0,0,wfc.width,wfc.height);
+				wfctx.beginPath();
+				wf.forEach((x,i)=>wfctx.lineTo(wfw*i,wfc.height*(x*.5+.5)));
+				wfctx.stroke();
 
-			[ppbtn,stopbtn,prebtn,postbtn].forEach(x=>x.disabled=true);
-			ifile.onchange=()=>pset(ifile.files[0]);
-			ppbtn.onclick=()=>{Tone.start();Tone.Transport[Tone.Transport.state=='started'?'pause':'start']();};
-			stopbtn.onclick=()=>Tone.Transport.stop();
-			prebtn.onclick=()=>Tone.Transport.seconds-=5;
-			postbtn.onclick=()=>Tone.Transport.seconds+=5;
-			miccb.onchange=()=>{
-				if(miccb.checked)
-					(async ()=>{
-						if(!mic){
-							mic=new Tone.UserMedia();
-							mic.connect(toneFFT);
-							mic.connect(toneWf);
-						}
-						mic.open();
-					})().catch(console.log);
-				else mic.close();
+				log.textContent=msg[0]+(msg[1]?Tone.Transport.seconds.toFixed(2)+msg[1]:'');
 			};
 
-			wfc.height=fftc.height=256*res;
-			wfc.width=fftc.width=1024*res;
-			wfctx.strokeStyle=fftctx.strokeStyle='#fff';
-			wfctx.lineWidth=fftctx.lineWidth=res;
-			wfctx.fillStyle='#000';
+		rev.connect(toneFFT);
+		rev.connect(toneWf);
+		rev.toDestination();
 
-			(rwet.oninput=()=>rev.wet.value=rwet.value)();
-			(rdec.oninput=()=>rev.decay=Math.pow(2,rdec.value))();
+		[ppbtn,stopbtn,prebtn,postbtn].forEach(x=>x.disabled=true);
+		ifile.onchange=()=>pset(ifile.files[0]);
+		ppbtn.onclick=()=>{Tone.start();Tone.Transport[Tone.Transport.state=='started'?'pause':'start']();};
+		stopbtn.onclick=()=>Tone.Transport.stop();
+		prebtn.onclick=()=>Tone.Transport.seconds-=5;
+		postbtn.onclick=()=>Tone.Transport.seconds+=5;
+		miccb.onchange=()=>{
+			if(miccb.checked)
+				(async ()=>{
+					if(!mic){
+						mic=new Tone.UserMedia();
+						mic.connect(toneFFT);
+						mic.connect(toneWf);
+					}
+					mic.open();
+				})().catch(console.log);
+			else mic.close();
+		};
 
-			(hzr.oninput=()=>hzr.nextElementSibling.textContent=`0.00~${(toneFFT.getFrequencyOfIndex(toneFFT.getValue().length-1)*Math.pow(2,hzr.value)).toFixed(2)}Hz`)();
-			(dbr.oninput=()=>dbr.nextElementSibling.textContent=-Math.pow(2,dbr.value).toFixed()+'~0 db')();
-			(buf.oninput=()=>toneFFT.smoothing=buf.value)();
-			(opa.oninput=()=>fftctx.fillStyle=`rgba(0,0,0,${Math.pow(2,opa.value)/255})`)();
+		wfc.height=fftc.height=256*res;
+		wfc.width=fftc.width=1024*res;
+		wfctx.strokeStyle=fftctx.strokeStyle='#fff';
+		wfctx.lineWidth=fftctx.lineWidth=res;
+		wfctx.fillStyle='#000';
 
-			main();
-		</script>
-	</body>
+		(rwet.oninput=()=>rev.wet.value=rwet.value)();
+		(rdec.oninput=()=>rev.decay=Math.pow(2,rdec.value))();
+
+		(hzr.oninput=()=>hzr.nextElementSibling.textContent=`0.00~${(toneFFT.getFrequencyOfIndex(toneFFT.getValue().length-1)*Math.pow(2,hzr.value)).toFixed(2)}Hz`)();
+		(dbr.oninput=()=>dbr.nextElementSibling.textContent=-Math.pow(2,dbr.value).toFixed()+'~0 db')();
+		(buf.oninput=()=>toneFFT.smoothing=buf.value)();
+		(opa.oninput=()=>fftctx.fillStyle=`rgba(0,0,0,${Math.pow(2,opa.value)/255})`)();
+
+		main();
+	</script>
+</body>
 </html>

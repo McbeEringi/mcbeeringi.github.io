@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='UTF-8'><title>FILENAME</title>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js'></script>
+	<script>const data={"name":"example","hash":"","enc":""};</script>
+</head>
+<body>
+	<div id='auth'>
+		<h1 id='h1'>FILENAME</h1>
+		key: <input id='key' onchange='main()'><br>
+		<span id='log'>input password and press enter</span><br>
+	</div>
+	<div id='main_' style='display:none;'>
+		<a id='dl' download='FILENAME' href='javascript:void();' style='height:16px;'>download file</a>
+		<iframe id='fr' src='' style='border:2px solid #888;width:calc(100vw - 4px);height:calc(100vh - 20px)'></iframe>
+	</div>
+	<script>
+		document.title=data.name;h1.innerText=data.name;dl.download=data.name;
+		const main=()=>{
+			if(CryptoJS.MD5(key.value).toString()==data.hash){
+				fr.src=CryptoJS.AES.decrypt(data.enc,key.value).toString(CryptoJS.enc.Utf8);dl.href=fr.src;
+				auth.style.display='none';main_.style.display='block';document.body.style.margin=0;
+			}else log.innerText='illegal password :(';
+		}
+	</script>
+</body>
+</html>

@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>McbeEringi jsbm</title>
+	<title>McbeEringi jsbn</title>
+	<meta name="description" content="js bookmark">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
 </head>
 <body>
-	<style>
-		:root,textarea{font-family:monospace;background:#222;color:#fff;tab-size:2;image-rendering:pixelated;}
-		textarea{resize:none;width:100%;box-sizing:border-box;word-break:break-all;}
-	</style>
+	<style>textarea{width:100%;}</style>
 
 	<h1>JS bookmark</h1>
-	<textarea id="inp"></textarea>
 	<hr>
-	<button id="copy">copy</button>
-	<textarea id="out"></textarea>
+	<textarea id="inp" class="input"></textarea>
+	<hr>
+	<button id="copy" class="button">copy</button>
+	<textarea id="out" class="input"></textarea>
 	<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
 	<script>
 		[inp,out].forEach(autosize);
