@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang='jp'>
-	<head>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src='https://www.googletagmanager.com/gtag/js?id=UA-145066191-2'></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
-		<meta charset='utf-8'>
-		<meta name='viewport' content='width=device-width,initial-scale=1.0'>
-		<title>McbeEringi 404</title>
-		<style>
-			:root{background-color:#222;color:#fff;font-family:monospace;text-align:center;}
-			:link{color:#8cf;}:visited{color:#c8f;}pre>h1{font-size:500%;}
-		</style>
-	</head>
+<html lang="en" dir="ltr">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi 404</title>
+	<meta name="description" content="404 handler">
+	<link rel="shortcut icon" type="image/svg+xml" href="img/icon.svg">
+	<link rel="apple-touch-icon" href="img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="src/style.css">
+</head>
 	<body>
 		McbeEringi
 		<hr>
@@ -32,7 +33,7 @@
 					[/others\/arch/i,'apps/mc/arch'],[/others\/poly/i,'apps/mc/poly'],
 					[/others\/sky/i,'sky'],[/apps\/sky/i,'sky'],
 					[/amuse\/js/i,'apps/js'],[/amuse\/jdsm/i,'apps/mc/jdsm'],[/amuse\/seq/i,'sky/seq_'],[/amuse\/textarea/i,'apps/js'],
-					[/worlds/i,'mc'],[/\.io\/how/i,'.io/mc/how']
+					[/worlds/i,'mc'],[/how/i,'mc']
 				].reduce((a,x)=>a.replace(...x),location.href);
 				if(location.href!=url){
 					log.textContent='';
