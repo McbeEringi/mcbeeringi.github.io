@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="jp">
+<html lang="en" dir="ltr">
 <head>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>McbeEringi calpis_calc</title>
-	<script src="../src/style.js" async></script>
+	<title>McbeEringi Minecraft</title>
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
 </head>
 <body>
 	<style>
@@ -15,25 +16,22 @@
 		input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{display:none;}
 		input[type="number"]{-moz-appearance:textfield;}
 	</style>
-	<h1 class="c title">🥛Calpis Calc🥛</h1>
-	<p class="c box">カルピス原液を適量入れた時に、コップの底が見えなくなる角度を計算します<br>
+	<h1>🥛Calpis Calc🥛</h1>
+	<p>カルピス原液を適量入れた時に、コップの底が見えなくなる角度を計算します<br>
 		美味しく作る目安程度に使ってください</p>
-	<div>
-		<img src="calpis.jpg" alt="calpis図解" style="width:50%;max-width:200px;"><br>
-		角θを求めます
-	</div>
-	<div class="box">
-		<h2>input</h2>
-		<form oninput="calpis(h_.value,d_.value,m_.value);">
-			液面 : 直径 =
-			<input type="number" id="h_" value="1" class="r" min="0"> : <input type="number" id="d_" value="1" min="0"><br>
-			<label><input type="number" id="m_" value="5" class="r" min="1">倍希釈</label>
-		</form>
-	</div>
-	<div>
-		<h2>result</h2>
-		<p id="out" style="transform-origin:left;"></p><br>
-	</div>
+	<hr>
+	<img src="calpis.jpg" alt="calpis図解" style="width:50%;max-width:200px;"><br>
+	角θを求めます
+	<hr>
+	<h2>input</h2>
+	<form oninput="calpis(h_.value,d_.value,m_.value);">
+		液面 : 直径 =
+		<input type="number" class="input" id="h_" value="1" class="r" min="0"> : <input type="number" class="input" id="d_" value="1" min="0"><br>
+		<label><input type="number" class="input" id="m_" value="5" class="r" min="1">倍希釈</label>
+	</form>
+	<hr>
+	<h2>result</h2>
+	<p id="out" style="transform-origin:left;"></p><br>
 	<script>
 		function calpis(h,d,m) {
 			var diffuse = (Math.atan2(h*2/m,d)*180/Math.acos(-1)).toFixed(2);

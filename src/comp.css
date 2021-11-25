@@ -1,4 +1,4 @@
-.stuff{--size:150px;}
+.stuff{--size:150px;--img:url(../img/icon.svg);}
 .stuff>a{display:inline-block;width:var(--size);margin:5px;vertical-align:top;transition:.2s;white-space:pre-wrap;}
 .stuff>a::before{content:"";display:block;height:var(--size);border-radius:20%;background:no-repeat center/cover var(--img);}
 .stuff>a::after{content:var(--entxt,var(--txt));display:block;font-size:small;text-decoration:none;}.stuff:lang(ja)>a::after{content:var(--txt);}
