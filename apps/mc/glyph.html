@@ -1,19 +1,22 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
-<script data-ad-client="ca-pub-6462086334272944" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-		<meta charset="utf-8">
-		<title>McbeEringi glyph_gen</title>
-		<meta name="viewport" content="width=device-width,initial-scale=1">
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+	<script data-ad-client="ca-pub-6462086334272944" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi glyph_gen</title>
+	<meta name="description" content="mc glyph generator">
+	<link rel="shortcut icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../../src/style.css">
 </head>
 <body>
 <style>
-	:root{background:#222;color:#fff;font-family:sans-serif;image-rendering:pixelated;}
-	.box{background-color:#333;padding:4px;overflow:scroll;}progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}canvas{width:100%;border:1px solid;margin-top:4px;background-size:12.5%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")}
-	a:link,a:visited{color:#aef;}a:hover{color:#8af;}a:active{color:#48f;}
-	input{background-color:#0000;color:#fff;border:none;border-radius:0;border-bottom:2px solid #888;font-size:14px;user-select:auto;-webkit-user-select:auto;}input:focus{outline:none;border-bottom:2px solid #48f;transition:.5s;}
+	progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}canvas{width:100%;border:1px solid;margin-top:4px;background-size:12.5%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")}
 	.clear_fix::after{content:"";clear:both;display:block;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
@@ -24,30 +27,27 @@
 
 <h1>glyph_gen</h1>
 <a href="glyph_.html">old page</a>
-<div class="box">
-	<h2>config</h2>
-	<div id="configp">
-		<label><span>img:</span><input id="csize" type="number" value="64" onchange="csize_(this.value);dl_();">px²</label><br>
-		<label><span>size:</span><input id="fsize" type="number" value="56" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
-		<label><span>font:</span><input id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);dl_();"></label> or <input type="file" onchange="load(this);" accept=".ttf,.otf,.woff,.woff2"><br>
-		<a id="dl" href="#">…</a><br>
-		<br>
-		<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
-		<label>list:<input id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
-		<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
-	</div>
+<hr>
+<h2>config</h2>
+<div id="configp">
+	<label><span>img:</span><input class="input" id="csize" type="number" value="64" onchange="csize_(this.value);dl_();">px²</label><br>
+	<label><span>size:</span><input class="input" id="fsize" type="number" value="56" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
+	<label><span>font:</span><input class="input" id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);dl_();"></label> or <input class="input" type="file" onchange="load(this);" accept=".ttf,.otf,.woff,.woff2"><br>
+	<a id="dl" href="#">…</a><br>
 	<br>
-	<button id="expb" onclick="exp(expl.value,expmode.checked,expmcpack.checked);">export</button>
-	<progress id="pbar" value="0"></progress>
-	<pre id="log"></pre><pre id="log_"></pre>
+	<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
+	<label>list:<input class="input" id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
+	<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
 </div>
 <br>
-<div class="box">
-	<h2>preview</h2>
-	<label><span>block:</span><input id="ward" value="00" onchange="set(this.value);dl_();"></label><br>
-	<canvas id="c">canvas</canvas>
-</div>
-
+<button class="button" id="expb" onclick="exp(expl.value,expmode.checked,expmcpack.checked);">export</button>
+<progress id="pbar" value="0"></progress>
+<pre id="log"></pre><pre id="log_"></pre>
+<hr>
+<h2>preview</h2>
+<label><span>block:</span><input class="input"id="ward" value="00" onchange="set(this.value);dl_();"></label>
+<canvas id="c">canvas</canvas>
+<hr>
 <script>
 'use strict';
 var ctx=c.getContext('2d');

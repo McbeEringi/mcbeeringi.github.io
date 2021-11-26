@@ -1,129 +1,119 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-	<head>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
-		<meta charset="utf-8">
-		<title>McbeEringi obj2mcbe</title>
-		<meta name="viewport" content="width=device-width,initial-scale=1">
-	</head>
-	<body>
-		<style>
-			:root,textarea,input{background-color:#222;color:#fff;font-family:menlo,monospace;}.box{background-color:#333;padding:4px;font-size:13px;}
-			a:link,a:visited{color:#aef;}a:link:hover{color:#8af;}a:link:active{color:#48f;}
-			textarea{background-color:#0000;line-height:14px;min-height:92px;max-height:448px;width:calc(100% - 8px);overflow:scroll;resize:vertical;}
-			#log{line-height:14px;max-height:448px;overflow:scroll;background-color:#333;}
-			input:not([type=radio]){background-color:#0000;display:inline-block;border:none;border-bottom:2px solid #888;border-radius:0;min-width:18em;max-width:100%;outline:none;transition:.2s;}
-			input:not([type=radio]):focus{border-bottom-color:#48fc;}
-			.button{background-color:#555;padding:8px;border-radius:4px;user-select:none;-webkit-user-select:none;display:inline-block;}
-			.button:active{background-color:#48fc;}
-		</style>
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
 
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi obj2mcbe</title>
+	<meta name="description" content="mc .obj to mcbe model json">
+	<link rel="shortcut icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
 
-		<h1>obj2mcbe</h1>
-		<div class="box">
-			<h2>.obj</h2>
-			16^3=1block<br>
-			Must be Tris or Quads<br>
-			<input type="file" id="finp" onchange="read(this)"><span id="finpl"></span>
-		</div>
-		<br>
-		<div class="box">
-			<h2>settings</h2>
-			<span style="display:inline-block;width:6em;text-align:right;">position:</span><input type="text" id="vfx" value="[v[2],v[1],v[0]];"><br>
-			<span style="display:inline-block;width:6em;text-align:right;">normal:</span><input type="text" id="vnfx" value="[vn[0],vn[1],vn[2]];"><br>
-			<span style="display:inline-block;width:6em;text-align:right;">tex_uv:</span><input type="text" id="vtfx" value="[vt[0],vt[1]];"><br>
-			<br>
-			<label>
-				format:
-				<select id="frm">
-					<option value="null">null</option>
-					<option value="0">1.8.0</option>
-					<option value="1">1.10.0</option>
-					<option value="2">1.12.0</option>
-					<option value="3" selected>1.16.0</option>
-				</select>
-			</label>
-			<div id="frmc">
-				<label>geometry.<input class="inp" id="mname" value="armor_stand"></label>
-				<textarea id="frmtmp"></textarea>
-			</div>
-		</div>
-		<br>
-		<span class="button" id="run">Run</span><br>
-		<br>
-		<div class="box">
-			<h2 id="outtitle"></h2>
-			<form id="outm" onchange="outt.style.display=['block','none'][this.m.value];outf.style.display=['none','block'][this.m.value];">
-				<label><input type="radio" name="m" value="1" checked>file</label><br>
-				<label><input type="radio" name="m" value="0">text</label><br>
-			</form>
-			<div id="outt" style="display:none;">
-				<textarea id="tout"></textarea><br>
-				<span class="button" onclick="navigator.clipboard.writeText(tout.value).then(()=>{this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);});">copy</span>
-			</div>
-			<div id="outf">
-				<br>
-				<a id="fout">Press "Run" to generate converted file</a>
-			</div>
-			<a id="logdl">　</a>
-		</div>
-		<br>
-		<pre id="log"></pre>
+	<link rel="stylesheet" href="../../src/style.css">
+</head>
+<body>
+	<style>#log{line-height:14px;max-height:448px;overflow:scroll;background-color:#333;}textarea{width:100%;height:360px;}</style>
 
-		<script>
-			var reader=new FileReader(),fname='unknown';
-			const worker=new Worker('poly.js'),
-			format_tmp=[
-				'{"format_version":"1.8.0","geometry.NAME":{"texturewidth":64,"textureheight":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0],"bones":[OBJ]}}',
-				'{"format_version":"1.10.0","geometry.NAME":{"texturewidth":64,"textureheight":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0],"bones":[OBJ]}}',
-				'{"format_version":"1.12.0","minecraft:geometry":[{"description":{"identifier":"geometry.NAME","texture_width":64,"texture_height":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0]},"bones":[OBJ]}]}',
-				'{"format_version":"1.16.0","minecraft:geometry":[{"description":{"identifier":"geometry.NAME","texture_width":64,"texture_height":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0]},"bones":[OBJ]}]}',
-			],
-			frmfx=()=>{
-				frmtmp.value=format_tmp[Number(frm.value)];
-				frmc.style.display=(frm.value=='null')?'none':'block';
-				outtitle.textContent=(frm.value=='null')?'mcbe bones(poly_mesh)':'mcbe geometry';
-			}
-			main=()=>{
-				log.textContent='';
-				worker.postMessage({
-					s:reader.result,
-					format:(frm.value=='null')?'':[mname.value,frmtmp.value],
-					cffx:[vfx.value,vnfx.value,vtfx.value],
-					fname:fname
-				});
-				run.textContent='Please wait…';run.style.background='#333';
-				run.onclick=()=>{}
-			},
-			read=_this=>{
-				fname=_this.files[0].name;
-				finpl.textContent='Drag & Drop or click to select';
-				reader.addEventListener('progress',x=>finpl.textContent=x.loaded/x.total+'% loaded…',false);
-				reader.addEventListener('load',x=>finpl.textContent=(x.total>=1e9?Math.round(x.total/1e7)/1e2+'GB':(x.total>=1e6?Math.round(x.total/1e4)/1e2+'MB':(x.total>=1e3?Math.round(x.total/1e1)/1e2+'KB':x.total+'byte'))),false);
-				reader.addEventListener('error',e=>finpl.textContent=e,false);
-				reader.addEventListener('loadend',x=>console.log(x),false);
-				reader.readAsText(_this.files[0]);
-			};
-			worker.addEventListener('message',m=>{
-					console.log(m.data);
-					if(m.data.diffuse){
-						if(m.data.diffuse[1]){
-							var diffuse = m.data.diffuse[1],o = m.data.diffuse[0];
-							tout.value = diffuse;
-							fout.href = 'data:,'+encodeURI(diffuse);fout.download = o+'.geo.json';fout.textContent = `save as "${fout.download}"`;
-							logdl.href = 'data:,'+encodeURI(log.textContent);logdl.download = o+'.log';logdl.textContent = `save log`;
-						}
-						run.textContent='Done!';run.style.background='#555';
-						run.onclick=main;
-						setTimeout(()=>run.textContent='Run',1000);
-					}
-					else{log.textContent+=m.data;}
+	<h1>obj2mcbe</h1>
+	<hr>
+	<h2>.obj</h2>
+	16^3=1block<br>
+	Must be Tris or Quads<br>
+	<input class="input" type="file" id="finp" onchange="read(this)"><span id="finpl"></span>
+	<hr>
+	<h2>settings</h2>
+	<span style="display:inline-block;width:6em;text-align:right;">position:</span><input class="input" type="text" id="vfx" value="[v[2],v[1],v[0]];"><br>
+	<span style="display:inline-block;width:6em;text-align:right;">normal:</span><input class="input" type="text" id="vnfx" value="[vn[0],vn[1],vn[2]];"><br>
+	<span style="display:inline-block;width:6em;text-align:right;">tex_uv:</span><input class="input" type="text" id="vtfx" value="[vt[0],vt[1]];"><br>
+	<br>
+	<label>
+		format:
+		<select id="frm">
+			<option value="null">null</option>
+			<option value="0">1.8.0</option>
+			<option value="1">1.10.0</option>
+			<option value="2">1.12.0</option>
+			<option value="3" selected>1.16.0</option>
+		</select>
+	</label>
+	<div id="frmc">
+		<label>geometry.<input class="input" id="mname" value="armor_stand"></label>
+		<textarea class="input" id="frmtmp"></textarea>
+	</div>
+	<hr>
+	<span class="button" id="run">Run</span><br>
+	<hr>
+	<h2 id="outtitle"></h2>
+	<form id="outm" onchange="outt.style.display=['block','none'][this.m.value];outf.style.display=['none','block'][this.m.value];">
+		<label><input type="radio" name="m" value="1" checked>file</label><br>
+		<label><input type="radio" name="m" value="0">text</label><br>
+	</form>
+	<div id="outt" style="display:none;">
+		<textarea class="input" id="tout"></textarea><br>
+		<span class="button" onclick="navigator.clipboard.writeText(tout.value).then(()=>{this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);});">copy</span>
+	</div>
+	<div id="outf">
+		<br>
+		<a id="fout">Press "Run" to generate converted file</a>
+	</div>
+	<a id="logdl">　</a>
+	<hr>
+	<pre id="log"></pre>
+
+	<script>
+		var reader=new FileReader(),fname='unknown';
+		const worker=new Worker('poly.js'),
+		format_tmp=[
+			'{"format_version":"1.8.0","geometry.NAME":{"texturewidth":64,"textureheight":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0],"bones":[OBJ]}}',
+			'{"format_version":"1.10.0","geometry.NAME":{"texturewidth":64,"textureheight":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0],"bones":[OBJ]}}',
+			'{"format_version":"1.12.0","minecraft:geometry":[{"description":{"identifier":"geometry.NAME","texture_width":64,"texture_height":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0]},"bones":[OBJ]}]}',
+			'{"format_version":"1.16.0","minecraft:geometry":[{"description":{"identifier":"geometry.NAME","texture_width":64,"texture_height":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0]},"bones":[OBJ]}]}',
+		],
+		frmfx=()=>{
+			frmtmp.value=format_tmp[Number(frm.value)];
+			frmc.style.display=(frm.value=='null')?'none':'block';
+			outtitle.textContent=(frm.value=='null')?'mcbe bones(poly_mesh)':'mcbe geometry';
+		}
+		main=()=>{
+			log.textContent='';
+			worker.postMessage({
+				s:reader.result,
+				format:(frm.value=='null')?'':[mname.value,frmtmp.value],
+				cffx:[vfx.value,vnfx.value,vtfx.value],
+				fname:fname
 			});
-			run.onclick=main;
-			frm.onchange=frmfx;
-			frmfx();
-		</script>
-	</body>
+			run.textContent='Please wait…';run.style.background='#333';
+			run.onclick=()=>{}
+		},
+		read=_this=>{
+			fname=_this.files[0].name;
+			finpl.textContent='Drag & Drop or click to select';
+			reader.addEventListener('progress',x=>finpl.textContent=x.loaded/x.total+'% loaded…',false);
+			reader.addEventListener('load',x=>finpl.textContent=(x.total>=1e9?Math.round(x.total/1e7)/1e2+'GB':(x.total>=1e6?Math.round(x.total/1e4)/1e2+'MB':(x.total>=1e3?Math.round(x.total/1e1)/1e2+'KB':x.total+'byte'))),false);
+			reader.addEventListener('error',e=>finpl.textContent=e,false);
+			reader.addEventListener('loadend',x=>console.log(x),false);
+			reader.readAsText(_this.files[0]);
+		};
+		worker.addEventListener('message',m=>{
+				console.log(m.data);
+				if(m.data.diffuse){
+					if(m.data.diffuse[1]){
+						var diffuse = m.data.diffuse[1],o = m.data.diffuse[0];
+						tout.value = diffuse;
+						fout.href = 'data:,'+encodeURI(diffuse);fout.download = o+'.geo.json';fout.textContent = `save as "${fout.download}"`;
+						logdl.href = 'data:,'+encodeURI(log.textContent);logdl.download = o+'.log';logdl.textContent = `save log`;
+					}
+					run.textContent='Done!';run.style.background='#555';
+					run.onclick=main;
+					setTimeout(()=>run.textContent='Run',1000);
+				}
+				else{log.textContent+=m.data;}
+		});
+		run.onclick=main;
+		frm.onchange=frmfx;
+		frmfx();
+	</script>
+</body>
 </html>

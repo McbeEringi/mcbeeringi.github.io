@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-	<head>
-		<meta charset="utf-8">
-		<title>McbeEringi jdsm</title>
-	</head>
-	<body>
-		<style>
-			:root,textarea{font-family:monospace;background:#222;color:#fff;tab-size:2;}:link{color:#8cf;}:visited{color:#c8f;}
-			#log{background:#333;padding:4px;}textarea{width:100%;resize:none;}
-		</style>
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
 
-		<h1>JSON directory sort&marge</h1>
-		<label>
-			can choose directory <br>
-			<input id="inp" type="file" webkitdirectory multiple>
-		</label><br>
-		<br>
-		insert <br>
-		<textarea id="ins">{}</textarea><br>
-		sort <label>{unspecified insert:Boolean(<input type="checkbox" id="smode">)?"after_start":"before_end"}</label> <br>
-		<textarea id="sort">[
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi jdsm</title>
+	<meta name="description" content="JSON directory sort&marge">
+	<link rel="shortcut icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../../src/style.css">
+</head>
+<body>
+	<style>#log{background:#333;padding:4px;}textarea{width:100%;resize:none;}</style>
+
+	<h1>JSON directory sort&marge</h1>
+	<hr>
+	<label>
+		can choose directory <br>
+		<input class="input" id="inp" type="file" webkitdirectory multiple>
+	</label><br>
+	<br>
+	insert <br>
+	<textarea class="input" id="ins">{}</textarea><br>
+	sort <label>{unspecified insert:Boolean(<input type="checkbox" id="smode">)?"after_start":"before_end"}</label> <br>
+	<textarea class="input" id="sort">[
 	"identifier",
 	"min_engine_version",
 	"materials",
@@ -32,78 +39,78 @@
 	"render_controllers",
 	"spawn_egg"
 ]</textarea>
-		<button id="exe">run</button>
-		<pre id="log"></pre>
-		<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
-		<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
-		<script>
-			[ins,sort].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+	<button class="button" id="exe">run</button>
+	<pre id="log"></pre>
+	<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
+	<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
+	<script>
+		[ins,sort].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 
-			exe.onclick=()=>{
-				console.log(inp.files);
-				log.textContent='please wait…\n';
-				const rmc=x=>x.replace(/\t/g,' ').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,''),
-				dmerge=(a,b)=>{
-					if(Array.isArray(a)&&Array.isArray(b))return a.concat(b);
-					else{
-						Object.keys(b).forEach(x=>{
-							if(typeof a[x]=='object'&&typeof b[x]=='object')a[x]=dmerge(a[x],b[x]);
-							else a[x]=b[x];
-						});
-						return a;
-					}
-				},
-				sfx=(a,b)=>{
-					if(smode.checked)return Math.sign(sdic.indexOf(a)-sdic.indexOf(b));
-					else return Math.sign((sdic.indexOf(a)>>>0)-(sdic.indexOf(b)>>>0));
-				},
-				objsort=(obj)=>{
-					let s={}
-					Object.keys(obj).sort(sfx).forEach(x=>{
-						if(typeof obj[x]=='object'){
-							if(Array.isArray(obj[x]))s[x]=obj[x].sort(sfx);
-							else s[x]=objsort(obj[x]);
-						}else s[x]=obj[x];
+		exe.onclick=()=>{
+			console.log(inp.files);
+			log.textContent='please wait…\n';
+			const rmc=x=>x.replace(/\t/g,' ').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,''),
+			dmerge=(a,b)=>{
+				if(Array.isArray(a)&&Array.isArray(b))return a.concat(b);
+				else{
+					Object.keys(b).forEach(x=>{
+						if(typeof a[x]=='object'&&typeof b[x]=='object')a[x]=dmerge(a[x],b[x]);
+						else a[x]=b[x];
 					});
-					return s;
-				};
-
-				let sdic,zip=new JSZip(),insd=JSON.parse(rmc(ins.value+'\n'));
-				try{
-					sdic=JSON.parse(sort.value);
-				}catch(e){log.textContent+=`[ sort ] ${e}`;return;}
-
-				let parr=Array.from(inp.files,x=>new Promise((res,rej)=>{
-					let path=x.webkitRelativePath;
-					if(/json$/i.test(x.name)){
-						let reader=new FileReader();
-						reader.onload=r=>{
-							let dat=rmc(r.target.result);
-							try{
-								dat=JSON.parse(dat);
-								console.log(path, dat);
-								dat=dmerge(dat,insd);
-								dat=objsort(dat);
-								zip.file(path,JSON.stringify(dat));
-								res('JSON');
-							}catch(err){log.textContent+=`${path}: ${err}\n`;res(err);}
-						}
-						reader.readAsText(x);
-					}else{
-						zip.file(path,x);
-						res();
-					}
-				}));
-				Promise.all(parr)
-					.then(x=>{log.textContent+='packaging…\n';return zip.generateAsync({type:"blob"});})
-					.then(b=>{
-						log.textContent+='done!\n';
-						let e=document.createElement('a');
-						e.download=`${inp.files[0].webkitRelativePath.split('/',2)[0]}.zip`;e.href=URL.createObjectURL(b);
-						e.click();setTimeout(URL.revokeObjectURL,10000,e.href);
-					})
-					.catch(console.warn);
+					return a;
+				}
+			},
+			sfx=(a,b)=>{
+				if(smode.checked)return Math.sign(sdic.indexOf(a)-sdic.indexOf(b));
+				else return Math.sign((sdic.indexOf(a)>>>0)-(sdic.indexOf(b)>>>0));
+			},
+			objsort=(obj)=>{
+				let s={}
+				Object.keys(obj).sort(sfx).forEach(x=>{
+					if(typeof obj[x]=='object'){
+						if(Array.isArray(obj[x]))s[x]=obj[x].sort(sfx);
+						else s[x]=objsort(obj[x]);
+					}else s[x]=obj[x];
+				});
+				return s;
 			};
-		</script>
-	</body>
+
+			let sdic,zip=new JSZip(),insd=JSON.parse(rmc(ins.value+'\n'));
+			try{
+				sdic=JSON.parse(sort.value);
+			}catch(e){log.textContent+=`[ sort ] ${e}`;return;}
+
+			let parr=Array.from(inp.files,x=>new Promise((res,rej)=>{
+				let path=x.webkitRelativePath;
+				if(/json$/i.test(x.name)){
+					let reader=new FileReader();
+					reader.onload=r=>{
+						let dat=rmc(r.target.result);
+						try{
+							dat=JSON.parse(dat);
+							console.log(path, dat);
+							dat=dmerge(dat,insd);
+							dat=objsort(dat);
+							zip.file(path,JSON.stringify(dat));
+							res('JSON');
+						}catch(err){log.textContent+=`${path}: ${err}\n`;res(err);}
+					}
+					reader.readAsText(x);
+				}else{
+					zip.file(path,x);
+					res();
+				}
+			}));
+			Promise.all(parr)
+				.then(x=>{log.textContent+='packaging…\n';return zip.generateAsync({type:"blob"});})
+				.then(b=>{
+					log.textContent+='done!\n';
+					let e=document.createElement('a');
+					e.download=`${inp.files[0].webkitRelativePath.split('/',2)[0]}.zip`;e.href=URL.createObjectURL(b);
+					e.click();setTimeout(URL.revokeObjectURL,10000,e.href);
+				})
+				.catch(console.warn);
+		};
+	</script>
+</body>
 </html>
