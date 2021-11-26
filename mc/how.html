@@ -21,7 +21,39 @@
 	<link rel="stylesheet" href="../src/comp.css">
 </head>
 <body>
-	WIP
-	<a href="index.html#how">こっち</a>
+	<style>
+		img{width:100%;max-width:420px;}
+		iframe.gl{border:none;border-radius:8px;width:96vmin;height:54vmin;}
+	</style>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	<div id="wrap">loading...</div>
+	<script>
+		const urlq=Object.fromEntries(location.search.substr(1).split('&').filter(y=>y).map(x=>x.split('=',2).map(y=>y.split('+'))));
+		fetch(`how/${(urlq.i||[])[0]}.md`).then(x=>x.text()).then(x=>{
+			wrap.textContent='';
+			wrap.insertAdjacentHTML('afterbegin',marked.parse(x,{baseUrl:'how/'}));
+		}).catch(()=>{
+			wrap.textContent='';
+			wrap.insertAdjacentHTML('afterbegin',`<h1>Shader HowTo</h1>
+<p>
+	マイクラBE用旧シェダーの作り方の手引きみたいな何かです。 <br>
+	分かりやすく解説(当社比)していますが、丸写しで満足されては悲しいので <br>
+	あと一歩までの解説に留めていることもあります。(気まぐれ) <br>
+	RenderDragon来たのであまりあてにしない方がいいです
+</p>
+<hr>
+<div class="stuff" style="--img:url(../img/6x6_.png);">
+	<a href="?i=1" style="--txt:'準備';">#1</a>
+	<a href="?i=2" style="--txt:'型と演算子';">#2</a>
+	<a href="?i=3" style="--txt:'HelloWorld!';">#3</a>
+	<a href="?i=4" style="--txt:'影作る。';">#4</a>
+	<a href="?i=5" style="--txt:'トーンマップ';">#5</a>
+	<a href="?i=6" style="--txt:'sinな葉っぱ';">#6</a>
+	<a href="?i=7" style="--txt:'空を描く(前編)';">#7</a>
+	<a href="?i=8" style="--txt:'空を描く(後編)';">#8</a>
+	<a href="?i=9" style="--txt:'球の描画';">#9</a>
+</div>`);
+		})
+	</script>
 </body>
 </html>
