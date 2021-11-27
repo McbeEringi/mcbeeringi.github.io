@@ -22,14 +22,18 @@
 </head>
 <body>
 	<style>
-		img{width:100%;max-width:420px;}
-		iframe.gl{border:none;border-radius:8px;width:96vmin;height:54vmin;}
+		#wrap img{width:100%;max-width:420px;}
+		#wrap .gl{border:none;border-radius:8px;width:96vmin;height:54vmin;}
 	</style>
 	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 	<div id="wrap">loading...</div>
 	<script>
 		const urlq=Object.fromEntries(location.search.substr(1).split('&').filter(y=>y).map(x=>x.split('=',2).map(y=>y.split('+')))),
-		ins=(x=`<h1>Shader HowTo</h1>
+		ins=x=>{wrap.textContent='';wrap.insertAdjacentHTML('afterbegin',x);};
+		if(urlq.i&&urlq.i[0])
+			fetch(`how/${urlq.i[0]}.md`).then(x=>x.text()).then(x=>ins(marked.parse(x,{baseUrl:'how/'})));
+		else
+			ins(`<h1>Shader HowTo</h1>
 <p>
 	マイクラBE用旧シェダーの作り方の手引きみたいな何かです。 <br>
 	分かりやすく解説(当社比)していますが、丸写しで満足されては悲しいので <br>
@@ -47,10 +51,7 @@
 	<a href="?i=7" style="--txt:'空を描く(前編)';">#7</a>
 	<a href="?i=8" style="--txt:'空を描く(後編)';">#8</a>
 	<a href="?i=9" style="--txt:'球の描画';">#9</a>
-</div>`)=>{wrap.textContent='';wrap.insertAdjacentHTML('afterbegin',x);};
-		if(urlq.i&&urlq.i[0])
-			fetch(`how/${urlq.i[0]}.md`).then(x=>x.text()).then(x=>ins(marked.parse(x,{baseUrl:'how/'}))).catch(()=>ins());
-		else ins();
+</div>`);
 	</script>
 </body>
 </html>
