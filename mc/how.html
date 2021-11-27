@@ -28,15 +28,12 @@
 	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 	<div id="wrap">loading...</div>
 	<script>
-		const urlq=Object.fromEntries(location.search.substr(1).split('&').filter(y=>y).map(x=>x.split('=',2).map(y=>y.split('+'))));
-		if(urlq.i)
-			fetch(`how/${urlq.i[0]}.md`).then(x=>x.text()).then(x=>{
-				wrap.textContent='';
-				wrap.insertAdjacentHTML('afterbegin',marked.parse(x,{baseUrl:'how/'}));
-			});
-		else{
-			wrap.textContent='';
-			wrap.insertAdjacentHTML('afterbegin',`<h1>Shader HowTo</h1>
+		const urlq=Object.fromEntries(location.search.substr(1).split('&').filter(y=>y).map(x=>x.split('=',2).map(y=>y.split('+')))),
+		ins=x=>{wrap.textContent='';wrap.insertAdjacentHTML('afterbegin',x);};
+		if(urlq.i&&urlq.i[0])
+			fetch(`how/${urlq.i[0]}.md`).then(x=>x.text()).then(x=>ins(marked.parse(x,{baseUrl:'how/'})));
+		else
+			ins(`<h1>Shader HowTo</h1>
 <p>
 	マイクラBE用旧シェダーの作り方の手引きみたいな何かです。 <br>
 	分かりやすく解説(当社比)していますが、丸写しで満足されては悲しいので <br>
@@ -55,7 +52,6 @@
 	<a href="?i=8" style="--txt:'空を描く(後編)';">#8</a>
 	<a href="?i=9" style="--txt:'球の描画';">#9</a>
 </div>`);
-		}
 	</script>
 </body>
 </html>
