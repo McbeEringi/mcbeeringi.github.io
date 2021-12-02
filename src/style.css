@@ -4,8 +4,8 @@
 	--b0:#48f;--b1:#8af;--b2:#aef;
 	--p0:#84f;--p1:#a8f;--p2:#eaf;
 	background-color:var(--d);image-rendering:pixelated;
-	background-size:64px;background-image:linear-gradient(#e6e6e6,#e6e6e6),linear-gradient(var(--d),var(--d)),linear-gradient(#404040,#404040),url(../img/noise.png);background-blend-mode:multiply,screen,multiply,multiply;
 }
+:root::before{content:"";position:fixed;width:100%;height:100%;z-index:-1;background-size:64px;background-image:url(../img/noise.png);opacity:.05;}
 :root,.input,.button{color:var(--w);font-family:sans-serif;}
 :link{color:var(--b2);}:link:hover{color:var(--b1);}:link:active{color:var(--b0);}:visited{color:var(--p2);}:visited:hover{color:var(--p1);}:visited:active{color:var(--p0);}
 .input,.button,hr{appearance:none;-webkit-appearance:none;border:0;box-sizing:border-box;max-width:100%;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
