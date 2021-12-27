@@ -13,10 +13,6 @@
 
 	<link rel="stylesheet" href="../src/style.css">
 
-	<style>
-		#log{background:#333;padding:4px;white-space:pre-wrap;overflow-x:scroll;}
-		#log>span{opacity:.5;}
-	</style>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/theme/monokai.min.css">
 	<script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.js"></script>
@@ -26,28 +22,35 @@
 </head>
 <body>
 	<h1>JavaScript</h1>
+	<style>.CodeMirror{height:auto;}</style>
 	<hr>
-	<div id='_cme_'></div>
-	<button onclick="_run_();" class="button">run</button>
-	<button onclick="_save_();" class="button">save</button>
-	<button onclick="_copy_();" class="button">copy url</button>
-	<pre id="log"></pre>
+	<div></div>
+	<hr>
+	<button class="button">run</button>
+	<button class="button">save</button>
+	<button class="button">copy url</button>
+	<pre style="white-space:pre-wrap;word-break:break-all;tab-size:2;"></pre>
+	<hr>
 	<script>
-	console.clear=()=>log.textContent='';
-	console.warn=console.info=console.error=console.log=(...x)=>{
-		log.insertAdjacentHTML('beforeend',`<span>${_time_()}</span>`);
-		log.insertAdjacentText('beforeend',x.map(x=>`\t${_type_(x)} ${JSON.stringify(x)||x.toString()}`).join(',\n')+'\n');
-	};
-	const _cm_=CodeMirror(_cme_,{
-		value:'console.clear();\nconsole.log("Hello World.");',mode:'javascript',theme:'monokai',
-		lineNumbers:true,tabSize:2,indentWithTabs:true,matchBrackets:true,autoCloseBrackets: true,
-	}),
-	_type_=x=>Object.prototype.toString.call(x).slice(8,-1),
-	_time_=()=>{const d=new Date();return `[${d.toLocaleTimeString()}.${('00'+d.getMilliseconds()).slice(-3)}]`;},
-	_run_=()=>{try{Function(_cm_.getValue())();}catch(e){console.error(e);}},
-	_save_=()=>{location.hash=encodeURIComponent(_cm_.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');console.log('saved!');},
-	_copy_=(x=location.href)=>navigator.clipboard.writeText(x).then(()=>console.log('copied!'));
-	if(location.hash)_cm_.setValue(decodeURIComponent(location.hash.slice(1)));
+	{
+		const log=document.querySelector('pre'),
+			btn=document.querySelectorAll('button'),
+			cm=CodeMirror(document.querySelector('div'),{
+				value:'console.clear();\nconsole.log("Hello World.");\n',mode:'javascript',theme:'monokai',
+				lineNumbers:true,tabSize:2,indentWithTabs:true,matchBrackets:true,autoCloseBrackets: true,
+			}),
+			type=x=>Object.prototype.toString.call(x).slice(8,-1),
+			time=()=>{const d=new Date();return `[${d.toLocaleTimeString()}.${String(d.getMilliseconds()).padStart(3,0)}]`;};
+		console.clear=()=>log.textContent='';
+		console.warn=console.info=console.error=console.log=(...x)=>{
+			const fx=x=>`\n<span style="opacity:0.5;">\t${type(x)}\t</span>${x.toString()}`;
+			log.insertAdjacentHTML('beforeend',`<span style="opacity:0.5;">${time()}</span>${x.map(fx).join('')}\n`);
+		};
+		btn[0].onclick=()=>{try{Function(cm.getValue())();}catch(e){console.error(e);}};
+		btn[1].onclick=()=>{location.hash=encodeURIComponent(cm.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');console.log('saved!');};
+		btn[2].onclick=(x=location.href)=>navigator.clipboard.writeText(x).then(()=>console.log('copied!'));
+		if(location.hash)cm.setValue(decodeURIComponent(location.hash.slice(1)));
+	}
 	</script>
 </body>
 </html>
