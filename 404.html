@@ -13,34 +13,34 @@
 
 	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
 </head>
-	<body>
-		McbeEringi
-		<hr>
-		<pre id="log"><h1>404</h1><h2>Page not found :(</h2><a href="https://mcbeeringi.github.io/">back to top</a></pre>
-		<hr>
-		<script>
-			if(location.href.match(/mcbeeringi\.github\.io\/esbe-1g/i)){
+<body>
+	McbeEringi
+	<hr>
+	<pre id="log"><h1>404</h1><h2>Page not found :(</h2><a href="https://mcbeeringi.github.io/">back to top</a></pre>
+	<hr>
+	<script>
+		if(location.href.match(/mcbeeringi\.github\.io\/esbe-1g/i)){
+			log.textContent='';
+			log.insertAdjacentHTML('beforeend',`ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。\n5秒後にリダイレクトします。\n\nESBEシリーズ\n<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a>\n<a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`);
+			setTimeout(()=>location.href='https://nari0978.github.io/1g/1g.html',5000);
+		}else{
+			const url=[
+				[/others\/gl/i,'apps/webgl/index'],[/apps\/fsh/i,'apps/webgl/fsh'],
+				[/others\/aes/i,'apps/aes'],[/others\/col/i,'apps/col'],
+				[/others\/unicode/i,'apps/unc'],[/others\/sosu-/i,'apps/sosu-'],
+				[/others\/calpis/i,'apps/calpis'],[/apps\/inv/i,'apps/xor'],[/apps\/s2i/i,'apps/minimap'],[/apps\/aes/i,'amuse/aes'],
+				[/others\/bmp/i,'apps/mc/glyph'],[/apps\/mc\/bmp/i,'apps/mc/glyph'],
+				[/others\/arch/i,'apps/mc/arch'],[/others\/poly/i,'apps/mc/poly'],
+				[/others\/sky/i,'sky'],[/apps\/sky/i,'sky'],
+				[/amuse\/js/i,'apps/js'],[/amuse\/jdsm/i,'apps/mc/jdsm'],[/amuse\/seq/i,'sky/seq_'],[/amuse\/textarea/i,'apps/js'],
+				[/worlds/i,'mc'],[/mc\/how.*/i,'mc/how.html'],[/\.io\/how/i,'.io/mc/how']
+			].reduce((a,x)=>a.replace(...x),location.href);
+			if(location.href!=url){
 				log.textContent='';
-				log.insertAdjacentHTML('beforeend',`ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。\n5秒後にリダイレクトします。\n\nESBEシリーズ\n<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a>\n<a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`);
-				setTimeout(()=>location.href='https://nari0978.github.io/1g/1g.html',5000);
-			}else{
-				const url=[
-					[/others\/gl/i,'apps/webgl/index'],[/apps\/fsh/i,'apps/webgl/fsh'],
-					[/others\/aes/i,'apps/aes'],[/others\/col/i,'apps/col'],
-					[/others\/unicode/i,'apps/unc'],[/others\/sosu-/i,'apps/sosu-'],
-					[/others\/calpis/i,'apps/calpis'],[/apps\/inv/i,'apps/xor'],[/apps\/s2i/i,'apps/minimap'],[/apps\/aes/i,'amuse/aes'],
-					[/others\/bmp/i,'apps/mc/glyph'],[/apps\/mc\/bmp/i,'apps/mc/glyph'],
-					[/others\/arch/i,'apps/mc/arch'],[/others\/poly/i,'apps/mc/poly'],
-					[/others\/sky/i,'sky'],[/apps\/sky/i,'sky'],
-					[/amuse\/js/i,'apps/js'],[/amuse\/jdsm/i,'apps/mc/jdsm'],[/amuse\/seq/i,'sky/seq_'],[/amuse\/textarea/i,'apps/js'],
-					[/worlds/i,'mc'],[/mc\/how.*/i,'mc/how.html'],[/\.io\/how/i,'.io/mc/how']
-				].reduce((a,x)=>a.replace(...x),location.href);
-				if(location.href!=url){
-					log.textContent='';
-					log.insertAdjacentHTML('beforeend','<h2>Redirecting to correct URL\nPlease wait…<h2>');
-					location.href=url;
-				}
+				log.insertAdjacentHTML('beforeend','<h2>Redirecting to correct URL\nPlease wait…<h2>');
+				location.href=url;
 			}
-		</script>
-	</body>
+		}
+	</script>
+</body>
 </html>
