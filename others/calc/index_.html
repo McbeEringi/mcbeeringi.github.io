@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head prefix="og: http://ogp.me/ns#">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>McbeEringi calc</title>
+		<meta name="Description" content="McbeEringi calc">
+		<link rel="shortcut icon" type="image/svg+xml" href="img/sky.svg">
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="sky">
+		<meta property="og:description" content="PWA Calculator">
+		<meta property="og:url" content="https://mcbeeringi.github.io/others/calc/index.html">
+		<meta property="og:image" content="https://mcbeeringi.github.io/others/calc/calc.png">
+		<!--iOS-->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+		<meta name="apple-mobile-web-app-title" content="calc">
+		<link rel="apple-touch-icon" href="calc.png">
+		<!--sw-->
+		<link rel="manifest" href="mf.json">
+		<meta name="theme-color" content="orange"/>
+		<script>
+			if('serviceWorker'in navigator&&location.protocol.includes('http')&&location.hostname!='localhost')window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then((reg)=>{console.log('sw Registered',reg);});});
+		</script>
+	</head>
+	<body>
+		<style>
+			:root{background-color:#ddc;font-family:sans-serif;font-size:48px;}html,body{margin:0;height:100%;}
+			.aspect{position:relative;}.aspect::before{content:"";display:block;padding-top:var(--ar);}.aspect>*{position:absolute;top:0;width:100%;height:100%;}
+			.kb{
+				user-select:none;-webkit-user-select:none;
+				display:grid;
+				font-size:min(32px,7vmin);line-height:100%;
+				text-align:center;
+				white-space:nowrap;
+			}
+			.kb>*{
+				display:inline-block;
+				background-color:#333;
+				color:#ddc;
+				margin:10%;
+				border-radius:8px;
+			}
+			.kb>*::before{content:"";display:block;height:calc(50% - min(16px,3.5vmin));}
+			.kb>*:active{opacity:.7;}
+			.b{background-color:#68b;}.r{background-color:#c67;}.s{background-color:#888;}
+			#disp{box-sizing:border-box;padding:8px;background-color:#9a8;text-align:right;}
+			#numkb{touch-action:none;grid-template-columns:repeat(5,1fr);grid-template-rows:4fr repeat(5,5fr);}
+
+			@media(orientation:landscape){}
+		</style>
+		<div id="disp" style="max-width:480px;">12.3</div>
+		<div class="aspect" style="--ar:90%;max-width:480px;">
+			<div id="numkb" class="kb">
+				<p style="background-color:#0000;opacity:.4;">🍒🍋</p><p class="s">%</p><p class="s">√</p><p class="s">▶︎</p><p class="s">GT</p>
+				<p class="b">MC</p><p class="b">MR</p><p class="b">M−</p><p class="b">M+</p><p class="s">÷</p>
+				<p class="s">+∕−</p><p>7</p><p>8</p><p>9</p><p class="s">×</p>
+				<p class="r">C</p><p>4</p><p>5</p><p>6</p><p class="s">−</p>
+				<p class="r">AC</p><p>1</p><p>2</p><p>3</p><p style="grid-column:5;grid-row:5/7;" class="s">+</p>
+				<p>0</p><p>00</p><p>.</p><p>=</p>
+			</div>
+		</div>
+		<script>
+			'use strict';
+			const fx={
+				'🍒🍋':x=>alert(x),
+				'1':x=>alert(x),
+				'2':x=>alert(x),
+				'3':x=>alert(x),
+				'4':x=>alert(x),
+				'5':x=>alert(x),
+				'6':x=>alert(x),
+				'7':x=>alert(x),
+				'8':x=>alert(x),
+				'9':x=>alert(x),
+				'0':x=>alert(x),
+				'00':x=>alert(x),
+				'.':x=>alert(x),
+				'+':x=>alert(x),
+				'−':x=>alert(x),
+				'×':x=>alert(x),
+				'÷':x=>alert(x),
+				'+∕−':x=>alert(x),
+				'%':x=>alert(x),
+				'√':x=>alert(x),
+				'▶︎':x=>alert(x),
+				'GT':x=>alert(x),
+				'MC':x=>alert(x),
+				'MR':x=>alert(x),
+				'M−':x=>alert(x),
+				'M+':x=>alert(x),
+				'=':x=>alert(x),
+				'C':x=>alert(x),
+				'AC':x=>alert(x)
+			};
+			[...numkb.children].forEach(x=>x.onpointerdown=fx[x.textContent]||(()=>alert(x.textContent)));
+		</script>
+	</body>
+</html>

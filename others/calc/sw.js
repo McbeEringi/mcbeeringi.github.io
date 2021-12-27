@@ -2,7 +2,7 @@
 //https://developers.google.com/web/fundamentals/primers/service-workers?hl=ja
 const cacheName='cache210711_0',STATIC_DATA=[
 	'index.html',
-	'calc.png','calc_192.png'
+	'icon.png','icon_192.png'
 ],
 noCache=[
 	'analytics',
