@@ -44,7 +44,7 @@
 		#pl{grid-column:-2/-1;grid-row:-3/-1;line-height:calc(var(--dy)*2);}
 	</style>
 	<div id="ctn">
-		<input class="input" id="disp" value="loading...">
+		<p id="disp">loading...</p>
 		<p id="">🔧</p><p class="num">(</p><p class="num">)</p><p id="bs">⌫</p><p class="num">÷</p>
 		<p id="">❖</p><p class="num">7</p><p class="num">8</p><p class="num">9</p><p class="num">×</p>
 		<p id="">fx</p><p class="num">4</p><p class="num">5</p><p class="num">6</p><p class="num">-</p>
@@ -57,7 +57,7 @@
 				console.log(dat);
 				if(dat==0||dat=='undefined')dat='';
 				dat=dat.slice(0,20);
-				disp.value=dat||0;
+				disp.textContent=dat||0;
 			};
 		let dat='';
 
