@@ -32,89 +32,44 @@
 	<style>
 		html,body{height:100%;margin:0;overflow:hidden;}
 		#ctn{
-			--dx:72px;--dy:64px;--disp:1.5;--font:.4;--bgc:#444;
+			--dx:72px;--dy:72px;--disp:1.5;--font:.3;--bgc:#444;
 			position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);line-height:var(--dy);font-size:calc(var(--dy)*var(--font));
 			overflow:hidden;text-align:center;
-			display:grid;grid-template-columns:repeat(5,var(--dx));grid-template-rows:calc(var(--dy)*var(--disp)) repeat(6,var(--dy));
+			display:grid;grid-template-columns:repeat(5,var(--dx));grid-template-rows:calc(var(--dy)*var(--disp)) repeat(5,var(--dy));
 		}
-		#ctn,#ctn>*{border:1px solid #888;box-sizing:border-box;user-select:none;}
+		#ctn,#ctn>*{border:1px solid #888;box-sizing:border-box;user-select:none;border-radius:0;}
 		#ctn>*{margin:0;background-color:var(--bgc);touch-action:none;user-select:none;-webkit-user-select:none;}
-		#ctn>:hover{filter:brightness(1.5);}
+		#ctn>:active{filter:brightness(1.5);}
 		#disp{grid-column:1/-1;padding:0 16px;--bgc:#111;text-align:right;touch-action:initial;user-select:all;-webkit-user-select:all;line-height:calc(var(--dy)*var(--disp));font-size:calc(calc(var(--dy)*var(--disp))*var(--font));}
 		#pl{grid-column:-2/-1;grid-row:-3/-1;line-height:calc(var(--dy)*2);}
 	</style>
 	<div id="ctn">
-		<div id="disp">loading...</div>
-		<p>cfg</p><p id="pc">%</p><p id="sr">√</p><p id="bs">→</p><p id="gt">GT</p>
-		<p id="mc">MC</p><p id="mr">MR</p><p id="mm">M-</p><p id="mp">M+</p><p>÷</p>
-		<p id="pm">+/-</p><p class="num">7</p><p class="num">8</p><p class="num">9</p><p>×</p>
-		<p id="cl">C</p><p class="num">4</p><p class="num">5</p><p class="num">6</p><p>-</p>
-		<p id="ac">AC</p><p class="num">1</p><p class="num">2</p><p class="num">3</p><p id="pl">+</p>
+		<input class="input" id="disp" value="loading...">
+		<p id="">🔧</p><p class="num">(</p><p class="num">)</p><p id="bs">⌫</p><p class="num">÷</p>
+		<p id="">❖</p><p class="num">7</p><p class="num">8</p><p class="num">9</p><p class="num">×</p>
+		<p id="">fx</p><p class="num">4</p><p class="num">5</p><p class="num">6</p><p class="num">-</p>
+		<p id="c">C</p><p class="num">1</p><p class="num">2</p><p class="num">3</p><p class="num" id="pl">+</p>
 		<p class="num">0</p><p class="num">00</p><p class="num">.</p><p id="eq">=</p>
 	</div>
 	<script>
-		class Calc{
-			constructor(){
-				this.round=0;// [F,CUT,5/4]
-				this.fract=2;// 0>n : add2
-			}
-			digit(){//string
-
-			}
-			op_add(){}
-			op_sub(){}
-			op_mul(){}
-			op_div(){}
-			op_pow(){}
-			op_eq (){}
-			//kmode(){}
-
-			gt(){}
-			mc(){}
-			mr(){}
-			msub(){}
-			madd(){}
-
-			ac(){}
-			c(){}
-			back(){}
-			
-			disp(){}
-		}
-		const num=[...document.body.querySelectorAll('.num')].sort((a,b)=>Math.sign(a.textContent-b.textContent)),
+		const num=[...document.body.querySelectorAll('.num')],
 			draw=()=>{
 				console.log(dat);
-				if(dat==0)dat='';
-				dat=dat.slice(0,16);
-				disp.textContent=dat||0;
+				if(dat==0||dat=='undefined')dat='';
+				dat=dat.slice(0,20);
+				disp.value=dat||0;
 			};
-		let dat='',m=0,gtm=0;
+		let dat='';
 
 		num.forEach(x=>{
 			x.onpointerdown=e=>{
 				dat+=x.textContent;
 			};
 		});
-		eq.onpointerdown=()=>gtm+=+dat;
+		eq.onpointerdown=()=>dat=String(Function('return '+dat.replace(/×/g,'*').replace(/÷/g,'/').replace(/([\d\.])([\(a-z,A-Z])/g,'$1*$2'))());
 
-		pc.onpointerdown=()=>dat=String(dat/100);
-		sr.onpointerdown=()=>dat=String(Math.sqrt(dat));
 		bs.onpointerdown=()=>dat=dat.slice(0,-1);
-		gt.onpointerdown=()=>dat=String(gtm);
-
-		mc.onpointerdown=()=>m=0;
-		mr.onpointerdown=()=>dat=String(m);
-		mm.onpointerdown=()=>m-=+dat;
-		mp.onpointerdown=()=>m+=+dat;
-		pm.onpointerdown=()=>dat=String(-dat);
-
-		ac.onpointerdown=()=>{
-			dat='';
-			gtm=0;
-		};
-		cl.onpointerdown=()=>{
-			dat='';
-		};
+		c.onpointerdown=()=>dat='';
 
 		ctn.onpointerdown=draw;
 		draw();
