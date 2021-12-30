@@ -1,6 +1,6 @@
 //https://developer.mozilla.org/ja/docs/Web/Progressive_web_apps/Offline_Service_workers
 //https://developers.google.com/web/fundamentals/primers/service-workers?hl=ja
-const cacheName='cache210711_0',STATIC_DATA=[
+const cacheName='cache211230_0',STATIC_DATA=[
 	'index.html',
 	'icon.png','icon_192.png'
 ],
