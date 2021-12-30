@@ -30,17 +30,20 @@
 </head>
 <body>
 	<style>
-		html,body{height:100%;margin:0;overflow:hidden;}
-		#ctn{
+		:root{
 			--dx:72px;--dy:72px;--disp:1.5;--font:.3;--bgc:#444;
+			font-family:monospace;
+		}
+		html,body{height:100%;margin:0;overflow:hidden;position:relative;}
+		#ctn{
 			position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);line-height:var(--dy);font-size:calc(var(--dy)*var(--font));
 			overflow:hidden;text-align:center;
 			display:grid;grid-template-columns:repeat(5,var(--dx));grid-template-rows:calc(var(--dy)*var(--disp)) repeat(5,var(--dy));
 		}
-		#ctn,#ctn>*{border:1px solid #888;box-sizing:border-box;user-select:none;border-radius:0;}
-		#ctn>*{margin:0;background-color:var(--bgc);touch-action:none;user-select:none;-webkit-user-select:none;}
+		#ctn,#ctn>*{border:1px solid #888;box-sizing:border-box;user-select:none;touch-action:none;user-select:none;-webkit-user-select:none;}
+		#ctn>*{margin:0;background-color:var(--bgc);}
 		#ctn>:active{filter:brightness(1.5);}
-		#disp{grid-column:1/-1;padding:0 16px;--bgc:#111;text-align:right;touch-action:initial;user-select:all;-webkit-user-select:all;line-height:calc(var(--dy)*var(--disp));font-size:calc(calc(var(--dy)*var(--disp))*var(--font));}
+		#disp{grid-column:1/-1;padding:0 16px;--bgc:#111;text-align:right;touch-action:manipulation;user-select:all;-webkit-user-select:all;line-height:calc(var(--dy)*var(--disp));font-size:calc(calc(var(--dy)*var(--disp))*var(--font));}
 		#pl{grid-column:-2/-1;grid-row:-3/-1;line-height:calc(var(--dy)*2);}
 	</style>
 	<div id="ctn">
@@ -52,21 +55,29 @@
 		<p class="num">0</p><p class="num">00</p><p class="num">.</p><p id="eq">=</p>
 	</div>
 	<script>
-		const num=[...document.body.querySelectorAll('.num')],
-			draw=()=>{
+		const draw=()=>{
 				console.log(dat);
 				if(dat==0||dat=='undefined')dat='';
-				dat=dat.slice(0,20);
+				//dat=dat.slice(0,16);
+				if(+dat)dat=String(Math.round(dat*1e4)/1e4);
 				disp.textContent=dat||0;
 			};
-		let dat='';
+		let dat='',flag=false,his=[];
 
-		num.forEach(x=>{
+		[...document.body.querySelectorAll('.num')].forEach(x=>{
 			x.onpointerdown=e=>{
+				if(flag)dat='';
+				flag=false;
 				dat+=x.textContent;
 			};
 		});
-		eq.onpointerdown=()=>dat=String(Function('return '+dat.replace(/×/g,'*').replace(/÷/g,'/').replace(/([\d\.])([\(a-z,A-Z])/g,'$1*$2'))());
+		eq.onpointerdown=()=>{
+			const cmd=dat.replace(/×/g,'*').replace(/÷/g,'/').replace(/([\d\.])([\(a-z,A-Z])/g,'$1*$2').replace(/([\)a-z,A-Z])([\d\.])/g,'$1*$2'),
+				tmp=dat;
+			dat=String(Function(`return ${cmd}`)());
+			flag=true;
+			his.push(tmp);
+		}
 
 		bs.onpointerdown=()=>dat=dat.slice(0,-1);
 		c.onpointerdown=()=>dat='';
