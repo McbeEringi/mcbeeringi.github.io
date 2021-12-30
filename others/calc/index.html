@@ -59,7 +59,6 @@
 				console.log(dat);
 				if(dat==0||dat=='undefined')dat='';
 				//dat=dat.slice(0,16);
-				if(+dat)dat=String(Math.round(dat*1e4)/1e4);
 				disp.textContent=dat||0;
 			};
 		let dat='',flag=false,his=[];
@@ -74,7 +73,7 @@
 		eq.onpointerdown=()=>{
 			const cmd=dat.replace(/×/g,'*').replace(/÷/g,'/').replace(/([\d\.])([\(a-z,A-Z])/g,'$1*$2').replace(/([\)a-z,A-Z])([\d\.])/g,'$1*$2'),
 				tmp=dat;
-			dat=String(Function(`return ${cmd}`)());
+			dat=Function(`return ${cmd}`)().toFixed(4);
 			flag=true;
 			his.push(tmp);
 		}
