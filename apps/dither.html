@@ -14,14 +14,13 @@
 	<link rel="stylesheet" href="../src/style.css">
 </head>
 <body>
-	<style>#diffuse,textarea{width:100%;}#diffuse{max-width:512px;}</style>
+	<style>#diffuse,textarea{width:100%;}#diffuse{max-width:1024px;}</style>
 	<h1>dither</h1>
 	<hr>
 	<input type="file" class="input" id="f"><br>
-	lum&bg:<textarea class="input" id="il">//r,g,b, bg
-[.298912,.586611,.114478, 0]</textarea><br>
-	dither:<textarea class="input" id="im">[
-	//x,y,weight
+	height:<input class="input" id="ih" value="256"><br>
+	rgba→mono:<textarea class="input" id="il">return(col[0]*.298912+col[1]*.586611+col[2]*.114478)*col[3]+0*(1-col[3]);</textarea><br>
+	dither:<textarea class="input" id="im">[//→,↓,weight
 	/*
 	//Floyd-Steinberg
 	[ 1,0,7/16],
@@ -38,6 +37,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
 	<script>
 		[il,im].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+		ih.oninput=()=>ih.value=ih.value.replace(/\D+/g,'');
 		const c=document.createElement('canvas'),
 			ctx=c.getContext('2d'),
 			main=(arr,w,m)=>{
@@ -52,13 +52,12 @@
 		b.onclick=()=>{
 			let img=new Image();
 			img.onload=()=>{
-				const l=Function(`return(${il.value});`)();
 				URL.revokeObjectURL(img.src);
-				c.width=115/img.naturalHeight*img.naturalWidth;
-				c.height=115;
+				c.width=(ih.value/img.naturalHeight||1)*img.naturalWidth;
+				c.height=+ih.value||img.naturalHeight;
 				ctx.drawImage(img,0,0,c.width,c.height);
 				img=ctx.getImageData(0,0,c.width,c.height);
-				main(new Array(img.data.length/4).fill().map((_,i)=>{i*=4;return(img.data[i]*l[0]+img.data[i+1]*l[1]+img.data[i+2]*l[2])*img.data[i+3]/65025+l[3]*(1-img.data[i+3]/255);}),
+				main(new Array(img.data.length/4).fill().map((_,i)=>{i*=4;return[...img.data.slice(i,i+4)].map(x=>x/255);}).map(Function('col',il.value)),//.map((_,i)=>{i*=4;return(img.data[i]*l[0]+img.data[i+1]*l[1]+img.data[i+2]*l[2])*img.data[i+3]/65025+l[3]*(1-img.data[i+3]/255);}),
 					c.width,
 					Function(`return(${im.value});`)()
 				).forEach((x,i)=>{i*=4;img.data[i]=img.data[i+1]=img.data[i+2]=x*255;img.data[i+3]=255;});
