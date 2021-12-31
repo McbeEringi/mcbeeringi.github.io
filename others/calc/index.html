@@ -82,8 +82,22 @@
 		c.onpointerdown=()=>dat='';
 
 		ctn.onpointerdown=draw;
-		draw();
-		[...ctn.children].forEach(x=>x.addEventListener('touchstart',()=>{},{passive:true}));
+		onload=draw;
+		//[...ctn.children].forEach(x=>x.addEventListener('touchstart',()=>{},{passive:true}));
+		document.onkeydown=e=>{
+			(({
+				'+':()=>{},
+				'-':()=>{},
+				'*':()=>{},
+				'/':()=>{},
+				'=':()=>{},
+				'(':()=>{},
+				')':()=>{},
+				'.':()=>{},
+				'c':()=>{},
+				'Backspace':()=>{},
+			})[e.key]||()=>{})()
+		}
 	</script>
 </body>
 </html>
