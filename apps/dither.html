@@ -32,21 +32,24 @@
 	<button type="button" class="button" id="b">exe</button>
 	<hr>
 	<img id="diffuse">
+	<textarea class="input" id="out"></textarea>
 	<hr>
 	<script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
 	<script>
-		[il,im].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+		[il,im,out].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 		ih.oninput=()=>ih.value=ih.value.replace(/\D+/g,'');
 		const c=document.createElement('canvas'),
 			ctx=c.getContext('2d'),
-			main=(arr,w,m)=>{
+			dither=(arr,w,m)=>{
 				m=m.map(x=>[x[0]+x[1]*w,x[2],x[0]]);
 				for(let i=0;i<arr.length;i++){
-					const x=arr[i]>.5,e=arr[i]-x;
+					const e=arr[i]-(arr[i]=arr[i]>.5);
 					m.forEach(([x,y,z])=>i+x<arr.length&&w-i%w>z&&(arr[i+x]+=e*y));
-					arr[i]=x;
 				}
 				return arr;
+			},
+			braille=(arr,w)=>{
+				const h=arr.length/w;
 			};
 		b.onclick=()=>{
 			let img=new Image();
@@ -56,15 +59,11 @@
 				c.height=+ih.value||img.naturalHeight;
 				ctx.drawImage(img,0,0,c.width,c.height);
 				img=ctx.getImageData(0,0,c.width,c.height);
-				main(new Array(img.data.length/4).fill().map((_,i)=>{i*=4;return[...img.data.slice(i,i+4)].map(x=>x/255);}).map(Function('col',il.value)),//.map((_,i)=>{i*=4;return(img.data[i]*l[0]+img.data[i+1]*l[1]+img.data[i+2]*l[2])*img.data[i+3]/65025+l[3]*(1-img.data[i+3]/255);}),
-					c.width,
-					Function(`return(${im.value});`)()
-				).forEach((x,i)=>{i*=4;img.data[i]=img.data[i+1]=img.data[i+2]=x*255;img.data[i+3]=255;});
+				let mono=new Array(img.data.length/4).fill().map((_,i)=>{i*=4;return[...img.data.slice(i,i+4)].map(x=>x/255);}).map(Function('col',il.value));
+				mono=dither(mono,c.width,Function(`return(${im.value});`)());
+				mono.forEach((x,i)=>{i*=4;img.data[i]=img.data[i+1]=img.data[i+2]=x*255;img.data[i+3]=255;});
 				ctx.putImageData(img,0,0);
-				c.toBlob(b=>{
-					diffuse.onload=()=>URL.revokeObjectURL(diffuse.src);
-					diffuse.src=URL.createObjectURL(b);
-				});
+				c.toBlob(b=>{diffuse.onload=()=>URL.revokeObjectURL(diffuse.src);diffuse.src=URL.createObjectURL(b);});
 				b.disabled=false;
 			},0);
 			img.onerror=()=>b.disabled=false;
