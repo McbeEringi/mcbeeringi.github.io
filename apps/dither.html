@@ -30,7 +30,7 @@
 	//Atkinson
 	[ 1,0,1/8],[ 2,0,1/8],[-1,1,1/8],[ 0,1,1/8],[ 1,1,1/8],[ 0,2,1/8]
 ]</textarea><br>
-	<label>gap:<input class="input" id="ig" value="[1,1]"></label><br>
+	<label>gap:<input class="input" id="ig" value="[0.7,1]"></label><br>
 	<label>padding:<input type="checkbox" class="toggle" id="padcb" checked></label><br>
 	<br>
 	<button type="button" class="button" id="b">exe</button>
@@ -59,7 +59,7 @@
 						let p=[j*(2+cfg.gap[0]),i*(4+cfg.gap[1])];
 						p=[7,4,6,3,5,2,1,0].reduce((a,x,k)=>{
 							const q=[p[0]+k%2,p[1]+Math.floor(k/2)];
-							a[x]=q[0]<=w?+arr[Math.floor(q[0]+q[1]*w)]||0:0;
+							a[x]=q[0]<w?+arr[Math.floor(q[0])+Math.floor(q[1])*w]||0:0;
 							return a;
 						},[]).join('');
 						return String.fromCharCode(10240+(parseInt(p,2)||cfg.pad));
