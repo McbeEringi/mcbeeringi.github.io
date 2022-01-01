@@ -15,7 +15,7 @@
 	<link rel="stylesheet" href="../src/toggle.css">
 </head>
 <body>
-	<style>#diffuse,textarea{width:100%;font-family:monospace;}#diffuse{max-width:1024px;}</style>
+	<style>#diffuse,textarea{width:100%;font-family:monospace;}#diffuse{max-width:1024px;}.ofs{overflow:scroll;}</style>
 	<h1>dither</h1>
 	<hr>
 	<input type="file" class="input" id="f"><br>
@@ -36,7 +36,7 @@
 	<button type="button" class="button" id="b">exe</button>
 	<hr>
 	<img id="diffuse">
-	<textarea class="input" id="out"></textarea>
+	<div class="ofs"><pre id="out"></pre></div>
 	<hr>
 	<script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
 	<script>
@@ -79,7 +79,7 @@
 				ctx.putImageData(img,0,0);
 				c.toBlob(b=>{diffuse.onload=()=>URL.revokeObjectURL(diffuse.src);diffuse.src=URL.createObjectURL(b);});
 				b.disabled=false;
-				out.value=braille(mono,c.width,{gap:Function(`return(${ig.value});`)(),pad:+padcb.checked});out.oninput();
+				out.textContent=braille(mono,c.width,{gap:Function(`return(${ig.value});`)(),pad:+padcb.checked});out.oninput();
 			},0);
 			img.onerror=()=>b.disabled=false;
 			img.src=URL.createObjectURL(f.files[0]);
