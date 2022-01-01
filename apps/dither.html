@@ -12,14 +12,15 @@
 	<meta name="theme-color" content="#214"/>
 
 	<link rel="stylesheet" href="../src/style.css">
+	<link rel="stylesheet" href="../src/toggle.css">
 </head>
 <body>
-	<style>#diffuse,textarea{width:100%;}#diffuse{max-width:1024px;}</style>
+	<style>#diffuse,textarea{width:100%;font-family:monospace;}#diffuse{max-width:1024px;}</style>
 	<h1>dither</h1>
 	<hr>
 	<input type="file" class="input" id="f"><br>
 	<br>
-	height:<input class="input" id="ih" value="256"><br>
+	<label>height:<input class="input" id="ih" value="256">px</label><br>
 	rgba→mono:<textarea class="input" id="il">return(col[0]*.298912+col[1]*.586611+col[2]*.114478)*col[3]+0*(1-col[3]);</textarea><br>
 	dither:<textarea class="input" id="im">[//→,↓,weight
 
@@ -29,6 +30,9 @@
 	//Atkinson
 	[ 1,0,1/8],[ 2,0,1/8],[-1,1,1/8],[ 0,1,1/8],[ 1,1,1/8],[ 0,2,1/8]
 ]</textarea><br>
+	<label>invert:<input type="checkbox" class="toggle" id="invcb"></label><br>
+	<label>padding:<input type="checkbox" class="toggle" id="padcb" checked></label><br>
+	<br>
 	<button type="button" class="button" id="b">exe</button>
 	<hr>
 	<img id="diffuse">
@@ -48,8 +52,21 @@
 				}
 				return arr;
 			},
-			braille=(arr,w)=>{
+			braille=(arr,w,cfg={gap:[1,1],inv:false,pad:true})=>{
 				const h=arr.length/w;
+				return new Array(Math.ceil((h+cfg.gap[1])/(4+cfg.gap[1]))).fill().map((_,i)=>
+					new Array(Math.ceil((w+cfg.gap[0])/(2+cfg.gap[0]))).fill().map((_,j)=>{
+						let s=[j*(2+cfg.gap[0]),i*(4+cfg.gap[1])];
+						s=[7,4,6,3,5,2,1,0].reduce((a,x,k)=>{
+							a[x]=+arr[s[0]+k%2+(s[1]+Math.floor(k/2))*w]||0;
+							if(cfg.inv)a[x]=1-a[x];
+							return a;
+						},[]).join('');
+						s=parseInt(s,2);
+						if(cfg.pad)s=s||1;
+						return String.fromCharCode(10240+s);
+					}).join('')
+				).join('\n');
 			};
 		b.onclick=()=>{
 			let img=new Image();
@@ -65,6 +82,7 @@
 				ctx.putImageData(img,0,0);
 				c.toBlob(b=>{diffuse.onload=()=>URL.revokeObjectURL(diffuse.src);diffuse.src=URL.createObjectURL(b);});
 				b.disabled=false;
+				out.value=braille(mono,c.width,{gap:[1,1],inv:invcb.checked,pad:padcb.checked});out.oninput();
 			},0);
 			img.onerror=()=>b.disabled=false;
 			img.src=URL.createObjectURL(f.files[0]);
