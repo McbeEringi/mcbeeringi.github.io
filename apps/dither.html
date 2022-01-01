@@ -30,6 +30,7 @@
 	//Atkinson
 	[ 1,0,1/8],[ 2,0,1/8],[-1,1,1/8],[ 0,1,1/8],[ 1,1,1/8],[ 0,2,1/8]
 ]</textarea><br>
+	<label>gap:<input class="input" id="ig" value="[1,1]"></label><br>
 	<label>padding:<input type="checkbox" class="toggle" id="padcb" checked></label><br>
 	<br>
 	<button type="button" class="button" id="b">exe</button>
@@ -78,7 +79,7 @@
 				ctx.putImageData(img,0,0);
 				c.toBlob(b=>{diffuse.onload=()=>URL.revokeObjectURL(diffuse.src);diffuse.src=URL.createObjectURL(b);});
 				b.disabled=false;
-				out.value=braille(mono,c.width,{gap:[1,1],pad:+padcb.checked});out.oninput();
+				out.value=braille(mono,c.width,{gap:Function(`return(${ig.value});`)(),pad:+padcb.checked});out.oninput();
 			},0);
 			img.onerror=()=>b.disabled=false;
 			img.src=URL.createObjectURL(f.files[0]);
