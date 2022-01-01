@@ -53,15 +53,16 @@
 				return arr;
 			},
 			braille=(arr,w,cfg={gap:[1,1],pad:1})=>{
-				const h=arr.length/w;
+				const h=Math.ceil(arr.length/w);
 				return new Array(Math.ceil((h+cfg.gap[1])/(4+cfg.gap[1]))).fill().map((_,i)=>
 					new Array(Math.ceil((w+cfg.gap[0])/(2+cfg.gap[0]))).fill().map((_,j)=>{
-						let s=[j*(2+cfg.gap[0]),i*(4+cfg.gap[1])];
-						s=[7,4,6,3,5,2,1,0].reduce((a,x,k)=>{
-							a[x]=+arr[s[0]+k%2+(s[1]+Math.floor(k/2))*w]||0;
+						let p=[j*(2+cfg.gap[0]),i*(4+cfg.gap[1])];
+						p=[7,4,6,3,5,2,1,0].reduce((a,x,k)=>{
+							const q=[p[0]+k%2,p[1]+Math.floor(k/2)];
+							a[x]=q[0]<=w?+arr[Math.floor(q[0]+q[1]*w)]||0:0;
 							return a;
 						},[]).join('');
-						return String.fromCharCode(10240+(parseInt(s,2)||cfg.pad));
+						return String.fromCharCode(10240+(parseInt(p,2)||cfg.pad));
 					}).join('')
 				).join('\n');
 			};
