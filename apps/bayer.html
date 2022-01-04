@@ -45,6 +45,7 @@ return lum*17>bayer[p[0]%4+p[1]%4*4];
 	<hr>
 	<script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
 	<script>
+		if(out.webkitRequestFullscreen)out.requestFullscreen=out.webkitRequestFullscreen;
 		let mstop=false,cfx;
 		const c=document.createElement('canvas'),
 			ctx=c.getContext('2d'),
