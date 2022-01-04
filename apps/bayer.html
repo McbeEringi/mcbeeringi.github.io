@@ -17,7 +17,7 @@
 	<style>
 		:root{background-color:#222;color:#fff;}
 		#out{display:inline-block;text-align:center;cursor:none;}
-		textarea{width:100%;font-family:monospace;}
+		textarea{width:100%;font-family:monospace;}.ofs{overflow:scroll;}
 	</style>
 	<h1>bayer</h1>
 	<hr>
@@ -41,7 +41,7 @@ return lum*17>bayer[p[0]%4+p[1]%4*4];
 	<hr>
 	<video src="badapple.mp4" controls id="v"></video><br>
 	<button type="button" class="button" id="b">full screen</button><br>
-	<pre id="out"></pre>
+	<div><pre id="out"></pre></div>
 	<hr>
 	<script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
 	<script>
