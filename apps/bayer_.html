@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi bayer</title>
+	<meta name="description" content="mono dither">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+</head>
+<body>
+	<style>
+		:root{background-color:#222;color:#fff;}
+		#out{display:inline-block;text-align:center;cursor:none;}
+		textarea{width:100%;font-family:monospace;}.ofs{overflow:scroll;}
+	</style>
+	<h1>bayer (worker)</h1>
+	<hr>
+	<input type="file" class="input" id="f"><br>
+	<br>
+
+	<label>height: <input class="input" id="ih" value="189"></label><br>
+	rgba→mono: <textarea class="input" id="il">const lum=(col[0]*.298912+col[1]*.586611+col[2]*.114478)*col[3]+0*(1-col[3]),
+	p=[i%w,Math.floor(i/w)],
+	bayer=[
+		1,9,3,11,
+		13,5,15,7,
+		4,12,2,10,
+		16,8,14,6
+	];
+return lum*17>bayer[p[0]%4+p[1]%4*4];
+</textarea><br>
+	<label>gap: <input class="input" id="ig" value="[0.7,1]"></label><br>
+	<label>padding: <input class="input" id="ip" value="1"></label><br>
+	<label>font-size: <input class="input" id="ifs" value="16"></label><br>
+	<hr>
+	<video src="badapple.mp4" controls id="v"></video><br>
+	<button type="button" class="button" id="b">full screen</button><br>
+	<div class="ofs"><pre id="out"></pre></div>
+	<hr>
+	<script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
+	<script>
+		if(out.webkitRequestFullscreen)out.requestFullscreen=out.webkitRequestFullscreen;
+		let mstop=false;
+		const workerstr=`
+let cfx,cw,bcfg;
+const braille=(arr,w,cfg={gap:[1,1],pad:1})=>{
+		const h=Math.ceil(arr.length/w);
+		return new Array(Math.ceil((h+cfg.gap[1])/(4+cfg.gap[1]))).fill().map((_,i)=>
+			new Array(Math.ceil((w+cfg.gap[0])/(2+cfg.gap[0]))).fill().map((_,j)=>{
+				let p=[j*(2+cfg.gap[0]),i*(4+cfg.gap[1])];
+				p=[7,6,5,3,1,4,2,0].map(x=>{
+					x=[p[0]+x%2,p[1]+Math.floor(x/2)];
+					return x[0]<w?+arr[Math.floor(x[0])+Math.floor(x[1])*w]||0:0;
+				}).join('');
+				return String.fromCharCode(10240+(parseInt(p,2)||cfg.pad));
+			}).join('')
+		).join('\\n');
+	},
+	main=img=>
+		postMessage(braille(
+			new Array(img.length/4).fill()
+				.map((_,i)=>{i*=4;return[...img.slice(i,i+4)].map(x=>x/255);})
+				.map((x,i)=>cfx(x,i,cw)),
+			cw,bcfg
+		));
+
+onmessage=m=>{
+	m=m.data;
+	({
+		'cw':()=>cw=m.data,
+		'bcfg':()=>bcfg=m.data,
+		'cfx':()=>cfx=Function('col','i','w',m.data),
+		'main':()=>main(m.data)
+	})[m.type]();
+};`,
+			worker=new Worker(URL.createObjectURL(new Blob([workerstr]))),
+			send=(...x)=>worker.postMessage(...x),
+			c=document.createElement('canvas'),
+			ctx=c.getContext('2d'),
+			sset=()=>{c.width=((c.height=ih.value)/v.videoHeight)*v.videoWidth;send({type:'cw',data:c.width});},
+			fset=()=>out.style.fontSize=`${ifs.value}px`,
+			bset=()=>send({type:'bcfg',data:{gap:Function(`return(${ig.value});`)(),pad:+ip.value||0}}),
+			cset=()=>{Function('col','i','w',il.value);send({type:'cfx',data:il.value});}
+			main=()=>{
+				ctx.drawImage(v,0,0,c.width,c.height);
+				send({type:'main',data:ctx.getImageData(0,0,c.width,c.height).data});
+			};
+		
+		worker.onmessage=m=>{out.textContent=m.data;if(mstop)mstop=false;else main();};
+
+		f.onchange=()=>{if(v.src)URL.revokeObjectURL(v.src);setTimeout(()=>{if(f.files[0])v.src=URL.createObjectURL(f.files[0]);},0)}
+		ih.onchange=sset;
+		ig.onchange=ip.oninput=bset;
+		ifs.oninput=fset;
+		autosize(il);il.oninput=()=>{autosize.update(il);cset();};
+
+		v.oncanplaythrough=sset;
+		v.onplay=main;
+		v.onpause=()=>mstop=true;
+
+		b.onclick=()=>out.requestFullscreen();
+		document.onkeydown=e=>{
+			if(e.code=='KeyL')v.play();
+			else if(e.code=='KeyK')v.pause();
+			else if(e.code=='KeyJ')v.currentTime=0;
+		};
+		fset();bset();cset();f.onchange();
+	</script>
+</body>
+</html>
