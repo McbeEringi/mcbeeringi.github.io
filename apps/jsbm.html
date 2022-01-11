@@ -22,14 +22,15 @@
 	<hr>
 	<button id="copy" class="button">copy</button>
 	<textarea id="out" class="input"></textarea>
-	<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
+	<script src="../src/taheight.js"></script>
 	<script>
-		[inp,out].forEach(autosize);
+		[inp,out].forEach(taheight);
 		inp.oninput=()=>{
 			let i=0,reg=/`[^`]+`/g,tmp=inp.value.match(reg)||[];
 			out.value='javascript:'+encodeURIComponent(inp.value.replace(/[\n\r\t\u2028\u2029]+/g,'').replace(reg,()=>tmp[i++]));
-			[inp,out].forEach(autosize.update);
+			[inp,out].forEach(taheight);
 		};
+		out.oninput=()=>taheight(out);
 		copy.onclick=()=>navigator.clipboard.writeText(out.value).then(x=>{copy.textContent='copied';setTimeout(()=>copy.textContent='copy',1000);});
 		inp.oninput();
 	</script>

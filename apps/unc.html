@@ -24,9 +24,8 @@
 	base64(UTF-8)<textarea id="b8" class="input"></textarea>
 	base64(UTF-16)<textarea id="b16" class="input"></textarea>
 	<!--ZIPもどき(Base64 encoded)<textarea id="z"></textarea>-->
-	<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
+	<script src="../src/taheight.js"></script>
 	<script>
-		[s,u8,u16,b8,b16].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
 		const b64='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split(''),
 		b64e=(x,b)=>{
 			x=x.map(y=>('0'.repeat(b-1)+y.toString(2)).slice(-1*b)).join('');
@@ -45,24 +44,23 @@
 			u16.value=s.value.split('').map(y=>'\\u'+('000'+y.codePointAt(0).toString(16)).slice(-4)).join('');
 			b8.value=b64e([...new TextEncoder().encode(s.value)],8);
 			b16.value=b64e(s.value.split('').map(x=>x.codePointAt(0)),16);
-			autosize.update(s);
-			[u8,u16,b8,b16].forEach(x=>autosize.update(x));
+			[s,u8,u16,b8,b16].forEach(taheight);
 		};
 		u8.oninput=()=>{
 			s.value=new TextDecoder().decode(Uint8Array.from(u8.value.split('%').filter(x=>x).map(x=>parseInt(x,16))));
-			autosize.update(u8);autosize.update(s);
+			[u8,s].forEach(taheight);
 		};
 		u16.oninput=()=>{
 			s.value=unescape(u16.value.replace(/\\u/g,'%u'));
-			autosize.update(u16);autosize.update(s);
+			[u16,s].forEach(taheight);
 		};
 		b8.oninput=()=>{
 			s.value=new TextDecoder().decode(Uint8Array.from(b64d(b8.value,8)));
-			autosize.update(b8);autosize.update(s);
+			[b8,s].forEach(taheight);
 		};
 		b16.oninput=()=>{
 			s.value=unescape(b64d(b16.value,16).map(x=>'%u'+('000'+x.toString(16)).slice(-4)).join(''));
-			autosize.update(b16);autosize.update(s);
+			[b16,s].forEach(taheight);
 		};
 	</script>
 </body>
