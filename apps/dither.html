@@ -39,7 +39,7 @@
 	<hr>
 	<script src="../src/taheight.js"></script>
 	<script>
-		[il,im].forEach(x=>{(x.oninput=()=>taheight(x))();});
+		tainit(il,im);
 		ih.oninput=()=>ih.value=ih.value.replace(/\D+/g,'');
 		const wurl=URL.createObjectURL(new Blob([`
 const dither=(arr,w,m)=>{

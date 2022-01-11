@@ -41,10 +41,10 @@
 ]</textarea>
 	<button class="button" id="exe">run</button>
 	<pre id="log"></pre>
+	<script src="../../src/taheight.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
-	<script src="https://www.jacklmoore.com/js/autosize.min.js"></script>
 	<script>
-		[ins,sort].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+		tainit(ins,sort);
 
 		exe.onclick=()=>{
 			console.log(inp.files);
