@@ -15,8 +15,8 @@
 </head>
 <body>
 	<style>
-		canvas{display:none;}
-		img{width:100%;max-width:320px;height:auto;}
+		canvas{display:none;}img{width:100%;max-width:320px;height:auto;}
+		textarea{width:100%;}
 	</style>
 	<script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
 	<canvas id="qr"></canvas>
@@ -30,8 +30,10 @@
 	<pre id="log"></pre>
 	<a id="qra"><img src="" alt="QRcode" width="1" height="1" id="qri"></a><br>
 	Powerd by <a href="https://github.com/soldair/node-qrcode">node-qrcode</a>
+	<script src="../src/taheight.js"></script>
 	<script>
 		const main=()=>QRCode.toDataURL(txt.value,{errorCorrectionLevel:['S','M','Q','L'][ecl.value],margin:4,scale:8,color:{dark:cd.value,light:cl.value}},(e,x)=>{if(e)log.textContent=e;qra.href=qri.src=x;qra.download=txt.value;});
+		(txt.oninput=()=>taheight(txt))();
 		main();
 	</script>
 </body>
