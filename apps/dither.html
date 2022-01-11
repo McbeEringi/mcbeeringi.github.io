@@ -37,9 +37,9 @@
 	<img id="diffuse">
 	<div class="ofs"><pre id="out"></pre></div>
 	<hr>
-	<script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
+	<script src="../src/taheight.js"></script>
 	<script>
-		[il,im].forEach(x=>{autosize(x);x.oninput=()=>autosize.update(x);});
+		[il,im].forEach(x=>{x.oninput=()=>taheight(x);});
 		ih.oninput=()=>ih.value=ih.value.replace(/\D+/g,'');
 		const wurl=URL.createObjectURL(new Blob([`
 const dither=(arr,w,m)=>{
