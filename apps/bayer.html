@@ -41,7 +41,7 @@ return lum*17>bayer[p[0]%4+p[1]%4*4];</textarea><br>
 	<button type="button" class="button" id="b">full screen</button><br>
 	<div class="ofs"><pre id="out"></pre></div>
 	<hr>
-	<script src="https://cdn.jsdelivr.net/npm/autosize/dist/autosize.min.js"></script>
+	<script src="../src/taheight.js"></script>
 	<script>
 		if(out.webkitRequestFullscreen)out.requestFullscreen=out.webkitRequestFullscreen;
 		let mstop=false;
@@ -96,7 +96,7 @@ onmessage=m=>{
 		ih.onchange=sset;
 		ig.onchange=ip.oninput=bset;
 		ifs.oninput=fset;
-		autosize(il);il.oninput=()=>{autosize.update(il);cset();};
+		il.oninput=()=>{taheight(il);cset();};
 
 		v.oncanplaythrough=sset;
 		v.onplay=main;
