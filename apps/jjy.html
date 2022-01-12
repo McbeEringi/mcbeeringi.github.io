@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi jjy_sim</title>
+	<meta name="description" content="JJY simulator">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+</head>
+<body>
+	<h1>jjy_sim</h1>
+	<hr>
+	<input type="range" id="r">
+	<pre id="log">Please connect wired earphones for efficient signal transmission.
+Do not wear the earphones.</pre>
+	<hr>
+	<script>
+		r.value=0;
+		const ctx=new (AudioContext||webkitAudioContext)(),
+			osc=ctx.createOscillator(),
+			g0=ctx.createGain(),
+			g1=ctx.createGain(),
+			wtr=(x,y)=>y.map(z=>z>0?+(x>=z&&!((x-=z)&&0)):-z),
+			jjy=(t=new Date())=>{
+				const y=t.getFullYear(),d=t.getDay(),m=t.getMinutes(),h=t.getHours();
+				t=new Array(t.getMonth()).fill().map((_,i)=>new Date(y,i,0).getDate()).reduce((a,x)=>a+x,0)+t.getDate();
+				return[
+					2,...wtr(m,[40,20,10,-0,8,4,2,1]),
+					2,0,0,...wtr(h,[20,10,-0,8,4,2,1]),
+					2,0,0,...wtr(t,[200,100,-0,80,40,20,10,-2,8,4,2,1]),0,0,h%2,m%2,0,
+					2,0,...wtr(y%100,[80,40,20,10,8,4,2,1]),
+					2,...wtr(d,[4,2,1]),0,0,0,0,0,0,
+					2
+				];
+			},
+			main=(t=0)=>
+				log.textContent=jjy().map((x,i)=>{
+					i=ctx.currentTime+i-t/1000;
+					if(i>0)g0.gain.setValueAtTime(1,i).setValueAtTime(0,i+[.8,.5,.2][x]);
+					return ['0','1','!'][x];
+				});
+		osc.type='square';
+		osc.frequency.value=13333.33;//12000;
+		g0.gain.value=0;
+		osc.connect(g0).connect(g1).connect(ctx.destination);
+		r.oninput=()=>{osc.start();r.oninput=()=>g1.gain.value=r.value/100;};
+
+		let t=new Date();
+		t=t.getSeconds()*1000+t.getMilliseconds();
+		main(t);setTimeout(()=>{main(-1000);setInterval(main,60000,-1000);},59000-t);
+	</script>
+</body>
+</html>
