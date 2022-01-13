@@ -14,21 +14,23 @@
 	<link rel="stylesheet" href="../src/style.css">
 </head>
 <body>
-	<style>canvas{width:100%;max-width:512px;}</style>
+	<style>pre{white-space:pre-wrap;display:inline-block;}canvas{width:100%;max-width:512px;}</style>
 	<h1>jjy_sim</h1>
 	<hr>
 	<input type="range" id="r"><br>
 	<input class="input" id="hz" value="13333.33">Hz<br>
-	<code id="log"></code><br>
+	<pre id="log"></pre><br>
 	<canvas id="c"></canvas><br>
 	<hr>
 	<script>
 		r.value=0;c.height=100;c.width=300;
+		let prev;
 		const ctx=c.getContext('2d'),
 			actx=new (AudioContext||webkitAudioContext)(),
 			osc=actx.createOscillator(),
 			g0=actx.createGain(),
 			g1=actx.createGain(),
+			/*
 			wtr=(x,y)=>y.map(z=>z>0?+(x>=z&&!((x-=z)&&0)):-z),
 			jjy=(t=new Date())=>{
 				const y=t.getFullYear(),d=t.getDay(),m=t.getMinutes(),h=t.getHours();
@@ -42,6 +44,29 @@
 					2
 				];
 			},
+			*/
+			bcd=x=>Array.from(parseInt(x.toString(10),16).toString(2),y=>+y).reverse(),
+			jjy=(t=new Date())=>{
+				let s=t.getSeconds();
+				s=[
+					02,16,15,14,00,13,12,11,10,02,
+					00,00,25,24,00,23,22,21,20,02,
+					00,00,39,38,00,37,36,35,34,02,
+					33,32,31,30,00,00,41,40,00,02,
+					00,57,56,55,54,53,52,51,50,02,
+					62,61,60,00,00,00,00,00,00,02
+				][s];
+				s=[
+					x=>x,
+					x=>bcd(t.getMinutes())[x]||0,
+					x=>bcd(t.getHours())[x]||0,
+					x=>bcd(new Array(t.getMonth()).fill(t.getFullYear()).map((y,i)=>new Date(y,i,0).getDate()).reduce((a,y)=>a+y,0)+t.getDate())[x]||0,
+					x=>t[['getMinutes','getHours'][x]]()%2,
+					x=>bcd(t.getFullYear()%100)[x]||0,
+					x=>bcd(t.getDay())[x]||0,
+				][Math.floor(s/10)](s%10);
+				return[s,[800,500,200][s]>t.getMilliseconds()];
+			},
 			draw=(i,a)=>{
 				log.textContent=new Date();
 				ctx.clearRect(0,0,c.width,c.height);
@@ -52,22 +77,21 @@
 					ctx.fillRect(j%30*w,+(j>29)&&h,w*[.8,.5,.2][x],h);
 				});
 			},
-			main=(t=0)=>
-				jjy().forEach((x,i,a)=>{
-					setTimeout(draw,i*1000-t,i,a);
-					i=actx.currentTime+i-t/1000;
-					if(i>0)g0.gain.setValueAtTime(1,i).setValueAtTime(0,i+[.8,.5,.2][x]);
-				});
+			main=()=>{
+				const cur=jjy();
+				if(cur[1]!=prev){
+					g0.gain.value=prev=cur[1];
+					log.textContent=`${new Date()}\n[${cur}]`;
+				}
+				requestAnimationFrame(main);
+			};
 		osc.type='square';
-		g0.gain.value=0;
 		osc.connect(g0).connect(g1).connect(actx.destination);
 		r.oninput=()=>{osc.start();r.oninput=()=>g1.gain.value=r.value/100;};
 		hz.oninput=()=>osc.frequency.value=hz.value;
+		document.onvisibilitychange=()=>g0.gain.value=0;
 
-		hz.oninput();
-		let t=new Date(),ms=t.getMilliseconds();
-		t=t.getSeconds()*1000+ms;
-		main(t);setTimeout(()=>{main(-1000);setInterval(main,60000,-1000);},59000-t);
+		hz.oninput();main();
 	</script>
 </body>
 </html>
