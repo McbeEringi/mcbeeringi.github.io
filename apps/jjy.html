@@ -58,13 +58,13 @@
 				][s];
 				s=[
 					x=>x,
-					x=>bcd(t.getMinutes())[x]||0,
-					x=>bcd(t.getHours())[x]||0,
-					x=>bcd(new Array(t.getMonth()).fill(t.getFullYear()).map((y,i)=>new Date(y,i,0).getDate()).reduce((a,y)=>a+y,0)+t.getDate())[x]||0,
+					x=>bcd(t.getMinutes())[x],
+					x=>bcd(t.getHours())[x],
+					x=>bcd(new Array(t.getMonth()).fill(t.getFullYear()).map((y,i)=>new Date(y,i,0).getDate()).reduce((a,y)=>a+y,0)+t.getDate())[x],
 					x=>t[['getMinutes','getHours'][x]]()%2,
-					x=>bcd(t.getFullYear()%100)[x]||0,
-					x=>bcd(t.getDay())[x]||0,
-				][Math.floor(s/10)](s%10);
+					x=>bcd(t.getFullYear()%100)[x],
+					x=>bcd(t.getDay())[x],
+				][Math.floor(s/10)](s%10)||0;
 				return[s,[800,500,200][s]>t.getMilliseconds()];
 			},
 			draw=(i,a)=>{
