@@ -69,7 +69,7 @@
 			main=()=>{
 				const t=new Date(),cur=jjy(t);
 				if(cur[1]!=prev&&document.visibilityState=='visible'){
-					g0.gain.value=(prev=cur[1])||.1;
+					g0.gain.value=prev=cur[1];
 					log.textContent=`${t}\n[${cur}]`;
 					draw(t.getSeconds(),cur[1]);
 				}
