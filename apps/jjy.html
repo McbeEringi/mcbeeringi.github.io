@@ -50,7 +50,7 @@
 			},
 			jjya=(t=new Date())=>{
 				let y=t.getFullYear();
-				const d=bcd(t.getDay()),m=bcd(t.getMinutes()),h=bcd(t.getHours()),a=new Array(t.getMonth()).fill().map((_,i)=>new Date(y,i,0).getDate()).reduce((a,x)=>a+x,0)+t.getDate();
+				const d=bcd(t.getDay()),m=bcd(t.getMinutes()),h=bcd(t.getHours()),a=bcd(new Array(t.getMonth()).fill().map((_,i)=>new Date(y,i,0).getDate()).reduce((a,x)=>a+x,0)+t.getDate());
 				y=bcd(y%100);
 				return[
 					2,m[6],m[5],m[4],0,m[3],m[2],m[1],m[0],2, 0,0,h[5],h[4],0,h[3],h[2],h[1],h[0],2, 0,0,a[9],a[8],0,a[7],a[6],a[5],a[4],2,
