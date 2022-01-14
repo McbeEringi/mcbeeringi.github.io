@@ -42,7 +42,7 @@
 					x=>bcd(t.getMinutes())[x],
 					x=>bcd(t.getHours())[x],
 					x=>bcd(new Array(t.getMonth()).fill(t.getFullYear()).map((y,i)=>new Date(y,i,0).getDate()).reduce((a,y)=>a+y,0)+t.getDate())[x],
-					x=>t[['getMinutes','getHours'][x]]()%2,
+					x=>bcd(t[['getMinutes','getHours'][x]]()).reduce((a,y)=>a+y)%2,
 					x=>bcd(t.getFullYear()%100)[x],
 					x=>bcd(t.getDay())[x],
 				][Math.floor(s/10)](s%10)||0;
@@ -54,7 +54,7 @@
 				y=bcd(y%100);
 				return[
 					2,m[6],m[5],m[4],0,m[3],m[2],m[1],m[0],2, 0,0,h[5],h[4],0,h[3],h[2],h[1],h[0],2, 0,0,a[9],a[8],0,a[7],a[6],a[5],a[4],2,
-					a[3],a[2],a[1],a[0],0,0,h[0],m[0],0,2, 0,y[7],y[6],y[5],y[4],y[3],y[2],y[1],y[0],2, d[2],d[1],d[0],0,0,0,0,0,0,2
+					a[3],a[2],a[1],a[0],0,0,h.reduce((a,y)=>a+y)%2,m.reduce((a,y)=>a+y)%2,0,2, 0,y[7],y[6],y[5],y[4],y[3],y[2],y[1],y[0],2, d[2],d[1],d[0],0,0,0,0,0,0,2
 				].map(x=>x||0);
 			},
 			draw=(i,b)=>{
@@ -85,7 +85,7 @@
 			else actx.resume();
 		};
 
-		sub();setTimeout(()=>{sub();setInterval(sub,60000);},59900-new Date().getSeconds()*1000-new Date().getMilliseconds())
+		sub();setTimeout(()=>{sub();setInterval(sub,60000);},59500-new Date().getSeconds()*1000-new Date().getMilliseconds())
 		hz.oninput();main();
 	</script>
 </body>
