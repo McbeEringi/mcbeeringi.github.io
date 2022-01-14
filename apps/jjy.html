@@ -23,38 +23,19 @@
 	<canvas id="c"></canvas><br>
 	<hr>
 	<script>
-		r.value=0;c.height=100;c.width=300;
-		let prev;
+		r.value=0;c.height=60;c.width=100;
+		let prev,arr;
 		const ctx=c.getContext('2d'),
 			actx=new (AudioContext||webkitAudioContext)(),
 			osc=actx.createOscillator(),
 			g0=actx.createGain(),
 			g1=actx.createGain(),
-			/*
-			wtr=(x,y)=>y.map(z=>z>0?+(x>=z&&!((x-=z)&&0)):-z),
-			jjy=(t=new Date())=>{
-				const y=t.getFullYear(),d=t.getDay(),m=t.getMinutes(),h=t.getHours();
-				t=new Array(t.getMonth()).fill().map((_,i)=>new Date(y,i,0).getDate()).reduce((a,x)=>a+x,0)+t.getDate();
-				return[
-					2,...wtr(m,[40,20,10,-0,8,4,2,1]),
-					2,0,0,...wtr(h,[20,10,-0,8,4,2,1]),
-					2,0,0,...wtr(t,[200,100,-0,80,40,20,10,-2,8,4,2,1]),0,0,h%2,m%2,0,
-					2,0,...wtr(y%100,[80,40,20,10,8,4,2,1]),
-					2,...wtr(d,[4,2,1]),0,0,0,0,0,0,
-					2
-				];
-			},
-			*/
 			bcd=x=>Array.from(parseInt(x.toString(10),16).toString(2),y=>+y).reverse(),
 			jjy=(t=new Date())=>{
 				let s=t.getSeconds();
 				s=[
-					02,16,15,14,00,13,12,11,10,02,
-					00,00,25,24,00,23,22,21,20,02,
-					00,00,39,38,00,37,36,35,34,02,
-					33,32,31,30,00,00,41,40,00,02,
-					00,57,56,55,54,53,52,51,50,02,
-					62,61,60,00,00,00,00,00,00,02
+					02,16,15,14,00,13,12,11,10,02, 00,00,25,24,00,23,22,21,20,02, 00,00,39,38,00,37,36,35,34,02,
+					33,32,31,30,00,00,41,40,00,02, 00,57,56,55,54,53,52,51,50,02, 62,61,60,00,00,00,00,00,00,02
 				][s];
 				s=[
 					x=>x,
@@ -67,30 +48,44 @@
 				][Math.floor(s/10)](s%10)||0;
 				return[s,[800,500,200][s]>t.getMilliseconds()];
 			},
-			draw=(i,a)=>{
-				log.textContent=new Date();
+			jjya=(t=new Date())=>{
+				let y=t.getFullYear();
+				const d=bcd(t.getDay()),m=bcd(t.getMinutes()),h=bcd(t.getHours()),a=new Array(t.getMonth()).fill().map((_,i)=>new Date(y,i,0).getDate()).reduce((a,x)=>a+x,0)+t.getDate();
+				y=bcd(y%100);
+				return[
+					2,m[6],m[5],m[4],0,m[3],m[2],m[1],m[0],2, 0,0,h[5],h[4],0,h[3],h[2],h[1],h[0],2, 0,0,a[9],a[8],0,a[7],a[6],a[5],a[4],2,
+					a[3],a[2],a[1],a[0],0,0,h[0],m[0],0,2, 0,y[7],y[6],y[5],y[4],y[3],y[2],y[1],y[0],2, d[2],d[1],d[0],0,0,0,0,0,0,2
+				].map(x=>x||0);
+			},
+			draw=(i,b)=>{
 				ctx.clearRect(0,0,c.width,c.height);
-				const w=c.width/30,h=c.height/2;
-				a.forEach((x,j)=>{
-					ctx.fillStyle=['green','yellow','red'][x];
-					ctx.globalAlpha=j==i?1:.2;
-					ctx.fillRect(j%30*w,+(j>29)&&h,w*[.8,.5,.2][x],h);
+				const w=c.width/10,h=c.height/6;
+				arr.forEach((x,j)=>{
+					ctx.fillStyle=['#0f0','#ff0','#f00'][x];
+					ctx.globalAlpha=j==i?b?1:.6:.2;
+					ctx.fillRect(j%10*w,Math.floor(j/10)*h,w*[.8,.5,.2][x],h);
 				});
 			},
 			main=()=>{
-				const cur=jjy();
-				if(cur[1]!=prev){
-					g0.gain.value=prev=cur[1];
-					log.textContent=`${new Date()}\n[${cur}]`;
+				const t=new Date(),cur=jjy(t);
+				if(cur[1]!=prev&&document.visibilityState=='visible'){
+					g0.gain.value=(prev=cur[1])||.1;
+					log.textContent=`${t}\n[${cur}]`;
+					draw(t.getSeconds(),cur[1]);
 				}
 				requestAnimationFrame(main);
-			};
+			},
+			sub=()=>arr=jjya();
 		osc.type='square';
 		osc.connect(g0).connect(g1).connect(actx.destination);
-		r.oninput=()=>{osc.start();r.oninput=()=>g1.gain.value=r.value/100;};
+		r.oninput=()=>{osc.start();r.oninput=()=>g1.gain.linearRampToValueAtTime(r.value/100,actx.currentTime+.1);};
 		hz.oninput=()=>osc.frequency.value=hz.value;
-		document.onvisibilitychange=()=>g0.gain.value=0;
+		document.onvisibilitychange=()=>{
+			if(document.visibilityState=='hidden')g0.gain.value=0;
+			else actx.resume();
+		};
 
+		sub();setTimeout(()=>{sub();setInterval(sub,60000);},60000-new Date().getSeconds()*1000-new Date().getMilliseconds())
 		hz.oninput();main();
 	</script>
 </body>
