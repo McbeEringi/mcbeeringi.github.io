@@ -35,30 +35,22 @@
 		b64d=(x,b)=>{
 			x=Array.from(x.replace(/=/g,''),y=>b64_[y]?b64_[y].toString(2).padStart(6,'0'):'').join('');
 			return(x.slice(0,x.length-x.length%b).match(new RegExp(`.{1,${b}}`,'g'))||[]).map(y=>parseInt(y,2));
-		};
-		s.oninput=()=>{
-			u8.value=[...new TextEncoder().encode(s.value)].map(x=>'%'+('0'+x.toString(16)).slice(-2)).join('');
-			u16.value=s.value.split('').map(y=>'\\u'+('000'+y.codePointAt(0).toString(16)).slice(-4)).join('');
-			b8.value=b64e([...new TextEncoder().encode(s.value)],8);
-			b16.value=b64e(s.value.split('').map(x=>x.codePointAt(0)),16);
-			[s,u8,u16,b8,b16].forEach(taheight);
-		};
-		u8.oninput=()=>{
-			s.value=new TextDecoder().decode(Uint8Array.from(u8.value.split('%').filter(x=>x).map(x=>parseInt(x,16))));
-			[u8,s].forEach(taheight);
-		};
-		u16.oninput=()=>{
-			s.value=String.fromCodePoint(...(u16.value.match(/\\u[\da-fA-F]{4}/g)||[]).map(x=>parseInt(x.slice(2),16)));
-			[u16,s].forEach(taheight);
-		};
-		b8.oninput=()=>{
-			s.value=new TextDecoder().decode(Uint8Array.from(b64d(b8.value,8)));
-			[b8,s].forEach(taheight);
-		};
-		b16.oninput=()=>{
-			s.value=String.fromCodePoint(...b64d(b16.value,16));
-			[b16,s].forEach(taheight);
-		};
+		},
+		s2u8=()=>u8.value=[...new TextEncoder().encode(s.value)].map(x=>'%'+('0'+x.toString(16)).slice(-2)).join(''),
+		s2u16=()=>u16.value=s.value.split('').map(y=>'\\u'+('000'+y.codePointAt(0).toString(16)).slice(-4)).join(''),
+		s2b8=()=>b8.value=b64e([...new TextEncoder().encode(s.value)],8),
+		s2b16=()=>b16.value=b64e(s.value.split('').map(x=>x.codePointAt(0)),16),
+		u82s=()=>s.value=new TextDecoder().decode(Uint8Array.from(u8.value.split('%').filter(x=>x).map(x=>parseInt(x,16)))),
+		u162s=()=>s.value=String.fromCodePoint(...(u16.value.match(/\\u[\da-fA-F]{4}/g)||[]).map(x=>parseInt(x.slice(2),16))),
+		b82s=()=>s.value=new TextDecoder().decode(Uint8Array.from(b64d(b8.value,8))),
+		b162s=()=>s.value=String.fromCodePoint(...b64d(b16.value,16)),
+		tah=()=>[s,u8,u16,b8,b16].forEach(taheight);
+
+		s.oninput=()=>{s2u8();s2u16();s2b8();s2b16();tah();};
+		u8.oninput=()=>{u82s();s2u16();s2b8();s2b16();tah();};
+		u16.oninput=()=>{u162s();s2u8();s2b8();s2b16();tah();};
+		b8.oninput=()=>{b82s();s2u8();s2u16();s2b16();tah();};
+		b16.oninput=()=>{b162s();s2u8();s2u16();s2b8();tah();};
 	</script>
 </body>
 </html>
