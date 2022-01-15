@@ -21,8 +21,7 @@
 	<h1>minimap</h1>
 	<hr>
 	<input type="file" id="inp" class="input"><br>
-	<pre id="dl"></pre><br>
-	<canvas id="c"></canvas><br>
+	<img id="img"><br>
 	<pre><code id="out"></code></pre>
 	<script>
 		'use strict';
@@ -57,11 +56,9 @@
 		main=x=>{
 			out.textContent=x;
 			hljs.highlightAll();
-			minimap(out.parentNode,.5,c).toBlob(b=>{
-				const a=document.createElement('a');
-				a.download=`${inp.files[0].name}.${b.type.match(/\/\w+$/)[0].slice(1)}`;a.textContent=`${a.download}\n`;
-				a.href=URL.createObjectURL(b);a.onclick=()=>setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},5000);
-				dl.appendChild(a);
+			minimap(out.parentNode,.5).toBlob(b=>{
+				img.src=URL.createObjectURL(b);
+				img.onload=()=>URL.revokeObjectURL(img.src);
 			});
 		};
 		onload=()=>main(`console.log('Hello World!');`);

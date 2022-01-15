@@ -40,9 +40,9 @@ return lum*17>bayer[p[0]%4+p[1]%4*4];</textarea><br>
 	<video src="badapple.mp4" controls id="v"></video><br>
 	<button type="button" class="button" id="b">full screen</button><br>
 	<div class="ofs"><pre id="out"></pre></div>
-	<hr>
 	<script src="../src/taheight.js"></script>
 	<script>
+		'use strict';
 		if(out.webkitRequestFullscreen)out.requestFullscreen=out.webkitRequestFullscreen;
 		let mstop=false;
 		const wurl=URL.createObjectURL(new Blob([`let cfx,cw,bcfg;
@@ -83,7 +83,7 @@ onmessage=m=>{
 			sset=()=>{c.width=((c.height=ih.value)/v.videoHeight)*v.videoWidth;send({type:'cw',data:c.width});},
 			fset=()=>out.style.fontSize=`${ifs.value}px`,
 			bset=()=>send({type:'bcfg',data:{gap:Function(`return(${ig.value});`)(),pad:+ip.value||0}}),
-			cset=()=>{Function('col','i','w',il.value);send({type:'cfx',data:il.value});}
+			cset=()=>{Function('col','i','w',il.value);send({type:'cfx',data:il.value});},
 			main=()=>{
 				ctx.drawImage(v,0,0,c.width,c.height);
 				send({type:'main',data:ctx.getImageData(0,0,c.width,c.height).data});

@@ -25,15 +25,26 @@
 			setTimeout(()=>location.href='https://nari0978.github.io/1g/1g.html',5000);
 		}else{
 			const url=[
-				[/others\/gl/i,'apps/webgl/index'],[/apps\/fsh/i,'apps/webgl/fsh'],
-				[/others\/aes/i,'apps/aes'],[/others\/col/i,'apps/col'],
-				[/others\/unicode/i,'apps/unc'],[/others\/sosu-/i,'apps/sosu-'],
-				[/others\/calpis/i,'apps/calpis'],[/apps\/inv/i,'apps/xor'],[/apps\/s2i/i,'apps/minimap'],[/apps\/aes/i,'amuse/aes'],
+				[/others\/gl/i,'apps/webgl/index'],
+				[/apps\/fsh/i,'apps/webgl/fsh'],
+				[/others\/col/i,'apps/col'],
+				[/others\/unicode/i,'apps/unc'],
+				[/others\/sosu-/i,'amuse/sosu-'],[/apps\/sosu-/i,'amuse/sosu-'],
+				[/others\/calpis/i,'apps/calpis'],
+				[/apps\/inv/i,'apps/xor'],
+				[/apps\/s2i/i,'apps/minimap'],
+				[/others\/aes/i,'amuse/aes'],[/apps\/aes/i,'amuse/aes'],
 				[/others\/bmp/i,'apps/mc/glyph'],[/apps\/mc\/bmp/i,'apps/mc/glyph'],
-				[/others\/arch/i,'apps/mc/arch'],[/others\/poly/i,'apps/mc/poly'],
+				[/others\/arch/i,'apps/mc/arch'],
+				[/others\/poly/i,'apps/mc/poly'],
 				[/others\/sky/i,'sky'],[/apps\/sky/i,'sky'],
-				[/amuse\/js/i,'apps/js'],[/amuse\/jdsm/i,'apps/mc/jdsm'],[/amuse\/seq/i,'sky/seq_'],[/amuse\/textarea/i,'apps/js'],
-				[/worlds/i,'mc'],[/mc\/how.*/i,'mc/how.html'],[/\.io\/how/i,'.io/mc/how']
+				[/amuse\/js/i,'apps/js'],[/amuse\/textarea/i,'apps/js'],
+				[/amuse\/jdsm/i,'apps/mc/jdsm'],
+				[/amuse\/seq/i,'sky/test/index'],
+				[/worlds/i,'mc'],
+				[/mc\/how.*/i,'mc/how.html'],[/\.io\/how/i,'.io/mc/how'],
+				[/apps\/ant/i,'amuse/ant'],
+				[/apps\/jsbm/i,'amuse/jsbm']
 			].reduce((a,x)=>a.replace(...x),location.href);
 			if(location.href!=url){
 				log.textContent='';
