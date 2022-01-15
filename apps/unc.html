@@ -48,7 +48,7 @@
 			[u8,s].forEach(taheight);
 		};
 		u16.oninput=()=>{
-			s.value=String.fromCodePoint(...(u16.value.match(/\\u\d{4}/g)||[]).map(x=>parseInt(x.slice(2),16)));
+			s.value=String.fromCodePoint(...(u16.value.match(/\\u[\da-fA-F]{4}/g)||[]).map(x=>parseInt(x.slice(2),16)));
 			[u16,s].forEach(taheight);
 		};
 		b8.oninput=()=>{
