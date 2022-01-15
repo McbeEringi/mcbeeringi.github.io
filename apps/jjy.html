@@ -20,9 +20,9 @@
 	<input type="range" id="r"><br>
 	<input class="input" id="hz" value="13333.33">Hz<br>
 	<pre id="log"></pre><br>
-	<canvas id="c"></canvas><br>
-	<hr>
+	<canvas id="c"></canvas>
 	<script>
+		'use strict';
 		let prev,arr;
 		const ctx=c.getContext('2d'),
 			actx=new (AudioContext||webkitAudioContext)(),
@@ -33,8 +33,8 @@
 			jjy=(t=new Date())=>{
 				let s=t.getSeconds();
 				s=[
-					02,16,15,14,00,13,12,11,10,02, 00,00,25,24,00,23,22,21,20,02, 00,00,39,38,00,37,36,35,34,02,
-					33,32,31,30,00,00,41,40,00,02, 00,57,56,55,54,53,52,51,50,02, 62,61,60,00,00,00,00,00,00,02
+					 2,16,15,14, 0,13,12,11,10, 2,  0, 0,25,24, 0,23,22,21,20, 2,  0, 0,39,38, 0,37,36,35,34, 2,
+					33,32,31,30, 0, 0,41,40, 0, 2,  0,57,56,55,54,53,52,51,50, 2, 62,61,60, 0, 0, 0, 0, 0, 0, 2
 				][s];
 				s=[
 					x=>x,
