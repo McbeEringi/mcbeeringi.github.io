@@ -33,7 +33,7 @@
 			return x+'='.repeat(3-(x.length+3)%4);
 		},
 		b64d=(x,b)=>{
-			x=Array.from(x.replace(/=/g,''),y=>b64_[y].toString(2).padStart(6,'0')).join('');
+			x=Array.from(x.replace(/=/g,''),y=>b64_[y]?b64_[y].toString(2).padStart(6,'0'):'').join('');
 			return(x.slice(0,x.length-x.length%b).match(new RegExp(`.{1,${b}}`,'g'))||[]).map(y=>parseInt(y,2));
 		};
 		s.oninput=()=>{
@@ -48,7 +48,7 @@
 			[u8,s].forEach(taheight);
 		};
 		u16.oninput=()=>{
-			s.value=unescape(u16.value.replace(/\\u/g,'%u'));
+			s.value=String.fromCodePoint(...(u16.value.match(/\\u\d{4}/g)||[]).map(x=>parseInt(x.slice(2),16)));
 			[u16,s].forEach(taheight);
 		};
 		b8.oninput=()=>{
@@ -56,7 +56,7 @@
 			[b8,s].forEach(taheight);
 		};
 		b16.oninput=()=>{
-			s.value=unescape(b64d(b16.value,16).map(x=>'%u'+('000'+x.toString(16)).slice(-4)).join(''));
+			s.value=String.fromCodePoint(...b64d(b16.value,16));
 			[b16,s].forEach(taheight);
 		};
 	</script>
