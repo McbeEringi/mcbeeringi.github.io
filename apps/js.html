@@ -50,6 +50,7 @@
 		btn[1].onclick=()=>{location.hash=encodeURIComponent(cm.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');console.log('saved!');};
 		btn[2].onclick=()=>navigator.clipboard.writeText(location.href).then(()=>console.log('copied!'));
 		if(location.hash)cm.setValue(decodeURIComponent(location.hash.slice(1)));
+		btn[0].onclick();
 	}
 	</script>
 </body>
