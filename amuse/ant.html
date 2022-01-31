@@ -41,11 +41,11 @@ speed:<input id="spd" type="range" min="1" max="512" step="1" value="128">
 <hr>
 <pre id="log"></pre>
 <canvas id="c"></canvas>
-<script src="../src/taheight.js"></script>
+<script src="../src/ta.js"></script>
 <script>
 let ctx=c.getContext('2d'),pli,colli,rotli,timer,tick;
 ctx.imageSmoothingEnabled=false;
-tainit(ants,rot,grid);
+[ants,rot,grid].forEach(TA.editor);
 const bhex=(l=1)=>new Array(l).fill().map(()=>Math.floor(Math.random()*0xff).toString(16).padStart(2,'0')).join(''),
 init=()=>{
 	try{

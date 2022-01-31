@@ -36,10 +36,10 @@
 	<hr>
 	<img id="diffuse">
 	<div class="ofs"><pre id="out"></pre></div>
-	<script src="../src/taheight.js"></script>
+	<script src="../src/ta.js"></script>
 	<script>
 		'use strict';
-		tainit(il,im);
+		[il,im].forEach(TA.editor);
 		ih.oninput=()=>ih.value=ih.value.replace(/\D+/g,'');
 		const wurl=URL.createObjectURL(new Blob([`
 const dither=(arr,w,m)=>{
