@@ -8,8 +8,10 @@ const TA={
 			ins=y=>x.value=x.value.slice(0,S)+y+x.value.slice(E),del=()=>{if(S==E&&(TA.brkt.includes(x.value.slice(S-1,S+1))||(x.value[S-1]==x.value[S]&&TA.quot.includes(x.value[S]))))cs(S-1,E+1);};
 		(({
 			Tab:()=>{pd();ins('	');cs(S+1);},Backspace:del,Delete:del,Enter:()=>{pd();const s='\n'+x.value.slice(0,S).match(/([	 ]*).*$/)[1]+(TA.brkt.some(y=>x.value[S-1]==y[0])?'	':'');ins(s);cs(S+s.length);},
-			...Object.fromEntries(TA.brkt.map(y=>[[y[0],()=>{ins(x.value.slice(S,E)+y[1]);cs(S);}],[y[1],()=>{if(x.value[S]==y[1]){pd();cs(S+1);}}]]).flat()),
-			...Object.fromEntries(TA.quot.map(y=>[y,()=>{if(x.value[S]==y){pd();cs(S+1);}if(x.value[S-1]!=y){ins(x.value.slice(S,E)+y);cs(S);}}])),
+			...Object.fromEntries([
+				...TA.brkt.map(y=>[[y[0],()=>{ins(x.value.slice(S,E)+y[1]);cs(S);}],[y[1],()=>{if(x.value[S]==y[1]){pd();cs(S+1);}}]]).flat(),
+				...TA.quot.map(y=>[y,()=>{if(x.value[S]==y){pd();cs(S+1);}if(x.value[S-1]!=y){ins(x.value.slice(S,E)+y);cs(S);}}])
+			])
 		})[e.key]||Array)();
 		if(e.defaultPrevented)TA.ah(x);
 	});}
