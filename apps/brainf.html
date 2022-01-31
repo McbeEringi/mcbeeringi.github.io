@@ -73,7 +73,7 @@ type here before run.</textarea><pre id="inpprv"></pre>
 	build: 2103133<br>
 	<iframe src="../amuse/ascii.html" style="border:none;width:100%;" onload="this.height=this.contentWindow.document.body.scrollHeight+24"></iframe>
 
-	<script src="../src/taheight.js"></script>
+	<script src="../src/ta.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jaconv/lib/jaconv.min.js"></script>
 	<script>
 	'use strict';
@@ -86,11 +86,11 @@ type here before run.</textarea><pre id="inpprv"></pre>
 			window.setZeroTimeout=setZeroTimeout;
 	})();
 	btn.onclick=()=>{demain();btn.disabled=true;qbtn.disabled=true;}
-	qbtn.onclick=()=>navigator.clipboard.readText().then(t=>{if(t){src.value=t;taheight(src);skipcb.checked=true;demain();btn.disabled=true;qbtn.disabled=true;}});
+	qbtn.onclick=()=>navigator.clipboard.readText().then(t=>{if(t){src.value=t;TA.ah(src);skipcb.checked=true;demain();btn.disabled=true;qbtn.disabled=true;}});
 	stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
 	const copy=e=>navigator.clipboard.writeText(e.target.textContent).then(()=>{e.target.style.background='#48f';setTimeout(()=>e.target.style.background='',100);});
 	out.onclick=srcout.onclick=copy;
-	tainit(eninp,src,inp);
+	[eninp,src,inp].forEach(TA.editor);
 
 	const romaji=x=>fetch('https://labs.goo.ne.jp/api/morph',{
 		method:'POST',mode:'cors',

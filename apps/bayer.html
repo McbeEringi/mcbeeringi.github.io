@@ -40,9 +40,10 @@ return lum*17>bayer[p[0]%4+p[1]%4*4];</textarea><br>
 	<video src="badapple.mp4" controls id="v"></video><br>
 	<button type="button" class="button" id="b">full screen</button><br>
 	<div class="ofs"><pre id="out"></pre></div>
-	<script src="../src/taheight.js"></script>
+	<script src="../src/ta.js"></script>
 	<script>
 		'use strict';
+		TA.editor(il);
 		if(out.webkitRequestFullscreen)out.requestFullscreen=out.webkitRequestFullscreen;
 		let mstop=false;
 		const wurl=URL.createObjectURL(new Blob([`let cfx,cw,bcfg;
@@ -96,7 +97,7 @@ onmessage=m=>{
 		ih.onchange=sset;
 		ig.onchange=ip.oninput=bset;
 		ifs.oninput=fset;
-		il.oninput=()=>{taheight(il);cset();};
+		il.oninput=cset;
 
 		v.oncanplaythrough=sset;
 		v.onplay=main;
