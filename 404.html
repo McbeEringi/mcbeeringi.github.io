@@ -44,7 +44,8 @@
 				[/worlds/i,'mc'],
 				[/mc\/how.*/i,'mc/how.html'],[/\.io\/how/i,'.io/mc/how'],
 				[/apps\/ant/i,'amuse/ant'],
-				[/apps\/jsbm/i,'amuse/jsbm']
+				[/apps\/jsbm/i,'amuse/jsbm'],
+				[/amuse\/ta/i,'ta/index']
 			].reduce((a,x)=>a.replace(...x),location.href);
 			if(location.href!=url){
 				log.textContent='';
