@@ -7,11 +7,28 @@
 	<link rel="stylesheet" href="../src/style.css">
 </head>
 <body>
+	<style>#ta{width:100%;white-space:pre;}</style>
 	<textarea class="input" id="ta"></textarea><br>
 	<a href="../src/ta.js">TA.js</a>
 	<script src="../src/ta.js"></script>
 	<script>
 		[ta].forEach(TA.editor);
+		fetch('../src/ta.js').then(x=>x.text()).then(x=>{
+			ta.value=`/*
+
+	TA.ah(HTMLTextAreaElement) -> HTMLTextAreaElement.style.height
+		updates textarea height according to the content.
+
+	TA.sizer(HTMLTextAreaElement) -> undefined
+		add TA.ah() to eventlistner (input) and execute instant.
+
+	TA.editor(HTMLTextAreaElement) -> undefined
+		setup the editor. TA.sizer() is also executed.
+
+*/
+
+`+x;TA.ah(ta);
+		});
 	</script>
 </body>
 </html>
