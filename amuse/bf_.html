@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
+	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title></title>
+	<title>bfgolf new</title>
 	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
 </head>
 <body>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<style>textarea{width:100%;}</style>
-	<textarea id="ta" class="input">Sky: Children of the Light</textarea>
+	<textarea id="inp" class="input">Sky: Children of the Light</textarea>
+	<hr>
+	<label><input type="number" id="chain" class="input" value="10" min="0" max="127" step="1">chained threshold [0~127] less calc <<< less memory</label><br>
 	<button id="btn" class="button">run</button>
+	<hr>
 	<textarea id="out" class="input"></textarea>
 	<pre id="log"></pre>
 	<script>
-		TA.editor(ta);TA.sizer(out);
+		TA.sizer(inp);TA.sizer(out);
+		let ltxt='',lid,clog=console.log;
+		console.log=(...x)=>{cancelIdleCallback(lid);clog(...x);ltxt+=x.map(y=>JSON.stringify(y))+'\n';lid=requestIdleCallback(()=>log.textContent=ltxt);}
 
 		const main=(s,dist)=>{
 			s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
@@ -88,7 +93,7 @@
 
 			return s;
 		};
-		(btn.onclick=()=>{out.value=main(ta.value,10).x;out.value+=out.value.length;TA.ah(out);})();
+		(btn.onclick=()=>{ltxt='';out.value=main(inp.value,chain.value).x;out.value+=out.value.length;TA.ah(out);})();
 	</script>
 </body>
 </html>
