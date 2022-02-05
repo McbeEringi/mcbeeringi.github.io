@@ -7,7 +7,6 @@
 	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
 </head>
 <body>
-	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<style>textarea{width:100%;}</style>
 	<textarea id="inp" class="input">Sky: Children of the Light</textarea>
 	<hr>
@@ -16,6 +15,8 @@
 	<hr>
 	<textarea id="out" class="input"></textarea>
 	<pre id="log"></pre>
+	<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
+	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<script>
 		TA.sizer(inp);TA.sizer(out);
 		let ltxt='',lid,clog=console.log;
