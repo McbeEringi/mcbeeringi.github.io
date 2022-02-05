@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title></title>
+	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
+</head>
+<body>
+	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
+	<style>textarea{width:100%;}</style>
+	<textarea id="ta" class="input">Sky: Children of the Light</textarea>
+	<button id="btn" class="button">run</button>
+	<textarea id="out" class="input"></textarea>
+	<pre id="log"></pre>
+	<script>
+		TA.editor(ta);TA.sizer(out);
+
+		const main=(s,dist)=>{
+			s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
+			console.log(s);
+
+			//create chain:{a:heap,x:raw,i:heap_index}
+			s={
+				...s.reduce((a,x,i)=>{
+					i=a.x.reduce((b,y,j)=>{
+						const p=[Math.abs(y-x),Math.abs(b[0]-x)].map(z=>Math.min(z,256-z));
+						return p[0]<p[1]&&p[0]<=dist?[y,j]:b;
+					},[(x+128)%256,a.x.length])[1];
+					if(a.a[i])a.a[i].push(x);else a.a[i]=[x];
+					a.x[i]=x;a.i.push(i);return a;
+				},{a:[],x:[],i:[]}),
+				x:s
+			};
+
+			//create freq index [...[[pair,pair],priority]]
+			s.freq=Object.entries(new Array(s.i.length-1).fill().reduce((a,x,i)=>{
+					x=s.i.slice(i,i+2);
+					if(x[0]!=x[1]){i=`${Math.min(...x)}_${Math.max(...x)}`;if(a[i])a[i]++;else a[i]=1;}
+					return a;
+				},{}))
+				.sort((a,b)=>Math.sign(b[1]-a[1]))
+				.map(x=>[x[0].split('_').map(y=>+y),x[1]]);
+
+			if(s.freq.length>=2){
+				s.freq={x:s.freq,a:s.freq[0][0],q:[]};
+
+				//solve freq
+				for(let i=1,l;1;i++){
+					l=s.freq.q.length;
+					s.freq.q=[...s.freq.q,...(s.freq.x[i]?[s.freq.x[i]]:[])].map(x=>({
+						tt:()=>0,ff:()=>x,tf(){x[0].reverse();return this.ft();},
+						ft(){
+							if(s.freq.a[0]==x[0][1])s.freq.a.unshift(x[0][0]);
+							else if(s.freq.a[s.freq.a.length-1]==x[0][1])s.freq.a.push(x[0][0]);
+							//else return x;
+						}
+					})[x[0].reduce((a,y)=>s.freq.a.includes(y)?a+'t':a+'f','')]()).filter(x=>x);
+					console.log([s.freq.x[i],s.freq.a,s.freq.q]);
+					if(!s.freq.x[i]&&s.freq.q.length==l)break;
+				}
+				s.freq=[...s.freq.a,...new Array(s.a.length).fill().map((_,i)=>i).filter(x=>!s.freq.a.includes(x))];
+
+				//swap index
+				s.a=s.freq.map(x=>s.a[x]);
+				s.freq=Object.fromEntries(s.freq.map(Array));
+				s.i=s.i.map(x=>s.freq[x]);
+			}
+
+			//find best init loop
+			s.init=new Array(10).fill().map((_,i)=>i+7).reduce((a,i,x)=>{
+				x=s.a.reduce((b,x)=>{
+					x=x[0];x=x<128?[1,x]:[-1,256-x];x[2]=x[1]%i;x[1]=x[1]/i;
+					x=x[1]%1>.5?[x[0],Math.ceil(x[1]),(x[2]-i)*x[0]]:[x[0],Math.floor(x[1]),x[2]*x[0]];
+					b.x+=x[1]+Math.abs(x[2]);b.a.push(x);return b;
+				},{i,x:i,a:[]});
+				console.log(x);return x.x<a.x?x:a;
+			},{x:Infinity});
+
+			//apply init number
+			s.init.a.forEach((x,i)=>s.a[i].unshift(s.a[i][0]-x[2]));
+
+			s.x=s.i.reduce((a,i,x)=>{
+				x=s.a[i][a.i[i]+1]-s.a[i][a.i[i]];x=[x>0,Math.abs(x)];
+				a.a+=(i>a.x?'>':'<').repeat(Math.abs(i-a.x))+(x[0]^x[1]>128?'+':'-').repeat(Math.min(x[1],256-x[1]))+'.';
+				a.i[i]++;a.x=i;return a;
+			},{x:0,a:'+'.repeat(s.init.i)+'['+s.init.a.map(x=>'>'+(x[0]>0?'+':'-').repeat(x[1])).join('')+'<'.repeat(s.init.a.length)+'-]>',i:new Array(s.a.length).fill(0)}).a;
+
+			return s;
+		};
+		(btn.onclick=()=>{out.value=main(ta.value,10).x;out.value+=out.value.length;TA.ah(out);})();
+	</script>
+</body>
+</html>
