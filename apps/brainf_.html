@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi brainf</title>
+	<meta name="description" content="brainf*** encoder & interpreter">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+</head>
+<body>
+	<style>textarea{width:100%;max-height:50vh;font-family:monospace !important;}</style>
+	<h1>brainf***</h1>
+	<hr>
+	<div id="enwrap">
+		<h2>encoder</h2>
+		<textarea class="input" spellcheck="false" placeholder="text">Hello World!</textarea>
+		<label><input class="input" type="number" value="10" min="0" max="127" step="1" placeholder="chained threshold"> [0~127] less calc <<< less memory</label><br>
+		<button class="button">run</button>
+		<textarea class="input button" spellcheck="false" placeholder="brainf***" readonly></textarea>
+	</div>
+	<hr>
+	<div id="dewrap">
+		<h2>decoder</h2>
+		<textarea class="input" spellcheck="false" placeholder="brainf***">++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
+>>>>>++.	H
+<<<<+.		e
++++++++..	ll
++++.		o
+>++.
+>-.		w
+<<.		o
++++.		r
+------.		l
+--------.	d
+>>>----.
+>>++[>+++++<-]>.\n
+<[,.]		input</textarea>
+		<textarea class="input" spellcheck="false" placeholder="ASCII">To use input command,
+type here before run.</textarea>
+		<button class="button">run</button>
+		<pre id="delog"></pre>
+		<textarea class="input button" spellcheck="false" readonly placeholder="text"></textarea>
+	</div>
+
+	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
+	<script>
+		'use strict';
+		const en=enwrap.querySelectorAll('textarea,button,input'),
+			de=dewrap.querySelectorAll('textarea,button,input'),
+			copy=x=>navigator.clipboard.writeText(x),
+			demain=(s,inp)=>{
+				s={s:s.replace(/\/\*.*\*\//g,'').replace(/\/\/[^\n]*\n/g,'\n'),x:Object.fromEntries(Array.from('><+-.,[]',Array))};
+				s={s:Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined),p:0,ps:0,pi:0,m:0,brk:[]};
+				while(1){
+					break;
+				}
+				return s.s;
+			},
+			enmain=(s,dist)=>{
+				s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
+				//create chain:{a:heap,x:raw,i:heap_index}
+				s={
+					...s.reduce((a,x,i)=>{
+						i=a.x.reduce((b,y,j)=>{
+							const p=[Math.abs(y-x),Math.abs(b[0]-x)].map(z=>Math.min(z,256-z));
+							return p[0]<p[1]&&p[0]<=dist?[y,j]:b;
+						},[(x+128)%256,a.x.length])[1];
+						if(a.a[i])a.a[i].push(x);else a.a[i]=[x];
+						a.x[i]=x;a.i.push(i);return a;
+					},{a:[],x:[],i:[]}),
+					x:s
+				};
+				//create freq index [...[[pair,pair],priority]]
+				s.freq=Object.entries(new Array(s.i.length-1).fill().reduce((a,x,i)=>{
+						x=s.i.slice(i,i+2);
+						if(x[0]!=x[1]){i=`${Math.min(...x)}_${Math.max(...x)}`;if(a[i])a[i]++;else a[i]=1;}
+						return a;
+					},{})).sort((a,b)=>Math.sign(b[1]-a[1])).map(x=>[x[0].split('_').map(y=>+y),x[1]]);
+				if(s.freq.length>=2){
+					//solve freq
+					s.freq={x:null,q:s.freq.slice(1),a:s.freq[0][0]};
+					while(1){
+						s.freq.x=Object.fromEntries(s.freq.a.map(Array));
+						s.freq.x=s.freq.q.reduce((a,x,i)=>({
+								tt:()=>a,ff:()=>a,tf(){x[0].reverse();return this.ft();},
+								ft(d=s.freq.x[x[0][1]],p=(s.freq.a.length-1)/2>d){
+									d=(p?d+1:s.freq.a.length-d)/x[1];//console.log(x,d);
+									return d<a.d?{i,d,p}:a;
+								}
+							})[x[0].reduce((a,y)=>s.freq.a.includes(y)?a+'t':a+'f','')](),{d:Infinity,_:true});
+						if(s.freq.x._)break;
+						s.freq.a[s.freq.x.p?'unshift':'push'](s.freq.q.splice(s.freq.x.i,1)[0][0][0]);
+						console.log(s.freq.a);
+					}
+					//swap index
+					s.a=s.freq.a.map(x=>s.a[x]);
+					s.freq=Object.fromEntries(s.freq.a.map(Array));
+					s.i=s.i.map(x=>s.freq[x]);
+				}
+				//find best init loop
+				s.init=new Array(10).fill().map((_,i)=>i+7).reduce((a,i,x)=>{
+					x=s.a.reduce((b,x)=>{
+						x=x[0];x=x<128?[1,x]:[-1,256-x];x[2]=x[1]%i;x[1]=x[1]/i;
+						x=x[1]%1>.5?[x[0],Math.ceil(x[1]),(x[2]-i)*x[0]]:[x[0],Math.floor(x[1]),x[2]*x[0]];
+						b.x+=x[1]+Math.abs(x[2]);b.a.push(x);return b;
+					},{i,x:i,a:[]});
+					console.log(x);return x.x<a.x?x:a;
+				},{x:Infinity});
+				//apply init number
+				s.init.a.forEach((x,i)=>s.a[i].unshift(s.a[i][0]-x[2]));
+				//generate code
+				s.x=s.i.reduce((a,i,x)=>{
+					x=s.a[i][a.i[i]+1]-s.a[i][a.i[i]];x=[x>0,Math.abs(x)];
+					a.a+=(i>a.x?'>':'<').repeat(Math.abs(i-a.x))+(x[0]^x[1]>128?'+':'-').repeat(Math.min(x[1],256-x[1]))+'.';
+					a.i[i]++;a.x=i;return a;
+				},{x:0,a:'+'.repeat(s.init.i)+'['+s.init.a.map(x=>'>'+(x[0]>0?'+':'-').repeat(x[1])).join('')+'<'.repeat(s.init.a.length)+'-]>',i:new Array(s.a.length).fill(0)}).a;
+				return s.x;
+			};
+
+			[...document.body.querySelectorAll('textarea')].forEach(TA.sizer);
+			en[2].onclick=()=>{en[3].value=enmain(en[0].value,en[1].value);en[3].value+=en[3].value.length;TA.ah(en[3]);};
+			en[3].onclick=()=>copy(en[3].value);
+			de[2].onclick=()=>{de[3].value=demain(de[0].value,de[1].value);};
+			de[3].onclick=()=>copy(de[3].value);
+	</script>
+</body>
+</html>

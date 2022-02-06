@@ -18,13 +18,13 @@
 	<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<script>
+		'use strict';
 		TA.sizer(inp);TA.sizer(out);
 		let ltxt='',lid,clog=console.log;
 		console.log=(...x)=>{cancelIdleCallback(lid);clog(...x);ltxt+=x.map(y=>JSON.stringify(y))+'\n';lid=requestIdleCallback(()=>log.textContent=ltxt);}
 
-		const main=(s,dist)=>{
+		const enmain=(s,dist)=>{
 			s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
-
 			//create chain:{a:heap,x:raw,i:heap_index}
 			s={
 				...s.reduce((a,x,i)=>{
@@ -37,16 +37,12 @@
 				},{a:[],x:[],i:[]}),
 				x:s
 			};
-
 			//create freq index [...[[pair,pair],priority]]
 			s.freq=Object.entries(new Array(s.i.length-1).fill().reduce((a,x,i)=>{
 					x=s.i.slice(i,i+2);
 					if(x[0]!=x[1]){i=`${Math.min(...x)}_${Math.max(...x)}`;if(a[i])a[i]++;else a[i]=1;}
 					return a;
-				},{}))
-				.sort((a,b)=>Math.sign(b[1]-a[1]))
-				.map(x=>[x[0].split('_').map(y=>+y),x[1]]);
-
+				},{})).sort((a,b)=>Math.sign(b[1]-a[1])).map(x=>[x[0].split('_').map(y=>+y),x[1]]);
 			if(s.freq.length>=2){
 				//solve freq
 				s.freq={x:null,q:s.freq.slice(1),a:s.freq[0][0]};
@@ -55,8 +51,7 @@
 					s.freq.x=s.freq.q.reduce((a,x,i)=>({
 							tt:()=>a,ff:()=>a,tf(){x[0].reverse();return this.ft();},
 							ft(d=s.freq.x[x[0][1]],p=(s.freq.a.length-1)/2>d){
-								d=(p?d+1:s.freq.a.length-d)/x[1];
-								//console.log(x,d);
+								d=(p?d+1:s.freq.a.length-d)/x[1];//console.log(x,d);
 								return d<a.d?{i,d,p}:a;
 							}
 						})[x[0].reduce((a,y)=>s.freq.a.includes(y)?a+'t':a+'f','')](),{d:Infinity,_:true});
@@ -64,13 +59,11 @@
 					s.freq.a[s.freq.x.p?'unshift':'push'](s.freq.q.splice(s.freq.x.i,1)[0][0][0]);
 					console.log(s.freq.a);
 				}
-
 				//swap index
 				s.a=s.freq.a.map(x=>s.a[x]);
 				s.freq=Object.fromEntries(s.freq.a.map(Array));
 				s.i=s.i.map(x=>s.freq[x]);
 			}
-
 			//find best init loop
 			s.init=new Array(10).fill().map((_,i)=>i+7).reduce((a,i,x)=>{
 				x=s.a.reduce((b,x)=>{
@@ -80,19 +73,17 @@
 				},{i,x:i,a:[]});
 				console.log(x);return x.x<a.x?x:a;
 			},{x:Infinity});
-
 			//apply init number
 			s.init.a.forEach((x,i)=>s.a[i].unshift(s.a[i][0]-x[2]));
-
+			//generate code
 			s.x=s.i.reduce((a,i,x)=>{
 				x=s.a[i][a.i[i]+1]-s.a[i][a.i[i]];x=[x>0,Math.abs(x)];
 				a.a+=(i>a.x?'>':'<').repeat(Math.abs(i-a.x))+(x[0]^x[1]>128?'+':'-').repeat(Math.min(x[1],256-x[1]))+'.';
 				a.i[i]++;a.x=i;return a;
 			},{x:0,a:'+'.repeat(s.init.i)+'['+s.init.a.map(x=>'>'+(x[0]>0?'+':'-').repeat(x[1])).join('')+'<'.repeat(s.init.a.length)+'-]>',i:new Array(s.a.length).fill(0)}).a;
-
-			return s;
+			return s.x;
 		};
-		(btn.onclick=()=>{ltxt='';out.value=main(inp.value,chain.value).x;out.value+=out.value.length;TA.ah(out);})();
+		(btn.onclick=()=>{ltxt='';out.value=enmain(inp.value,chain.value);out.value+=out.value.length;TA.ah(out);})();
 	</script>
 </body>
 </html>
