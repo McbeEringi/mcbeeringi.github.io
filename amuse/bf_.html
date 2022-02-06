@@ -48,26 +48,25 @@
 				.map(x=>[x[0].split('_').map(y=>+y),x[1]]);
 
 			if(s.freq.length>=2){
-				s.freq={x:s.freq,a:s.freq[0][0],q:[]};
-
 				//solve freq
-				for(let i=1,l;1;i++){
-					l=s.freq.q.length;
-					s.freq.q=[...s.freq.q,...(s.freq.x[i]?[s.freq.x[i]]:[])].map(x=>({
-						tt:()=>0,ff:()=>x,tf(){x[0].reverse();return this.ft();},
-						ft(){
-							if(s.freq.a[0]==x[0][1])s.freq.a.unshift(x[0][0]);
-							else if(s.freq.a[s.freq.a.length-1]==x[0][1])s.freq.a.push(x[0][0]);
-							//else return x;
-						}
-					})[x[0].reduce((a,y)=>s.freq.a.includes(y)?a+'t':a+'f','')]()).filter(x=>x);
-					console.log([s.freq.x[i],s.freq.a,s.freq.q]);
-					if(!s.freq.x[i]&&s.freq.q.length==l)break;
+				s.freq={x:null,q:s.freq.slice(1),a:s.freq[0][0]};
+				while(1){
+					s.freq.x=Object.fromEntries(s.freq.a.map(Array));
+					s.freq.x=s.freq.q.reduce((a,x,i)=>({
+							tt:()=>a,ff:()=>a,tf(){x[0].reverse();return this.ft();},
+							ft(d=s.freq.x[x[0][1]],p=(s.freq.a.length-1)/2>d){
+								d=(p?d+1:s.freq.a.length-d)/x[1];
+								//console.log(x,d);
+								return d<a.d?{i,d,p}:a;
+							}
+						})[x[0].reduce((a,y)=>s.freq.a.includes(y)?a+'t':a+'f','')](),{d:Infinity,_:true});
+					if(s.freq.x._)break;
+					s.freq.a[s.freq.x.p?'unshift':'push'](s.freq.q.splice(s.freq.x.i,1)[0][0][0]);
+					console.log(s.freq.a);
 				}
-				s.freq=[...s.freq.a,...new Array(s.a.length).fill().map((_,i)=>i).filter(x=>!s.freq.a.includes(x))];
 
 				//swap index
-				s.a=s.freq.map(x=>s.a[x]);
+				s.a=s.freq.a.map(x=>s.a[x]);
 				s.freq=Object.fromEntries(s.freq.map(Array));
 				s.i=s.i.map(x=>s.freq[x]);
 			}
