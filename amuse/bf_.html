@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
 </head>
 <body>
-	<style>textarea{width:100%;}</style>
+	<style>textarea{width:100%;max-height:100vh;}</style>
 	<textarea id="inp" class="input">Sky: Children of the Light</textarea>
 	<hr>
 	<label><input type="number" id="chain" class="input" value="10" min="0" max="127" step="1">chained threshold [0~127] less calc <<< less memory</label><br>
@@ -67,7 +67,7 @@
 
 				//swap index
 				s.a=s.freq.a.map(x=>s.a[x]);
-				s.freq=Object.fromEntries(s.freq.map(Array));
+				s.freq=Object.fromEntries(s.freq.a.map(Array));
 				s.i=s.i.map(x=>s.freq[x]);
 			}
 
