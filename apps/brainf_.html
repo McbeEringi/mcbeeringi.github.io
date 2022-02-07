@@ -14,7 +14,7 @@
 	<link rel="stylesheet" href="../src/style.css">
 </head>
 <body>
-	<style>textarea{width:100%;max-height:50vh;font-family:monospace !important;}</style>
+	<style>textarea{width:100%;max-height:50vh;font-family:monospace !important;}.input.button{text-align:initial;}</style>
 	<h1>brainf***</h1>
 	<hr>
 	<div id="enwrap">
@@ -45,7 +45,7 @@
 type here before run.</textarea>
 		<button class="button">run</button>
 		<pre id="delog"></pre>
-		<textarea class="input button" spellcheck="false" readonly placeholder="text"></textarea>
+		<textarea class="input button" spellcheck="false" readonly placeholder="text" style="white-space:pre;"></textarea>
 	</div>
 
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
@@ -56,11 +56,26 @@ type here before run.</textarea>
 			copy=x=>navigator.clipboard.writeText(x),
 			demain=(s,inp)=>{
 				s={s:s.replace(/\/\*.*\*\//g,'').replace(/\/\/[^\n]*\n/g,'\n'),x:Object.fromEntries(Array.from('><+-.,[]',Array))};
-				s={s:Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined),p:0,ps:0,pi:0,m:0,brk:[]};
+				s={s:Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined),p:0,ps:0,pi:0,m:[0],l:[],x:[]};
+				console.log(s.s.map(x=>'><+-.,[]'[x]).join(''))
+				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256);
 				while(1){
-					break;
+					if(s.s[s.ps]==undefined)break;
+					[
+						()=>{s.p++;if(s.m[s.p]==undefined)s.m[s.p]=0;},
+						()=>{if(s.p>0)s.p--;else console.warn(s.ps+': invailed "<". canceled.\n');},
+						()=>{s.m[s.p]++;s.m[s.p]&=0xff;},
+						()=>{s.m[s.p]--;s.m[s.p]&=0xff;},
+						()=>s.x.push(s.m[s.p]),
+						()=>{if(inp[s.pi]==undefined){s.m[s.p]=0;console.warn(s.ps+': input empty. use 0 as input.\n');}else s.m[s.p]=inp[s.pi++];},
+						()=>s.l.push(s.ps),
+						()=>{if(s.l.length){if(s.m[s.p]==0)s.l.pop();else s.ps=s.l[s.l.length-1];}else console.warn(s.ps+': invailed "]". skipped.\n');}
+					][s.s[s.ps]]();
+					s.ps++;
 				}
-				return s.s;
+				s.x=String.fromCharCode(...s.x);
+				console.log(s);
+				return s.x;
 			},
 			enmain=(s,dist)=>{
 				s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
@@ -126,7 +141,7 @@ type here before run.</textarea>
 			[...document.body.querySelectorAll('textarea')].forEach(TA.sizer);
 			en[2].onclick=()=>{en[3].value=enmain(en[0].value,en[1].value);en[3].value+=en[3].value.length;TA.ah(en[3]);};
 			en[3].onclick=()=>copy(en[3].value);
-			de[2].onclick=()=>{de[3].value=demain(de[0].value,de[1].value);};
+			de[2].onclick=()=>{de[3].value=demain(de[0].value,de[1].value);TA.ah(de[3]);};
 			de[3].onclick=()=>copy(de[3].value);
 	</script>
 </body>
