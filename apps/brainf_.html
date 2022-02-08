@@ -56,26 +56,16 @@ type here before run.</textarea>
 			copy=x=>navigator.clipboard.writeText(x),
 			demain=(s,inp)=>{
 				s={s:s.replace(/\/\*.*\*\//g,'').replace(/\/\/[^\n]*\n/g,'\n'),x:Object.fromEntries(Array.from('><+-.,[]',Array))};
-				s={s:Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined),p:0,ps:0,pi:0,m:[0],l:[],x:[]};
-				console.log(s.s.map(x=>'><+-.,[]'[x]).join(''))
 				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256);
-				while(1){
-					if(s.s[s.ps]==undefined)break;
-					[
-						()=>{s.p++;if(s.m[s.p]==undefined)s.m[s.p]=0;},
-						()=>{if(s.p>0)s.p--;else console.warn(s.ps+': invailed "<". canceled.\n');},
-						()=>{s.m[s.p]++;s.m[s.p]&=0xff;},
-						()=>{s.m[s.p]--;s.m[s.p]&=0xff;},
-						()=>s.x.push(s.m[s.p]),
-						()=>{if(inp[s.pi]==undefined){s.m[s.p]=0;console.warn(s.ps+': input empty. use 0 as input.\n');}else s.m[s.p]=inp[s.pi++];},
-						()=>s.l.push(s.ps),
-						()=>{if(s.l.length){if(s.m[s.p]==0)s.l.pop();else s.ps=s.l[s.l.length-1];}else console.warn(s.ps+': invailed "]". skipped.\n');}
-					][s.s[s.ps]]();
-					s.ps++;
-				}
-				s.x=String.fromCharCode(...s.x);
-				console.log(s);
-				return s.x;
+				s=Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined).reduce((a,x)=>{
+					if(a.x!=x){
+						if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
+						a.x=x;a.i=1;
+					}else a.i++;
+					if(a.x>=4)a.s+=['s.push(m[p]);','m[p]=i[pi];','while(m[p]){','}'][a.x-4];
+					return a;
+				},{s:`const m=new Uint8Array(30000),i=[${inp}],s=[];let p=0,pi=0;`,x:Infinity,i:0}).s;
+				return Function(s+'return String.fromCharCode(...s);')();
 			},
 			enmain=(s,dist)=>{
 				s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
