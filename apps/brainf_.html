@@ -86,6 +86,15 @@ type here before run.</textarea>
 				}).s+'s(1);console.log("Done!")';
 				console.log(s);
 				worker.postMessage(s);
+				/*s=Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined).reduce((a,x)=>{
+					if(a.x!=x){
+						if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
+						a.x=x;a.i=1;
+					}else a.i++;
+					if(a.x>=4)a.s+=['s.push(m[p]);','m[p]=i[pi];','while(m[p]){','}'][a.x-4];
+					return a;
+				},{s:`const m=new Uint8Array(30000),i=[${inp}],s=[];let p=0,pi=0;`,x:Infinity,i:0}).s;
+				return Function(s+'return String.fromCharCode(...s);')();*/
 			},
 			enmain=(s,dist)=>{
 				s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
