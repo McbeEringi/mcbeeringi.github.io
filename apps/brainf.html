@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
 	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
 
@@ -15,39 +15,21 @@
 	<link rel="stylesheet" href="../src/toggle.css">
 </head>
 <body>
-	<style>
-		textarea{width:100%;}
-		#out,#srcout{min-height:70px;overflow:scroll;background:#333;line-height:14px;padding:4px;user-select:text;-webkit-user-select:text;}
-		#srcout{white-space:pre-wrap;max-height:560px;}
-		.wrapper>*{padding:4px;margin-top:0;font-size:12px;word-break:break-all;}
-		#mv{height:36px;overflow:scroll;white-space:nowrap;background:#333;position:relative;margin:2px;}
-		#mv div,#mv p{width:32px;height:32px;margin:2px;border-radius:8px;}
-		#mv div{position:absolute;top:0px;left:0;font-size:8px;background:var(--b0);z-index:1;/*transition:.05s;*/}
-		#mv p{line-height:32px;vertical-align:top;text-align:center;display:inline-block;box-shadow:0 0 0 1px #888 inset;font-size:16px;z-index:2;position:relative;}
-		.wrapper,.wrapper>textarea{position:relative;}.wrapper>pre{position:absolute;top:0;left:0;right:0;white-space:pre-wrap;border:1px solid #0000;pointer-events:none;color:#0000;}
-		.caret{color:#333;background:#fff;border-radius:1px;}
-		*::-webkit-scrollbar{display:none;}*{-ms-overflow-style:none;scrollbar-width:none;}
-		#skipcb:checked+*{display:none;}
-	</style>
-
+	<style>textarea{width:100%;max-height:100vh;font-family:monospace !important;}.input.button{text-align:initial;}</style>
 	<h1>brainf***</h1>
+	<a href="brainf_.html">legacy</a>
 	<hr>
-	<h2>encoder</h2>
-	<pre id="srcout"></pre>
-	<button class="button" onclick="srcout.textContent=enmain(eninp.value,mmind.value)">run</button>  <button class="button" onclick="romaji(eninp.value).then(x=>srcout.textContent=enmain(x,mmind.value))">run (ja)</button>
-	<label>chained threshold: <input class="input" type="number" id="mmind" value="10" min="0" max="127" step="1"> [0~127] less calc <<< less memory</label><br>
-	<br>
-	inp: <button class="button" onclick="eninp.select();">select all</button><br>
-	<textarea class="input" id="eninp">Hello World!</textarea><br>
-	morphed by <a href="https://labs.goo.ne.jp/api/jp/morphological-analysis/">goo 形態素解析API</a><br>
+	<div id="enwrap">
+		<h2>encoder</h2>
+		<textarea class="input" spellcheck="false" placeholder="text">Hello World!</textarea>
+		<label><input class="input" type="number" value="10" min="0" max="127" step="1" placeholder="chained threshold"> [0~127] less calc <<< less memory</label><br>
+		<button class="button">run</button>
+		<textarea class="input button" spellcheck="false" placeholder="brainf***" readonly></textarea>
+	</div>
 	<hr>
-	<h2>interpreter</h2>
-	<div id="mv"><div></div><p>0</p></div>
-	<pre id="out"></pre>
-	<button class="button" id="btn">run</button> <button class="button" id="stopb">stop</button> <label for="skipcb">skip:</label><input type="checkbox" id="skipcb" class="toggle"> <span>speed:<input type="range" id="spd" min="0" max="200" value="20"></span> <br>
-	src: <button class="button" id="qbtn">paste &amp; run</button> <button class="button" onclick="src.select();">select all</button>
-	<div class="wrapper">
-	<textarea class="input" id="src" >++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
+	<div id="dewrap">
+		<h2>decoder</h2>
+		<textarea class="input" spellcheck="false" placeholder="brainf***">++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
 >>>>>++.	H
 <<<<+.		e
 +++++++..	ll
@@ -59,180 +41,134 @@
 ------.		l
 --------.	d
 >>>----.
->>++[>+++++<-]>.	return
-<[,.]			input</textarea><pre id="srcprv"></pre>
+>>++[>+++++<-]>.\n
+<+[,.]		input</textarea>
+		<textarea class="input" spellcheck="false" placeholder="ASCII">To use input command,
+type here before run.</textarea>
+		<button class="button">run</button> <button class="button">discard</button> <label>memory:<input type="checkbox" class="toggle" checked></label>
+		<textarea class="input" spellcheck="false" placeholder="info" readonly style="white-space:pre;"></textarea>
+		<textarea class="input button" spellcheck="false" placeholder="text" readonly style="white-space:pre;height:100vh;"></textarea>
 	</div>
-	<br>
-	","inp: <button class="button" onclick="inp.select();">select all</button>
-	<div class="wrapper">
-	<textarea class="input" id="inp">To use input command,
-type here before run.</textarea><pre id="inpprv"></pre>
-	</div>
-	<hr>
-	<pre id="log"></pre>
-	build: 2103133<br>
-	<iframe src="../amuse/ascii.html" style="border:none;width:100%;" onload="this.height=this.contentWindow.document.body.scrollHeight+24"></iframe>
 
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/jaconv/lib/jaconv.min.js"></script>
 	<script>
-	'use strict';
-	//https://dbaron.org/log/20100309-faster-timeouts
-	(function(){
-			var timeouts=[],messageName='zero-timeout-message';
-			function setZeroTimeout(fn){timeouts.push(fn);window.postMessage(messageName,"*");}
-			function handleMessage(event){if(event.source==window&&event.data==messageName){event.stopPropagation();if(timeouts.length>0){var fn=timeouts.shift();fn();}}}
-			window.addEventListener("message",handleMessage,true);
-			window.setZeroTimeout=setZeroTimeout;
-	})();
-	btn.onclick=()=>{demain();btn.disabled=true;qbtn.disabled=true;}
-	qbtn.onclick=()=>navigator.clipboard.readText().then(t=>{if(t){src.value=t;TA.ah(src);skipcb.checked=true;demain();btn.disabled=true;qbtn.disabled=true;}});
-	stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
-	const copy=e=>navigator.clipboard.writeText(e.target.textContent).then(()=>{e.target.style.background='#48f';setTimeout(()=>e.target.style.background='',100);});
-	out.onclick=srcout.onclick=copy;
-	[eninp,src,inp].forEach(TA.editor);
-
-	const romaji=x=>fetch('https://labs.goo.ne.jp/api/morph',{
-		method:'POST',mode:'cors',
-		headers:{'Accept':'application/json','Content-Type':'application/json'},
-		body:JSON.stringify({
-			app_id:'57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3',
-			sentence:x
-		})
-	}).then(r=>r.json()).then(x=>x.word_list.reduce((a,x)=>a.concat(x),[]).map(x=>(x[2]&&!['Alphabet','Number','Roman'].includes(x[1]))?jaconv.toHebon(jaconv.toHiragana(x[2])).toLowerCase():jaconv.toHanAscii(x[0])).join('')),
-	demain=()=>{
-		var s,p,ps,pi,m,l,tmp;
-		const render=all=>{
-			mv.firstChild.style.left=`${36*p}px`;
-			while(mv.childNodes.length-1<m.length)mv.appendChild(document.createElement('p'));
-			if(all)mv.childNodes.forEach((e,i)=>{if(i)e.textContent=m[i-1]});
-			else mv.childNodes[p+1].textContent=m[p];
-			srcprv.innerHTML=src.value.substring(0,ps-1)+(src.value[ps-1]?`<span class="caret">${src.value[ps-1]}</span>`:'');
-			inpprv.innerHTML=inp.value.substring(0,pi-1)+(inp.value[pi-1]?`<span class="caret">${inp.value[pi-1]}</span>`:'');
-		},
-		post=()=>{
-			render(true);
-			btn.disabled=false;qbtn.disabled=false;stopb.disabled=false;skipcb.checked=false;
-			src.readOnly=false;inp.readOnly=false;srcprv.style.display='none';inpprv.style.display='none';
-		},
-		core=()=>{
-			tmp=null;
-			switch(s[ps]){
-				case'>':p++;if(m[p]==undefined)m[p]=0;ps++;break;
-				case'<':if(p>0)p--;else{log.textContent+=ps+': invailed "<". canceled.\n';stopb.disabled=true;}ps++;break;
-				case'+':m[p]++;m[p]&=0xff;ps++;break;
-				case'-':m[p]--;m[p]&=0xff;ps++;break;
-				case'.':out.textContent+=String.fromCharCode(m[p]);ps++;break;
-				case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;log.textContent+=ps+': input empty. use 0 as input.\n';ps++;}else if(tmp>255)pi++;else{m[p]=tmp;pi++;ps++;}tmp=null;break;
-				case'[':l.push(ps);ps++;break;
-				case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.textContent+=ps+': invailed "]". skipped.\n';ps++;}break;
-				default:ps++;tmp=1;break;
-			}
-			if(!tmp&&!skipcb.checked)render();
-			if(ps==s.length||stopb.disabled==true)setTimeout(post,spd.value);
-			else{if(skipcb.checked||tmp){try{core();}catch(e){render(!tmp);setZeroTimeout(core);}}else setTimeout(core,spd.value);}
-		};
-		mv.innerHTML='<div></div><p>0</p>';
-		out.textContent='';log.textContent='';
-		src.readOnly=true;inp.readOnly=true;srcprv.style.display='block';inpprv.style.display='block';
-		s=src.value.split('');p=0;ps=0;pi=0;m=[0];l=[];
-		if(s.length)core();else{log.textContent+='! : no src found.\n';setTimeout(post,spd.value);}
-	},
-	enmain=(s,md)=>{
-		const round=x=>-Math.sign(x)*Math.round(-Math.abs(x)),
-		freq=inp=>{
-			const joinPair=x=>{
-				var indm=x.reduce((a,y)=>Math.max(y[0],y[1],a),0);
-				console.log('joinPair',x,indm);
-				var ind=new Array(indm+1).fill(null),s=new Array(indm).concat(x[0]);
-				x.shift();ind[s[indm]]=indm;ind[s[indm+1]]=indm+1;
-				var flag=true;
-				while(flag){
-					flag=false;
-					x=x.map((e,i)=>{
-						if(ind[e[0]]&&!ind[e[1]]){
-							if(!(s[ind[e[0]]+1]+1)){s[ind[e[0]]+1]=e[1];ind[e[1]]=ind[e[0]]+1;}//ok
-							else if(!(s[ind[e[0]]-1]+1)){s[ind[e[0]]-1]=e[1];ind[e[1]]=ind[e[0]]-1;}//ok
-						}//doom
-						else if(!ind[e[0]]&&ind[e[1]]){
-							if(!(s[ind[e[1]]+1]+1)){s[ind[e[1]]+1]=e[0];ind[e[0]]=ind[e[1]]+1;}//ok
-							else if(!(s[ind[e[1]]-1]+1)){s[ind[e[1]]-1]=e[0];ind[e[0]]=ind[e[1]]-1;}//ok
-						}//doom
-						else if(!ind[e[0]]&&!ind[e[1]])return e;//pass
-						//else if(ind[e[0]]&&ind[e[1]])//doom
-						flag=true;console.log(e,s,ind);
-					});
-					x=x.filter(y=>y);console.log(x);
+		'use strict';
+		let worker,t0;
+		const wurl=URL.createObjectURL(new Blob(['onmessage=m=>Function(m.data)();'])),
+			en=enwrap.querySelectorAll('textarea,button,input'),
+			de=dewrap.querySelectorAll('textarea,button,input'),
+			wset=()=>{
+				if(worker)worker.terminate();
+				worker=Object.assign(new Worker(wurl),{
+					onmessage:m=>{
+						m=m.data;
+						[
+							()=>{de[6].value+=String.fromCharCode(...m[1]);de[6].scrollTop=de[6].scrollHeight;},
+							()=>de[5].value=`${performance.now()-t0}ms\n${Array.from(m[1],x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[2])}  ^`,
+							()=>de[5].value='Done! '+de[5].value
+						][m[0]]()
+					}
+				});
+			},
+			copy=x=>navigator.clipboard.writeText(x),
+			demain=(s='',inp='',mem=true)=>{
+				s={s,x:Object.fromEntries(Array.from('><+-.,[]',Array))};
+				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256);
+				s=Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined).reduce((a,x)=>{
+					if(a.x!=x){
+						if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
+						a.x=x;a.i=1;
+					}else a.i++;
+					if(a.x>=4)a.s+=['x.push(m[p]);s();','m[p]=n[q++];','while(m[p]){','}'][a.x-4];
+					return a;
+				},{
+					s:`let p=0,q=0,x=[];const m=new Uint8Array(30000),n=new Uint8Array([${inp}]),s=y=>{if(x.length>=256||y){postMessage([0,x]);x=[];`+(mem?'postMessage([1,m,p]);}if(y){':'}if(y){postMessage([1,m,p]);')+'postMessage([2]);}};',
+					x:Infinity,i:0
+				}).s+'s(1);console.log("Done!")';
+				console.log(s);
+				worker.postMessage(s);
+				/*s={s:s.replace(/\/\*.*\*\//g,'').replace(/\/\/[^\n]*\n/g,'\n'),x:Object.fromEntries(Array.from('><+-.,[]',Array))};
+				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256);
+				s=Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined).reduce((a,x)=>{
+					if(a.x!=x){
+						if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
+						a.x=x;a.i=1;
+					}else a.i++;
+					if(a.x>=4)a.s+=['s.push(m[p]);','m[p]=i[pi];','while(m[p]){','}'][a.x-4];
+					return a;
+				},{s:`const m=new Uint8Array(30000),i=[${inp}],s=[];let p=0,pi=0;`,x:Infinity,i:0}).s;
+				return Function(s+'return String.fromCharCode(...s);')();*/
+			},
+			enmain=(s,dist)=>{
+				s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
+				//create chain:{a:heap,x:raw,i:heap_index}
+				s={
+					...s.reduce((a,x,i)=>{
+						i=a.x.reduce((b,y,j)=>{
+							const p=[Math.abs(y-x),Math.abs(b[0]-x)].map(z=>Math.min(z,256-z));
+							return p[0]<p[1]&&p[0]<=dist?[y,j]:b;
+						},[(x+128)%256,a.x.length])[1];
+						if(a.a[i])a.a[i].push(x);else a.a[i]=[x];
+						a.x[i]=x;a.i.push(i);return a;
+					},{a:[],x:[],i:[]}),
+					x:s
+				};
+				//create freq index [...[[pair,pair],priority]]
+				s.freq=Object.entries(new Array(s.i.length-1).fill().reduce((a,x,i)=>{
+						x=s.i.slice(i,i+2);
+						if(x[0]!=x[1]){i=`${Math.min(...x)}_${Math.max(...x)}`;if(a[i])a[i]++;else a[i]=1;}
+						return a;
+					},{})).sort((a,b)=>Math.sign(b[1]-a[1])).map(x=>[x[0].split('_').map(y=>+y),x[1]]);
+				if(s.freq.length>=2){
+					//solve freq
+					s.freq={x:null,q:s.freq.slice(1),a:s.freq[0][0]};
+					while(1){
+						s.freq.x=Object.fromEntries(s.freq.a.map(Array));
+						s.freq.x=s.freq.q.reduce((a,x,i)=>({
+								tt:()=>a,ff:()=>a,tf(){x[0].reverse();return this.ft();},
+								ft(d=s.freq.x[x[0][1]],p=(s.freq.a.length-1)/2>d){
+									d=(p?d+1:s.freq.a.length-d)/x[1];//console.log(x,d);
+									return d<a.d?{i,d,p}:a;
+								}
+							})[x[0].reduce((a,y)=>s.freq.a.includes(y)?a+'t':a+'f','')](),{d:Infinity,_:true});
+						if(s.freq.x._)break;
+						s.freq.a[s.freq.x.p?'unshift':'push'](s.freq.q.splice(s.freq.x.i,1)[0][0][0]);
+						console.log(s.freq.a);
+					}
+					//swap index
+					s.a=s.freq.a.map(x=>s.a[x]);
+					s.freq=Object.fromEntries(s.freq.a.map(Array));
+					s.i=s.i.map(x=>s.freq[x]);
 				}
-				return [s.filter(e=>e+1),x];
-			}
-			var inpm=[...new Array(Math.max(...inp)+1).keys()];
-			if(inpm.length<3){console.log('freq skipped',inpm);return inpm;}
-			var arr=inp.map((x,i,c)=>{if(c[i+1])return[x,c[i+1]];})
-				.filter(x=>x&&x[0]!=x[1]).map(x=>x[0]>x[1]?[x[1],x[0]]:x);
-			//freq sort
-			var fq={};arr.forEach(x=>fq[x]=0);
-			var s=arr.filter(x=>++fq[x]==1);
-			s.sort((a,b)=>fq[b]-fq[a]);
-			//arr
-			var tmp,out=[];
-			while(true){
-				tmp=joinPair(s);out=out.concat(tmp[0]);s=tmp[1];
-				if(tmp[1].length==0)break;
-			}
-			out=out.concat(inpm.filter(x=>out.indexOf(x)==-1));console.log('freq',out);
-			return out;
-		},
-		slm=arr=>{
-			var m=Number.POSITIVE_INFINITY,s,tmp;
-			for(var i=4;i<=16;i++){
-				tmp=arr.map(x=>Math.abs(x>127?256-x:x)).map(x=>round(x/i)+x%i).reduce((a,b)=>a+b)+i;
-				if(tmp<m){m=tmp;s=i;}console.log(i,tmp);
-			}
-			console.log('slm',s);
-			return s;
-		};
+				//find best init loop
+				s.init=new Array(10).fill().map((_,i)=>i+7).reduce((a,i,x)=>{
+					x=s.a.reduce((b,x)=>{
+						x=x[0];x=x<128?[1,x]:[-1,256-x];x[2]=x[1]%i;x[1]=x[1]/i;
+						x=x[1]%1>.5?[x[0],Math.ceil(x[1]),(x[2]-i)*x[0]]:[x[0],Math.floor(x[1]),x[2]*x[0]];
+						b.x+=x[1]+Math.abs(x[2]);b.a.push(x);return b;
+					},{i,x:i,a:[]});
+					console.log(x);return x.x<a.x?x:a;
+				},{x:Infinity});
+				//apply init number
+				s.init.a.forEach((x,i)=>s.a[i].unshift(s.a[i][0]-x[2]));
+				//generate code
+				s.x=s.i.reduce((a,i,x)=>{
+					x=s.a[i][a.i[i]+1]-s.a[i][a.i[i]];x=[x>0,Math.abs(x)];
+					a.a+=(i>a.x?'>':'<').repeat(Math.abs(i-a.x))+(x[0]^x[1]>128?'+':'-').repeat(Math.min(x[1],256-x[1]))+'.';
+					a.i[i]++;a.x=i;return a;
+				},{x:0,a:'+'.repeat(s.init.i)+'['+s.init.a.map(x=>'>'+(x[0]>0?'+':'-').repeat(x[1])).join('')+'<'.repeat(s.init.a.length)+'-]>',i:new Array(s.a.length).fill(0)}).a;
+				return s.x;
+			};
 
-		s=s.split('').map(x=>x.charCodeAt(0)).filter(x=>x<256);console.log('raw',s);
-		var ind=[0],clm=[[s[0]]],tmp={};
-		s.slice(1).forEach((x,i)=>{i++;
-			tmp.mini=-1;tmp.mind=Number(md)+1;
-			clm.forEach((y,j)=>{
-				tmp.last=y[y.length-1];
-				tmp.dist=Math.abs(tmp.last-x);
-				tmp.dist=Math.min(tmp.dist,256-tmp.dist);
-				if(tmp.dist<tmp.mind){
-					tmp.mind=tmp.dist;
-					tmp.mini=j;
-				}
-			});
-			if(tmp.mini==-1){ind[i]=clm.length;clm[ind[i]]=[x];}
-			else{ind[i]=tmp.mini;clm[ind[i]].push(x);}
-		});
-		console.log('index',ind);console.log('data',clm);
-		var freq_=freq(ind);ind=ind.map(x=>freq_.indexOf(x));clm=freq_.map(x=>clm[x]);
-		console.log('index',ind);console.log('data',clm);//console.log(freq(ind));//shoud be ordered
-
-		tmp=clm.map(x=>x[0]);
-		md=slm(tmp);
-		tmp=tmp.map((x,i)=>{//near
-			var r=round((x>127?x-256:x)/md);
-			clm[i].unshift(r<0?256+r*md:r*md);
-			return r;
-		});console.log('boot',tmp);
-		s='+'.repeat(md)+'[';
-		tmp.forEach(x=>s+='>'+(x>0?'+':'-').repeat(Math.abs(x)));
-		s+='<'.repeat(tmp.length)+'-]>';
-		ind.forEach((x,i)=>{
-			var p=x-(ind[i-1]||0),to=clm[x][1]-clm[x][0];clm[x].shift();
-			s+=(p>0?'>':'<').repeat(Math.abs(p));
-			p=Math.abs(to);s+=(to>0^p>128?'+':'-').repeat(p>128?256-p:p)+'.';
-			console.log(i,x,s);console.log(clm);
-		});
-
-		console.log('result:',s.length,s);
-		return s+s.length;
-	};
+			wset();
+			[...document.body.querySelectorAll('textarea:not([readonly])')].forEach(TA.sizer);
+			en[2].onclick=()=>{en[3].value=enmain(en[0].value,en[1].value);en[3].value+=en[3].value.length;TA.ah(en[3]);};
+			en[3].onclick=()=>copy(en[3].value);
+			de[2].onclick=()=>{de[6].value='';de[5].value='Running...';t0=performance.now();demain(de[0].value,de[1].value,de[4].checked);};
+			de[3].onclick=()=>{wset();de[5].value='Discard '+de[5].value;};
+			de[5].value='\n\n\n\n';TA.ah(de[5]);de[5].value='';
+			de[6].onclick=()=>copy(de[6].value);
+			onbeforeunload=()=>{worker.terminate();URL.revokeObjectURL(wurl);};
 	</script>
 </body>
 </html>
