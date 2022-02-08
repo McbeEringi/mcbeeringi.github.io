@@ -40,7 +40,7 @@
 --------.	d
 >>>----.
 >>++[>+++++<-]>.\n
-<[,.]		input</textarea>
+<+[,.]		input</textarea>
 		<textarea class="input" spellcheck="false" placeholder="ASCII">To use input command,
 type here before run.</textarea>
 		<button class="button">run</button>
@@ -51,7 +51,9 @@ type here before run.</textarea>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<script>
 		'use strict';
-		const en=enwrap.querySelectorAll('textarea,button,input'),
+		const wurl=URL.createObjectURL(new Blob(['onmessage=m=>Function(m.data)();'])),
+			worker=new Worker(wurl),
+			en=enwrap.querySelectorAll('textarea,button,input'),
 			de=dewrap.querySelectorAll('textarea,button,input'),
 			copy=x=>navigator.clipboard.writeText(x),
 			demain=(s,inp)=>{
@@ -62,10 +64,13 @@ type here before run.</textarea>
 						if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
 						a.x=x;a.i=1;
 					}else a.i++;
-					if(a.x>=4)a.s+=['s.push(m[p]);','m[p]=i[pi];','while(m[p]){','}'][a.x-4];
+					if(a.x>=4)a.s+=['s.push(m[p]);send();','m[p]=i[q++];','while(m[p]){','}'][a.x-4];
 					return a;
-				},{s:`const m=new Uint8Array(30000),i=[${inp}],s=[];let p=0,pi=0;`,x:Infinity,i:0}).s;
-				return Function(s+'return String.fromCharCode(...s);')();
+				},{s:`const m=new Uint8Array(30000),i=new Uint8Array([${inp}]),s=[],
+					send=x=>{if(x||(t[0]+200)<=(t[1]=performance.now())){t[0]=t[1];postMessage(s);}};
+					let p=0,q=0,t=[performance.now(),0];`,x:Infinity,i:0
+				}).s+'send(1);';
+				worker.postMessage(s);
 			},
 			enmain=(s,dist)=>{
 				s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
@@ -128,11 +133,13 @@ type here before run.</textarea>
 				return s.x;
 			};
 
+			worker.onmessage=m=>{de[3].value=String.fromCharCode(...m.data);TA.ah(de[3]);};
 			[...document.body.querySelectorAll('textarea')].forEach(TA.sizer);
 			en[2].onclick=()=>{en[3].value=enmain(en[0].value,en[1].value);en[3].value+=en[3].value.length;TA.ah(en[3]);};
 			en[3].onclick=()=>copy(en[3].value);
-			de[2].onclick=()=>{de[3].value=demain(de[0].value,de[1].value);TA.ah(de[3]);};
+			de[2].onclick=()=>demain(de[0].value,de[1].value);
 			de[3].onclick=()=>copy(de[3].value);
+			onbeforeunload=()=>URL.revokeObjectURL(wurl);
 	</script>
 </body>
 </html>
