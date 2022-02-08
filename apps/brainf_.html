@@ -43,7 +43,7 @@
 <+[,.]		input</textarea>
 		<textarea class="input" spellcheck="false" placeholder="ASCII">To use input command,
 type here before run.</textarea>
-		<button class="button">run</button> <button class="button">discard</button> <label>skip:<input type="range" min="1" max="512" value="256"></label>
+		<button class="button">run</button> <button class="button">discard</button>
 		<textarea class="input" spellcheck="false" placeholder="info" readonly style="white-space:pre;"></textarea>
 		<textarea class="input button" spellcheck="false" placeholder="text" readonly style="white-space:pre;height:100vh;"></textarea>
 	</div>
@@ -61,15 +61,15 @@ type here before run.</textarea>
 					onmessage:m=>{
 						m=m.data;
 						[
-							()=>{de[6].value+=String.fromCharCode(...m[1]);de[6].scrollTop=de[6].scrollHeight;},
-							()=>de[5].value=`${performance.now()-t0}ms\n${[...m[1]].map(x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[2])}  ^`,
-							()=>de[5].value='Done! '+de[5].value
+							()=>{de[5].value+=String.fromCharCode(...m[1]);de[5].scrollTop=de[5].scrollHeight;},
+							()=>de[4].value=`${performance.now()-t0}ms\n${[...m[1]].map(x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[2])}  ^`,
+							()=>de[4].value='Done! '+de[4].value
 						][m[0]]()
 					}
 				});
 			},
 			copy=x=>navigator.clipboard.writeText(x),
-			demain=(s='',inp='',skip=256)=>{
+			demain=(s='',inp='')=>{
 				s={s:s.replace(/\/\*.*\*\//g,'').replace(/\/\/[^\n]*\n/g,'\n'),x:Object.fromEntries(Array.from('><+-.,[]',Array))};
 				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256);
 				s=Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined).reduce((a,x)=>{
@@ -80,7 +80,7 @@ type here before run.</textarea>
 					if(a.x>=4)a.s+=['x.push(m[p]);s();','m[p]=n[q++];','while(m[p]){','}'][a.x-4];
 					return a;
 				},{
-					s:`let p=0,q=0,x=[];const m=new Uint8Array(30000),n=new Uint8Array([${inp}]),s=y=>{if(x.length>=${skip}||y){postMessage([0,x]);x=[];postMessage([1,m,p]);}if(y){postMessage([2]);}};`,
+					s:`let p=0,q=0,x=[];const m=new Uint8Array(30000),n=new Uint8Array([${inp}]),s=y=>{if(x.length>=256||y){postMessage([0,x]);x=[];postMessage([1,m,p]);}if(y){postMessage([2]);}};`,
 					x:Infinity,i:0
 				}).s+'s(1);console.log("Done!")';
 				console.log(s);
@@ -151,10 +151,10 @@ type here before run.</textarea>
 			[...document.body.querySelectorAll('textarea:not([readonly])')].forEach(TA.sizer);
 			en[2].onclick=()=>{en[3].value=enmain(en[0].value,en[1].value);en[3].value+=en[3].value.length;TA.ah(en[3]);};
 			en[3].onclick=()=>copy(en[3].value);
-			de[2].onclick=()=>{de[6].value='';de[5].value='Running...';t0=performance.now();demain(de[0].value,de[1].value,de[4].value);};
-			de[3].onclick=()=>{wset();de[5].value='Discard '+de[5].value;};
-			de[5].value='\n\n\n\n';TA.ah(de[5]);de[5].value='';
-			de[6].onclick=()=>copy(de[6].value);
+			de[2].onclick=()=>{de[5].value='';de[4].value='Running...';t0=performance.now();demain(de[0].value,de[1].value);};
+			de[3].onclick=()=>{wset();de[4].value='Discard '+de[4].value;};
+			de[4].value='\n\n\n\n';TA.ah(de[4]);de[4].value='';
+			de[5].onclick=()=>copy(de[5].value);
 			onbeforeunload=()=>{worker.terminate();URL.revokeObjectURL(wurl);};
 	</script>
 </body>
