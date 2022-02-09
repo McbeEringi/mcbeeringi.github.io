@@ -24,7 +24,7 @@
 		#mv div,#mv p{width:32px;height:32px;margin:2px;border-radius:8px;}
 		#mv div{position:absolute;top:0px;left:0;font-size:8px;background:var(--b0);z-index:1;/*transition:.05s;*/}
 		#mv p{line-height:32px;vertical-align:top;text-align:center;display:inline-block;box-shadow:0 0 0 1px #888 inset;font-size:16px;z-index:2;position:relative;}
-		.wrapper,.wrapper>textarea{position:relative;}.wrapper>pre{position:absolute;top:0;left:0;right:0;white-space:pre-wrap;border:1px solid #0000;pointer-events:none;color:#0000;}
+		.wrapper,.wrapper>textarea{position:relative;}.wrapper>pre{position:absolute;top:0;left:0;right:0;white-space:pre-wrap;pointer-events:none;color:#0000;}
 		.caret{color:#333;background:#fff;border-radius:1px;}
 		*::-webkit-scrollbar{display:none;}*{-ms-overflow-style:none;scrollbar-width:none;}
 		#skipcb:checked+*{display:none;}
@@ -47,7 +47,7 @@
 	<button class="button" id="btn">run</button> <button class="button" id="stopb">stop</button> <label for="skipcb">skip:</label><input type="checkbox" id="skipcb" class="toggle"> <span>speed:<input type="range" id="spd" min="0" max="200" value="20"></span> <br>
 	src: <button class="button" id="qbtn">paste &amp; run</button> <button class="button" onclick="src.select();">select all</button>
 	<div class="wrapper">
-	<textarea class="input" id="src" >++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
+	<textarea style="background-color:#0008;color:#fff;border:0;resize:none;" id="src" >++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
 >>>>>++.	H
 <<<<+.		e
 +++++++..	ll
@@ -60,7 +60,7 @@
 --------.	d
 >>>----.
 >>++[>+++++<-]>.	return
-<[,.]			input</textarea><pre id="srcprv"></pre>
+<+[,.]			input</textarea><pre id="srcprv"></pre>
 	</div>
 	<br>
 	","inp: <button class="button" onclick="inp.select();">select all</button>
@@ -70,7 +70,7 @@ type here before run.</textarea><pre id="inpprv"></pre>
 	</div>
 	<hr>
 	<pre id="log"></pre>
-	build: 2103133<br>
+	build: 2202090<br>
 	<iframe src="../amuse/ascii.html" style="border:none;width:100%;" onload="this.height=this.contentWindow.document.body.scrollHeight+24"></iframe>
 
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
@@ -118,14 +118,14 @@ type here before run.</textarea><pre id="inpprv"></pre>
 		core=()=>{
 			tmp=null;
 			switch(s[ps]){
-				case'>':p++;if(m[p]==undefined)m[p]=0;ps++;break;
+				case'>':p++;if(m[p]==undefined&&p<30000)m[p]=0;ps++;break;
 				case'<':if(p>0)p--;else{log.textContent+=ps+': invailed "<". canceled.\n';stopb.disabled=true;}ps++;break;
 				case'+':m[p]++;m[p]&=0xff;ps++;break;
 				case'-':m[p]--;m[p]&=0xff;ps++;break;
 				case'.':out.textContent+=String.fromCharCode(m[p]);ps++;break;
 				case',':tmp=inp.value.charCodeAt(pi);if(isNaN(tmp)){m[p]=0;log.textContent+=ps+': input empty. use 0 as input.\n';ps++;}else if(tmp>255)pi++;else{m[p]=tmp;pi++;ps++;}tmp=null;break;
-				case'[':l.push(ps);ps++;break;
-				case']':if(l.length){if(m[p]==0){l.pop();ps++;}else ps=l[l.length-1]+1;}else{log.textContent+=ps+': invailed "]". skipped.\n';ps++;}break;
+				case'[':if(!m[p])ps=l[0][ps];ps++;break;
+				case']':ps=l[1][ps];break;
 				default:ps++;tmp=1;break;
 			}
 			if(!tmp&&!skipcb.checked)render();
@@ -135,7 +135,7 @@ type here before run.</textarea><pre id="inpprv"></pre>
 		mv.innerHTML='<div></div><p>0</p>';
 		out.textContent='';log.textContent='';
 		src.readOnly=true;inp.readOnly=true;srcprv.style.display='block';inpprv.style.display='block';
-		s=src.value.split('');p=0;ps=0;pi=0;m=[0];l=[];
+		s=[...src.value];p=0;ps=0;pi=0;m=[0];l=s.reduce((a,x,i)=>{const fx=({'[':()=>a[0].push(i),']':()=>{if(a[0].length)a[1].push([a[0].pop(),i]);}})[x];if(fx)fx();return a;},[[],[]])[1];l=[Object.fromEntries(l),Object.fromEntries(l.map(x=>x.reverse()))];console.log(l);
 		if(s.length)core();else{log.textContent+='! : no src found.\n';setTimeout(post,spd.value);}
 	},
 	enmain=(s,md)=>{
