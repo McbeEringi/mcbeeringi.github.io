@@ -48,6 +48,7 @@ type here before run.</textarea>
 		<button class="button">run</button> <button class="button">discard</button> <label>memory:<input type="checkbox" class="toggle" checked></label>
 		<textarea class="input" spellcheck="false" placeholder="info" readonly style="white-space:pre;"></textarea>
 		<textarea class="input button" spellcheck="false" placeholder="text" readonly style="white-space:pre;height:100vh;"></textarea>
+		build: 220209
 	</div>
 
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
@@ -82,7 +83,7 @@ type here before run.</textarea>
 					if(a.x>=4)a.s+=['x.push(m[p]);s();','m[p]=n.pop();','while(m[p]){','}'][a.x-4];
 					return a;
 				},{
-					s:`let p=0,x=[];const m=new Uint8Array(30000),n=[${inp}],s=y=>{if(x.length>=256||y){postMessage([0,x]);x=[];`+(mem?'postMessage([1,m,p]);}if(y){':'}if(y){postMessage([1,m,p]);')+'postMessage([2]);}};',
+					s:`let p=0,x=[],t=[performance.now(),0];const m=new Uint8Array(30000),n=[${inp}],s=y=>{if((t[0]+200)<(t[1]=performance.now())||y){t[0]=t[1];postMessage([0,x]);x=[];`+(mem?'postMessage([1,m,p]);}if(y){':'}if(y){postMessage([1,m,p]);')+'postMessage([2]);}};',
 					x:Infinity,i:0
 				}).s+'s(1);console.log("Done!");';
 				console.log(s);
