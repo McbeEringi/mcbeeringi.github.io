@@ -64,7 +64,7 @@ type here before run.</textarea>
 						m=m.data;
 						[
 							()=>{de[6].value+=String.fromCharCode(...m[1]);de[6].scrollTop=de[6].scrollHeight;},
-							()=>de[5].value=`${performance.now()-t0}ms\n${Array.from(m[1],x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[2])}  ^`,
+							()=>de[5].value=`${((performance.now()-t0)*.001).toFixed(3)}s\n${Array.from(m[1],x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[2])}  ^`,
 							()=>de[5].value='Done! '+de[5].value
 						][m[0]]()
 					}
@@ -73,31 +73,20 @@ type here before run.</textarea>
 			copy=x=>navigator.clipboard.writeText(x),
 			demain=(s='',inp='',mem=true)=>{
 				s={s,x:Object.fromEntries(Array.from('><+-.,[]',Array))};
-				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256);
+				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256).reverse();
 				s=Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined).reduce((a,x)=>{
 					if(a.x!=x){
 						if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
 						a.x=x;a.i=1;
 					}else a.i++;
-					if(a.x>=4)a.s+=['x.push(m[p]);s();','m[p]=n[q++];','while(m[p]){','}'][a.x-4];
+					if(a.x>=4)a.s+=['x.push(m[p]);s();','m[p]=n.pop();','while(m[p]){','}'][a.x-4];
 					return a;
 				},{
-					s:`let p=0,q=0,x=[];const m=new Uint8Array(30000),n=new Uint8Array([${inp}]),s=y=>{if(x.length>=256||y){postMessage([0,x]);x=[];`+(mem?'postMessage([1,m,p]);}if(y){':'}if(y){postMessage([1,m,p]);')+'postMessage([2]);}};',
+					s:`let p=0,x=[];const m=new Uint8Array(30000),n=[${inp}],s=y=>{if(x.length>=256||y){postMessage([0,x]);x=[];`+(mem?'postMessage([1,m,p]);}if(y){':'}if(y){postMessage([1,m,p]);')+'postMessage([2]);}};',
 					x:Infinity,i:0
-				}).s+'s(1);console.log("Done!")';
+				}).s+'s(1);console.log("Done!");';
 				console.log(s);
 				worker.postMessage(s);
-				/*s={s:s.replace(/\/\*.*\*\//g,'').replace(/\/\/[^\n]*\n/g,'\n'),x:Object.fromEntries(Array.from('><+-.,[]',Array))};
-				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256);
-				s=Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined).reduce((a,x)=>{
-					if(a.x!=x){
-						if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
-						a.x=x;a.i=1;
-					}else a.i++;
-					if(a.x>=4)a.s+=['s.push(m[p]);','m[p]=i[pi];','while(m[p]){','}'][a.x-4];
-					return a;
-				},{s:`const m=new Uint8Array(30000),i=[${inp}],s=[];let p=0,pi=0;`,x:Infinity,i:0}).s;
-				return Function(s+'return String.fromCharCode(...s);')();*/
 			},
 			enmain=(s,dist)=>{
 				s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
