@@ -45,10 +45,10 @@
 <+[,.]		input</textarea>
 		<textarea class="input" spellcheck="false" placeholder="ASCII">To use input command,
 type here before run.</textarea>
-		<button class="button">run</button> <button class="button">discard</button> <label>memory:<input type="checkbox" class="toggle" checked></label>
-		<textarea class="input" spellcheck="false" placeholder="info" readonly style="white-space:pre;"></textarea>
+		<button class="button">run</button> <button class="button">discard</button> <label>log:<input type="checkbox" class="toggle" checked></label> <label>transpile:<input type="checkbox" class="toggle" checked></label>
+		<textarea class="input" spellcheck="false" placeholder="log" readonly style="white-space:pre;"></textarea>
 		<textarea class="input button" spellcheck="false" placeholder="text" readonly style="white-space:pre;height:100vh;"></textarea>
-		build: 220209
+		build: 2202091
 	</div>
 
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
@@ -64,29 +64,37 @@ type here before run.</textarea>
 					onmessage:m=>{
 						m=m.data;
 						[
-							()=>{de[6].value+=String.fromCharCode(...m[1]);de[6].scrollTop=de[6].scrollHeight;},
-							()=>de[5].value=`${((performance.now()-t0)*.001).toFixed(3)}s\n${Array.from(m[1],x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[2])}  ^`,
-							()=>de[5].value='Done! '+de[5].value
+							()=>{de[7].value+=String.fromCharCode(...m[1]);de[7].scrollTop=de[7].scrollHeight;},
+							()=>de[6].value=`${((performance.now()-t0)*.001).toFixed(3)}s\n${Array.from(m[1],x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[2])}  ^`,
+							()=>de[6].value='Done! '+de[6].value
 						][m[0]]()
 					}
 				});
 			},
 			copy=x=>navigator.clipboard.writeText(x),
-			demain=(s='',inp='',mem=true)=>{
-				s={s,x:Object.fromEntries(Array.from('><+-.,[]',Array))};
+			demain=(s='',inp='',mem=true,trans=true)=>{
+				s={s,x:Object.fromEntries(Array.from('><+-.,[]',Array))};s=Array.from(s.s,x=>s.x[x]);
 				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256).reverse();
-				s=Array.from(s.s,x=>s.x[x]).filter(x=>x!=undefined).reduce((a,x)=>{
-					if(a.x!=x){
-						if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
-						a.x=x;a.i=1;
-					}else a.i++;
-					if(a.x>=4)a.s+=['x.push(m[p]);s();','m[p]=n.pop();','while(m[p]){','}'][a.x-4];
-					return a;
-				},{
-					s:`let p=0,x=[],t=[performance.now(),0];const m=new Uint8Array(30000),n=[${inp}],s=y=>{if((t[0]+200)<(t[1]=performance.now())||y){t[0]=t[1];postMessage([0,x]);x=[];`+(mem?'postMessage([1,m,p]);}if(y){':'}if(y){postMessage([1,m,p]);')+'postMessage([2]);}};',
-					x:Infinity,i:0
-				}).s+'s(1);console.log("Done!");';
-				console.log(s);
+				s=trans?s.reduce((a,x)=>{
+						if(x!=undefined){
+							if(a.x!=x){
+								if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
+								a.x=x;a.i=1;
+							}else a.i++;
+							if(a.x>=4)a.s+=['x.push(m[p]);s();','m[p]=n.pop();','while(m[p]){','}'][a.x-4];
+						}
+						return a;
+					},{
+						s:`let p=0,x=[],t=[performance.now(),0];console.log(t[0]);const m=new Uint8Array(30000),n=[${inp}],s=y=>{if((t[0]+200)<(t[1]=performance.now())||y){t[0]=t[1];postMessage([0,x]);x=[];`+(mem?'postMessage([1,m,p]);}if(y){':'}if(y){postMessage([1,m,p]);')+'postMessage([2]);}};',
+						x:Infinity,i:0
+					}).s+'s(1);console.log(t[1],m,p);':
+					`let p=0,ps=0,x=[],l,t=[performance.now(),0];const m=new Uint8Array(30000),n=[${inp}],s=[${s}].filter(x=>x>-1);
+						l=s.reduce((a,x,i)=>{if(x==6)a[0].push(i);else if(a[0].length&&x==7)a[1].push([a[0].pop(i),i]);return a;},[[],[]])[1];l=[Object.fromEntries(l),Object.fromEntries(l.map(x=>[x[1],x[0]-1]))];
+						while(ps<s.length){
+							[()=>p++,()=>p--,()=>m[p]++,()=>m[p]--,()=>{x.push(m[p]);if((t[0]+200)<(t[1]=performance.now())){t[0]=t[1];postMessage([0,x]);x=[];${mem?'postMessage([1,m,p]);':''}}},()=>m[p]=n.pop(),()=>ps=(m[p]?ps:l[0][ps]),()=>ps=l[1][ps]][s[ps]]();
+							ps++;
+						}
+						postMessage([0,x]);postMessage([1,m,p]);postMessage([2]);console.log(m,p);`;
 				worker.postMessage(s);
 			},
 			enmain=(s,dist)=>{
@@ -154,11 +162,21 @@ type here before run.</textarea>
 			[...document.body.querySelectorAll('textarea:not([readonly])')].forEach(TA.sizer);
 			en[2].onclick=()=>{en[3].value=enmain(en[0].value,en[1].value);en[3].value+=en[3].value.length;TA.ah(en[3]);};
 			en[3].onclick=()=>copy(en[3].value);
-			de[2].onclick=()=>{de[6].value='';de[5].value='Running...';t0=performance.now();demain(de[0].value,de[1].value,de[4].checked);};
-			de[3].onclick=()=>{wset();de[5].value='Discard '+de[5].value;};
-			de[5].value='\n\n\n\n';TA.ah(de[5]);de[5].value='';
-			de[6].onclick=()=>copy(de[6].value);
+			de[2].onclick=()=>{de[7].value='';de[6].value='Running...';t0=performance.now();demain(de[0].value,de[1].value,de[4].checked,de[5].checked);};
+			de[3].onclick=()=>{wset();de[6].value='Discard '+de[6].value;};
+			de[6].value='\n\n\n\n';TA.ah(de[6]);de[6].value='';
+			de[7].onclick=()=>copy(de[7].value);
 			onbeforeunload=()=>{worker.terminate();URL.revokeObjectURL(wurl);};
+			/*
+			const romaji=x=>fetch('https://labs.goo.ne.jp/api/morph',{
+					method:'POST',mode:'cors',
+					headers:{'Accept':'application/json','Content-Type':'application/json'},
+					body:JSON.stringify({
+						app_id:'57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3',
+						sentence:x
+					})
+				}).then(r=>r.json()).then(x=>x.word_list.reduce((a,x)=>a.concat(x),[]).map(x=>(x[2]&&!['Alphabet','Number','Roman'].includes(x[1]))?jaconv.toHebon(jaconv.toHiragana(x[2])).toLowerCase():jaconv.toHanAscii(x[0])).join(''));
+			*/
 	</script>
 </body>
 </html>
