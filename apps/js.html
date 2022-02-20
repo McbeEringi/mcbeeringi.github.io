@@ -40,7 +40,7 @@
 				lineNumbers:true,tabSize:2,indentWithTabs:true,matchBrackets:true,autoCloseBrackets: true,
 			}),
 			llog=x=>{
-				const fx=y=>`\n<span style="opacity:0.5;">\t${Object.prototype.toString.call(y).slice(8,-1)}\t</span>${x.toString()}`,
+				const fx=y=>`\n<span style="opacity:0.5;">\t${Object.prototype.toString.call(y).slice(8,-1)}\t</span>${y.toString()}`,
 					time=()=>{const d=new Date();return `[${d.toLocaleTimeString()}.${String(d.getMilliseconds()).padStart(3,0)}]`;};
 				pre.insertAdjacentHTML('beforeend',`<span style="opacity:0.5;">${time()}</span>${x.map(fx).join('')}\n`);
 			},
