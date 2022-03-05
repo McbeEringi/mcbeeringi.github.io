@@ -29,6 +29,7 @@
 	<button class="button">run</button>
 	<button class="button">save</button>
 	<button class="button">copy url</button>
+	<button class="button">copy runner</button>
 	<pre style="white-space:pre-wrap;word-break:break-all;tab-size:2;"></pre>
 	<hr>
 	<script>
@@ -52,7 +53,9 @@
 		console.log=(...x)=>{ntv.log(...x);llog(x);};
 		btn[0].onclick=()=>{try{Function(cm.getValue())();}catch(e){console.error(e);}};
 		btn[1].onclick=()=>{location.hash=encodeURIComponent(cm.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');console.log('saved!');};
-		btn[2].onclick=()=>navigator.clipboard.writeText(location.href).then(()=>console.log('copied!'));
+		btn[2].onclick=()=>navigator.clipboard.writeText(location.href).then(()=>console.log('url copied!'));
+		btn[3].onclick=()=>navigator.clipboard.writeText('https://mcbeeringi.github.io/apps/jsrun.html'+location.hash).then(()=>console.log('runner copied!'));
+		document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.code=='KeyS'){e.preventDefault();btn[1].click();}})
 		if(location.hash)cm.setValue(decodeURIComponent(location.hash.slice(1)));
 		btn[0].onclick();
 	}
