@@ -9,7 +9,7 @@
 :root,.input,.button{color:var(--fc);font-family:sans-serif;}
 :link{color:var(--b2);}:link:hover{color:var(--b1);}:link:active{color:var(--b0);}:visited{color:var(--p2);}:visited:hover{color:var(--p1);}:visited:active{color:var(--p0);}
 .input,.button,hr{vertical-align:middle;outline:0;box-sizing:border-box;max-width:100%;--border:max(2px,.3ex);border-radius:var(--border);appearance:none;-webkit-appearance:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
-hr{border:0;background-color:var(--g1);height:calc(var(--border)*2)}
+hr{border:var(--border) solid var(--g1);margin:var(--border);}
 .input,.button{margin:var(--border) 0;border:var(--g3) var(--border) solid;border-bottom-color:var(--g1);display:inline-block;transition:.2s;}
 .input{background-color:var(--g3);padding:.5ex;resize:none;}.button{background-color:var(--g2);padding:.5ex 2ex;text-align:center;}
 .input:hover,.input:focus,.button:hover{border-bottom-color:var(--b0);}.button:active{background-color:var(--g0);border-bottom-color:var(--b2);}
