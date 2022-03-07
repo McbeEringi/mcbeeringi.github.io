@@ -1,37 +1,4 @@
-/*
-	SPEC
-		Spriter.textures: Array
-			texture cache
-		Spriter.mods: Array
-			modifier cache
-		Spriter.stdMod: Function((ctx,img)=>ctx.drawImage(img,0,0)) => void
-			default texture modifier
-			see also Spriter.setMod
-				ctx: CanvasRenderingContext2D
-					canvas(as texture) 2d context
-				img: HTMLImageElement
-					original image element
-		Spriter.exeMod: Function((url)=>{}) => void
-			execute modification
-			use Spriter.setMod for general usage
-				url: String
-					texture url
-		Spriter.setMod: Function((url,mod)=>{}) => void
-			set modifier and refresh texture.
-				url: String
-					texture url
-				mod: Function((ctx,img)=>{}) => void
-					texture modifier
-						ctx: CanvasRenderingContext2D
-							canvas(as texture) 2d context
-						img: HTMLImageElement
-							original image element
-	USAGE
-		cut circle
-			Spriter.stdMod=(ctx,img)=>{ctx.beginPath();ctx.ellipse(img.width/2,img.height/2,img.width/2,img.height/2,0,0, 2*Math.PI);ctx.clip();ctx.drawImage(img,0,0);};
-*/
-
-const Spriter={
+window.Spriter={
 	name:'spriter',version:'0.1.0',for:'matter-js@*',
 	install(base){base.after('Render.bodies',function(){
 		const r=arguments[0];
