@@ -1,5 +1,5 @@
 .stuff{--size:150px;}
-.stuff>a{display:inline-block;width:var(--size);margin:5px;vertical-align:top;transition:.2s;white-space:pre-wrap;}
+.stuff>a{display:inline-block;width:var(--size);margin:4px;vertical-align:top;transition:.2s;white-space:pre-wrap;}
 .stuff>a::before{content:"";display:block;height:var(--size);border-radius:20%;background:var(--col,#0000) no-repeat center/cover var(--img,url(../img/icon_.svg));}
 .stuff>a::after{content:var(--entxt,var(--txt));display:inline-block;width:100%;font-size:small;text-decoration:none;color:var(--fc);}
 .stuff:lang(ja)>a::after{content:var(--txt);}
