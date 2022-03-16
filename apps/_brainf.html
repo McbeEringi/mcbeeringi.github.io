@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-145066191-2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145066191-2');</script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi brainf</title>
+	<meta name="description" content="brainf*** encoder & interpreter">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+	<link rel="stylesheet" href="../src/toggle.css">
+</head>
+<body>
+	<style>textarea{width:100%;max-height:100vh;font-family:monospace !important;}.input.button{text-align:initial;}</style>
+	<h1>brainf***</h1>
+	<a href="brainf_.html">legacy</a>
+	<hr>
+	<div id="enwrap">
+		<h2>encoder</h2>
+		<textarea class="input" spellcheck="false" placeholder="text">Hello World!</textarea>
+		<label><input class="input" type="number" value="10" min="0" max="127" step="1" placeholder="chained threshold"> [0~127] less calc <<< less memory</label><br>
+		<button class="button">run</button>
+		<textarea class="input button" spellcheck="false" placeholder="brainf***" readonly></textarea>
+	</div>
+	<hr>
+	<div id="dewrap">
+		<h2>decoder</h2>
+		<textarea class="input" spellcheck="false" placeholder="brainf***">++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
+>>>>>++.	H
+<<<<+.		e
++++++++..	ll
++++.		o
+>++.
+>-.		w
+<<.		o
++++.		r
+------.		l
+--------.	d
+>>>----.
+>>++[>+++++<-]>.\n
+<+[,.]		input</textarea>
+		<textarea class="input" spellcheck="false" placeholder="ASCII">To use input command,
+type here before run.</textarea>
+		<button class="button">run</button> <button class="button">discard</button> <label>transpile:<input type="checkbox" class="toggle" checked></label> <label>log:<input type="checkbox" class="toggle" checked></label>
+		<textarea class="input" spellcheck="false" placeholder="log" readonly style="white-space:pre;"></textarea>
+		<textarea class="input button" spellcheck="false" placeholder="text" readonly style="white-space:pre;height:100vh;"></textarea>
+		build: 2202091<br>
+		<a href="https://github.com/fabianishere/brainfuck/blob/master/examples/mandelbrot/mandelbrot.bf">mandelbrot example</a>
+	</div>
+
+	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
+	<script>
+		'use strict';
+		let worker,t0;
+		const wurl=URL.createObjectURL(new Blob(['onmessage=m=>Function(m.data)();'])),
+			en=enwrap.querySelectorAll('textarea,button,input'),
+			de=dewrap.querySelectorAll('textarea,button,input'),
+			wset=()=>{
+				if(worker)worker.terminate();
+				worker=Object.assign(new Worker(wurl),{
+					onmessage:m=>{
+						m=m.data;
+						[
+							()=>{de[7].value+=String.fromCharCode(...m[1]);de[7].scrollTop=de[7].scrollHeight;},
+							()=>de[6].value=`${((performance.now()-t0)*.001).toFixed(3)}s\n${Array.from(m[1],x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[2])}  ^`,
+							()=>de[6].value='Done! '+de[6].value
+						][m[0]]()
+					}
+				});
+			},
+			copy=x=>navigator.clipboard.writeText(x),
+			demain=(s='',inp='',trans=true,mem=true)=>{
+				s={s,x:Object.fromEntries(Array.from('><+-.,[]',Array))};s=Array.from(s.s,x=>s.x[x]);
+				inp=Array.from(inp,x=>x.charCodeAt(0)).filter(x=>x<256).reverse();
+				s=trans?[...s,-1].reduce((a,x)=>{
+						if(x!=undefined){/*
+							if(a.x!=x){
+								if(a.x<4)a.s+=['p+=','p-=','m[p]+=','m[p]-='][a.x]+a.i+';';
+								a.x=x;a.i=1;
+							}else a.i++;
+							if(a.x>=4)a.s+=['x.push(m[p]);s();','m[p]=n.pop();','while(m[p]){','}'][a.x-4];*/
+							const gp=()=>[a.p,'','+'+a.p][Math.sign(a.p)+1],
+								sp=()=>{const s=[`p-=${-a.p};`,'',`p+=${a.p};`][Math.sign(a.p)+1];a.p=0;return s;}
+							if(~a.x)[
+								()=>a.p++,
+								()=>a.p--,
+								()=>{
+									if(x!=2&&x!=3){
+										if(a.p)a.s+=`m[p${gp()}]${a.p<0?'-='+-a.m:'+='+a.m};`;
+										a.m=0;
+									}
+									else a.m++;
+								},
+								()=>{
+									if(a.x!=2&&a.x!=3){
+										if(a.p)a.s+=`m[p${gp()}]${a.p<0?'-='+-a.m:'+='+a.m};`;
+										a.m=0;
+									}
+									else a.m--;
+								},
+								()=>a.s+=`x.push(m[p${gp()}]);s();`,
+								()=>a.s+=`m[p${gp()}]=n.pop();`,
+								()=>a.s+=sp()+'while(m[p]){',
+								()=>a.s+=sp()+'}',
+							][a.x]();
+							if(a.x!=x)a.x=x;
+						}
+						return a;
+					},{
+						s:`let p=0,x=[],t=[performance.now(),0];console.log(t[0]);const m=new Uint8Array(30000),n=[${inp}],s=y=>{if((t[0]+200)<(t[1]=performance.now())||y){t[0]=t[1];postMessage([0,x]);x=[];`+(mem?'postMessage([1,m,p]);}if(y){':'}if(y){postMessage([1,m,p]);')+'postMessage([2]);}};',
+						x:-1,p:0,m:0
+					}).s+'s(1);console.log(t[1],m,p);':
+					`let p=0,ps=0,x=[],l,t=[performance.now(),0];const m=new Uint8Array(30000),n=[${inp}],s=[${s}].filter(x=>x>-1);
+						l=s.reduce((a,x,i)=>{if(x==6)a[0].push(i);else if(a[0].length&&x==7)a[1].push([a[0].pop(i),i]);return a;},[[],[]])[1];l=[Object.fromEntries(l),Object.fromEntries(l.map(x=>[x[1],x[0]-1]))];
+						while(ps<s.length){
+							[()=>p++,()=>p--,()=>m[p]++,()=>m[p]--,()=>{x.push(m[p]);if((t[0]+200)<(t[1]=performance.now())){t[0]=t[1];postMessage([0,x]);x=[];${mem?'postMessage([1,m,p]);':''}}},()=>m[p]=n.pop(),()=>ps=(m[p]?ps:l[0][ps]),()=>ps=l[1][ps]][s[ps]]();
+							ps++;
+						}
+						postMessage([0,x]);postMessage([1,m,p]);postMessage([2]);console.log(m,p);`;
+				worker.postMessage(s);console.log(s);
+			},
+			enmain=(s,dist)=>{
+				s=Array.from(s,x=>x.codePointAt(0)).filter(x=>x<256);
+				//create chain:{a:heap,x:raw,i:heap_index}
+				s={
+					...s.reduce((a,x,i)=>{
+						i=a.x.reduce((b,y,j)=>{
+							const p=[Math.abs(y-x),Math.abs(b[0]-x)].map(z=>Math.min(z,256-z));
+							return p[0]<p[1]&&p[0]<=dist?[y,j]:b;
+						},[(x+128)%256,a.x.length])[1];
+						if(a.a[i])a.a[i].push(x);else a.a[i]=[x];
+						a.x[i]=x;a.i.push(i);return a;
+					},{a:[],x:[],i:[]}),
+					x:s
+				};
+				//create freq index [...[[pair,pair],priority]]
+				s.freq=Object.entries(new Array(s.i.length-1).fill().reduce((a,x,i)=>{
+						x=s.i.slice(i,i+2);
+						if(x[0]!=x[1]){i=`${Math.min(...x)}_${Math.max(...x)}`;if(a[i])a[i]++;else a[i]=1;}
+						return a;
+					},{})).sort((a,b)=>Math.sign(b[1]-a[1])).map(x=>[x[0].split('_').map(y=>+y),x[1]]);
+				if(s.freq.length>=2){
+					//solve freq
+					s.freq={x:null,q:s.freq.slice(1),a:s.freq[0][0]};
+					while(1){
+						s.freq.x=Object.fromEntries(s.freq.a.map(Array));
+						s.freq.x=s.freq.q.reduce((a,x,i)=>({
+								tt:()=>a,ff:()=>a,tf(){x[0].reverse();return this.ft();},
+								ft(d=s.freq.x[x[0][1]],p=(s.freq.a.length-1)/2>d){
+									d=(p?d+1:s.freq.a.length-d)/x[1];//console.log(x,d);
+									return d<a.d?{i,d,p}:a;
+								}
+							})[x[0].reduce((a,y)=>s.freq.a.includes(y)?a+'t':a+'f','')](),{d:Infinity,_:true});
+						if(s.freq.x._)break;
+						s.freq.a[s.freq.x.p?'unshift':'push'](s.freq.q.splice(s.freq.x.i,1)[0][0][0]);
+						console.log(s.freq.a);
+					}
+					//swap index
+					s.a=s.freq.a.map(x=>s.a[x]);
+					s.freq=Object.fromEntries(s.freq.a.map(Array));
+					s.i=s.i.map(x=>s.freq[x]);
+				}
+				//find best init loop
+				s.init=new Array(10).fill().map((_,i)=>i+7).reduce((a,i,x)=>{
+					x=s.a.reduce((b,x)=>{
+						x=x[0];x=x<128?[1,x]:[-1,256-x];x[2]=x[1]%i;x[1]=x[1]/i;
+						x=x[1]%1>.5?[x[0],Math.ceil(x[1]),(x[2]-i)*x[0]]:[x[0],Math.floor(x[1]),x[2]*x[0]];
+						b.x+=x[1]+Math.abs(x[2]);b.a.push(x);return b;
+					},{i,x:i,a:[]});
+					console.log(x);return x.x<a.x?x:a;
+				},{x:Infinity});
+				//apply init number
+				s.init.a.forEach((x,i)=>s.a[i].unshift(s.a[i][0]-x[2]));
+				//generate code
+				s.x=s.i.reduce((a,i,x)=>{
+					x=s.a[i][a.i[i]+1]-s.a[i][a.i[i]];x=[x>0,Math.abs(x)];
+					a.a+=(i>a.x?'>':'<').repeat(Math.abs(i-a.x))+(x[0]^x[1]>128?'+':'-').repeat(Math.min(x[1],256-x[1]))+'.';
+					a.i[i]++;a.x=i;return a;
+				},{x:0,a:'+'.repeat(s.init.i)+'['+s.init.a.map(x=>'>'+(x[0]>0?'+':'-').repeat(x[1])).join('')+'<'.repeat(s.init.a.length)+'-]>',i:new Array(s.a.length).fill(0)}).a;
+				return s.x;
+			};
+
+			wset();
+			[...document.body.querySelectorAll('textarea:not([readonly])')].forEach(TA.sizer);
+			en[2].onclick=()=>{en[3].value=enmain(en[0].value,en[1].value);en[3].value+=en[3].value.length;TA.ah(en[3]);};
+			en[3].onclick=()=>copy(en[3].value);
+			de[2].onclick=()=>{de[7].value='';de[6].value='Running...';t0=performance.now();demain(de[0].value,de[1].value,de[4].checked,de[5].checked);};
+			de[3].onclick=()=>{wset();de[6].value='Discard '+de[6].value;};
+			de[6].value='\n\n\n\n';TA.ah(de[6]);de[6].value='';
+			de[7].onclick=()=>copy(de[7].value);
+			onbeforeunload=()=>{worker.terminate();URL.revokeObjectURL(wurl);};
+			/*
+			const romaji=x=>fetch('https://labs.goo.ne.jp/api/morph',{
+					method:'POST',mode:'cors',
+					headers:{'Accept':'application/json','Content-Type':'application/json'},
+					body:JSON.stringify({
+						app_id:'57564783ad5ccbd6907aadf8e971dec93045d352f074633e3d02e1df22e10bc3',
+						sentence:x
+					})
+				}).then(r=>r.json()).then(x=>x.word_list.reduce((a,x)=>a.concat(x),[]).map(x=>(x[2]&&!['Alphabet','Number','Roman'].includes(x[1]))?jaconv.toHebon(jaconv.toHiragana(x[2])).toLowerCase():jaconv.toHanAscii(x[0])).join(''));
+			*/
+	</script>
+</body>
+</html>
