@@ -48,7 +48,7 @@ type here before run.</textarea>
 		<button class="button">run</button> <button class="button">discard</button> <label>transpile:<input type="checkbox" class="toggle" checked></label> <label>speed:<input type="range" min="-256" max="-1"></label> <label>log:<input type="checkbox" class="toggle" checked></label>
 		<textarea class="input" spellcheck="false" placeholder="log" readonly style="white-space:pre;"></textarea>
 		<textarea class="input button" spellcheck="false" placeholder="text" readonly style="white-space:pre;height:100vh;"></textarea>
-		build: 2202091<br>
+		build: 2203190<br>
 		<a href="https://github.com/fabianishere/brainfuck/blob/master/examples/mandelbrot/mandelbrot.bf">mandelbrot example</a>
 	</div>
 
@@ -66,7 +66,7 @@ type here before run.</textarea>
 						m=m.data;
 						[
 							()=>{de[8].value+=String.fromCharCode(...m[1]);de[8].scrollTop=de[8].scrollHeight;},
-							()=>de[7].value=`${((m[2]-m[1])*.001).toFixed(3)}s\n${Array.from(m[3].slice(0,Math.max(m[4],new Map(Array.from(m[3],(x,i)=>[x>0,i])).get(true)||0)+1),x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[4])}  ^`,
+							()=>de[7].value=`${((m[2]-m[1])*.001).toFixed(3)}s ${m[5]?m[5]+'steps':''}\n${Array.from(m[3].slice(0,Math.max(m[4],new Map(Array.from(m[3],(x,i)=>[x>0,i])).get(true)||0)+1),x=>(x+'').padStart(3,' ')).join(' ')}\n${'    '.repeat(m[4])}  ^`,
 							()=>de[7].value='Done! '+de[7].value
 						][m[0]]();
 						
@@ -94,12 +94,12 @@ type here before run.</textarea>
 					`let p=0,ps=0,step=0,l,x=[],t0=performance.now(),t=[t0,0];console.log(t0);const m=new Uint8Array(30000),n=[${inp}],src=[${s}].filter(x=>x>-1);
 						l=src.reduce((a,x,i)=>{if(x==6)a[0].push(i);else if(a[0].length&&x==7)a[1].push([a[0].pop(i),i]);return a;},[[],[]])[1];l=[Object.fromEntries(l),Object.fromEntries(l.map(x=>[x[1],x[0]-1]))];
 						while(ps<src.length){
-							if((t[0]+50)<(t[1]=performance.now())){t[0]=t[1];postMessage([0,x]);x=[];${mem?'postMessage([1,t0,t[1],m,p]);':''}}
+							if((t[0]+50)<(t[1]=performance.now())){t[0]=t[1];postMessage([0,x]);x=[];${mem?'postMessage([1,t0,t[1],m,p,step]);':''}}
 							[()=>p++,()=>p--,()=>m[p]++,()=>m[p]--,()=>{x.push(m[p]);},()=>m[p]=n.pop(),()=>ps=(m[p]?ps:l[0][ps]),()=>ps=l[1][ps]][src[ps]]();
 							ps++;step++;
 							if(step%128<wait)await new Promise(f=>setTimeout(f,wait-128));
 						}
-						postMessage([0,x]);postMessage([1,t0,t[1],m,p]);postMessage([2]);console.log(m,p);`;
+						postMessage([0,x]);postMessage([1,t0,t[1],m,p,step]);postMessage([2]);console.log(m,p);`;
 				worker.postMessage(s);
 			},
 			enmain=(s,dist)=>{
@@ -169,7 +169,7 @@ type here before run.</textarea>
 			de[2].onclick=()=>{de[8].value='';de[7].value='Running...';pmax=0;demain(de[0].value,de[1].value,de[4].checked,de[6].checked);};
 			de[3].onclick=()=>{wset();de[7].value='Discard '+de[7].value;};
 			(de[4].onchange=()=>de[5].disabled=de[4].checked)();
-			de[5].oninput=()=>worker.postMessage(`this.wait=-(${de[5].value});`);
+			de[5].oninput=()=>worker.postMessage(`this.wait=${de[5].value.slice(1)};`);
 			de[7].value='\n\n\n\n';TA.ah(de[7]);de[7].value='';
 			de[8].onclick=()=>copy(de[8].value);
 			onbeforeunload=()=>{worker.terminate();URL.revokeObjectURL(wurl);};
