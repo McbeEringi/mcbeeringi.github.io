@@ -87,7 +87,7 @@ type here before run.</textarea>
 						return a;
 					},{
 						s:`let p=0,x=[],t=[performance.now(),0];console.log(t[0]);const m=new Uint8Array(30000),n=[${inp}],s=y=>{if((t[0]+200)<(t[1]=performance.now())||y){t[0]=t[1];postMessage([0,x]);x=[];`+(mem?'postMessage([1,m,p]);}if(y){':'}if(y){postMessage([1,m,p]);')+'postMessage([2]);}};',
-						x:Infinity,i:0
+						x:-1,i:0
 					}).s+'s(1);console.log(t[1],m,p);':
 					`let p=0,ps=0,x=[],l,t=[performance.now(),0];const m=new Uint8Array(30000),n=[${inp}],s=[${s}].filter(x=>x>-1);
 						l=s.reduce((a,x,i)=>{if(x==6)a[0].push(i);else if(a[0].length&&x==7)a[1].push([a[0].pop(i),i]);return a;},[[],[]])[1];l=[Object.fromEntries(l),Object.fromEntries(l.map(x=>[x[1],x[0]-1]))];
