@@ -36,32 +36,28 @@
 
 		exe.onclick=()=>{
 			log.textContent='please wait…\n';
-			const rmc=x=>x.replace(/\t/g,' ').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,'');
+			const rmc=x=>x.replace(/\r\n/g,'\n').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,'');
 			let zip=new JSZip(),keys;
-			try{
-				keys=JSON.parse(tkey.value);
-			}catch(e){log.textContent+=`[ target key ] ${e}`;return;}
+			try{keys=JSON.parse(rmc(tkey.value));}catch(e){log.textContent+=`[ target key ] ${e}`;return;}
 
-			let parr=Array.from(inp.files,x=>new Promise((res,rej)=>{
-				let path=x.webkitRelativePath;
-				if(/json$/i.test(x.name)){
-					let reader=new FileReader();
-					reader.onload=r=>{
-						try{
-							let dat=JSON.parse(rmc(r.target.result)),ind=keys.reduce((a,x)=>a[x],dat);
-							if(typeof ind=='object')throw 'parameter is object';
-							log.textContent+=`${path}\t${ind}\n`;
-							zip.file(`${ind}/${path}`,r.target.result);
-							res('JSON');
-						}catch(err){log.textContent+=`${path}: ${err}\n`;res(err);}
-					}
-					reader.readAsText(x);
-				}else{
-					zip.file(path,x);
-					res();
-				}
-			}));
-			Promise.all(parr)
+			Promise.all(
+				Array.from(inp.files,x=>new Promise(f=>{
+					let path=x.webkitRelativePath;
+					if(/json$/i.test(x.name)){
+						let reader=new FileReader();
+						reader.onload=r=>{
+							try{
+								let dat=JSON.parse(rmc(r.target.result)),ind=keys.reduce((a,x)=>a[x],dat);
+								if(typeof ind=='object')throw 'parameter is object';
+								log.textContent+=`${path}\t${ind}\n`;
+								zip.file(`${ind}/${path}`,r.target.result);
+								f();
+							}catch(err){log.textContent+=`${path}: ${err}\n`;console.log(rmc.toString());f(err);}
+						}
+						reader.readAsText(x);
+					}else{zip.file(path,x);f();}
+				}))
+			)
 				.then(x=>{log.textContent+='packaging…\n';return zip.generateAsync({type:"blob"});})
 				.then(b=>{
 					log.textContent+='done!\n';
