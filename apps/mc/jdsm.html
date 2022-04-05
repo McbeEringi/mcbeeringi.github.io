@@ -47,61 +47,58 @@
 		[ins,sort].forEach(TA.editor);
 
 		exe.onclick=()=>{
-			console.log(inp.files);
 			log.textContent='please wait…\n';
-			const rmc=x=>x.replace(/\t/g,' ').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,''),
-			dmerge=(a,b)=>{
-				if(Array.isArray(a)&&Array.isArray(b))return a.concat(b);
-				else{
-					Object.keys(b).forEach(x=>{
-						if(typeof a[x]=='object'&&typeof b[x]=='object')a[x]=dmerge(a[x],b[x]);
-						else a[x]=b[x];
-					});
-					return a;
-				}
-			},
-			sfx=(a,b)=>{
-				if(smode.checked)return Math.sign(sdic.indexOf(a)-sdic.indexOf(b));
-				else return Math.sign((sdic.indexOf(a)>>>0)-(sdic.indexOf(b)>>>0));
-			},
-			objsort=(obj)=>{
-				let s={}
-				Object.keys(obj).sort(sfx).forEach(x=>{
-					if(typeof obj[x]=='object'){
-						if(Array.isArray(obj[x]))s[x]=obj[x].sort(sfx);
-						else s[x]=objsort(obj[x]);
-					}else s[x]=obj[x];
-				});
-				return s;
-			};
-
-			let sdic,zip=new JSZip(),insd=JSON.parse(rmc(ins.value+'\n'));
-			try{
-				sdic=JSON.parse(sort.value);
-			}catch(e){log.textContent+=`[ sort ] ${e}`;return;}
-
-			let parr=Array.from(inp.files,x=>new Promise((res,rej)=>{
-				let path=x.webkitRelativePath;
-				if(/json$/i.test(x.name)){
-					let reader=new FileReader();
-					reader.onload=r=>{
-						let dat=rmc(r.target.result);
-						try{
-							dat=JSON.parse(dat);
-							console.log(path, dat);
-							dat=dmerge(dat,insd);
-							dat=objsort(dat);
-							zip.file(path,JSON.stringify(dat));
-							res('JSON');
-						}catch(err){log.textContent+=`${path}: ${err}\n`;res(err);}
+			const rmc=x=>x.replace(/\r\n/g,'\n').replace(/\/\/.*\n/g,'\n').replace(/\/\*[.\n]*\*\//g,''),
+				dmerge=(a,b)=>{
+					if(Array.isArray(a)&&Array.isArray(b))return a.concat(b);
+					else{
+						Object.keys(b).forEach(x=>{
+							if(typeof a[x]=='object'&&typeof b[x]=='object')a[x]=dmerge(a[x],b[x]);
+							else a[x]=b[x];
+						});
+						return a;
 					}
-					reader.readAsText(x);
-				}else{
-					zip.file(path,x);
-					res();
-				}
-			}));
-			Promise.all(parr)
+				},
+				sfx=(a,b)=>{
+					if(smode.checked)return Math.sign(sdic.indexOf(a)-sdic.indexOf(b));
+					else return Math.sign((sdic.indexOf(a)>>>0)-(sdic.indexOf(b)>>>0));
+				},
+				objsort=(obj)=>{
+					let s={}
+					Object.keys(obj).sort(sfx).forEach(x=>{
+						if(typeof obj[x]=='object'){
+							if(Array.isArray(obj[x]))s[x]=obj[x].sort(sfx);
+							else s[x]=objsort(obj[x]);
+						}else s[x]=obj[x];
+					});
+					return s;
+				};
+			let sdic,zip=new JSZip(),insd=JSON.parse(rmc(ins.value));
+			try{sdic=JSON.parse(rmc(sort.value));}catch(e){log.textContent+=`[ sort ] ${e}`;return;}
+
+			Promise.all(
+					Array.from(inp.files,x=>new Promise((res,rej)=>{
+					let path=x.webkitRelativePath;
+					if(/json$/i.test(x.name)){
+						let reader=new FileReader();
+						reader.onload=r=>{
+							let dat=rmc(r.target.result);
+							try{
+								dat=JSON.parse(dat);
+								console.log(path, dat);
+								dat=dmerge(dat,insd);
+								dat=objsort(dat);
+								zip.file(path,JSON.stringify(dat));
+								res('JSON');
+							}catch(err){log.textContent+=`${path}: ${err}\n`;res(err);}
+						}
+						reader.readAsText(x);
+					}else{
+						zip.file(path,x);
+						res();
+					}
+				}))
+			)
 				.then(x=>{log.textContent+='packaging…\n';return zip.generateAsync({type:"blob"});})
 				.then(b=>{
 					log.textContent+='done!\n';
