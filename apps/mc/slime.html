@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi slime_chunk_be</title>
+	<meta name="description" content="mcbe slime chunk calculator">
+	<link rel="shortcut icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../../src/style.css">
+</head>
+<body>
+	<style>
+		pre{font-family:monospace;}
+		#c{background:#8882 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='2' cx='256' cy='256' fill='%23f00'/%3E%3C/svg%3E");}
+	</style>
+	<h1>slime_chunk_be</h1>
+	<hr>
+	x:<input type="number" id="inpx" value="0"><br>
+	z:<input type="number" id="inpz" value="0"><br>
+	s:<input type="range" id="inps" value="10" min="7" max="11" step="any"><br>
+	<canvas id="c"></canvas>
+	<pre id="log"></pre>
+	<script>
+		c.style.width=c.style.height=512+'px';
+		c.width=c.height=512*devicePixelRatio;
+		const genrand_int32=seed=>{//MersenneTwister
+				const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
+				mt[0]=seed;
+				for(let i=1;i<N;i++)mt[i]=Math.imul(mt[i-1]^(mt[i-1]>>>30),1812433253)+i;
+				for(let i=0;i<N;i++)mt[i]=mt[(i+M)%N]^mask(mt[i],mt[(i+1)%N]);
+				let y=mt[0];
+				y^=(y>>>11);
+				y^=(y<<  7)&0x9d2c5680;
+				y^=(y<< 15)&0xefc60000;
+				y^=(y>>>18);
+				return y>>>0;
+			},
+			slime=p=>genrand_int32(Math.imul(p[0],0x1f1f1f1f)^p[1])%10==0,
+			//region=x=>new Array(32).fill().map((_,i)=>new Array(32).fill().map((ch,j)=>{ch=[j+32*x[0],i+32*x[1]];return{ch,slime:slime(ch)};}));
+			ctx=c.getContext('2d'),
+			cache={},
+			draw=(size,pos)=>{log.textContent=size;
+				ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='#0f08';
+				const a=Math.ceil(size/16);
+				new Array(a).fill().forEach((_,i)=>new Array(a).fill().forEach((_,j)=>{
+					const ch=[j-Math.round(size/32)-Math.floor(pos[0]/16),i-Math.round(size/32)-Math.floor(pos[1]/16)],
+								grid=[c.width/size*16,c.height/size*16];
+					if(''+ch in cache?cache[''+ch]:(cache[''+ch]=slime(ch)))
+						ctx.fillRect(grid[0]*j,grid[1]*i,...grid);
+				}));
+			};
+		ctx.scale(devicePixelRatio,devicePixelRatio);
+		(inpx.oninput=inpz.oninput=inps.oninput=()=>draw(Math.pow(2,inps.value),[inpx.value,inpz.value]))();
+</script>
+</body>
+</html>
