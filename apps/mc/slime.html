@@ -12,6 +12,7 @@
 	<meta name="theme-color" content="#214"/>
 
 	<link rel="stylesheet" href="../../src/style.css">
+	<link rel="stylesheet" href="../../src/toggle.css">
 </head>
 <body>
 	<style>
@@ -24,6 +25,7 @@
 	<label>x:<input type="number" id="inpx" value="0" class="input"></label>
 	<label>z:<input type="number" id="inpz" value="0" class="input"></label>
 	<label>size:<input type="range" id="inps" value="4" min="1" max="7" step="any"><label>
+	<label>coord:<input type="checkbox" id="inpc" checked class="toggle"><label>
 
 	<canvas id="c"></canvas>
 	<script>
@@ -53,22 +55,22 @@
 					txts=Math.min(Math.floor(Math.sqrt(size)/2),5);
 				size=Math.ceil(size+1);
 				ctx.font=`${+getComputedStyle(c).width.slice(0,-2)/32*devicePixelRatio}px monospace`;
-				new Array(size).fill().forEach((_,y)=>
-					new Array(size).fill().forEach((_,x)=>{
+				new Array(size).fill().flatMap((_,y)=>
+					new Array(size).fill().map((_,x)=>{
 						const ch=[x-Math.floor(hs)+ach[0]+ofs[0],y-Math.floor(hs)+ach[1]+ofs[1]],gpos=[grid*(x+ofs[0]+hsf-(pfrc[0]-8)/16),grid*(y+ofs[1]+hsf-(pfrc[1]-8)/16)];
 						ctx.fillStyle=[
 							'#8882','#8884','#0f0a','#0f0c',
 							'#8885','#8887','#0f0d','#0f0f',
 						][((ch[0]&1)^(ch[1]&1))+(slime_(ch)<<1)+(((Math.floor(ch[0]/32)&1)^(Math.floor(ch[1]/32)&1))<<2)];
 						ctx.fillRect(...gpos,grid,grid);
-						if(ch.map(_=>_%Math.pow(2,txts)).every(_=>!_)){
-							ctx.translate(...gpos);ctx.rotate(Math.PI/4);
-							ctx.fillStyle=`#888${'468ace'[txts]}`;
-							ctx.fillText('\u25fa'+ch.map(_=>_*16),0,0,grid*1.4*Math.pow(2,txts));
-							ctx.rotate(-Math.PI/4);ctx.translate(...gpos.map(_=>-_));
-						}
-					})
-				);
+						if(ch.map(_=>_%Math.pow(2,txts)).every(_=>!_))if(inpc.checked)return{ch,gpos};
+					}).filter(x=>x)
+				).forEach(x=>{
+					ctx.translate(...x.gpos);ctx.rotate(Math.PI/4);
+					ctx.fillStyle=`#fff${'468ace'[txts]}`;
+					ctx.fillText('\u25fa'+x.ch.map(_=>_*16),0,0,grid*1.4*Math.pow(2,txts));
+					ctx.rotate(-Math.PI/4);ctx.translate(...x.gpos.map(_=>-_));
+				});
 				ctx.fillStyle='#f00c';
 				ctx.fillRect(c.width/2-1,0,2,c.height);
 				ctx.fillRect(0,c.height/2-1,c.width,2);
@@ -82,7 +84,7 @@
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
 		addEventListener('DOMContentLoaded',onresize=()=>{c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;flag=true;},{once:true});
-		(inpx.oninput=inpz.oninput=inps.oninput=()=>flag=true)();
+		(inpx.oninput=inpz.oninput=inps.oninput=inpc.onchange=()=>flag=true)();
 		ctx.scale(devicePixelRatio,devicePixelRatio);
 		c.addEventListener('wheel',e=>{e.preventDefault();inps.value=+inps.value+e.deltaY*.1;flag=true;});
 		c.addEventListener('mousedown',e=>cursor={z:1});
