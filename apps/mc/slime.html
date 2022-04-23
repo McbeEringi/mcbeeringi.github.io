@@ -16,7 +16,7 @@
 <body>
 	<style>
 		pre{font-family:monospace;font-size:8px;text-align:center;display:inline-block;}
-		#c{width:100%;}
+		#c{width:100%;max-width:512px;}
 	</style>
 	<h1>slime_chunk_be</h1>
 	<hr>
@@ -24,7 +24,7 @@
 	z:<input type="number" id="inpz" value="0" class="input"><input type="range" id="rngz" value="0" min="-5" max="5"><br>
 	size:<input type="range" id="inps" value="4" min="1" max="7" step="any"><br>
 
-	<pre id="log"></pre>
+	<pre id="log"></pre><br>
 	<canvas id="c"></canvas>
 	<script>
 		let flag=false;
@@ -45,25 +45,27 @@
 			cache={},cind=[],
 			slime_=p=>''+p in cache?cache[''+p]:(()=>{cind.push(''+p);return cache[''+p]=slime(p);})(),
 			ctx=c.getContext('2d'),
-			draw=(size=(Math.pow(2,inps.value)),p=[+inpx.value,+inpz.value])=>{
+			draw=(size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
 				size=(size-1)/2
 				ctx.clearRect(0,0,c.width,c.height);
-				let ach=[Math.floor(p[0]/16),Math.floor(p[1]/16)],a=size*2+1,grid=c.width/a,sfrc=size%1,ofs=-1-(sfrc!=0);
+				let ach=[Math.floor(p[0]/16),Math.floor(p[1]/16)],a=size*2+1,grid=c.width/a,
+					sfrc=size%1,pfrc=[mod(p[0],16),mod(p[1],16)],
+					ofsx=-(pfrc[0]==0)-(sfrc!=0),ofsy=-(pfrc[1]==0)-(sfrc!=0)
 				log.textContent=`x:${p[0]}\nz:${p[1]}\n${slime_(ach)}`;
 				new Array(Math.ceil(a+1)).fill().forEach((_,y)=>
 					new Array(Math.ceil(a+1)).fill().forEach((_,x)=>{
-						const ch=[x-Math.floor(size)+ach[0]+ofs,y-Math.floor(size)+ach[1]+ofs];
+						const ch=[x-Math.floor(size)+ach[0]+ofsx,y-Math.floor(size)+ach[1]+ofsy];
 						ctx.fillStyle=[
 							'#8882','#8884','#0f0a','#0f0c'
 						][(((ch[0]&1)^(ch[1]&1)))+(slime_(ch)<<1)];
-						ctx.fillRect(grid*(x+ofs+sfrc-(mod(p[0],16)-8)/16),grid*(y+ofs+sfrc-(mod(p[1],16)-8)/16),grid,grid);
+						ctx.fillRect(grid*(x+ofsx+sfrc-(pfrc[0]-8)/16),grid*(y+ofsy+sfrc-(pfrc[1]-8)/16),grid,grid);
 					})
 				);
-				ctx.fillStyle='#f008';
+				ctx.fillStyle='#f00c';
 				ctx.fillRect(c.width/2-1,0,2,c.height);
 				ctx.fillRect(0,c.height/2-1,c.width,2);
 				grid/=16;
-				ctx.fillStyle='#f004';
+				ctx.fillStyle='#f008';
 				ctx.fillRect(c.width/2-grid*mod(p[0],1),c.height/2-grid*mod(p[1],1),grid,grid);
 				if((a=cind.length-a*a)>0){cind.slice(0,a).forEach(x=>delete cache[x]);cind.splice(0,a);}
 			},
