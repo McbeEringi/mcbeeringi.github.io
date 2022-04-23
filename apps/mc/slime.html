@@ -50,12 +50,12 @@
 				log.textContent=`x:${p[0]}\nz:${p[1]}\n${slime_(ach)}`;
 				new Array(a).fill().forEach((_,y)=>
 					new Array(a).fill().forEach((_,x)=>{
-						const arg=[grid*x,grid*y,grid,grid],
-							ch=[x-size+ach[0],y-size+ach[1]],
-							f=c=>{ctx.fillStyle=c;ctx.fillRect(...arg);};
-						f((ch[0]%2+ch[1]%2)%2?'#8882':'#8884');
-						if(x==size||y==size)f('#f004');
-						if(slime_(ch))f('#0f0c');
+						const ch=[x-size+ach[0],y-size+ach[1]];
+						ctx.fillStyle=[
+							'#8882','#8884','#0f0a','#0f0c',
+							'#f882','#f884','#0f0a','#0f0c'
+						][(((ch[0]&1)^(ch[1]&1)))+(slime_(ch)<<1)+((x==size||y==size)<<2)];
+						ctx.fillRect(grid*x,grid*y,grid,grid);
 					})
 				);
 				if((a=cind.length-a*a)>0){cind.slice(0,a).forEach(x=>delete cache[x]);cind.splice(0,a);}
@@ -66,10 +66,10 @@
 				if(flag){draw();flag=false;}
 				requestAnimationFrame(main);
 			};
-		onload=onresize=()=>{
+		addEventListener('DOMContentLoaded',onresize=()=>{
 			c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
 			flag=true;
-		};
+		},{once:true});
 		(inpx.oninput=inpz.oninput=inps.oninput=()=>flag=true)();
 		ctx.scale(devicePixelRatio,devicePixelRatio);
 		main();
