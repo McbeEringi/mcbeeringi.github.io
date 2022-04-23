@@ -77,7 +77,7 @@
 				ctx.fillRect(c.width/2-grid*mod(p[0],1),c.height/2-grid*mod(p[1],1),grid,grid);
 				ctx.fillStyle='#fffc';
 				ctx.font=`${16*devicePixelRatio}px monospace`;
-				`x: ${p[0].toFixed(2)}\nz: ${p[1].toFixed(2)}\nslime: ${slime_(ach)}`.split('\n').forEach((x,i)=>ctx.fillText(x,0,16*devicePixelRatio*(i+1)*1.2));
+				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime_(ach)}`.split('\n').forEach((x,i)=>ctx.fillText(x,0,16*devicePixelRatio*(i+1)*1.2));
 				if((size=cind.length-size*size*4)>0){cind.slice(0,size).forEach(x=>delete cache[x]);cind.splice(0,size);}
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
@@ -91,8 +91,8 @@
 			if(!cursor.z)return;
 			const size=getComputedStyle(c).width.slice(0,-2);
 			e.preventDefault();
-			inpx.value=+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=e.clientX/size))*Math.pow(2,inps.value)*16;
-			inpz.value=+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=e.clientY/size))*Math.pow(2,inps.value)*16;
+			inpx.value=(+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=e.clientX/size))*Math.pow(2,inps.value)*16).toFixed(2);
+			inpz.value=(+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=e.clientY/size))*Math.pow(2,inps.value)*16).toFixed(2);
 			flag=true;
 		});
 		c.addEventListener('touchstart',e=>cursor={});
@@ -102,8 +102,8 @@
 			const size=getComputedStyle(c).width.slice(0,-2),
 				tt=[0,1].map(x=>e.targetTouches[x]);
 			e.preventDefault();
-			inpx.value=+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=(tt[0].clientX+tt[1].clientX)/size*.5))*Math.pow(2,inps.value)*16;
-			inpz.value=+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=(tt[0].clientY+tt[1].clientY)/size*.5))*Math.pow(2,inps.value)*16;
+			inpx.value=(+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=(tt[0].clientX+tt[1].clientX)/size*.5))*Math.pow(2,inps.value)*16).toFixed(2);
+			inpz.value=(+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=(tt[0].clientY+tt[1].clientY)/size*.5))*Math.pow(2,inps.value)*16).toFixed(2);
 			inps.value=+inps.value-('s'in cursor||(cursor.s=0))*(-cursor.s+(cursor.s=Math.hypot(tt[0].clientX-tt[1].clientX,tt[0].clientY-tt[1].clientY)/size/4))*16;
 			flag=true;
 		});
