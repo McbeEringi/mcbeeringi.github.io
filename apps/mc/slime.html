@@ -22,13 +22,14 @@
 	<hr>
 	x:<input type="number" id="inpx" value="0" class="input"><input type="range" id="rngx" value="0" min="-5" max="5"><br>
 	z:<input type="number" id="inpz" value="0" class="input"><input type="range" id="rngz" value="0" min="-5" max="5"><br>
-	size:<input type="range" id="inps" value="4" min="1" max="6" step="any"><br>
+	size:<input type="range" id="inps" value="4" min="1" max="7" step="any"><br>
 
 	<pre id="log"></pre>
 	<canvas id="c"></canvas>
 	<script>
 		let flag=false;
-		const genrand_int32=seed=>{//MersenneTwister
+		const mod=(x,y)=>(x%y+y)%y,
+			genrand_int32=seed=>{//MersenneTwister
 				const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
 				mt[0]=seed;
 				for(let i=1;i<N;i++)mt[i]=Math.imul(mt[i-1]^(mt[i-1]>>>30),1812433253)+i;
@@ -44,20 +45,26 @@
 			cache={},cind=[],
 			slime_=p=>''+p in cache?cache[''+p]:(()=>{cind.push(''+p);return cache[''+p]=slime(p);})(),
 			ctx=c.getContext('2d'),
-			draw=(size=Math.round(Math.pow(2,inps.value)),p=[+inpx.value,+inpz.value])=>{
+			draw=(size=(Math.pow(2,inps.value)),p=[+inpx.value,+inpz.value])=>{
+				size=(size-1)/2
 				ctx.clearRect(0,0,c.width,c.height);
-				let ach=[Math.floor(p[0]/16),Math.floor(p[1]/16)],a=size*2+1,grid=c.width/a;
+				let ach=[Math.floor(p[0]/16),Math.floor(p[1]/16)],a=size*2+1,grid=c.width/a,sfrc=size%1,ofs=-1-(sfrc!=0);
 				log.textContent=`x:${p[0]}\nz:${p[1]}\n${slime_(ach)}`;
-				new Array(a).fill().forEach((_,y)=>
-					new Array(a).fill().forEach((_,x)=>{
-						const ch=[x-size+ach[0],y-size+ach[1]];
+				new Array(Math.ceil(a+1)).fill().forEach((_,y)=>
+					new Array(Math.ceil(a+1)).fill().forEach((_,x)=>{
+						const ch=[x-Math.floor(size)+ach[0]+ofs,y-Math.floor(size)+ach[1]+ofs];
 						ctx.fillStyle=[
-							'#8882','#8884','#0f0a','#0f0c',
-							'#f882','#f884','#0f0a','#0f0c'
-						][(((ch[0]&1)^(ch[1]&1)))+(slime_(ch)<<1)+((x==size||y==size)<<2)];
-						ctx.fillRect(grid*x,grid*y,grid,grid);
+							'#8882','#8884','#0f0a','#0f0c'
+						][(((ch[0]&1)^(ch[1]&1)))+(slime_(ch)<<1)];
+						ctx.fillRect(grid*(x+ofs+sfrc-(mod(p[0],16)-8)/16),grid*(y+ofs+sfrc-(mod(p[1],16)-8)/16),grid,grid);
 					})
 				);
+				ctx.fillStyle='#f008';
+				ctx.fillRect(c.width/2-1,0,2,c.height);
+				ctx.fillRect(0,c.height/2-1,c.width,2);
+				grid/=16;
+				ctx.fillStyle='#f004';
+				ctx.fillRect(c.width/2-grid*mod(p[0],1),c.height/2-grid*mod(p[1],1),grid,grid);
 				if((a=cind.length-a*a)>0){cind.slice(0,a).forEach(x=>delete cache[x]);cind.splice(0,a);}
 			},
 			main=()=>{
