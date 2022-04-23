@@ -16,18 +16,18 @@
 <body>
 	<style>
 		pre{font-family:monospace;font-size:8px;text-align:center;display:inline-block;}
-		#c{width:100%;max-width:512px;}
+		#c{display:block;width:min(100%,720px);margin:0 auto;}
+		label{white-space:nowrap;}
 	</style>
 	<h1>slime_chunk_be</h1>
 	<hr>
-	x:<input type="number" id="inpx" value="0" class="input"><input type="range" id="rngx" value="0" min="-5" max="5"><br>
-	z:<input type="number" id="inpz" value="0" class="input"><input type="range" id="rngz" value="0" min="-5" max="5"><br>
-	size:<input type="range" id="inps" value="4" min="1" max="7" step="any"><br>
+	<label>x:<input type="number" id="inpx" value="0" class="input"></label>
+	<label>z:<input type="number" id="inpz" value="0" class="input"></label>
+	<label>size:<input type="range" id="inps" value="4" min="1" max="7" step="any"><label>
 
-	<pre id="log"></pre><br>
 	<canvas id="c"></canvas>
 	<script>
-		let flag=false;
+		let flag=false,cursor={};
 		const mod=(x,y)=>(x%y+y)%y,
 			genrand_int32=seed=>{//MersenneTwister
 				const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
@@ -46,19 +46,27 @@
 			slime_=p=>''+p in cache?cache[''+p]:(()=>{cind.push(''+p);return cache[''+p]=slime(p);})(),
 			ctx=c.getContext('2d'),
 			draw=(size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
-				size=(size-1)/2
+				hs=(size-1)/2;
 				ctx.clearRect(0,0,c.width,c.height);
-				let ach=[Math.floor(p[0]/16),Math.floor(p[1]/16)],a=size*2+1,grid=c.width/a,
-					sfrc=size%1,pfrc=[mod(p[0],16),mod(p[1],16)],
-					ofsx=-(pfrc[0]==0)-(sfrc!=0),ofsy=-(pfrc[1]==0)-(sfrc!=0)
-				log.textContent=`x:${p[0]}\nz:${p[1]}\n${slime_(ach)}`;
-				new Array(Math.ceil(a+1)).fill().forEach((_,y)=>
-					new Array(Math.ceil(a+1)).fill().forEach((_,x)=>{
-						const ch=[x-Math.floor(size)+ach[0]+ofsx,y-Math.floor(size)+ach[1]+ofsy];
+				let ach=[Math.floor(p[0]/16),Math.floor(p[1]/16)],grid=c.width/size,
+					hsf=hs%1,pfrc=p.map(x=>mod(x,16)),ofs=pfrc.map(x=>-(x<8)-(!hsf<.5)),//TODO
+					txts=Math.min(Math.floor(Math.sqrt(size)/2),5);
+				size=Math.ceil(size+1);
+				ctx.font=`${+getComputedStyle(c).width.slice(0,-2)/32*devicePixelRatio}px monospace`;
+				new Array(size).fill().forEach((_,y)=>
+					new Array(size).fill().forEach((_,x)=>{
+						const ch=[x-Math.floor(hs)+ach[0]+ofs[0],y-Math.floor(hs)+ach[1]+ofs[1]],gpos=[grid*(x+ofs[0]+hsf-(pfrc[0]-8)/16),grid*(y+ofs[1]+hsf-(pfrc[1]-8)/16)];
 						ctx.fillStyle=[
-							'#8882','#8884','#0f0a','#0f0c'
-						][(((ch[0]&1)^(ch[1]&1)))+(slime_(ch)<<1)];
-						ctx.fillRect(grid*(x+ofsx+sfrc-(pfrc[0]-8)/16),grid*(y+ofsy+sfrc-(pfrc[1]-8)/16),grid,grid);
+							'#8882','#8884','#0f0a','#0f0c',
+							'#8885','#8887','#0f0d','#0f0f',
+						][((ch[0]&1)^(ch[1]&1))+(slime_(ch)<<1)+(((Math.floor(ch[0]/32)&1)^(Math.floor(ch[1]/32)&1))<<2)];
+						ctx.fillRect(...gpos,grid,grid);
+						if(ch.map(_=>_%Math.pow(2,txts)).every(_=>!_)){
+							ctx.translate(...gpos);ctx.rotate(Math.PI/4);
+							ctx.fillStyle=`#888${'468ace'[txts]}`;
+							ctx.fillText('\u25fa'+ch.map(_=>_*16),0,0,grid*1.4*Math.pow(2,txts));
+							ctx.rotate(-Math.PI/4);ctx.translate(...gpos.map(_=>-_));
+						}
 					})
 				);
 				ctx.fillStyle='#f00c';
@@ -67,20 +75,38 @@
 				grid/=16;
 				ctx.fillStyle='#f008';
 				ctx.fillRect(c.width/2-grid*mod(p[0],1),c.height/2-grid*mod(p[1],1),grid,grid);
-				if((a=cind.length-a*a)>0){cind.slice(0,a).forEach(x=>delete cache[x]);cind.splice(0,a);}
+				ctx.fillStyle='#fffc';
+				ctx.font=`${16*devicePixelRatio}px monospace`;
+				`x: ${p[0].toFixed(2)}\nz: ${p[1].toFixed(2)}\nslime: ${slime_(ach)}`.split('\n').forEach((x,i)=>ctx.fillText(x,0,16*devicePixelRatio*(i+1)*1.2));
+				if((size=cind.length-size*size*4)>0){cind.slice(0,size).forEach(x=>delete cache[x]);cind.splice(0,size);}
 			},
-			main=()=>{
-				if(rngx.value!=0){inpx.value=+inpx.value+rngx.value*Math.abs(rngx.value);inpx.oninput();}
-				if(rngz.value!=0){inpz.value=+inpz.value+rngz.value*Math.abs(rngz.value);inpz.oninput();}
-				if(flag){draw();flag=false;}
-				requestAnimationFrame(main);
-			};
-		addEventListener('DOMContentLoaded',onresize=()=>{
-			c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
-			flag=true;
-		},{once:true});
+			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
+		addEventListener('DOMContentLoaded',onresize=()=>{c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;flag=true;},{once:true});
 		(inpx.oninput=inpz.oninput=inps.oninput=()=>flag=true)();
 		ctx.scale(devicePixelRatio,devicePixelRatio);
+		c.addEventListener('wheel',e=>{e.preventDefault();inps.value=+inps.value+e.deltaY*.1;flag=true;});
+		c.addEventListener('mousedown',e=>cursor={z:1});
+		addEventListener('mouseup',e=>cursor={});
+		addEventListener('mousemove',e=>{
+			if(!cursor.z)return;
+			const size=getComputedStyle(c).width.slice(0,-2);
+			e.preventDefault();
+			inpx.value=+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=e.clientX/size))*Math.pow(2,inps.value)*16;
+			inpz.value=+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=e.clientY/size))*Math.pow(2,inps.value)*16;
+			flag=true;
+		});
+		c.addEventListener('touchstart',e=>cursor={});
+		c.addEventListener('touchend',e=>cursor={});
+		c.addEventListener('touchmove',e=>{
+			if(e.targetTouches.length<2)return;
+			const size=getComputedStyle(c).width.slice(0,-2),
+				tt=[0,1].map(x=>e.targetTouches[x]);
+			e.preventDefault();
+			inpx.value=+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=(tt[0].clientX+tt[1].clientX)/size*.5))*Math.pow(2,inps.value)*16;
+			inpz.value=+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=(tt[0].clientY+tt[1].clientY)/size*.5))*Math.pow(2,inps.value)*16;
+			inps.value=+inps.value-('s'in cursor||(cursor.s=0))*(-cursor.s+(cursor.s=Math.hypot(tt[0].clientX-tt[1].clientX,tt[0].clientY-tt[1].clientY)/size/4))*16;
+			flag=true;
+		});
 		main();
 </script>
 </body>
