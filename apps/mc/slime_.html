@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi slime_chunk_be</title>
+	<meta name="description" content="mcbe slime chunk calculator">
+	<link rel="shortcut icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../../src/style.css">
+	<link rel="stylesheet" href="../../src/toggle.css">
+</head>
+<body>
+	<style>
+		pre{font-family:monospace;font-size:8px;text-align:center;display:inline-block;}
+		#c{display:block;width:min(100%,720px);margin:0 auto;cursor:grab;}#c:active{cursor:grabbing;}
+		label{white-space:nowrap;}
+	</style>
+	<h1>slime_chunk_be</h1>
+	<hr>
+	<label>x:<input type="number" id="inpx" value="0" class="input"></label>
+	<label>z:<input type="number" id="inpz" value="0" class="input"></label>
+	<label>size:<input type="range" id="inps" value="4" min="1" max="7" step="any"></label>
+	<label>coord:<input type="checkbox" id="inpc" checked class="toggle"></label>
+
+	<canvas id="c"></canvas>
+	<script>
+		let flag=false,cursor={};
+		const mod=(x,y)=>(x%y+y)%y,
+			genrand_int32=seed=>{//MersenneTwister
+				const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
+				mt[0]=seed;
+				for(let i=1;i<N;i++)mt[i]=Math.imul(mt[i-1]^(mt[i-1]>>>30),1812433253)+i;
+				for(let i=0;i<N;i++)mt[i]=mt[(i+M)%N]^mask(mt[i],mt[(i+1)%N]);
+				let y=mt[0];
+				y^=(y>>>11);
+				y^=(y<<  7)&0x9d2c5680;
+				y^=(y<< 15)&0xefc60000;
+				y^=(y>>>18);
+				return y>>>0;
+			},
+			slime=p=>genrand_int32(Math.imul(p[0],0x1f1f1f1f)^p[1])%10==0,
+			cache={},cind=[],
+			region=p=>{
+				if(!(''+p in cache)){
+					const rpos=[p[0]*32,p[1]*32],mesh=x=>(x[0]&1)^(x[1]&1),
+						_c=document.createElement('canvas'),
+						_ctx=_c.getContext('2d');
+					_c.width=32;_c.height=32;
+					new Array(32).fill().forEach((_,y)=>new Array(32).fill().forEach((_,x)=>{
+						const ch=[rpos[0]+x,rpos[1]+y];
+						_ctx.fillStyle=[
+							'#8882','#8884','#0f0a','#0f0c',
+							'#8885','#8887','#0f0d','#0f0f'
+						][mesh(ch)+(slime(ch)<<1)+(mesh(p)<<2)];
+						_ctx.fillRect(x,y,1,1);
+					}));
+					cache[''+p]=_c;
+					cind.push(''+p);
+				}
+				return cache[''+p];
+			},
+			ctx=c.getContext('2d'),
+			draw=(size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
+				ctx.clearRect(0,0,c.width,c.height);
+				const so=size*8,
+					range=[p.map(x=>Math.floor((x-so)/512)),p.map(x=>Math.floor((x+so)/512))];
+				ctx.drawImage(region([0,0]),0,0,c.width,c.height);
+			},
+			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
+		addEventListener('DOMContentLoaded',onresize=()=>{
+			c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
+			ctx.imageSmoothingEnabled=false;
+			flag=true;
+		},{once:true});
+		(inpx.oninput=inpz.oninput=inps.oninput=inpc.onchange=()=>flag=true)();
+		ctx.scale(devicePixelRatio,devicePixelRatio);
+		c.addEventListener('wheel',e=>{e.preventDefault();inps.value=+inps.value+e.deltaY*.1;flag=true;});
+		c.addEventListener('mousedown',e=>cursor={z:1});
+		addEventListener('mouseup',e=>cursor={});
+		addEventListener('mousemove',e=>{
+			if(!cursor.z)return;
+			const size=getComputedStyle(c).width.slice(0,-2);
+			e.preventDefault();
+			inpx.value=(+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=e.clientX/size))*Math.pow(2,inps.value)*16).toFixed(2);
+			inpz.value=(+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=e.clientY/size))*Math.pow(2,inps.value)*16).toFixed(2);
+			flag=true;
+		});
+		c.addEventListener('touchstart',e=>cursor={});
+		c.addEventListener('touchend',e=>cursor={});
+		c.addEventListener('touchmove',e=>{
+			if(e.targetTouches.length<2)return;
+			const size=getComputedStyle(c).width.slice(0,-2),
+				tt=[0,1].map(x=>e.targetTouches[x]);
+			e.preventDefault();
+			inpx.value=(+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=(tt[0].clientX+tt[1].clientX)/size*.5))*Math.pow(2,inps.value)*16).toFixed(2);
+			inpz.value=(+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=(tt[0].clientY+tt[1].clientY)/size*.5))*Math.pow(2,inps.value)*16).toFixed(2);
+			inps.value=+inps.value-('s'in cursor||(cursor.s=0))*(-cursor.s+(cursor.s=Math.hypot(tt[0].clientX-tt[1].clientX,tt[0].clientY-tt[1].clientY)/size/4))*16;
+			flag=true;
+		});
+		main();
+</script>
+</body>
+</html>
