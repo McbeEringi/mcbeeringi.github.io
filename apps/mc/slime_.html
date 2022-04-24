@@ -24,7 +24,7 @@
 	<hr>
 	<label>x:<input type="number" id="inpx" value="0" class="input"></label>
 	<label>z:<input type="number" id="inpz" value="0" class="input"></label>
-	<label>size:<input type="range" id="inps" value="4" min="1" max="7" step="any"></label>
+	<label>size:<input type="range" id="inps" value="4" min="1" max="8" step="any"></label>
 	<label>coord:<input type="checkbox" id="inpc" checked class="toggle"></label>
 
 	<canvas id="c"></canvas>
@@ -51,16 +51,25 @@
 						_c=document.createElement('canvas'),
 						_ctx=_c.getContext('2d');
 					_c.width=32;_c.height=32;
-					new Array(32).fill().forEach((_,y)=>new Array(32).fill().forEach((_,x)=>{
-						const ch=[rpos[0]+x,rpos[1]+y];
-						_ctx.fillStyle=[
-							'#8882','#8884','#0f0a','#0f0c',
-							'#8885','#8887','#0f0d','#0f0f'
-						][mesh(ch)+(slime(ch)<<1)+(mesh(p)<<2)];
-						_ctx.fillRect(x,y,1,1);
-					}));
+					_ctx.putImageData(new ImageData(new Uint8ClampedArray(
+						new Array(32).fill().flatMap((_,y)=>new Array(32).fill().flatMap((_,x)=>{
+							const ch=[rpos[0]+x,rpos[1]+y];
+							return[
+								[128,128,128,32],[128,128,128,64],[0,255,0,224],[0,255,0,192],
+								[128,128,128,128],[128,128,128,64],[0,255,0,224],[0,255,0,240]
+							][mesh(ch)+(slime(ch)<<1)+(mesh(p)<<2)];
+						}))
+					),32),0,0);
 					cache[''+p]=_c;
 					cind.push(''+p);
+					_c.toBlob(b=>{
+						const img=new Image();
+						img.src=URL.createObjectURL(b);
+						img.onload=()=>{
+							if(cind.includes(''+p))cache[''+p]=img;
+							URL.revokeObjectURL(img.src);
+						};
+					});
 				}
 				return cache[''+p];
 			},
@@ -68,8 +77,13 @@
 			draw=(size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
 				ctx.clearRect(0,0,c.width,c.height);
 				const so=size*8,
-					range=[p.map(x=>Math.floor((x-so)/512)),p.map(x=>Math.floor((x+so)/512))];
-				ctx.drawImage(region([0,0]),0,0,c.width,c.height);
+					range=[p.map(x=>Math.floor((x-so)/512)),p.map(x=>Math.floor((x+so)/512))],
+					rnum=[range[1][0]-range[0][0]+1,range[1][1]-range[0][1]+1];
+				new Array(rnum[1]).fill().forEach((_,y)=>
+					new Array(rnum[0]).fill().forEach((_,x)=>{
+						ctx.drawImage(region([range[0][0]+x,range[0][1]+y]),c.width/rnum[0]*x,c.height/rnum[1]*y,c.width/rnum[0],c.height/rnum[1]);
+					})
+				)
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
 		addEventListener('DOMContentLoaded',onresize=()=>{
