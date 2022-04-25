@@ -32,7 +32,7 @@
 		'use strict';
 		let flag=false,cursor={},wcur=0;
 		const mod=(x,y)=>(x%y+y)%y,cache={},queue=[],
-			wurl=new Array(16).fill().map(()=>URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async()=>{}).constructor(m.data)();']))),
+			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async()=>{}).constructor(m.data)();']))),
 			worker=wurl.map(x=>new Worker(x)),
 			slime=m=>{//der MersenneTwister
 				m=Math.imul(m[0],0x1f1f1f1f)^m[1];
