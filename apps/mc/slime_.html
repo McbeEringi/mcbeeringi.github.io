@@ -24,12 +24,14 @@
 	<hr>
 	<label>x:<input type="number" id="inpx" value="0" class="input"></label>
 	<label>z:<input type="number" id="inpz" value="0" class="input"></label>
-	<label>size:<input type="range" id="inps" value="4" min="1" max="10" step="any"></label>
+	<label>size:<input type="range" id="inps" value="5" min="1" max="9" step="any"></label>
 	<label>coord:<input type="checkbox" id="inpc" checked class="toggle"></label>
 
 	<canvas id="c"></canvas>
 	<script>
-		const wurl=URL.createObjectURL(new Blob([`
+		let flag=false,cursor={},wcur=0;
+		const cache={},cind=[],queue=[],
+			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob([`
 				const genrand_int32=seed=>{//MersenneTwister
 						const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
 						mt[0]=seed;
@@ -56,13 +58,11 @@
 						);
 					};
 				onmessage=m=>postMessage({p:m.data,dat:region_dat(m.data)});
-			`])),
-			worker=new Worker(wurl);
-		let flag=false,cursor={};
-		const cache={},cind=[],queue=[],
+			`]))),
+			worker=wurl.map(x=>new Worker(x)),
 			region=p=>{
 				if(''+p in cache)return cache[''+p];
-				if(!queue.includes(''+p)){queue.push(''+p);worker.postMessage(p);}
+				if(!queue.includes(''+p)){queue.push(''+p);worker[wcur=(wcur+1)%worker.length].postMessage(p);}
 			},
 			ctx=c.getContext('2d'),
 			draw=(size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
@@ -86,7 +86,7 @@
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
 
-		worker.onmessage=m=>{
+		worker.forEach(x=>x.onmessage=m=>{
 			m=m.data;
 			const _c=document.createElement('canvas'),
 				_ctx=_c.getContext('2d');
@@ -104,7 +104,7 @@
 					URL.revokeObjectURL(img.src);
 				};
 			});
-		};
+		});
 
 		addEventListener('DOMContentLoaded',onresize=()=>{
 			c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
@@ -137,6 +137,7 @@
 			flag=true;
 		});
 		main();
+		onbeforeunload=()=>{wurl.map(URL.revokeObjectURL);};
 </script>
 </body>
 </html>
