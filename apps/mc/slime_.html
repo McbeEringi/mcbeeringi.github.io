@@ -31,37 +31,23 @@
 	<script>
 		let flag=false,cursor={},wcur=0;
 		const mod=(x,y)=>(x%y+y)%y,cache={},queue=[],
-			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob([`
-				const genrand_int32=seed=>{//MersenneTwister
-						const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
-						mt[0]=seed;
-						for(let i=1;i<N;i++)mt[i]=Math.imul(mt[i-1]^(mt[i-1]>>>30),1812433253)+i;
-						for(let i=0;i<N;i++)mt[i]=mt[(i+M)%N]^mask(mt[i],mt[(i+1)%N]);
-						let y=mt[0];
-						y^=(y>>>11);
-						y^=(y<<  7)&0x9d2c5680;
-						y^=(y<< 15)&0xefc60000;
-						y^=(y>>>18);
-						return y>>>0;
-					},
-					slime=p=>genrand_int32(Math.imul(p[0],0x1f1f1f1f)^p[1])%10==0,
-					region_dat=p=>{
-						const rpos=[p[0]*32,p[1]*32],mesh=x=>(x[0]&1)^(x[1]&1);
-						return new Uint8ClampedArray(
-							new Array(32).fill().flatMap((_,y)=>new Array(32).fill().flatMap((_,x)=>{
-								const ch=[rpos[0]+x,rpos[1]+y];
-								return[
-									[128,128,128,32],[128,128,128,64],[0,255,0,224],[0,255,0,192],
-									[128,128,128,128],[128,128,128,64],[0,255,0,224],[0,255,0,240]
-								][mesh(ch)+(slime(ch)<<1)+(mesh(p)<<2)];
-							}))
-						);
-					};
-				onmessage=m=>postMessage({p:m.data,dat:region_dat(m.data)});
-			`]))),
+			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob(['const AsyncFunction=Object.getPrototypeOf(async()=>{}).constructor;onmessage=m=>AsyncFunction(m.data)();']))),
 			worker=wurl.map(x=>new Worker(x)),
+			genrand_int32=seed=>{//MersenneTwister
+				const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
+				mt[0]=seed;
+				for(let i=1;i<N;i++)mt[i]=Math.imul(mt[i-1]^(mt[i-1]>>>30),1812433253)+i;
+				for(let i=0;i<N;i++)mt[i]=mt[(i+M)%N]^mask(mt[i],mt[(i+1)%N]);
+				let y=mt[0];
+				y^=(y>>>11);
+				y^=(y<<  7)&0x9d2c5680;
+				y^=(y<< 15)&0xefc60000;
+				y^=(y>>>18);
+				return y>>>0;
+			},
+			slime=p=>genrand_int32(Math.imul(p[0],0x1f1f1f1f)^p[1])%10==0,
 			region=p=>{
-				if(''+p in cache)return cache[''+p];
+				if(p in cache)return cache[p];
 				if(!queue.includes(''+p)){queue.push(''+p);worker[wcur=(wcur+1)%worker.length].postMessage(p);}
 			},
 			ctx=c.getContext('2d'),
@@ -80,8 +66,7 @@
 				);
 				ctx.fillStyle='#fffc';
 				ctx.font=`${16*devicePixelRatio}px monospace`;
-				const g=ctx.getImageData(c.width/2,c.height/2,1,1).data[1];
-				`x: ${p[0]}\nz: ${p[1]}\nslime: ${g==0?'loading...':g>192?'true':'false'}`.split('\n').forEach((x,i)=>ctx.fillText(x,0,16*devicePixelRatio*(i+1)*1.2));
+				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}\nqueue: ${queue.length}`.split('\n').forEach((x,i)=>ctx.fillText(x,0,16*devicePixelRatio*(i+1)*1.2));
 
 				ctx.fillStyle='#f00c';
 				ctx.fillRect(c.width/2-1,0,2,c.height);
@@ -96,23 +81,40 @@
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
 
-		worker.forEach(x=>x.onmessage=m=>{
-			m=m.data;
-			const _c=document.createElement('canvas'),
-				_ctx=_c.getContext('2d');
-			_c.width=32;_c.height=32;
-			_ctx.putImageData(new ImageData(m.dat,32),0,0);
-			cache[''+m.p]=_c;
-			queue.splice(Object.fromEntries(queue.map(Array))[''+m.p],1);
-			flag=true;
-			_c.toBlob(b=>{
-				const img=new Image();
-				img.src=URL.createObjectURL(b);
-				img.onload=()=>{
-					if(''+m.p in cache)cache[''+m.p]=img;
-					URL.revokeObjectURL(img.src);
-				};
-			});
+		worker.forEach(x=>{
+			x.postMessage(`const genrand_int32=${genrand_int32},slime=${slime},
+				region_dat=p=>{
+						const rpos=[p[0]*32,p[1]*32],mesh=x=>(x[0]&1)^(x[1]&1);
+						return new Uint8ClampedArray(
+							new Array(32).fill().flatMap((_,y)=>new Array(32).fill().flatMap((_,x)=>{
+								const ch=[rpos[0]+x,rpos[1]+y];
+								return[
+									[128,128,128,32],[128,128,128,64],[0,255,0,224],[0,255,0,192],
+									[128,128,128,128],[128,128,128,64],[0,255,0,224],[0,255,0,240]
+								][mesh(ch)+(slime(ch)<<1)+(mesh(p)<<2)];
+							}))
+						);
+					};
+				onmessage=m=>postMessage({p:m.data,dat:region_dat(m.data)});
+			`);
+			x.onmessage=m=>{
+				m=m.data;
+				const _c=document.createElement('canvas'),
+					_ctx=_c.getContext('2d');
+				_c.width=32;_c.height=32;
+				_ctx.putImageData(new ImageData(m.dat,32),0,0);
+				cache[m.p]=_c;
+				queue.splice(Object.fromEntries(queue.map(Array))[m.p],1);
+				flag=true;
+				_c.toBlob(b=>{
+					const img=new Image();
+					img.src=URL.createObjectURL(b);
+					img.onload=()=>{
+						if(m.p in cache)cache[m.p]=img;
+						URL.revokeObjectURL(img.src);
+					};
+				});
+			};
 		});
 
 		addEventListener('DOMContentLoaded',onresize=()=>{
