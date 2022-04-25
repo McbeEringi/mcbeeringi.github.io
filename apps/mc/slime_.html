@@ -29,9 +29,10 @@
 
 	<canvas id="c"></canvas>
 	<script>
+		'use strict';
 		let flag=false,cursor={},wcur=0;
 		const mod=(x,y)=>(x%y+y)%y,cache={},queue=[],
-			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob(['const AsyncFunction=Object.getPrototypeOf(async()=>{}).constructor;onmessage=m=>AsyncFunction(m.data)();']))),
+			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async()=>{}).constructor(m.data)();']))),
 			worker=wurl.map(x=>new Worker(x)),
 			genrand_int32=seed=>{//MersenneTwister
 				const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
@@ -66,7 +67,7 @@
 				);
 				ctx.fillStyle='#fffc';
 				ctx.font=`${16*devicePixelRatio}px monospace`;
-				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}\nqueue: ${queue.length}`.split('\n').forEach((x,i)=>ctx.fillText(x,0,16*devicePixelRatio*(i+1)*1.2));
+				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}${queue.length?'\nqueue: '+queue.length:''}`.split('\n').forEach((x,i)=>ctx.fillText(x,0,16*devicePixelRatio*(i+1)*1.2));
 
 				ctx.fillStyle='#f00c';
 				ctx.fillRect(c.width/2-1,0,2,c.height);
