@@ -52,52 +52,52 @@
 			ctx=c.getContext('2d'),
 			draw=(size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
 				ctx.clearRect(0,0,c.width,c.height);
-				const so=size*8,
-					range=[p.map(x=>Math.floor((x-so)/512)),p.map(x=>Math.floor((x+so)/512))],
+				const hs=[size*8,size*8*c.height/c.width],hw=c.width/2,hh=c.height/2,
+					range=[p.map((x,i)=>Math.floor((x-hs[i])/512)),p.map((x,i)=>Math.floor((x+hs[i])/512))],
 					rnum=[range[1][0]-range[0][0]+1,range[1][1]-range[0][1]+1],
-					grid=c.width*32/size,
-					ofs=[range[0][0]-(p[0]-so)/512,range[0][1]-(p[1]-so)/512];
+					rgrid=c.width*32/size,bgrid=c.width/16/size,
+					ofs=[range[0][0]-(p[0]-hs[0])/512,range[0][1]-(p[1]-hs[1])/512];
 				new Array(rnum[1]).fill().forEach((_,y)=>
 					new Array(rnum[0]).fill().forEach((_,x)=>{
 						_=region([range[0][0]+x,range[0][1]+y]);
-						if(_)ctx.drawImage(_,grid*(x+ofs[0]),grid*(y+ofs[1]),grid,grid);
+						if(_)ctx.drawImage(_,rgrid*(x+ofs[0]),rgrid*(y+ofs[1]),rgrid,rgrid);
 					})
 				);
+
+				ctx.fillStyle='#f00c';
+				ctx.fillRect(hw-1,0,2,c.height);
+				ctx.fillRect(0,hh-1,c.width,2);
+
+				ctx.fillStyle='#f008';
+				ctx.fillRect(hw-bgrid*mod(p[0],1),hh-bgrid*mod(p[1],1),bgrid,bgrid);
+
 				ctx.fillStyle='#fffc';
 				ctx.font=`${16*devicePixelRatio}px monospace`;
-				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}${queue.length?'\nqueue: '+queue.length:''}`.split('\n').forEach((x,i)=>ctx.fillText(x,c.width/2,c.height/2+16*devicePixelRatio*(i+.5)*1.2));
+				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}${queue.length?'\nqueue: '+queue.length:''}`.split('\n').forEach((x,i)=>ctx.fillText(x,hw,hh+16*devicePixelRatio*(i+.5)*1.2));
 
 				if(inpc.checked){
 					ctx.font=`${12*devicePixelRatio}px monospace`;
 					const txts=Math.pow(2,Math.floor(Math.sqrt(size)/4));
 					new Array(rnum[0]).fill().forEach((_,x)=>{
-						const arg=[(range[0][0]+x)*512,0,-grid*(x+ofs[0])];
+						const arg=[(range[0][0]+x)*512,0,-rgrid*(x+ofs[0])];
 						for(let x_=0;x_<32;x_++){
 							if(x_%txts)continue;
 							ctx.rotate(Math.PI/2);
-							ctx.fillText(arg[0]+x_*16,arg[1],arg[2]-grid*(x_/32));
+							ctx.fillText(arg[0]+x_*16,arg[1],arg[2]-rgrid*(x_/32));
 							ctx.rotate(-Math.PI/2);
 						}
 					});
 					new Array(rnum[1]).fill().forEach((_,y)=>{
-						const arg=[(range[0][1]+y)*512,0,grid*(y+ofs[1])];
+						const arg=[(range[0][1]+y)*512,0,rgrid*(y+ofs[1])];
 						for(let y_=0;y_<32;y_++){
 							if(y_%txts)continue;
-							ctx.fillText(arg[0]+y_*16,arg[1],arg[2]+grid*(y_/32));
+							ctx.fillText(arg[0]+y_*16,arg[1],arg[2]+rgrid*(y_/32));
 						}
 					});
 				}
 
-				ctx.fillStyle='#f00c';
-				ctx.fillRect(c.width/2-1,0,2,c.height);
-				ctx.fillRect(0,c.height/2-1,c.width,2);
-
-				ctx.fillStyle='#f008';
-				size=c.width/16/size;
-				ctx.fillRect(c.width/2-size*mod(p[0],1),c.height/2-size*mod(p[1],1),size,size);
-
 				const cr=p.map(x=>x/512-.5),keysc=Object.keys(cache),delc=keysc.length-rnum[0]*rnum[1]*2;
-				if(delc>0)keysc.map(x=>[x,x.split(',').reduce((a,y,i)=>Math.max(Math.abs(+y-cr[i]),a),0)]).sort((a,b)=>a[1]-b[1]).slice(-delc).forEach(x=>delete cache[x[0]]);
+				if(delc>0)keysc.map(x=>[x,x.split(',').reduce((a,y,i)=>Math.abs(+y-cr[i])+a,0)]).sort((a,b)=>a[1]-b[1]).slice(-delc).forEach(x=>delete cache[x[0]]);
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
 
@@ -138,12 +138,12 @@
 		});
 
 		addEventListener('DOMContentLoaded',onresize=()=>{
-			c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
+			c.height=c.width=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
 			ctx.imageSmoothingEnabled=false;
 			ctx.textBaseline='middle';
 			flag=true;
 		},{once:true});
-		(inpx.oninput=inpz.oninput=inps.oninput=inpc.onchange=()=>flag=true)();
+		inpx.oninput=inpz.oninput=inps.oninput=inpc.onchange=()=>flag=true;
 		ctx.scale(devicePixelRatio,devicePixelRatio);
 		c.addEventListener('wheel',e=>{e.preventDefault();inps.value=+inps.value+e.deltaY*.1;flag=true;});
 		c.addEventListener('mousedown',e=>cursor={z:1});
