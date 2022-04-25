@@ -24,13 +24,13 @@
 	<hr>
 	<label>x:<input type="number" id="inpx" value="0" class="input"></label>
 	<label>z:<input type="number" id="inpz" value="0" class="input"></label>
-	<label>size:<input type="range" id="inps" value="5" min="1" max="9" step="any"></label>
+	<label>size:<input type="range" id="inps" value="5" min="1" max="10" step="any"></label>
 	<label>coord:<input type="checkbox" id="inpc" checked class="toggle"></label>
 
 	<canvas id="c"></canvas>
 	<script>
 		let flag=false,cursor={},wcur=0;
-		const cache={},cind=[],queue=[],
+		const mod=(x,y)=>(x%y+y)%y,cache={},queue=[],
 			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob([`
 				const genrand_int32=seed=>{//MersenneTwister
 						const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
@@ -78,11 +78,21 @@
 						if(_)ctx.drawImage(_,grid*(x+ofs[0]),grid*(y+ofs[1]),grid,grid);
 					})
 				);
+				ctx.fillStyle='#fffc';
+				ctx.font=`${16*devicePixelRatio}px monospace`;
+				const g=ctx.getImageData(c.width/2,c.height/2,1,1).data[1];
+				`x: ${p[0]}\nz: ${p[1]}\nslime: ${g==0?'loading...':g>192?'true':'false'}`.split('\n').forEach((x,i)=>ctx.fillText(x,0,16*devicePixelRatio*(i+1)*1.2));
+
 				ctx.fillStyle='#f00c';
 				ctx.fillRect(c.width/2-1,0,2,c.height);
 				ctx.fillRect(0,c.height/2-1,c.width,2);
 
-				if((size=cind.length-rnum[0]*rnum[1]*2)>0)cind.splice(0,size).forEach(x=>delete cache[x]);
+				ctx.fillStyle='#f008';
+				size=c.width/16/size;
+				ctx.fillRect(c.width/2-size*mod(p[0],1),c.height/2-size*mod(p[1],1),size,size);
+
+				const cr=p.map(x=>x/512-.5),keysc=Object.keys(cache),delc=keysc.length-rnum[0]*rnum[1]*2;
+				if(delc>0)keysc.map(x=>[x,x.split(',').reduce((a,y,i)=>Math.max(Math.abs(+y-cr[i]),a),0)]).sort((a,b)=>a[1]-b[1]).slice(-delc).forEach(x=>delete cache[x[0]]);
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
 
@@ -93,14 +103,13 @@
 			_c.width=32;_c.height=32;
 			_ctx.putImageData(new ImageData(m.dat,32),0,0);
 			cache[''+m.p]=_c;
-			cind.push(''+m.p);
 			queue.splice(Object.fromEntries(queue.map(Array))[''+m.p],1);
 			flag=true;
 			_c.toBlob(b=>{
 				const img=new Image();
 				img.src=URL.createObjectURL(b);
 				img.onload=()=>{
-					if(cind.includes(''+m.p))cache[''+m.p]=img;
+					if(''+m.p in cache)cache[''+m.p]=img;
 					URL.revokeObjectURL(img.src);
 				};
 			});
