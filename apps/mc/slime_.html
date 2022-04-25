@@ -24,68 +24,88 @@
 	<hr>
 	<label>x:<input type="number" id="inpx" value="0" class="input"></label>
 	<label>z:<input type="number" id="inpz" value="0" class="input"></label>
-	<label>size:<input type="range" id="inps" value="4" min="1" max="8" step="any"></label>
+	<label>size:<input type="range" id="inps" value="4" min="1" max="10" step="any"></label>
 	<label>coord:<input type="checkbox" id="inpc" checked class="toggle"></label>
 
 	<canvas id="c"></canvas>
 	<script>
+		const wurl=URL.createObjectURL(new Blob([`
+				const genrand_int32=seed=>{//MersenneTwister
+						const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
+						mt[0]=seed;
+						for(let i=1;i<N;i++)mt[i]=Math.imul(mt[i-1]^(mt[i-1]>>>30),1812433253)+i;
+						for(let i=0;i<N;i++)mt[i]=mt[(i+M)%N]^mask(mt[i],mt[(i+1)%N]);
+						let y=mt[0];
+						y^=(y>>>11);
+						y^=(y<<  7)&0x9d2c5680;
+						y^=(y<< 15)&0xefc60000;
+						y^=(y>>>18);
+						return y>>>0;
+					},
+					slime=p=>genrand_int32(Math.imul(p[0],0x1f1f1f1f)^p[1])%10==0,
+					region_dat=p=>{
+						const rpos=[p[0]*32,p[1]*32],mesh=x=>(x[0]&1)^(x[1]&1);
+						return new Uint8ClampedArray(
+							new Array(32).fill().flatMap((_,y)=>new Array(32).fill().flatMap((_,x)=>{
+								const ch=[rpos[0]+x,rpos[1]+y];
+								return[
+									[128,128,128,32],[128,128,128,64],[0,255,0,224],[0,255,0,192],
+									[128,128,128,128],[128,128,128,64],[0,255,0,224],[0,255,0,240]
+								][mesh(ch)+(slime(ch)<<1)+(mesh(p)<<2)];
+							}))
+						);
+					};
+				onmessage=m=>postMessage({p:m.data,dat:region_dat(m.data)});
+			`])),
+			worker=new Worker(wurl);
 		let flag=false,cursor={};
-		const mod=(x,y)=>(x%y+y)%y,
-			genrand_int32=seed=>{//MersenneTwister
-				const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
-				mt[0]=seed;
-				for(let i=1;i<N;i++)mt[i]=Math.imul(mt[i-1]^(mt[i-1]>>>30),1812433253)+i;
-				for(let i=0;i<N;i++)mt[i]=mt[(i+M)%N]^mask(mt[i],mt[(i+1)%N]);
-				let y=mt[0];
-				y^=(y>>>11);
-				y^=(y<<  7)&0x9d2c5680;
-				y^=(y<< 15)&0xefc60000;
-				y^=(y>>>18);
-				return y>>>0;
-			},
-			slime=p=>genrand_int32(Math.imul(p[0],0x1f1f1f1f)^p[1])%10==0,
-			cache={},cind=[],
+		const cache={},cind=[],queue=[],
 			region=p=>{
-				if(!(''+p in cache)){
-					const rpos=[p[0]*32,p[1]*32],mesh=x=>(x[0]&1)^(x[1]&1),
-						_c=document.createElement('canvas'),
-						_ctx=_c.getContext('2d');
-					_c.width=32;_c.height=32;
-					_ctx.putImageData(new ImageData(new Uint8ClampedArray(
-						new Array(32).fill().flatMap((_,y)=>new Array(32).fill().flatMap((_,x)=>{
-							const ch=[rpos[0]+x,rpos[1]+y];
-							return[
-								[128,128,128,32],[128,128,128,64],[0,255,0,224],[0,255,0,192],
-								[128,128,128,128],[128,128,128,64],[0,255,0,224],[0,255,0,240]
-							][mesh(ch)+(slime(ch)<<1)+(mesh(p)<<2)];
-						}))
-					),32),0,0);
-					cache[''+p]=_c;
-					cind.push(''+p);
-					_c.toBlob(b=>{
-						const img=new Image();
-						img.src=URL.createObjectURL(b);
-						img.onload=()=>{
-							if(cind.includes(''+p))cache[''+p]=img;
-							URL.revokeObjectURL(img.src);
-						};
-					});
-				}
-				return cache[''+p];
+				if(''+p in cache)return cache[''+p];
+				if(!queue.includes(''+p)){queue.push(''+p);worker.postMessage(p);}
 			},
 			ctx=c.getContext('2d'),
 			draw=(size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
 				ctx.clearRect(0,0,c.width,c.height);
 				const so=size*8,
 					range=[p.map(x=>Math.floor((x-so)/512)),p.map(x=>Math.floor((x+so)/512))],
-					rnum=[range[1][0]-range[0][0]+1,range[1][1]-range[0][1]+1];
+					rnum=[range[1][0]-range[0][0]+1,range[1][1]-range[0][1]+1],
+					grid=c.width*32/size,
+					ofs=[range[0][0]-(p[0]-so)/512,range[0][1]-(p[1]-so)/512];
 				new Array(rnum[1]).fill().forEach((_,y)=>
 					new Array(rnum[0]).fill().forEach((_,x)=>{
-						ctx.drawImage(region([range[0][0]+x,range[0][1]+y]),c.width/rnum[0]*x,c.height/rnum[1]*y,c.width/rnum[0],c.height/rnum[1]);
+						_=region([range[0][0]+x,range[0][1]+y]);
+						if(_)ctx.drawImage(_,grid*(x+ofs[0]),grid*(y+ofs[1]),grid,grid);
 					})
-				)
+				);
+				ctx.fillStyle='#f00c';
+				ctx.fillRect(c.width/2-1,0,2,c.height);
+				ctx.fillRect(0,c.height/2-1,c.width,2);
+
+				if((size=cind.length-rnum[0]*rnum[1]*2)>0)cind.splice(0,size).forEach(x=>delete cache[x]);
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
+
+		worker.onmessage=m=>{
+			m=m.data;
+			const _c=document.createElement('canvas'),
+				_ctx=_c.getContext('2d');
+			_c.width=32;_c.height=32;
+			_ctx.putImageData(new ImageData(m.dat,32),0,0);
+			cache[''+m.p]=_c;
+			cind.push(''+m.p);
+			queue.splice(Object.fromEntries(queue.map(Array))[''+m.p],1);
+			flag=true;
+			_c.toBlob(b=>{
+				const img=new Image();
+				img.src=URL.createObjectURL(b);
+				img.onload=()=>{
+					if(cind.includes(''+m.p))cache[''+m.p]=img;
+					URL.revokeObjectURL(img.src);
+				};
+			});
+		};
+
 		addEventListener('DOMContentLoaded',onresize=()=>{
 			c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
 			ctx.imageSmoothingEnabled=false;
