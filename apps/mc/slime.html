@@ -24,66 +24,125 @@
 	<hr>
 	<label>x:<input type="number" id="inpx" value="0" class="input"></label>
 	<label>z:<input type="number" id="inpz" value="0" class="input"></label>
-	<label>size:<input type="range" id="inps" value="4" min="1" max="7" step="any"><label>
-	<label>coord:<input type="checkbox" id="inpc" checked class="toggle"><label>
+	<label>size:<input type="range" id="inps" value="5" min="1" max="10" step="any"></label>
+	<label>coord:<input type="checkbox" id="inpc" checked class="toggle"></label>
 
 	<canvas id="c"></canvas>
 	<script>
-		let flag=false,cursor={};
-		const mod=(x,y)=>(x%y+y)%y,
-			genrand_int32=seed=>{//MersenneTwister
-				const N=624,M=397,mt=new Uint32Array(N),mask=(u,l)=>(x=>(x>>>1)^[0,0x9908b0df][x&1])((u&0x80000000)|(l&0x7fffffff));
-				mt[0]=seed;
-				for(let i=1;i<N;i++)mt[i]=Math.imul(mt[i-1]^(mt[i-1]>>>30),1812433253)+i;
-				for(let i=0;i<N;i++)mt[i]=mt[(i+M)%N]^mask(mt[i],mt[(i+1)%N]);
-				let y=mt[0];
-				y^=(y>>>11);
-				y^=(y<<  7)&0x9d2c5680;
-				y^=(y<< 15)&0xefc60000;
-				y^=(y>>>18);
-				return y>>>0;
+		'use strict';
+		let flag=false,cursor={},wcur=0;
+		const mod=(x,y)=>(x%y+y)%y,cache={},queue=[],
+			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async()=>{}).constructor(m.data)();']))),
+			worker=wurl.map(x=>new Worker(x)),
+			slime=m=>{//der MersenneTwister
+				m=Math.imul(m[0],0x1f1f1f1f)^m[1];//seed
+				const f=(x,y)=>Math.imul(x^x>>>30,0x6c078965)+y,a=m&0x80000000|(m=f(m,1))&0x7fffffff;
+				for(let i=2;i<398;i++)m=f(m,i);
+				m^=(a>>>1^[0,0x9908b0df][a&1]);
+				m^=m>>>11;
+				m^=m<<  7 &0x9d2c5680;
+				m^=m<< 15 &0xefc60000;
+				m^=m>>>18;
+				return!((m>>>0)%10);//slime
 			},
-			slime=p=>genrand_int32(Math.imul(p[0],0x1f1f1f1f)^p[1])%10==0,
-			cache={},cind=[],
-			slime_=p=>''+p in cache?cache[''+p]:(()=>{cind.push(''+p);return cache[''+p]=slime(p);})(),
+			region=p=>{
+				if(p in cache)return cache[p];
+				if(!queue.includes(''+p)){queue.push(''+p);worker[wcur=(wcur+1)%worker.length].postMessage(p);}
+			},
 			ctx=c.getContext('2d'),
 			draw=(size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
-				hs=(size-1)/2;
 				ctx.clearRect(0,0,c.width,c.height);
-				let ach=[Math.floor(p[0]/16),Math.floor(p[1]/16)],grid=c.width/size,
-					hsf=hs%1,pfrc=p.map(x=>mod(x,16)),ofs=pfrc.map(x=>-(x<8)-(!hsf<.5)),//TODO
-					txts=Math.min(Math.floor(Math.sqrt(size)/2),5);
-				size=Math.ceil(size+1);
-				ctx.font=`${+getComputedStyle(c).width.slice(0,-2)/32*devicePixelRatio}px monospace`;
-				new Array(size).fill().flatMap((_,y)=>
-					new Array(size).fill().map((_,x)=>{
-						const ch=[x-Math.floor(hs)+ach[0]+ofs[0],y-Math.floor(hs)+ach[1]+ofs[1]],gpos=[grid*(x+ofs[0]+hsf-(pfrc[0]-8)/16),grid*(y+ofs[1]+hsf-(pfrc[1]-8)/16)];
-						ctx.fillStyle=[
-							'#8882','#8884','#0f0a','#0f0c',
-							'#8885','#8887','#0f0d','#0f0f',
-						][((ch[0]&1)^(ch[1]&1))+(slime_(ch)<<1)+(((Math.floor(ch[0]/32)&1)^(Math.floor(ch[1]/32)&1))<<2)];
-						ctx.fillRect(...gpos,grid,grid);
-						if(ch.map(_=>_%Math.pow(2,txts)).every(_=>!_))if(inpc.checked)return{ch,gpos};
-					}).filter(x=>x)
-				).forEach(x=>{
-					ctx.translate(...x.gpos);ctx.rotate(Math.PI/4);
-					ctx.fillStyle=`#fff${'468ace'[txts]}`;
-					ctx.fillText('\u25fa'+x.ch.map(_=>_*16),0,0,grid*1.4*Math.pow(2,txts));
-					ctx.rotate(-Math.PI/4);ctx.translate(...x.gpos.map(_=>-_));
-				});
+				const so=size*8,
+					range=[p.map(x=>Math.floor((x-so)/512)),p.map(x=>Math.floor((x+so)/512))],
+					rnum=[range[1][0]-range[0][0]+1,range[1][1]-range[0][1]+1],
+					grid=c.width*32/size,
+					ofs=[range[0][0]-(p[0]-so)/512,range[0][1]-(p[1]-so)/512];
+				new Array(rnum[1]).fill().forEach((_,y)=>
+					new Array(rnum[0]).fill().forEach((_,x)=>{
+						_=region([range[0][0]+x,range[0][1]+y]);
+						if(_)ctx.drawImage(_,grid*(x+ofs[0]),grid*(y+ofs[1]),grid,grid);
+					})
+				);
+				ctx.fillStyle='#fffc';
+				ctx.font=`${16*devicePixelRatio}px monospace`;
+				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}${queue.length?'\nqueue: '+queue.length:''}`.split('\n').forEach((x,i)=>ctx.fillText(x,c.width/2,c.height/2+16*devicePixelRatio*(i+.5)*1.2));
+
+				if(inpc.checked){
+					ctx.font=`${12*devicePixelRatio}px monospace`;
+					const txts=Math.pow(2,Math.floor(Math.sqrt(size)/4));
+					new Array(rnum[0]).fill().forEach((_,x)=>{
+						const arg=[(range[0][0]+x)*512,0,-grid*(x+ofs[0])];
+						for(let x_=0;x_<32;x_++){
+							if(x_%txts)continue;
+							ctx.rotate(Math.PI/2);
+							ctx.fillText(arg[0]+x_*16,arg[1],arg[2]-grid*(x_/32));
+							ctx.rotate(-Math.PI/2);
+						}
+					});
+					new Array(rnum[1]).fill().forEach((_,y)=>{
+						const arg=[(range[0][1]+y)*512,0,grid*(y+ofs[1])];
+						for(let y_=0;y_<32;y_++){
+							if(y_%txts)continue;
+							ctx.fillText(arg[0]+y_*16,arg[1],arg[2]+grid*(y_/32));
+						}
+					});
+				}
+
 				ctx.fillStyle='#f00c';
 				ctx.fillRect(c.width/2-1,0,2,c.height);
 				ctx.fillRect(0,c.height/2-1,c.width,2);
-				grid/=16;
+
 				ctx.fillStyle='#f008';
-				ctx.fillRect(c.width/2-grid*mod(p[0],1),c.height/2-grid*mod(p[1],1),grid,grid);
-				ctx.fillStyle='#fffc';
-				ctx.font=`${16*devicePixelRatio}px monospace`;
-				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime_(ach)}`.split('\n').forEach((x,i)=>ctx.fillText(x,0,16*devicePixelRatio*(i+1)*1.2));
-				if((size=cind.length-size*size*4)>0){cind.slice(0,size).forEach(x=>delete cache[x]);cind.splice(0,size);}
+				size=c.width/16/size;
+				ctx.fillRect(c.width/2-size*mod(p[0],1),c.height/2-size*mod(p[1],1),size,size);
+
+				const cr=p.map(x=>x/512-.5),keysc=Object.keys(cache),delc=keysc.length-rnum[0]*rnum[1]*2;
+				if(delc>0)keysc.map(x=>[x,x.split(',').reduce((a,y,i)=>Math.max(Math.abs(+y-cr[i]),a),0)]).sort((a,b)=>a[1]-b[1]).slice(-delc).forEach(x=>delete cache[x[0]]);
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
-		addEventListener('DOMContentLoaded',onresize=()=>{c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;flag=true;},{once:true});
+
+		worker.forEach(x=>{
+			x.postMessage(`const slime=${slime},
+				region_dat=p=>{
+						const rpos=[p[0]*32,p[1]*32],mesh=x=>(x[0]&1)^(x[1]&1);
+						return new Uint8ClampedArray(
+							new Array(32).fill().flatMap((_,y)=>new Array(32).fill().flatMap((_,x)=>{
+								const ch=[rpos[0]+x,rpos[1]+y];
+								return[
+									[128,128,128,32],[128,128,128,64],[0,255,0,224],[0,255,0,192],
+									[128,128,128,128],[128,128,128,64],[0,255,0,224],[0,255,0,240]
+								][mesh(ch)+(slime(ch)<<1)+(mesh(p)<<2)];
+							}))
+						);
+					};
+				onmessage=m=>postMessage({p:m.data,dat:region_dat(m.data)});
+			`);
+			x.onmessage=m=>{
+				m=m.data;
+				const _c=document.createElement('canvas'),
+					_ctx=_c.getContext('2d');
+				_c.width=32;_c.height=32;
+				_ctx.putImageData(new ImageData(m.dat,32),0,0);
+				cache[m.p]=_c;
+				queue.splice(Object.fromEntries(queue.map(Array))[m.p],1);
+				flag=true;
+				_c.toBlob(b=>{
+					const img=new Image();
+					img.src=URL.createObjectURL(b);
+					img.onload=()=>{
+						if(m.p in cache)cache[m.p]=img;
+						URL.revokeObjectURL(img.src);
+					};
+				});
+			};
+		});
+
+		addEventListener('DOMContentLoaded',onresize=()=>{
+			c.width=c.height=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
+			ctx.imageSmoothingEnabled=false;
+			ctx.textBaseline='middle';
+			flag=true;
+		},{once:true});
 		(inpx.oninput=inpz.oninput=inps.oninput=inpc.onchange=()=>flag=true)();
 		ctx.scale(devicePixelRatio,devicePixelRatio);
 		c.addEventListener('wheel',e=>{e.preventDefault();inps.value=+inps.value+e.deltaY*.1;flag=true;});
@@ -110,6 +169,7 @@
 			flag=true;
 		});
 		main();
+		onbeforeunload=()=>{wurl.map(URL.revokeObjectURL);};
 </script>
 </body>
 </html>
