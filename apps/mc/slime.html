@@ -30,15 +30,15 @@
 	<canvas id="c"></canvas>
 	<script>
 		'use strict';
-		let flag=false,cursor={},wcur=0;
-		const mod=(x,y)=>(x%y+y)%y,cache={},queue=[],
+		let flag=false,cursor={},wcur=0,queue=[];
+		const mod=(x,y)=>(x%y+y)%y,cache={},
 			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async()=>{}).constructor(m.data)();']))),
 			worker=wurl.map(x=>new Worker(x)),
 			slime=m=>{//der MersenneTwister
 				m=Math.imul(m[0],0x1f1f1f1f)^m[1];//seed
 				const f=(x,y)=>Math.imul(x^x>>>30,0x6c078965)+y,a=m&0x80000000|(m=f(m,1))&0x7fffffff;
 				for(let i=2;i<398;i++)m=f(m,i);
-				m^=(a>>>1^[0,0x9908b0df][a&1]);
+				m^=a>>> 1 ^[0,0x9908b0df][a&1];
 				m^=m>>>11;
 				m^=m<<  7 &0x9d2c5680;
 				m^=m<< 15 &0xefc60000;
@@ -96,8 +96,10 @@
 					});
 				}
 
-				const cr=p.map(x=>x/512-.5),keysc=Object.keys(cache),delc=keysc.length-rnum[0]*rnum[1]*2;
-				if(delc>0)keysc.map(x=>[x,x.split(',').reduce((a,y,i)=>Math.abs(+y-cr[i])+a,0)]).sort((a,b)=>a[1]-b[1]).slice(-delc).forEach(x=>delete cache[x[0]]);
+				const cr=p.map(x=>x/512-.5),keysc=Object.keys(cache),delc=rnum[0]*rnum[1]*2,
+					dsort=x=>x.map(y=>[y,y.split(',').reduce((a,z,i)=>Math.abs(+z-cr[i])+a,0)]).sort((a,b)=>a[1]-b[1]);
+				if(keysc.length>delc)dsort(keysc).slice(delc).forEach(x=>delete cache[x[0]]);
+				if(queue.length>delc)queue=dsort(queue).slice(0,delc).map(x=>x[0]);
 			},
 			main=()=>{if(flag){draw();flag=false;}requestAnimationFrame(main);};
 
@@ -119,12 +121,13 @@
 			`);
 			x.onmessage=m=>{
 				m=m.data;
+				if(!queue.includes(''+m.p))return;
 				const _c=document.createElement('canvas'),
 					_ctx=_c.getContext('2d');
 				_c.width=32;_c.height=32;
 				_ctx.putImageData(new ImageData(m.dat,32),0,0);
 				cache[m.p]=_c;
-				queue.splice(Object.fromEntries(queue.map(Array))[m.p],1);
+				queue=queue.filter(x=>x!=m.p);
 				flag=true;
 				_c.toBlob(b=>{
 					const img=new Image();
@@ -145,7 +148,7 @@
 		},{once:true});
 		inpx.oninput=inpz.oninput=inps.oninput=inpc.onchange=()=>flag=true;
 		ctx.scale(devicePixelRatio,devicePixelRatio);
-		c.addEventListener('wheel',e=>{e.preventDefault();inps.value=+inps.value+e.deltaY*.1;flag=true;});
+		c.addEventListener('wheel',e=>{e.preventDefault();inps.value=+inps.value+e.deltaY*.01;flag=true;});
 		c.addEventListener('mousedown',e=>cursor={z:1});
 		addEventListener('mouseup',e=>cursor={});
 		addEventListener('mousemove',e=>{
