@@ -49,7 +49,13 @@
 				if(!queue.includes(''+p)){queue.push(''+p);worker[wcur=(wcur+1)%worker.length].postMessage(p);}
 			},
 			ctx=c.getContext('2d'),
-			draw=(size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
+			set=(s=(cs=>['width','height'].map(x=>+cs[x].slice(0,-2)*devicePixelRatio))(getComputedStyle(c)))=>{
+				c.width=s[0]||s;c.height=s[1]||s;
+				ctx.imageSmoothingEnabled=false;
+				ctx.textBaseline='middle';
+				flag=true;
+			},
+			draw=(pr=devicePixelRatio,size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
 				ctx.clearRect(0,0,c.width,c.height);
 				const hs=[size*8,size*8*c.height/c.width],hw=c.width/2,hh=c.height/2,
 					range=[p.map((x,i)=>Math.floor((x-hs[i])/512)),p.map((x,i)=>Math.floor((x+hs[i])/512))],
@@ -71,10 +77,10 @@
 				ctx.fillRect(hw-bgrid*mod(p[0],1),hh-bgrid*mod(p[1],1),bgrid,bgrid);
 
 				ctx.fillStyle='#fffc';
-				ctx.font=`${16*devicePixelRatio}px monospace`;
-				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}${queue.length?'\nqueue: '+queue.length:''}`.split('\n').forEach((x,i)=>ctx.fillText(x,hw,hh+16*devicePixelRatio*(i+.5)*1.2));
+				ctx.font=`${16*pr}px monospace`;
+				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}${queue.length?'\nqueue: '+queue.length:''}`.split('\n').forEach((x,i)=>ctx.fillText(x,hw,hh+16*pr*(i+.5)*1.2));
 
-				ctx.font=`${12*devicePixelRatio}px monospace`;
+				ctx.font=`${12*pr}px monospace`;
 				const txts=Math.pow(2,Math.floor(Math.sqrt(size)/4));
 				new Array(rnum[0]).fill().forEach((_,x)=>{
 					const arg=[(range[0][0]+x)*512,0,-rgrid*(x+ofs[0])];
@@ -119,8 +125,7 @@
 			x.onmessage=m=>{
 				m=m.data;
 				if(!queue.includes(''+m.p))return;
-				const _c=document.createElement('canvas'),
-					_ctx=_c.getContext('2d');
+				const _c=document.createElement('canvas'),_ctx=_c.getContext('2d');
 				_c.width=32;_c.height=32;
 				_ctx.putImageData(new ImageData(m.dat,32),0,0);
 				cache[m.p]=_c;
@@ -137,14 +142,8 @@
 			};
 		});
 
-		addEventListener('DOMContentLoaded',onresize=()=>{
-			c.height=c.width=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
-			ctx.imageSmoothingEnabled=false;
-			ctx.textBaseline='middle';
-			flag=true;
-		},{once:true});
+		addEventListener('DOMContentLoaded',onresize=()=>set(+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio),{once:true});
 		inpx.oninput=inpz.oninput=inps.oninput=()=>flag=true;
-		ctx.scale(devicePixelRatio,devicePixelRatio);
 		c.addEventListener('wheel',e=>{e.preventDefault();inps.value=+inps.value+e.deltaY*.01;flag=true;});
 		c.addEventListener('mousedown',e=>cursor={z:1});
 		addEventListener('mouseup',e=>cursor={});
@@ -169,11 +168,12 @@
 			flag=true;
 		});
 		dlbtn.onclick=()=>{
-			const _c=document.createElement('canvas'),
-				_ctx=_c.getContext('2d');
+			const _c=document.createElement('canvas'),_ctx=_c.getContext('2d');
+			set(2048);draw(4);
 			_ctx.fillRect(0,0,_c.width=c.width,_c.height=c.height);
-			_ctx.drawImage(c,0,0,_c.width,_c.height);
+			_ctx.drawImage(c,0,0);
 			Object.assign(document.createElement('a'),{href:_c.toDataURL(),download:new Date()}).click();
+			onresize();
 		};
 		main();
 		onbeforeunload=()=>{wurl.map(URL.revokeObjectURL);};
