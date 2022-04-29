@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi unct</title>
+	<meta name="description" content="unicord table">
+	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+</head>
+<body>
+	<style>
+		.cont{max-width:720px;margin:0 auto;}
+		#wrap{padding-top:100%;position:relative;}
+		#scr{padding-top:calc(calc(calc(100%/17)*16)*255);position:absolute;width:100%;}
+		#char{padding-top:calc(calc(100%/17)*19);position:absolute;width:100%;}
+		#wrap>*,#scr>*,#char>*{position:absolute;top:0;left:0;width:100%;height:100%;overflow:auto;}
+		#char>*{display:grid;grid-template-columns:repeat(17,1fr);grid-template-rows:repeat(19,1fr);}
+		#char p{margin:0;box-shadow:0 0 0 1px #8888 inset;overflow:hidden;word-break:break-all;text-align:center;}
+	</style>
+	<h1>unicode table</h1>
+	<hr>
+	<label>
+		plane: 
+		<select id="plane" class="input">
+			<option value="0x000000">00</option>
+			<option value="0x010000">01</option>
+			<option value="0x020000">02</option>
+			<option value="0x030000">03</option>
+			<option value="0x0e0000">0e</option>
+			<option value="0x0f0000">0f</option>
+			<option value="0x100000">10</option>
+		</select>
+	</label>
+	<div class="cont">
+		<div id="wrap"><div>
+			<div id="scr"><div>
+				<div id="char"><div>
+				</div></div>
+			</div></div>
+		</div></div>
+		</div>
+	<script>
+		let grid=0,prev=-1,
+			draw=()=>Array.from(char.firstChild.children,(x,i)=>{
+				x.textContent=i%17==0?
+					(+plane.value+(Math.floor(i/17)+prev)*16).toString(16).padStart(4,'0'):
+					String.fromCodePoint(+plane.value+i-Math.floor(i/17)+prev*16-1);
+				char.style.top=grid*prev+'px';
+			});
+		for(let i=0;i<17*19;i++)char.firstChild.appendChild(Object.assign(document.createElement('p'),i%17==0?{}:{onclick:e=>prompt(e.currentTarget.textContent.codePointAt(0).toString(16).padStart(4,'0'),e.currentTarget.textContent)}));
+		(onresize=()=>grid=+getComputedStyle(char.firstChild.firstElementChild).height.slice(0,-2))();
+
+		(wrap.firstChild.onscroll=()=>(prev==(prev=Math.floor(wrap.firstChild.scrollTop/grid)))||draw())();
+		plane.onchange=draw;
+	</script>
+</body>
+</html>
