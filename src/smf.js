@@ -11,22 +11,22 @@ const midi2json=async w=>{
 		p+=8+w.getUint32(p+4);
 		if((w.getUint32(p-4)&0xffffff)!==0xff2f00)throw'invailed chunk length or end of chunk is not defined.';
 		while(q<p){
-			let t=vln(),e=w.getUint8(q),ch=e&0x0f;
+			let dt=vln(),e=w.getUint8(q),ch=e&0x0f;
 			if(e>>7)q++;else e=s[s.length-1].e;
-			s.push([//8~
-				()=>ui7s({t,e,ch,name:'noteOff'},'note','vel'),
-				()=>ui7s({t,e,ch,name:'noteOn'},'note','vel'),
-				()=>ui7s({t,e,ch,name:'polyPress'},'note','vel'),
-				()=>ui7s({t,e,ch,name:'ctrl'},'ctrl','value'),
-				()=>ui7s({t,e,ch,name:'prg'},'prg'),
-				()=>ui7s({t,e,ch,name:'chPress'},'vel'),
-				()=>({t,e,ch,name:'bend',value:(ui7()|(ui7()<<7))-0x2000}),
+			s.push({dt,...[//8~
+				()=>ui7s({e,ch,name:'noteOff'},'note','vel'),
+				()=>ui7s({e,ch,name:'noteOn'},'note','vel'),
+				()=>ui7s({e,ch,name:'polyPress'},'note','vel'),
+				()=>ui7s({e,ch,name:'ctrl'},'ctrl','value'),
+				()=>ui7s({e,ch,name:'prg'},'prg'),
+				()=>ui7s({e,ch,name:'chPress'},'vel'),
+				()=>({e,ch,name:'bend',value:(ui7()|(ui7()<<7))-0x2000}),
 				({
-					0:(l=vln())=>({t,name:'sysEx0',data:new Uint8Array(0xf0,...new Uint8Array(w.buffer,q,q+=l))}),
-					7:(l=vln())=>({t,name:'sysEx7',data:new Uint8Array(w.buffer.slice(q,q+=l))}),
-					15:(type=ui7(),l=vln())=>({t,name:'meta',type,data:new Uint8Array(w.buffer.slice(q,q+=l))})
+					0:(l=vln())=>({name:'sysEx0',data:new Uint8Array(0xf0,...new Uint8Array(w.buffer,q,q+=l))}),
+					7:(l=vln())=>({name:'sysEx7',data:new Uint8Array(w.buffer.slice(q,q+=l))}),
+					15:(type=ui7(),l=vln())=>({name:'meta',type,data:new Uint8Array(w.buffer.slice(q,q+=l))})
 				}[ch])
-			][(e>>4)&0b0111]());
+			][(e>>4)&0b0111]()});
 		}
 		tracks.push(s);
 	}
@@ -42,7 +42,7 @@ json2midi=w=>{
 			...num(w.header.precision,2),
 			...w.tracks.flatMap(x=>{
 				x=x.flatMap(y=>[
-					...vln(y.t),
+					...vln(y.dt),
 					...({
 						noteOff:()=>[0x80+(y.ch&0xf),y.note&0x7f,y.vel&0x7f],
 						noteOn:()=>[0x90+(y.ch&0xf),y.note&0x7f,y.vel&0x7f],
