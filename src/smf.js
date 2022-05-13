@@ -3,7 +3,7 @@ const midi2json=async w=>{
 	if(w.getUint32(0)!==0x4d546864)throw'invaild file.';
 	let p=8+w.getUint32(4),tracks=[];
 	while(p<w.byteLength){
-		let q=p+8,s=[],
+		let q=p+8,s=[],r,
 				vln=(x,y)=>{while(1){y=w.getUint8(q++);x=(x<<7)|(y&0x7f);if(!(y>>7))break;}return x;},
 				ui7=()=>w.getUint8(q++)&0x7f,
 				ui7s=(x,...y)=>Object.assign(x,Object.fromEntries(y.map(z=>[z,ui7()])));
@@ -11,16 +11,17 @@ const midi2json=async w=>{
 		p+=8+w.getUint32(p+4);
 		if((w.getUint32(p-4)&0xffffff)!==0xff2f00)throw'invailed chunk length or end of chunk is not defined.';
 		while(q<p){
-			let dt=vln(),e=w.getUint8(q),ch=e&0x0f;
-			if(e>>7)q++;else e=s[s.length-1].e;
+			let dt=vln(),e=w.getUint8(q),ch;
+			if(e>>7){r=e;q++;}else e=r;
+			ch=e&0x0f;
 			s.push({dt,...[//8~
-				()=>ui7s({e,ch,name:'noteOff'},'note','vel'),
-				()=>ui7s({e,ch,name:'noteOn'},'note','vel'),
-				()=>ui7s({e,ch,name:'polyPress'},'note','vel'),
-				()=>ui7s({e,ch,name:'ctrl'},'ctrl','value'),
-				()=>ui7s({e,ch,name:'prg'},'prg'),
-				()=>ui7s({e,ch,name:'chPress'},'vel'),
-				()=>({e,ch,name:'bend',value:(ui7()|(ui7()<<7))-0x2000}),
+				()=>ui7s({ch,name:'noteOff'},'note','vel'),
+				()=>ui7s({ch,name:'noteOn'},'note','vel'),
+				()=>ui7s({ch,name:'polyPress'},'note','vel'),
+				()=>ui7s({ch,name:'ctrl'},'ctrl','value'),
+				()=>ui7s({ch,name:'prg'},'prg'),
+				()=>ui7s({ch,name:'chPress'},'vel'),
+				()=>({ch,name:'bend',value:(ui7()|(ui7()<<7))-0x2000}),
 				({
 					0:(l=vln())=>({name:'sysEx0',data:new Uint8Array(0xf0,...new Uint8Array(w.buffer,q,q+=l))}),
 					7:(l=vln())=>({name:'sysEx7',data:new Uint8Array(w.buffer.slice(q,q+=l))}),
