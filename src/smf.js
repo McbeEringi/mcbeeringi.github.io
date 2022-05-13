@@ -35,7 +35,8 @@ const midi2json=async w=>{
 },
 json2midi=w=>{
 	let vln=x=>{let s=[];while(1){s.unshift((x&0x7f)|(s.length?0x80:0));x>>=7;if(!x)break;}return s;},
-		num=(x,l)=>new Array(l--).fill().map((_,i)=>(x>>(8*(l-i)))&0xff);
+		num=(x,l)=>new Array(l--).fill().map((_,i)=>(x>>(8*(l-i)))&0xff),
+		r,rs=(x,y,...z)=>((z=z.map(_=>_&0x7f))&&(r==(r=x+(y.ch&0xf))))?z:[r,...z];
 	return new Blob([new Uint8Array([
 		0x4d,0x54,0x68,0x64, 0,0,0,6,
 		...num(w.header.format,2),
@@ -45,16 +46,16 @@ json2midi=w=>{
 			x=x.flatMap(y=>[
 				...vln(y.dt),
 				...({
-					noteOff:()=>[0x80+(y.ch&0xf),y.note&0x7f,y.vel&0x7f],
-					noteOn:()=>[0x90+(y.ch&0xf),y.note&0x7f,y.vel&0x7f],
-					polyPress:()=>[0xa0+(y.ch&0xf),y.note&0x7f,y.vel&0x7f],
-					ctrl:()=>[0xb0+(y.ch&0xf),y.ctrl&0x7f,y.value&0x7f],
-					prg:()=>[0xc0+(y.ch&0xf),y.prg&0x7f],
-					chPress:()=>[0xd0+(y.ch&0xf),y.vel&0x7f],
-					bend:(z=y.value+0x2000)=>[0xe0+(y.ch&0xf),z&0x7f,(z>>7)&0x7f],
-					sysEx0:()=>[0xf0,...vln(y.data.length-1),...y.data.slice(1)],
-					sysEx7:()=>[0xf7,...vln(y.data.length),...y.data],
-					meta:()=>[0xff,y.type&0x7f,...vln(y.data.length),...y.data]
+					noteOff:()=>rs(0x80,y,y.note,y.vel),
+					noteOn:()=>rs(0x90,y,y.note,y.vel),
+					polyPress:()=>rs(0xa0,y,y.note,y.vel),
+					ctrl:()=>rs(0xb0,y,y.ctrl,y.value),
+					prg:()=>rs(0xc0,y,y.prg),
+					chPress:()=>rs(0xd0,y,y.vel),
+					bend:(z=y.value+0x2000)=>rs(0xe0,y,z,z>>7),
+					sysEx0:()=>[r=0xf0,...vln(y.data.length-1),...y.data.slice(1)],
+					sysEx7:()=>[r=0xf7,...vln(y.data.length),...y.data],
+					meta:()=>[r=0xff,y.type&0x7f,...vln(y.data.length),...y.data]
 				}[y.name]())
 			]);
 			return[0x4d,0x54,0x72,0x6b,...num(x.length,4),...x];
