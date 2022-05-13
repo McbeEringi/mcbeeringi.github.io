@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>McbeEringi smf</title>
-	<meta name="description" content="xor encrypter">
+	<meta name="description" content="smf sample">
 	<link rel="shortcut icon" type="image/svg+xml" href="../img/icon.svg">
 	<link rel="apple-touch-icon" href="../img/icon.png">
 	<meta name="theme-color" content="#214"/>
@@ -14,19 +14,30 @@
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 </head>
 <body>
+	<style>
+		textarea{width:100%;white-space:pre;}
+	</style>
 	<h1>smf</h1>
 	<hr>
-	<input type="file" class="input" id="f"><button id="lbtn">load</button><br>
-	<button id="sbtn">download</button><br>
-	<textarea id="ta" style="width:100%;"></textarea>
+	<input type="file" class="input" id="f"><button id="lbtn" class="button">load</button><br>
+	<button id="sbtn" class="button">download</button><br>
+	<textarea id="ta" class="input"></textarea>
 	<script>
 		TA.editor(ta);
+		const urls=[];
 		lbtn.onclick=async w=>{
 			w=await midi2json(f.files[0]);
-			w.forEach(x=>x.forEach(y=>{if(y.data)y.data=[...y.data]}));
-			ta.value=JSON.stringify(w,null,'\t');
+			w.tracks.forEach(x=>x.forEach(y=>{if(y.data)y.data=[...y.data]}));
+			ta.value=JSON.stringify(w,null,'\t').replace(/\n\t{4,}(.*)|\n\t{3}([\]\}].*)/g,'$1$2');
 			TA.ah(ta);
 		};
+		sbtn.onclick=()=>{
+			const a=document.createElement('a');
+			a.download=new Date()+'.mid';
+			a.href=URL.createObjectURL(json2midi(JSON.parse(ta.value)));
+			a.click();
+		};
+		beforeunload=()=>urls.forEach(URL.revokeObjectURL);
 	</script>
 </body>
 </html>
