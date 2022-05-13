@@ -68,8 +68,8 @@ json2midi=w=>{
 {
 	header:{
 		format:Uint16,
-		length:Uint16,
-		precision:Int16
+		ntrks:Uint16,
+		division:Int16
 	},
 	tracks:[
 		[
