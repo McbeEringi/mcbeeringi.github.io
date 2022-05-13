@@ -41,7 +41,7 @@ json2midi=w=>{
 		0x4d,0x54,0x68,0x64, 0,0,0,6,
 		...num(w.header.format,2),
 		...num(w.header.ntrks||w.tracks.length,2),
-		...typeof w.header.division=='number'?num(w.header.division&0x7f,2):[0x80|Math.max(0x80-Math.abs(w.header.division.smpte),0),w.header.division.tpf&0xff],
+		...typeof w.header.division=='number'?num(w.header.division&0x7fff,2):[0x80|Math.max(0x80-Math.abs(w.header.division.smpte),0),w.header.division.tpf&0xff],
 		...w.tracks.flatMap(x=>{
 			x=x.flatMap(y=>[
 				...vln(y.dt),
