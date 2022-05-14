@@ -23,7 +23,7 @@ const midi2json=async w=>{
 				()=>ui7s({ch,name:'chPress'},'vel'),
 				()=>({ch,name:'bend',value:(ui7()|(ui7()<<7))-0x2000}),
 				({
-					0:(l=vln())=>({name:'sysEx0',data:new Uint8Array(0xf0,...new Uint8Array(w.buffer,q,q+=l))}),
+					0:(l=vln())=>({name:'sysEx0',data:new Uint8Array(0xf0,...new Uint8Array(w.buffer.slice(q,q+=l)))}),
 					7:(l=vln())=>({name:'sysEx7',data:new Uint8Array(w.buffer.slice(q,q+=l))}),
 					15:(type=ui7(),l=vln())=>({name:'meta',type,data:new Uint8Array(w.buffer.slice(q,q+=l))})
 				}[ch])
