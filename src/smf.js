@@ -31,7 +31,7 @@ const midi2json=async w=>{
 		}
 		tracks.push(s);
 	}
-	return{header:{format:w.getUint16(8),ntrks:w.getUint16(10),division:(x=>x>>15?{smpte:((x>>8)&0x7f)-0x80,tpf:x&0xff}:x)(w.getInt16(12))},tracks};
+	return{header:{format:w.getUint16(8),ntrks:w.getUint16(10),division:(x=>x>>15?{smpte:0x80-((x>>8)&0x7f),tpf:x&0xff}:x)(w.getInt16(12))},tracks};
 },
 json2midi=w=>{
 	let vln=x=>{let s=[];while(1){s.unshift((x&0x7f)|(s.length?0x80:0));x>>=7;if(!x)break;}return s;},
@@ -41,7 +41,7 @@ json2midi=w=>{
 		0x4d,0x54,0x68,0x64, 0,0,0,6,
 		...num(w.header.format,2),
 		...num(w.header.ntrks||w.tracks.length,2),
-		...typeof w.header.division=='number'?num(w.header.division&0x7fff,2):[0x80|Math.max(0x80-Math.abs(w.header.division.smpte),0),w.header.division.tpf&0xff],
+		...typeof w.header.division=='number'?num(w.header.division&0x7fff,2):[0x80|0x80-(w.header.division.smpte&0x7f),w.header.division.tpf&0xff],
 		...w.tracks.flatMap(x=>{
 			x=x.flatMap(y=>[
 				...vln(y.dt),
