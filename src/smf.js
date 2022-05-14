@@ -69,7 +69,7 @@ json2midi=w=>{
 	header:{
 		format:Uint16,
 		ntrks:Uint16,
-		division:Int16
+		division:Int16 or{smpte,tpf}
 	},
 	tracks:[
 		[
