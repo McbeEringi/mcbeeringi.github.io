@@ -19,16 +19,57 @@
 	</style>
 	<h1>smf</h1>
 	<hr>
-	<input type="file" class="input" id="f"> <button id="lbtn" class="button">load</button> <button id="sbtn" class="button">download</button><br>
+	<input type="file" class="input" id="f">
+	<button id="lbtn" class="button">load</button>
+	<button id="pbtn" class="button">play</button>
+	<button id="sbtn" class="button">download</button><br>
+	<canvas id="c"></canvas><br>
 	<textarea id="ta" class="input" spellcheck="false"></textarea>
 	<script>
 		TA.editor(ta);
-		const urls=[];
+		const urls=[],
+			ctx=c.getContext('2d');
+			actx=new(window.AudioContext||webkitAudioContext)(),
+			aa=actx.createAnalyser(),
+			aaa=new Uint8Array(aa.frequencyBinCount),
+			draw=()=>{
+				const stroke=x=>{
+					ctx.strokeStyle=x;
+					ctx.beginPath();
+					aaa.forEach((x,i)=>ctx[i?'lineTo':'moveTo'](c.width*i/aaa.length,c.height*(255-x)/255));
+					ctx.stroke();
+				};
+				ctx.fillStyle='#000';
+				ctx.fillRect(0,0,c.width,c.height);
+				//aa.getByteFrequencyData(aaa);stroke('#040');
+				aa.getByteTimeDomainData(aaa);stroke('#0f0');
+				requestAnimationFrame(draw);
+			};
+		draw(c.width*=2);
 		lbtn.onclick=async w=>{
 			w=await midi2json(f.files[0]);
 			w.tracks.forEach(x=>x.forEach(y=>{if(y.data)y.data=[...y.data]}));
 			ta.value=JSON.stringify(w,null,'\t').replace(/\n\t{4,}(.*)|\n\t{3}([\]\}].*)/g,'$1$2');
 			TA.ah(ta);
+		};
+		pbtn.onclick=w=>{
+			w=JSON.parse(ta.value);
+			w.tracks.flatMap(x=>x.reduce((a,y)=>(y.dt=(a[0]+=y.dt),a.push(y),a),[0]).slice(1))
+			.forEach(x=>{
+				if(x.name=='noteOn'&&x.vel>0){
+					x.dt=x.dt/w.header.division*.4;
+
+					const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=.2,ct=actx.currentTime+x.dt;
+					osc.type=x.ch?'square':'sawtooth';
+					osc.frequency.value=440*(2**((x.note-69)/12));
+					x.vel=x.vel/127;
+					g0.gain.setTargetAtTime(0,ct,d*.2);
+					g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d-.01);g1.gain.linearRampToValueAtTime(0,ct+d);
+					[osc,g0,g1,actx.destination].reduce((a,x)=>a.connect(x));g1.connect(aa);
+					osc.start(ct);
+					osc.stop(ct+d);
+				}
+			});
 		};
 		sbtn.onclick=()=>{
 			const a=document.createElement('a');
