@@ -112,3 +112,13 @@ midi2json(
 	`.match(/[\da-f]{2}/g).map(x=>parseInt(x,16))).buffer])
 ).then(json2midi).then(midi2json).then(console.log);
 */
+//TODO
+/*
+sysEx
+	master volume : f0 7f 7f 04 01 LL MM f7
+		(LL&0x7f)&((MM&0x7f)<<7)
+https://ja.wikipedia.org/wiki/General_MIDI
+
+cc,rpn,	prg
+http://www.eonet.ne.jp/~a-ton/dtm/gmcc/index.html
+*/
