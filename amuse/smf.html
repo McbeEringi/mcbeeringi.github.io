@@ -41,11 +41,11 @@
 				};
 				ctx.fillStyle='#000';
 				ctx.fillRect(0,0,c.width,c.height);
-				//aa.getByteFrequencyData(aaa);stroke('#040');
+				aa.getByteFrequencyData(aaa);stroke('#800');
 				aa.getByteTimeDomainData(aaa);stroke('#0f0');
 				requestAnimationFrame(draw);
 			};
-		draw(c.width*=2);
+		draw(c.width*=4,c.height*=2);
 		lbtn.onclick=async w=>{
 			w=await midi2json(f.files[0]);
 			w.tracks.forEach(x=>x.forEach(y=>{if(y.data)y.data=[...y.data]}));
@@ -54,20 +54,25 @@
 		};
 		pbtn.onclick=w=>{
 			w=JSON.parse(ta.value);
-			w.tracks.flatMap(x=>x.reduce((a,y)=>(y.dt=(a[0]+=y.dt),a.push(y),a),[0]).slice(1))
-			.forEach(x=>{
+			w=w.tracks
+				.flatMap(x=>x.reduce((a,y)=>(y.dt=(a[0]+=y.dt),a.push(y),a),[0]).slice(1))//absolutify
+				.sort((a,b)=>a.dt-b.dt)
+				.reduce((a,x)=>(
+					[x.dt,a[0]]=[x.dt-a[0],x.dt],//relativify & store
+					x.dt=a[1]*x.dt+a[a.length-1].dt,//absolutify after scaling
+					x.name=='meta'&&x.type==0x51&&(a[1]=((x.data[0]<<16)|(x.data[1]<<8)|x.data[2])/w.header.division*1e-6),//get tempo
+					a.push(x),a),[0,0,{dt:0}]).slice(3);
+			console.log(w);
+			w.forEach(x=>{
 				if(x.name=='noteOn'&&x.vel>0){
-					x.dt=x.dt/w.header.division*.4;
-
-					const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=.2,ct=actx.currentTime+x.dt;
+					const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=.5,ct=actx.currentTime+x.dt;
 					osc.type=x.ch?'square':'sawtooth';
 					osc.frequency.value=440*(2**((x.note-69)/12));
 					x.vel=x.vel/127;
-					g0.gain.setTargetAtTime(0,ct,d*.2);
+					g0.gain.setTargetAtTime(0,ct,.2);
 					g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d-.01);g1.gain.linearRampToValueAtTime(0,ct+d);
-					[osc,g0,g1,actx.destination].reduce((a,x)=>a.connect(x));g1.connect(aa);
-					osc.start(ct);
-					osc.stop(ct+d);
+					[osc,g0,g1,actx.destination].reduce((a,x)=>(a.connect(x),x));g1.connect(aa);
+					osc.start(ct);osc.stop(ct+d);
 				}
 			});
 		};
