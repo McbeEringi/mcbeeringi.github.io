@@ -31,18 +31,18 @@
 		const urls=[],
 			ctx=c.getContext('2d');
 			actx=new(window.AudioContext||webkitAudioContext)(),
-			aa=actx.createAnalyser(),
-			aaa=new Uint8Array(aa.frequencyBinCount),
+			aa=actx.createAnalyser();
+			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=.4,aa.frequencyBinCount,1024)),
 			draw=()=>{
-				const stroke=x=>{
+				const stroke=(x,l)=>{
 					ctx.strokeStyle=x;
 					ctx.beginPath();
-					aaa.forEach((x,i)=>ctx[i?'lineTo':'moveTo'](c.width*i/aaa.length,c.height*(255-x)/255));
+					aaa.slice(0,l).forEach((x,i,a)=>ctx[i?'lineTo':'moveTo'](c.width*i/a.length,c.height*(255-x)/255));
 					ctx.stroke();
 				};
 				ctx.fillStyle='#000';ctx.fillRect(0,0,c.width,c.height);
-				aa.getByteFrequencyData(aaa);stroke('#800');
-				aa.getByteTimeDomainData(aaa);stroke('#0f0');
+				aa.getByteTimeDomainData(aaa);stroke('#0c0',1024);
+				aa.getByteFrequencyData(aaa);stroke('#f00',256);
 				ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText(txt,0,16);
 				requestAnimationFrame(draw);
 			};
@@ -64,20 +64,22 @@
 					x.name=='meta'&&x.type==0x51&&(a[1]=((x.data[0]<<16)|(x.data[1]<<8)|x.data[2])/w.header.division*1e-6),//get tempo
 					a.push(x),a),[0,0,{dt:0}]).slice(3);
 			console.log(w);
-			const main=(o=0,l=64,ot=0)=>{txt=`e_ofs:${o}, t_corr:${ot.toFixed(3)}`;
+			const main=(o=0,l=64,ot=0)=>{
+				txt=`e_ofs:${o}, t_corr:${ot.toFixed(3)}`;
+				ot+=w[o].dt;
 				w.slice(o,o+l).forEach(x=>{
 					if(x.name=='noteOn'&&x.vel>0){
-						const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=.5,ct=actx.currentTime+x.dt-w[o].dt-ot;
+						const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=.5,ct=actx.currentTime+x.dt-ot;
 						osc.type=['sawtooth','square','triangle','sine'][x.ch%4];
 						osc.frequency.value=440*(2**((x.note-69)/12));
 						x.vel/=127;x.vel*=.5;
-						g0.gain.setTargetAtTime(0,ct,.2);
+						g0.gain.setTargetAtTime(0,ct,.5);
 						g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d-.01);g1.gain.linearRampToValueAtTime(0,ct+d);
 						[osc,g0,g1,actx.destination].reduce((a,x)=>(a.connect(x),x));g1.connect(aa);
 						osc.start(ct);osc.stop(ct+d);
 					}
 				});
-				const t=actx.currentTime,next=w[o+l].dt-w[o].dt-ot;
+				const t=actx.currentTime,next=w[o+l].dt-ot;
 				if(w[o+l])setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);
 			};
 			main();
