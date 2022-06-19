@@ -31,6 +31,7 @@
 		const urls=[],
 			ctx=c.getContext('2d');
 			actx=new(window.AudioContext||webkitAudioContext)(),
+			shape=[.5,.25,1,0].map(w=>new Float32Array(new Array(actx.sampleRate).fill().map((x,i)=>(x=i/actx.sampleRate*2-1,w?Math.abs(x)>(1+2/actx.sampleRate-w)?Math.sign(x):0:x)))),
 			master=actx.createGain(),//Dynamicsmasterressor(),
 			aa=actx.createAnalyser();
 			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=0,aa.frequencyBinCount,1024)),
@@ -79,13 +80,14 @@
 				txt=`e_ofs:${o}, t_corr:${ot.toFixed(3)}`;
 				ot+=w[o].t;
 				w.slice(o,o+l).forEach(x=>{
-						const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
-						osc.type=['sawtooth','square','triangle','sine'][x.ch%4];
+						const osc=actx.createOscillator(),ws=actx.createWaveShaper(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
+						osc.type='triangle';
+						ws.curve=shape[x.ch%4];
 						osc.frequency.value=440*(2**((x.note-69)/12));
 						x.vel/=127;x.vel*=.2;
 						g0.gain.setTargetAtTime(0,ct,.4);
 						g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d-.02);g1.gain.linearRampToValueAtTime(0,ct+d);
-						[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
+						[osc,ws,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 						osc.start(ct);osc.stop(ct+d);
 				});
 				const t=actx.currentTime,next=w[o+l].t-ot;
@@ -100,6 +102,21 @@
 			a.click();
 		};
 		beforeunload=()=>urls.forEach(URL.revokeObjectURL);
+
+		const pwm=(actx)=>{
+			const osc=Object.assign(actx.createOscillator(),{type:'sawtooth'}),
+				sq=Object.assign(actx.createWaveShaper(),{curve:new Float32Array([...new Array(actx.sampleRate/2).fill(-1),...new Array(actx.sampleRate/2).fill(1)])});
+
+		g.gain.value=0;
+		osc.duty=g.gain;
+
+		[osc,sq].reduce((a,x)=>(a.connect(x),x));
+		osc.connect(sq);
+
+		osc.connect=x=>sq.connect(x);
+		osc.disconnect=x=>sq.disconnect(x);
+    return osc;
+};
 	</script>
 </body>
 </html>
