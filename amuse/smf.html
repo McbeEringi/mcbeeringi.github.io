@@ -80,7 +80,7 @@
 			},new Array(16).fill().map(()=>[])).slice(16);
 			console.log(w);
 
-			const main=(o=0,d=5,t=0)=>{
+			/*const main=(o=0,d=5,t=0)=>{
 				const arr=w.filter((x,i)=>o<=i&&x.t<(t+d));
 				txt=`now:${o}(${t.toFixed(3)}), entry:${arr.length}`;
 				arr.forEach(x=>{
@@ -95,9 +95,9 @@
 				});
 				t-=actx.currentTime;
 				if(w.length>o+arr.length)setTimeout(()=>main(o+arr.length,d,t+actx.currentTime),(d-2)*1000);
-			};
-			/*const main=(o=0,l=64,ot=0)=>{
-				txt=`e_ofs:${o}, t_corr:${ot.toFixed(3)}`;
+			};*/
+			const main=(o=0,l=128,ot=0)=>{
+				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
 				ot+=w[o].t;
 				w.slice(o,o+l).forEach(x=>{
 						const osc=actx.createOscillator(),ws=actx.createWaveShaper(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
@@ -112,7 +112,7 @@
 				});
 				const t=actx.currentTime,next=w[o+l].t-ot;
 				if(w[o+l])setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);
-			};*/
+			};
 			main();
 		};
 		sbtn.onclick=()=>{
