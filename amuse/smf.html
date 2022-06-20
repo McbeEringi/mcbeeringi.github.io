@@ -31,7 +31,7 @@
 		const urls=[],
 			ctx=c.getContext('2d');
 			actx=new(window.AudioContext||webkitAudioContext)(),
-			shape=[.5,.25,1,0].map(w=>new Float32Array(new Array(actx.sampleRate).fill().map((x,i)=>(x=i/actx.sampleRate*2-1,w?Math.abs(x)>(1+2/actx.sampleRate-w)?Math.sign(x):0:x)))),
+			shape=[.5,.25,1,.75,0].map(w=>new Float32Array(new Array(actx.sampleRate).fill().map((x,i)=>(x=i/actx.sampleRate*2-1,w?Math.abs(x)>(1+2/actx.sampleRate-w)?Math.sign(x):0:x)))),
 			master=actx.createGain(),//Dynamicsmasterressor(),
 			aa=actx.createAnalyser();
 			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=0,aa.frequencyBinCount,1024)),
@@ -80,13 +80,13 @@
 				return a;
 			},new Array(16).fill().map(()=>[])).slice(16);
 			console.log(w);
-			const main=(o=0,l=128,ot=0)=>{
+			const main=(o=0,l=256,ot=0)=>{
 				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
 				ot+=w[o].t;
-				w.slice(o,o+l).forEach(x=>{
-						const osc=actx.createOscillator(),ws=actx.createWaveShaper(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
+				w.slice(o,o+l).forEach(x=>{//if(x.name=='noteOn'&&x.vel>0){
+						const osc=actx.createOscillator(),ws=actx.createWaveShaper(),g0=actx.createGain(),g1=actx.createGain(),d=.2,ct=actx.currentTime+x.t-ot;
 						osc.type='triangle';
-						ws.curve=shape[x.ch%4];
+						ws.curve=shape[x.ch%5];
 						osc.frequency.value=440*(2**((x.note-69)/12));
 						x.vel/=127;x.vel*=.2;
 						g0.gain.setTargetAtTime(0,ct,.4);
@@ -95,7 +95,7 @@
 						osc.start(ct);osc.stop(ct+d);
 				});
 				const t=actx.currentTime,next=w[o+l].t-ot;
-				if(w[o+l])setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);
+				if(w[o+l])setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-4)*1000);
 			};
 			main();
 		};
