@@ -70,32 +70,16 @@
 					x.dt=a[1]*x.dt+a[a.length-1].dt,//absolutify after scaling
 					x.name=='meta'&&x.type==0x51&&(a[1]=((x.data[0]<<16)|(x.data[1]<<8)|x.data[2])/w.header.division*1e-6),//get tempo
 					a.push(x),a),[0,0,{dt:0}]).slice(3);
+			console.log(w);
 			w=w.reduce((a,x)=>{
 				if(x.name=='noteOn'&&x.vel>0)a[x.ch][x.note]=x;
-				if(((x.name=='noteOn'&&x.vel==0)||x.name=='noteOff')&&x.note in a[x.ch]){
-					a.push({note:x.note,t:a[x.ch][x.note].dt,d:x.dt-a[x.ch][x.note].dt,vel:a[x.ch][x.note].vel,ch:x.ch});
-					delete a[x.ch][x.note];
+				if(((x.name=='noteOn'&&x.vel==0)||x.name=='noteOff')&&a[x.ch][x.note]){
+					const {note,ch,vel,dt}=a[x.ch][x.note];delete a[x.ch][x.note];
+					a.push({note,ch,vel,t:dt,d:x.dt-dt});
 				}
 				return a;
 			},new Array(16).fill().map(()=>[])).slice(16);
 			console.log(w);
-
-			/*const main=(o=0,d=5,t=0)=>{
-				const arr=w.filter((x,i)=>o<=i&&x.t<(t+d));
-				txt=`now:${o}(${t.toFixed(3)}), entry:${arr.length}`;
-				arr.forEach(x=>{
-						const osc=actx.createOscillator(),ws=actx.createWaveShaper(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-t;
-						osc.type='triangle';ws.curve=shape[x.ch%4];
-						osc.frequency.value=440*(2**((x.note-69)/12));
-						x.vel/=127;x.vel*=.2;
-						g0.gain.setTargetAtTime(0,ct,.4);
-						g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d-.02);g1.gain.linearRampToValueAtTime(0,ct+d);
-						[osc,ws,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
-						osc.start(ct);osc.stop(ct+d);
-				});
-				t-=actx.currentTime;
-				if(w.length>o+arr.length)setTimeout(()=>main(o+arr.length,d,t+actx.currentTime),(d-2)*1000);
-			};*/
 			const main=(o=0,l=128,ot=0)=>{
 				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
 				ot+=w[o].t;
