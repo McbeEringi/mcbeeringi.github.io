@@ -31,7 +31,8 @@
 		const urls=[],
 			ctx=c.getContext('2d');
 			actx=new(window.AudioContext||webkitAudioContext)(),
-			shape=[.125,.25,.5,.75,0].map(w=>new Float32Array(new Array(actx.sampleRate).fill().map((x,i)=>(x=i/actx.sampleRate*2-1,w?Math.abs(x)>(1+2/actx.sampleRate-w)?Math.sign(x):0:x)))),
+			//shape=[.125,.25,.5,.75,0].map(w=>new Float32Array(new Array(actx.sampleRate).fill().map((x,i)=>(x=i/actx.sampleRate*2-1,w?Math.abs(x)>(1+2/actx.sampleRate-w)?Math.sign(x):0:Math.floor((x*.5+.5)*17)/8-1)))),
+			shape=[1,2,4,-2,0].map(w=>new Float32Array(new Array(actx.sampleRate).fill().map((x,i)=>(x=i/actx.sampleRate,w?(y=>(+(w<0&&(w*=-1))^+(y&&y<=w))*2-1)(Math.floor(x*9)):(y=>(y<16?15-y:y-16)/8-1)(Math.floor(x*33)))))),
 			master=actx.createGain(),//Dynamicsmasterressor(),
 			aa=actx.createAnalyser();
 			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=0,aa.frequencyBinCount,1024)),
@@ -85,12 +86,12 @@
 				ot+=w[o].t;
 				w.slice(o,o+l).forEach(x=>{//if(x.name=='noteOn'&&x.vel>0){
 						const osc=actx.createOscillator(),ws=actx.createWaveShaper(),g0=actx.createGain(),g1=actx.createGain(),d=.2,ct=actx.currentTime+x.t-ot;
-						osc.type='triangle';
+						osc.type='sawtooth';
 						ws.curve=shape[x.ch%5];
 						osc.frequency.value=440*(2**((x.note-69)/12));
-						x.vel/=127;x.vel*=.2;
+						x.vel/=127;x.vel*=.1;
 						g0.gain.setTargetAtTime(0,ct,.4);
-						g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d-.02);g1.gain.linearRampToValueAtTime(0,ct+d);
+						g1.gain.setValueAtTime(0,0);g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d-.02);g1.gain.linearRampToValueAtTime(0,ct+d);
 						[osc,ws,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 						osc.start(ct);osc.stop(ct+d);
 				});
