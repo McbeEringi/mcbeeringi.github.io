@@ -86,7 +86,7 @@
 						osc.type='triangle';
 						ws.curve=shape[x.ch%5];
 						osc.frequency.value=440*(2**((x.note-69)/12));
-						x.vel/=127;x.vel*=.1;
+						x.vel/=127;x.vel*=.05;
 						g0.gain.setTargetAtTime(0,ct,.4);
 						g1.gain.setValueAtTime(0,0);g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d-.02);g1.gain.linearRampToValueAtTime(0,ct+d);
 						[osc,ws,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
