@@ -31,7 +31,18 @@
 		const urls=[],
 			ctx=c.getContext('2d');
 			actx=new(window.AudioContext||webkitAudioContext)(),
-			shape=[.125,.25,.5,.75,0,-1].map(w=>new Float32Array(new Array(actx.sampleRate).fill().map((x,i)=>(x=i/actx.sampleRate,w?~w?(x>(1-w)?1:-1):(x+Math.random())-1:Math.floor(x*16)/7.5-1)))),//triangle
+			noise=new Array(32767).fill().reduce((a,y=a[0][0]^a[0][1])=>(a.push(!y),a[0]=[...a[0].slice(1),y],a),[[1,...new Array(14).fill(0)]]).slice(1),
+			fft=(w,z=8192)=>{
+				const add=([a,b],[c,d])=>[a+c,b+d],sub=([a,b],[c,d])=>[a-c,b-d],mul=([a,b],[c,d])=>[a*c-b*d,a*d+b*c],img=t=>[Math.cos(t),Math.sin(t)],
+					trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
+					core=(c,T=-2*Math.PI/c.length,N=c.length,s=0,w=1)=>{
+						if(N===1)return[c[s]];const Nh=N/2,Td=T*2,wd=w*2,a=core(c,Td,Nh,s,wd).concat(core(c,Td,Nh,s+w,wd));
+						for(let i=0;i<Nh;i++){const x=[a[i],mul(a[i+Nh],img(T*i))];a[i]=add(...x);a[i+Nh]=sub(...x);}
+						return a;
+					};
+				return trs(core(w.flatMap(x=>new Array(z/w.length).fill().map(()=>[x*2-1,0])))).map(x=>new Float32Array(x));
+			},
+			pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(x=>actx.createPeriodicWave(...fft(x))),
 			master=actx.createGain(),//DynamicsCompressor(),
 			aa=actx.createAnalyser();
 			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=0,aa.frequencyBinCount,1024)),
@@ -81,18 +92,17 @@
 				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
 				ot+=w[o].t;
 				w.slice(o,o+l).forEach(x=>{//if(x.name=='noteOn'&&x.vel>0){
-						const osc=actx.createOscillator(),ws=actx.createWaveShaper(),g0=actx.createGain(),g1=actx.createGain(),d=.2,ct=actx.currentTime+x.t-ot;
-						osc.type='triangle';
-						ws.curve=shape[x.ch==9?5:(x.ch%5)];
-						osc.frequency.value=440*(2**((x.note-69)/12));
+						const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
+						osc.setPeriodicWave(pwav[x.ch%5]);
+						osc.frequency.value=440*(2**((x.note-69)/12))*((x.ch==9?5:(x.ch%5))==5?.002:1);
 						x.vel/=127;x.vel*=.05;
 						g0.gain.setTargetAtTime(0,ct,.4);
 						g1.gain.setValueAtTime(0,0);g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d);g1.gain.linearRampToValueAtTime(0,ct+d+.02);
-						[osc,ws,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
+						[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 						osc.start(ct);osc.stop(ct+d+.02);
 				});
 				const t=actx.currentTime,next=w[o+l].t-ot;
-				if(w[o+l])setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-4)*1000);
+				if(w[o+l])setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);
 			};
 			main();
 		};
