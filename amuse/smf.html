@@ -33,16 +33,11 @@
 			actx=new(window.AudioContext||webkitAudioContext)(),
 			noise=new Array(32767).fill().reduce((a,y=a[0][0]^a[0][1])=>(a.push(!y),a[0]=[...a[0].slice(1),y],a),[[1,...new Array(14).fill(0)]]).slice(1),
 			fft=(w,z=8192)=>{
-				const add=([a,b],[c,d])=>[a+c,b+d],sub=([a,b],[c,d])=>[a-c,b-d],mul=([a,b],[c,d])=>[a*c-b*d,a*d+b*c],img=t=>[Math.cos(t),Math.sin(t)],
-					trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
-					core=(c,T=-2*Math.PI/c.length,N=c.length,s=0,w=1)=>{
-						if(N===1)return[c[s]];const Nh=N/2,Td=T*2,wd=w*2,a=core(c,Td,Nh,s,wd).concat(core(c,Td,Nh,s+w,wd));
-						for(let i=0;i<Nh;i++){const x=[a[i],mul(a[i+Nh],img(T*i))];a[i]=add(...x);a[i+Nh]=sub(...x);}
-						return a;
-					};
-				return trs(core(w.flatMap(x=>new Array(z/w.length).fill().map(()=>[x*2-1,0])))).map(x=>new Float32Array(x));
+				const add=([[a,b],[c,d]])=>[a+c,b+d],sub=([[a,b],[c,d]])=>[a-c,b-d],mul=([a,b],[c,d])=>[a*c-b*d,a*d+b*c],img=t=>[Math.cos(t),Math.sin(t)],trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
+					core=(x,t=-Math.PI/x.length,n=x.length,p=0,o=1,_)=>n==1?[x[p]]:(_=core(x,t*=2,n/=2,p+o,o*=2),x=core(x,t,n,p,o).map((y,i)=>[y,mul(_[i],img(t*i))]),x.map(add).concat(x.map(sub)));
+				return trs(core(w.flatMap(x=>new Array(z/w.length).fill().map(()=>[x,0])))).map(x=>new Float32Array(x));
 			},
-			pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(x=>actx.createPeriodicWave(...fft(x))),
+			pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
 			master=actx.createGain(),//DynamicsCompressor(),
 			aa=actx.createAnalyser();
 			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=0,aa.frequencyBinCount,1024)),
