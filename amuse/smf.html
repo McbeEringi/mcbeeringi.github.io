@@ -34,7 +34,7 @@
 			noise=new Array(32767).fill().reduce((a,y=a[0][0]^a[0][1])=>(a.push(!y),a[0]=[...a[0].slice(1),y],a),[[1,...new Array(14).fill(0)]]).slice(1),
 			fft=(w,z=8192)=>{
 				const add=([[a,b],[c,d]])=>[a+c,b+d],sub=([[a,b],[c,d]])=>[a-c,b-d],mul=([a,b],[c,d])=>[a*c-b*d,a*d+b*c],img=t=>[Math.cos(t),Math.sin(t)],trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
-					core=(x,t=-Math.PI/x.length,n=x.length,p=0,o=1,_)=>n==1?[x[p]]:(_=core(x,t*=2,n/=2,p+o,o*=2),x=core(x,t,n,p,o).map((y,i)=>[y,mul(_[i],img(t*i))]),x.map(add).concat(x.map(sub)));
+					core=(x,n=x.length,t=-Math.PI/n,p=0,o=1,_)=>n==1?[x[p]]:(_=core(x,n/=2,t*=2,p+o,o*=2),x=core(x,n,t,p,o).map((y,i)=>[y,mul(_[i],img(t*i))]),x.map(add).concat(x.map(sub)));
 				return trs(core(w.flatMap(x=>new Array(z/w.length).fill().map(()=>[x,0])))).map(x=>new Float32Array(x));
 			},
 			pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
