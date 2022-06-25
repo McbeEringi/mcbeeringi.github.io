@@ -76,13 +76,32 @@
 					a.push(x),a),[0,0,{dt:0}]).slice(3);
 			console.log(w);
 			w=w.reduce((a,x)=>{
-				if(x.name=='noteOn'&&x.vel>0)a[x.ch][x.note]=x;
-				if(((x.name=='noteOn'&&x.vel==0)||x.name=='noteOff')&&a[x.ch][x.note]){
-					const {note,ch,vel,dt}=a[x.ch][x.note];delete a[x.ch][x.note];
-					a.push({note,ch,vel,t:dt,d:x.dt-dt});
+				if(x.name=='noteOn'&&x.vel>0){
+					if(a[x.ch].notes[x.note].pushed==-1){
+						const {note,ch,vel,dt}=a[x.ch].notes[x.note];a.push({note,ch,vel,t:dt,d:x.dt-dt});
+					}
+					a[x.ch].notes[x.note]={...x,pushed:1};
+				}
+				else if(((x.name=='noteOn'&&x.vel==0)||x.name=='noteOff')&&a[x.ch].notes[x.note].pushed==1){
+					if(a[x.ch].sus)a[x.ch].notes[x.note].pushed=-1;
+					else{
+						const {note,ch,vel,dt}=a[x.ch].notes[x.note];a[x.ch].notes[x.note].pushed=0;
+						a.push({note,ch,vel,t:dt,d:x.dt-dt});
+					}
+				}
+				else if(x.name=='ctrl'&&x.ctrl==0x40){
+					if(a[x.ch].sus!=(a[x.ch].sus=(x.value>>>6))&&!a[x.ch].sus){
+						a.push(...a[x.ch].notes.flatMap(y=>{
+							if(!~y.pushed){
+								const {note,ch,vel,dt}=y;y.pushed=0;
+								return[{note,ch,vel,t:dt,d:x.dt-dt}];
+							}else return[];
+						}));
+					}
 				}
 				return a;
-			},new Array(16).fill().map(()=>[])).slice(16);
+			},new Array(16).fill().map(()=>({notes:new Array(127).fill().map(()=>({pushed:0})),sus:0}))).slice(16);
+			w=w.sort((a,b)=>a.t-b.t);
 			console.log(w);
 			const main=(o=0,l=256,ot=0)=>{
 				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
@@ -92,7 +111,7 @@
 						osc.setPeriodicWave(pwav[x.ch%5]);
 						osc.frequency.value=440*(2**((x.note-69)/12))*((x.ch==9?5:(x.ch%5))==5?.002:1);
 						x.vel/=127;x.vel*=.2;
-						g0.gain.setTargetAtTime(0,ct,.4);
+						g0.gain.setTargetAtTime(0,ct,230/(x.note**1.5));
 						g1.gain.setValueAtTime(0,0);g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d);g1.gain.linearRampToValueAtTime(0,ct+d+.02);
 						[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 						osc.start(ct);osc.stop(ct+d+.02);
