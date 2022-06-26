@@ -27,13 +27,13 @@
 	<textarea id="ta" class="input" spellcheck="false"></textarea>
 	<script>
 		TA.editor(ta);
-		let txt='';
+		let txt='',path;
 		const urls=[],
 			ctx=c.getContext('2d');
 			actx=new(window.AudioContext||webkitAudioContext)(),
 			noise=new Array(32767).fill().reduce((a,y=a[0][0]^a[0][1])=>(a.push(!y),a[0]=[...a[0].slice(1),y],a),[[1,...new Array(14).fill(0)]]).slice(1),
-			fft=(w,l=8192)=>{
-				w=w.flatMap(x=>new Array(l/w.length).fill().map(()=>[x,0]));
+			fft=(w,l=12)=>{
+				w=w.flatMap(x=>new Array(2**l/w.length).fill().map(()=>[x,0]));
 				const add=([[a,b],[c,d]])=>[a+c,b+d],sub=([[a,b],[c,d]])=>[a-c,b-d],mul=([a,b],[c,d])=>[a*c-b*d,a*d+b*c],cm=t=>[Math.cos(t),Math.sin(t)],trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
 					core=(n=w.length,t=-Math.PI/n,p=0,o=1,x,y)=>n==1?[w[p]]:(y=core(n/=2,t*=2,p+o,o*=2),x=core(n,t,p,o).map((z,i)=>[z,mul(y[i],cm(t*i))]),x.map(add).concat(x.map(sub)));
 				return trs(core()).map(x=>new Float32Array([0,...x.slice(1)]));
@@ -53,6 +53,7 @@
 				aa.getByteTimeDomainData(aaa);stroke('#0c0',1024);
 				aa.getByteFrequencyData(aaa);stroke('#f00',256);
 				ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText(txt,0,16);
+				ctx.strokeStyle='#08f';path&&ctx.stroke(path);
 				requestAnimationFrame(draw);
 			};
 		draw(c.width*=4,c.height*=2,ctx.lineWidth=2);
@@ -116,6 +117,7 @@
 						[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 						osc.start(ct);osc.stop(ct+d+.02);
 				});
+				path=new Path2D(w.slice(o,o+l).map(x=>`M${(x.t-w[o].t)*64} ${(1-x.note/127)*c.height}l${x.d*64} 0`).join(''));
 				const t=actx.currentTime,next=w[o+l].t-ot;
 				if(w[o+l])setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);
 			};
