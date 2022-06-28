@@ -78,7 +78,7 @@
 			console.log(w);
 			w=w.reduce((a,x)=>{
 				if(x.name=='noteOn'&&x.vel>0){
-					if(a[x.ch].notes[x.note].pushed==-1){
+					if(a[x.ch].notes[x.note].pushed!=0){
 						const {note,ch,vel,dt}=a[x.ch].notes[x.note];a.push({note,ch,vel,t:dt,d:x.dt-dt});
 					}
 					a[x.ch].notes[x.note]={...x,pushed:1};
