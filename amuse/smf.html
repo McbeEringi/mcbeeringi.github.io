@@ -52,32 +52,25 @@
 				ctx.fillStyle='#000';ctx.fillRect(0,0,c.width,c.height);
 				aa.getByteTimeDomainData(aaa);stroke('#0c0',1024);
 				aa.getByteFrequencyData(aaa);stroke('#f00',256);
+				path&&(ctx.strokeStyle='#08f',ctx.stroke(new Path2D(path[1]+`M${(actx.currentTime-path[0])*64} 0l0 ${c.height}`)));
 				ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText(txt,0,16);
-				ctx.strokeStyle='#08f';path&&ctx.stroke(path);
 				requestAnimationFrame(draw);
 			};
 		draw(c.width*=4,c.height*=2,ctx.lineWidth=2);
 		master.connect(actx.destination);
 		master.connect(aa);
 		lbtn.onclick=async w=>{
-			w=await midi2json(f.files[0]);
+			w=await smfin(f.files[0]);
 			w.tracks.forEach(x=>x.forEach(y=>{if(y.data)y.data=[...y.data]}));
 			ta.value=JSON.stringify(w,null,'\t').replace(/\n\t{4,}(.*)|\n\t{3}([\]\}].*)/g,'$1$2');
 			TA.ah(ta);
 		};
 		pbtn.onclick=w=>{
 			w=JSON.parse(ta.value);
-			w=w.tracks
-				.flatMap((x,i)=>x.reduce((a,y)=>(y.t=(a[0]+=y.dt),y.trk=i,a.push(y),a),[0]).slice(1))//absolutify
-				.sort((a,b)=>a.t-b.t)
-				.reduce((a,x)=>(
-					[x.t,a[0]]=[x.t-a[0],x.t],//relativify & store
-					x.t=a[1]*x.t+a[a.length-1].t,//absolutify after scaling
-					x.name=='meta'&&x.type==0x51&&(a[1]=((x.data[0]<<16)|(x.data[1]<<8)|x.data[2])/w.header.division*1e-6),//get tempo
-					a.push(x),a),[0,0,{t:0}]).slice(3);
+			w.uni=smfuni(w);
 			console.log(w);
 
-			w=w.reduce((a,x)=>{
+			w=w.uni.reduce((a,x)=>{
 				if(x.name=='noteOn'&&x.vel>0){
 					if(a[x.ch].notes[x.note].pushed!=0){
 						const {note,ch,vel,t}=a[x.ch].notes[x.note];a.push({note,ch,vel,t,d:x.t-t});
@@ -108,6 +101,7 @@
 			
 			const main=(o=0,l=256,ot=0)=>{
 				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
+				setTimeout(()=>path=[actx.currentTime,w.slice(o,o+l).map(x=>`M${(x.t-w[o].t)*64} ${(1-x.note/127)*c.height}l${x.d*64} 0`).join('')],-ot*1000);
 				ot+=w[o].t;
 				w.slice(o,o+l).forEach(x=>{//if(x.name=='noteOn'&&x.vel>0){
 						const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
@@ -119,7 +113,6 @@
 						[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 						osc.start(ct);osc.stop(ct+d+.02);
 				});
-				path=new Path2D(w.slice(o,o+l).map(x=>`M${(x.t-w[o].t)*64} ${(1-x.note/127)*c.height}l${x.d*64} 0`).join(''));
 				const t=actx.currentTime,next=w[o+l].t-ot;
 				if(w[o+l])setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);
 			};
@@ -128,7 +121,7 @@
 		sbtn.onclick=()=>{
 			const a=document.createElement('a');
 			a.download=new Date()+'.mid';
-			a.href=URL.createObjectURL(json2midi(JSON.parse(ta.value)));
+			a.href=URL.createObjectURL(smfout(JSON.parse(ta.value)));
 			a.click();
 		};
 		beforeunload=()=>urls.forEach(URL.revokeObjectURL);
