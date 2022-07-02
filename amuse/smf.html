@@ -68,34 +68,35 @@
 		pbtn.onclick=w=>{
 			w=JSON.parse(ta.value);
 			w=w.tracks
-				.flatMap(x=>x.reduce((a,y)=>(y.dt=(a[0]+=y.dt),a.push(y),a),[0]).slice(1))//absolutify
-				.sort((a,b)=>a.dt-b.dt)
+				.flatMap((x,i)=>x.reduce((a,y)=>(y.t=(a[0]+=y.dt),y.trk=i,a.push(y),a),[0]).slice(1))//absolutify
+				.sort((a,b)=>a.t-b.t)
 				.reduce((a,x)=>(
-					[x.dt,a[0]]=[x.dt-a[0],x.dt],//relativify & store
-					x.dt=a[1]*x.dt+a[a.length-1].dt,//absolutify after scaling
+					[x.t,a[0]]=[x.t-a[0],x.t],//relativify & store
+					x.t=a[1]*x.t+a[a.length-1].t,//absolutify after scaling
 					x.name=='meta'&&x.type==0x51&&(a[1]=((x.data[0]<<16)|(x.data[1]<<8)|x.data[2])/w.header.division*1e-6),//get tempo
-					a.push(x),a),[0,0,{dt:0}]).slice(3);
+					a.push(x),a),[0,0,{t:0}]).slice(3);
 			console.log(w);
+
 			w=w.reduce((a,x)=>{
 				if(x.name=='noteOn'&&x.vel>0){
 					if(a[x.ch].notes[x.note].pushed!=0){
-						const {note,ch,vel,dt}=a[x.ch].notes[x.note];a.push({note,ch,vel,t:dt,d:x.dt-dt});
+						const {note,ch,vel,t}=a[x.ch].notes[x.note];a.push({note,ch,vel,t,d:x.t-t});
 					}
 					a[x.ch].notes[x.note]={...x,pushed:1};
 				}
 				else if(((x.name=='noteOn'&&x.vel==0)||x.name=='noteOff')&&a[x.ch].notes[x.note].pushed==1){
 					if(a[x.ch].sus)a[x.ch].notes[x.note].pushed=-1;
 					else{
-						const {note,ch,vel,dt}=a[x.ch].notes[x.note];a[x.ch].notes[x.note].pushed=0;
-						a.push({note,ch,vel,t:dt,d:x.dt-dt});
+						const {note,ch,vel,t}=a[x.ch].notes[x.note];a[x.ch].notes[x.note].pushed=0;
+						a.push({note,ch,vel,t,d:x.t-t});
 					}
 				}
 				else if(x.name=='ctrl'&&x.ctrl==0x40){
 					if(a[x.ch].sus!=(a[x.ch].sus=(x.value>>>6))&&!a[x.ch].sus){
 						a.push(...a[x.ch].notes.flatMap(y=>{
 							if(!~y.pushed){
-								const {note,ch,vel,dt}=y;y.pushed=0;
-								return[{note,ch,vel,t:dt,d:x.dt-dt}];
+								const {note,ch,vel,t}=y;y.pushed=0;
+								return[{note,ch,vel,t,d:x.t-t}];
 							}else return[];
 						}));
 					}
@@ -104,6 +105,7 @@
 			},new Array(16).fill().map(()=>({notes:new Array(127).fill().map(()=>({pushed:0})),sus:0}))).slice(16);
 			w=w.sort((a,b)=>a.t-b.t);
 			console.log(w);
+			
 			const main=(o=0,l=256,ot=0)=>{
 				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
 				ot+=w[o].t;
