@@ -1,4 +1,4 @@
-const midi2json=async w=>{
+const smfin=async w=>{
 	w=new DataView(await new Response(w).arrayBuffer());
 	if(w.getUint32(0)!==0x4d546864)throw'invaild file.';
 	let p=8+w.getUint32(4),tracks=[];
@@ -33,7 +33,7 @@ const midi2json=async w=>{
 	}
 	return{header:{format:w.getUint16(8),ntrks:w.getUint16(10),division:(x=>x>>15?{smpte:0x80-((x>>8)&0x7f),tpf:x&0xff}:x)(w.getInt16(12))},tracks};
 },
-json2midi=w=>{
+smfout=w=>{
 	let vln=x=>{let s=[];while(1){s.unshift((x&0x7f)|(s.length?0x80:0));x>>=7;if(!x)break;}return s;},
 		num=(x,l)=>new Array(l--).fill().map((_,i)=>(x>>(8*(l-i)))&0xff),
 		r,rs=(x,y,...z)=>((z=z.map(_=>_&0x7f))&&(r==(r=x+(y.ch&0xf))))?z:[r,...z];
@@ -61,7 +61,16 @@ json2midi=w=>{
 			return[0x4d,0x54,0x72,0x6b,...num(x.length,4),...x];
 		})
 	]).buffer]);
-};
+},
+smfuni=w=>w.tracks//returns unified track with absolute time 't'
+	.flatMap((x,trk)=>x.reduce((a,y)=>(y={...y,t:a[0]+=y.dt,trk},delete y.dt,a.push(y),a),[0]).slice(1))//absolutify
+	.sort((a,b)=>a.t-b.t)
+	.reduce((a,x)=>(
+		[x.t,a[0]]=[x.t-a[0],x.t],//relativify & store
+		x.t=a[1]*x.t+a[a.length-1].t,//absolutify after scaling
+		x.name=='meta'&&x.type==0x51&&(a[1]=((x.data[0]<<16)|(x.data[1]<<8)|x.data[2])/w.header.division*1e-6),//get tempo
+		a.push(x),a),[0,0,{t:0}]).slice(3);
+
 
 //json format
 /*
@@ -83,7 +92,7 @@ json2midi=w=>{
 
 //example
 /*
-midi2json(
+smfin(
 	new Blob([new Uint8Array(`
 		4d 54 68 64
 		00 00 00 06
@@ -110,7 +119,7 @@ midi2json(
 		60    40 00
 		00 ff 2f 00
 	`.match(/[\da-f]{2}/g).map(x=>parseInt(x,16))).buffer])
-).then(json2midi).then(midi2json).then(console.log);
+).then(smfout).then(smfin).then(console.log);
 */
 //TODO
 /*
