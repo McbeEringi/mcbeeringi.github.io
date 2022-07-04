@@ -105,7 +105,7 @@
 				ot+=w[o].t;
 				w.slice(o,o+l).forEach(x=>{//if(x.name=='noteOn'&&x.vel>0){
 						const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
-						osc.setPeriodicWave(pwav[x.ch%5]);
+						osc.setPeriodicWave(pwav[x.trk%5]);
 						osc.frequency.value=440*(2**((x.note-69)/12))*((x.ch==9?5:(x.ch%5))==5?.002:1);
 						x.vel/=127;x.vel*=.2;
 						g0.gain.setTargetAtTime(0,ct,230/(x.note**1.5));
