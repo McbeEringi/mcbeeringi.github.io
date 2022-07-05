@@ -2,7 +2,7 @@
  *  Designed by @McbeEringi cc0
  *  usage: <input type="checkbox" class="toggle" style="--size:<length(height)>;">
  */
-input[type=checkbox].toggle{--size:24px;appearance:none;-webkit-appearance:none;outline:none;display:inline-block;width:calc(var(--size)*1.62);height:var(--size);border-radius:calc(var(--size)*.5);vertical-align:middle;background-color:#666;transition:.1s;}
+input[type=checkbox].toggle{--size:24px;appearance:none;-webkit-appearance:none;display:inline-block;width:calc(var(--size)*1.62);height:var(--size);border-radius:calc(var(--size)*.5);vertical-align:middle;background-color:#666;transition:.1s;}
 input[type=checkbox].toggle::before{content:"";display:block;width:var(--size);height:var(--size);border-radius:50%;transform:scale(.85);background-color:#fff;transition:inherit;}
 input[type=checkbox]:checked.toggle{background-color:#3d5;}
 input[type=checkbox]:checked.toggle::before{transform:translateX(calc(var(--size)*.62))scale(.85);}
