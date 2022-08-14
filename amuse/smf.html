@@ -23,12 +23,12 @@
 	<button id="lbtn" class="button">load</button>
 	<button id="pbtn" class="button">play</button>
 	<button id="sbtn" class="button">download</button>
-	<button id="rbtn" class="button">render wav</button><br>
+	<label>record wav<input type="checkbox" id="reccb"></label><br>
 	<canvas id="c" style="max-width:100%;"></canvas><br>
 	<textarea id="ta" class="input" spellcheck="false"></textarea>
 	<script>
 		TA.editor(ta);
-		let txt='',path;
+		let txt='',path=[];
 		const urls=[],
 			ctx=c.getContext('2d');
 			actx=new(window.AudioContext||webkitAudioContext)(),
@@ -43,6 +43,8 @@
 			master=actx.createGain(),//DynamicsCompressor(),
 			aa=actx.createAnalyser();
 			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=0,aa.frequencyBinCount,1024)),
+			recn=actx.createMediaStreamDestination(),
+			mr=new MediaRecorder(recn.stream);
 			draw=()=>{
 				const stroke=(x,l)=>{
 					ctx.strokeStyle=x;
@@ -53,11 +55,11 @@
 				ctx.fillStyle='#000';ctx.fillRect(0,0,c.width,c.height);
 				aa.getByteTimeDomainData(aaa);stroke('#0c0',1024);
 				aa.getByteFrequencyData(aaa);stroke('#f00',256);
-				path&&(ctx.strokeStyle='#08f',ctx.stroke(new Path2D(path[1]+`M${(actx.currentTime-path[0])*64} 0l0 ${c.height}`)));
+				path.length&&(ctx.strokeStyle='#08f',path.forEach(x=>ctx.stroke(new Path2D(`M${-(actx.currentTime-x[0])*64} 0`+x[1]))));
 				ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText(txt,0,16);
 				requestAnimationFrame(draw);
 			},
-			fmt=(w=JSON.parse(ta.value))=>smfuni(w).reduce((a,x)=>{
+			fmt=(w=Function(`return(${ta.value});`)())=>smfuni(w).reduce((a,x)=>{
 				if(x.name=='noteOn'&&x.vel>0){
 					if(a[x.ch].notes[x.note].pushed!=0){
 						const {note,ch,trk,vel,t}=a[x.ch].notes[x.note];a.push({note,ch,trk,vel,t,d:x.t-t});
@@ -91,11 +93,14 @@
 				str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,rate,true);ch*=2;v.setUint32(28,rate*ch,true);v.setUint16(32,ch,true);v.setUint16(34,16,true);
 				str(36,'data');v.setUint32(40,x.length*2,true);for(let i=0;i<x.length;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);}
 				return b;
-			};
+			},
+			dl=(x,n)=>{const a=document.createElement('a');a.download=n;a.href=URL.createObjectURL(x);a.click();URL.revokeObjectURL(a.href);};
 
 		draw(c.width*=4,c.height*=2,ctx.lineWidth=2);
 		master.connect(actx.destination);
 		master.connect(aa);
+		master.connect(recn);
+		mr.ondataavailable=e=>new Response(e.data).arrayBuffer().then(x=>new Promise((f,r)=>actx.decodeAudioData(x,f,r))).then(x=>dl(new Blob([toWav(x)]),f.files[0].name+'.wav'));
 		lbtn.onclick=async w=>{
 			w=await smfin(f.files[0]);
 			w.tracks.forEach(x=>x.forEach(y=>{if(y.data)y.data=[...y.data]}));
@@ -103,11 +108,14 @@
 			TA.ah(ta);
 		};
 		pbtn.onclick=w=>{
-			w=fmt();
+			pbtn.disabled=true;
+			w=fmt();const scale=64;
+			reccb.checked&&mr.start();
 			const main=(o=0,l=256,ot=0)=>{
 				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
-				setTimeout(()=>path=[actx.currentTime,w.slice(o,o+l).map(x=>`M${(x.t-w[o].t)*64} ${(1-x.note/127)*c.height}l${x.d*64} 0`).join('')],-ot*1000);
-				ot+=w[o].t;
+				path=path.slice(Math.max(path.findIndex(x=>x[0]>actx.currentTime)-3,0));
+				path.push([actx.currentTime-ot,w.slice(o,o+l).reduce((a,x)=>(a[2]+=`m${-a[0]+(a[0]=(x.t-w[o].t)*scale)} ${-a[1]+(a[1]=(1-x.note/127)*c.height)}h${x.d*scale}`,a[0]+=x.d*scale,a),[0,0,''])[2]]);
+				ot+=w[o].t;console.log(ot)
 				w.slice(o,o+l).forEach(x=>{//if(x.name=='noteOn'&&x.vel>0){
 						const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
 						osc.setPeriodicWave(pwav[x.trk%5]);
@@ -118,40 +126,18 @@
 						[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 						osc.start(ct);osc.stop(ct+d+.02);
 				});
-				const t=actx.currentTime,next=w[o+l].t-ot;
-				if(w[o+l])setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);
+				if(w[o+l]){
+					const t=actx.currentTime,next=w[o+l].t-ot;
+					setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);
+				}else setTimeout(()=>{
+					console.log('fin.');
+					path=[];mr.state=='recording'&&mr.stop();
+					pbtn.disabled=false;
+				},(-ot+w[w.length-1].t+w[w.length-1].d)*1000);
 			};
 			main();
 		};
-		sbtn.onclick=()=>{
-			const a=document.createElement('a');
-			a.download=new Date()+'.mid';
-			a.href=URL.createObjectURL(smfout(JSON.parse(ta.value)));
-			a.click();URL.revokeObjectURL(a.href);
-		};
-		rbtn.onclick=w=>{
-			rbtn.disabled=true;
-			w=fmt();console.log(w);
-			const ch=2,rate=actx.sampleRate,
-				oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(ch,(w[w.length-1].t+w[w.length-1].d)*rate,rate);
-			w.forEach(x=>{
-				const osc=oac.createOscillator(),g0=oac.createGain(),g1=oac.createGain();
-				osc.setPeriodicWave(pwav[x.trk%5]);
-				osc.frequency.value=440*(2**((x.note-69)/12))*((x.ch==9?5:(x.ch%5))==5?.002:1);
-				x.vel/=127;x.vel*=.2;
-				g0.gain.setTargetAtTime(0,x.t,230/(x.note**1.5));
-				g1.gain.setValueAtTime(0,0);g1.gain.setValueAtTime(0,x.t);g1.gain.linearRampToValueAtTime(x.vel,x.t+.01);g1.gain.setValueAtTime(x.vel,x.t+x.d);g1.gain.linearRampToValueAtTime(0,x.t+x.d+.02);
-				[osc,g0,g1,oac.destination].reduce((a,x)=>(a.connect(x),x));
-				osc.start(x.t);osc.stop(x.t+x.d+.02);
-			});
-			oac.startRendering();oac.oncomplete=({renderedBuffer:x})=>{
-				console.log(x);rbtn.disabled=false;
-				const a=document.createElement('a');
-				a.download=f.files[0].name+'.mid';
-				a.href=URL.createObjectURL(new Blob([toWav(x)]));
-				a.click();URL.revokeObjectURL(a.href);
-			};
-		};
+		sbtn.onclick=()=>dl(smfout(Function(`return(${ta.value});`)()),new Date()+'.mid');
 	</script>
 </body>
 </html>
