@@ -10,12 +10,13 @@
 	<meta name="theme-color" content="#214"/>
 
 	<link rel="stylesheet" href="../src/style.css">
+	<link rel="stylesheet" href="../src/toggle.css">
 	<script src="../src/smf.js"></script>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 </head>
 <body>
 	<style>
-		textarea{width:100%;white-space:pre;}
+		textarea{width:100%;white-space:pre;max-height:100vh;}
 	</style>
 	<h1>smf</h1>
 	<hr>
@@ -23,13 +24,13 @@
 	<button id="lbtn" class="button">load</button>
 	<button id="pbtn" class="button">play</button>
 	<button id="sbtn" class="button">download</button>
-	<label>record wav<input type="checkbox" id="reccb"></label><br>
+	<label>record wav<input type="checkbox" class="toggle" id="reccb"></label><br>
 	<canvas id="c" style="max-width:100%;"></canvas><br>
 	<textarea id="ta" class="input" spellcheck="false"></textarea>
 	<script>
 		TA.editor(ta);
-		let txt='',path=[];
-		const urls=[],
+		let txt='select_file > load > play',path=[];
+		const urls=[],scale=64,
 			ctx=c.getContext('2d');
 			actx=new(window.AudioContext||webkitAudioContext)(),
 			noise=new Array(32767).fill().reduce((a,y=a[0][0]^a[0][1])=>(a.push(!y),a[0]=[...a[0].slice(1),y],a),[[1,...new Array(14).fill(0)]]).slice(1),
@@ -42,7 +43,7 @@
 			pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
 			master=actx.createGain(),//DynamicsCompressor(),
 			aa=actx.createAnalyser();
-			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=0,aa.frequencyBinCount,1024)),
+			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=0,1024)),
 			recn=actx.createMediaStreamDestination(),
 			mr=new MediaRecorder(recn.stream);
 			draw=()=>{
@@ -52,10 +53,14 @@
 					aaa.slice(0,l).forEach((x,i,a)=>ctx[i?'lineTo':'moveTo'](c.width*i/a.length,c.height*(255-x)/255));
 					ctx.stroke();
 				};
-				ctx.fillStyle='#000';ctx.fillRect(0,0,c.width,c.height);
-				aa.getByteTimeDomainData(aaa);stroke('#0c0',1024);
-				aa.getByteFrequencyData(aaa);stroke('#f00',256);
-				path.length&&(ctx.strokeStyle='#08f',path.forEach(x=>ctx.stroke(new Path2D(`M${-(actx.currentTime-x[0])*64} 0`+x[1]))));
+				ctx.clearRect(0,0,c.width,c.height);
+				aa.getByteTimeDomainData(aaa);stroke('#ff0',1024);
+				aa.getByteFrequencyData(aaa);stroke('#f0f',256);
+				path.length&&(
+					ctx.strokeStyle='#0ff',path.forEach(x=>ctx.stroke(new Path2D(`M${-(actx.currentTime-x[0]-2)*scale} 0`+x[1]))),
+					ctx.strokeStyle='#0ff',ctx.stroke(new Path2D(`M${scale*2} 0v${c.height}`)),
+					ctx.strokeStyle='#0ff8',ctx.stroke(new Path2D(`M${scale*4} 0v${c.height}`))
+				);
 				ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText(txt,0,16);
 				requestAnimationFrame(draw);
 			},
@@ -96,7 +101,7 @@
 			},
 			dl=(x,n)=>{const a=document.createElement('a');a.download=n;a.href=URL.createObjectURL(x);a.click();URL.revokeObjectURL(a.href);};
 
-		draw(c.width*=4,c.height*=2,ctx.lineWidth=2);
+		draw(c.width=2048,c.height=512,ctx.lineWidth=2);
 		master.connect(actx.destination);
 		master.connect(aa);
 		master.connect(recn);
@@ -108,32 +113,28 @@
 			TA.ah(ta);
 		};
 		pbtn.onclick=w=>{
-			pbtn.disabled=true;
-			w=fmt();const scale=64;
+			reccb.disabled=pbtn.disabled=true;
+			w=fmt();
 			reccb.checked&&mr.start();
-			const main=(o=0,l=256,ot=0)=>{
+			const main=(o=0,l=256,ot=-1)=>{
 				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
 				path=path.slice(Math.max(path.findIndex(x=>x[0]>actx.currentTime)-3,0));
-				path.push([actx.currentTime-ot,w.slice(o,o+l).reduce((a,x)=>(a[2]+=`m${-a[0]+(a[0]=(x.t-w[o].t)*scale)} ${-a[1]+(a[1]=(1-x.note/127)*c.height)}h${x.d*scale}`,a[0]+=x.d*scale,a),[0,0,''])[2]]);
+				path.push([actx.currentTime-ot,w.slice(o,o+l).reduce((a,x)=>(a[2]+=`m${-a[0]+(a[0]=(x.t-w[o].t)*scale)} ${-a[1]+(a[1]=(1-x.note/128/*for display purpose only*/)*c.height)}h${x.d*scale}`,a[0]+=x.d*scale,a),[0,0,''])[2]]);
 				ot+=w[o].t;
-				w.slice(o,o+l).forEach(x=>{//if(x.name=='noteOn'&&x.vel>0){
+				w.slice(o,o+l).forEach((x,i,{length:j})=>{//if(x.name=='noteOn'&&x.vel>0){
 						const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
 						osc.setPeriodicWave(pwav[x.trk%5]);
-						osc.frequency.value=440*(2**((x.note-69)/12))*((x.ch==9?5:(x.ch%5))==5?.002:1);
-						x.vel/=127;x.vel*=.2;
+						osc.frequency.value=440*(2**((x.note-69)/12))*(x.ch==9?.1:1);
+						x.vel/=127;x.vel*=.125;
 						g0.gain.setTargetAtTime(0,ct,230/(x.note**1.5));
 						g1.gain.setValueAtTime(0,0);g1.gain.setValueAtTime(0,ct);g1.gain.linearRampToValueAtTime(x.vel,ct+.01);g1.gain.setValueAtTime(x.vel,ct+d);g1.gain.linearRampToValueAtTime(0,ct+d+.02);
 						[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 						osc.start(ct);osc.stop(ct+d+.02);
+						if(i+1==j){
+							if(l==j){const t=actx.currentTime,next=w[o+l].t-ot;setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);}
+							else osc.onended=()=>(mr.state=='recording'&&mr.stop(),reccb.disabled=pbtn.disabled=false,txt='fin.',setTimeout(()=>(path=[],txt='select_file > load > play'),2000));
+						}
 				});
-				if(w[o+l]){
-					const t=actx.currentTime,next=w[o+l].t-ot;
-					setTimeout(()=>main(o+l,l,actx.currentTime-t-next),(next-2)*1000);
-				}else setTimeout(()=>{
-					console.log('fin.');
-					path=[];mr.state=='recording'&&mr.stop();
-					pbtn.disabled=false;
-				},(-ot+w[w.length-1].t+w[w.length-1].d)*1000);
 			};
 			main();
 		};
