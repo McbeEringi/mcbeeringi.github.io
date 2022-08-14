@@ -115,7 +115,7 @@
 				txt=`note:${o}, t_corr:${ot.toFixed(3)}`;
 				path=path.slice(Math.max(path.findIndex(x=>x[0]>actx.currentTime)-3,0));
 				path.push([actx.currentTime-ot,w.slice(o,o+l).reduce((a,x)=>(a[2]+=`m${-a[0]+(a[0]=(x.t-w[o].t)*scale)} ${-a[1]+(a[1]=(1-x.note/127)*c.height)}h${x.d*scale}`,a[0]+=x.d*scale,a),[0,0,''])[2]]);
-				ot+=w[o].t;console.log(ot)
+				ot+=w[o].t;
 				w.slice(o,o+l).forEach(x=>{//if(x.name=='noteOn'&&x.vel>0){
 						const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),d=x.d,ct=actx.currentTime+x.t-ot;
 						osc.setPeriodicWave(pwav[x.trk%5]);
