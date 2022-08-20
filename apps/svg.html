@@ -28,10 +28,16 @@
 	</div>
 
 	<script type="module">
-		import {EditorView,basicSetup} from 'https://codemirror.net/try/mods/codemirror.js';
-		import {xml} from 'https://codemirror.net/try/mods/@codemirror-lang-xml.js';
-		import {languages} from 'https://codemirror.net/try/mods/@codemirror-language-data.js';
-		import {oneDark} from 'https://codemirror.net/try/mods/@codemirror-theme-one-dark.js';
+		import { EditorView, lineNumbers, highlightActiveLineGutter, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, highlightActiveLine, keymap } from "https://codemirror.net/try/mods/@codemirror-view.js";
+		import { EditorState } from "https://codemirror.net/try/mods/@codemirror-state.js";
+		import { foldGutter, indentOnInput, syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldKeymap } from "https://codemirror.net/try/mods/@codemirror-language.js";
+		import { history, defaultKeymap, historyKeymap, indentWithTab } from "https://codemirror.net/try/mods/@codemirror-commands.js";
+		import { highlightSelectionMatches, searchKeymap } from "https://codemirror.net/try/mods/@codemirror-search.js";
+		import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "https://codemirror.net/try/mods/@codemirror-autocomplete.js";
+		import { lintKeymap } from "https://codemirror.net/try/mods/@codemirror-lint.js";
+		import { xml } from 'https://codemirror.net/try/mods/@codemirror-lang-xml.js';
+		import { languages } from 'https://codemirror.net/try/mods/@codemirror-language-data.js';
+		import { oneDark } from 'https://codemirror.net/try/mods/@codemirror-theme-one-dark.js';
 
 		const c=document.createElement('canvas'),ctx=c.getContext('2d'),a=document.createElement('a'),
 			oninput=cm=>img.src='data:image/svg+xml,'+encodeURIComponent(cm.state.doc.toString()),
@@ -44,7 +50,32 @@
 </svg>
 `,
 				extensions:[
-					basicSetup,
+					lineNumbers(),
+					highlightActiveLineGutter(),
+					highlightSpecialChars({specialChars:/　/g}),
+					history(),
+					foldGutter(),
+					drawSelection(),
+					dropCursor(),
+					EditorState.allowMultipleSelections.of(true),
+					indentOnInput(),
+					syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+					bracketMatching(),
+					closeBrackets(),
+					autocompletion(),
+					rectangularSelection(),
+					highlightActiveLine(),
+					highlightSelectionMatches(),
+					keymap.of([
+							...closeBracketsKeymap,
+							...defaultKeymap,
+							...searchKeymap,
+							...historyKeymap,
+							...foldKeymap,
+							...completionKeymap,
+							...lintKeymap,
+							indentWithTab
+					]),
 					xml({codeLanguages:languages}),
 					oneDark,
 					EditorView.updateListener.of(oninput),
