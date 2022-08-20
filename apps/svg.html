@@ -5,7 +5,7 @@
 
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>McbeEringi xor</title>
+	<title>McbeEringi svg</title>
 	<meta name="description" content="xor encrypter">
 	<link rel="icon" type="image/svg+xml" href="../img/icon.svg">
 	<link rel="apple-touch-icon" href="../img/icon.png">
@@ -15,10 +15,10 @@
 </head>
 <body>
 	<style>
-		#img{object-fit:contain;width:max(320px,100%);max-height:100%;}
-		.wrap{display:flex;flex-wrap:wrap;height:calc(100vh - 16px);}.wrap>*{flex:1 0;overflow:auto;}
+		.wrap{display:flex;flex-wrap:wrap;height:calc(100vh - 16px);}
+		.wrap>*{flex:1 0;object-fit:contain;width:100%;min-width:min(100%,480px);max-height:100%;}
 	</style>
-	<h1>SVG</h1>
+	<h1>svg</h1>
 	<hr>
 	<a href="https://developer.mozilla.org/ja/docs/Web/SVG/Tutorial/Paths" target="_blank">help</a>
 	<button id="btn" class="button">dl png</button>
@@ -47,9 +47,10 @@
 					basicSetup,
 					xml({codeLanguages:languages}),
 					oneDark,
-					EditorView.updateListener.of(oninput)
+					EditorView.updateListener.of(oninput),
+					EditorView.lineWrapping
 				],
-				parent: cme
+				parent:cme
 			});
 		img.onload=()=>{c.width=img.naturalWidth;c.height=img.naturalHeight;ctx.drawImage(img,0,0);};
 		btn.onclick=()=>{a.href=c.toDataURL();a.download=new Date().toLocaleString()+'.png';a.click();};
