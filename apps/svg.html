@@ -15,22 +15,20 @@
 </head>
 <body>
 	<style>
-		.wrap{display:flex;flex-wrap:wrap;height:calc(100vh - 16px);}
-		.wrap>*{flex:1 0;object-fit:contain;width:100%;min-width:min(100%,480px);max-height:100%;}
+		:root,body{height:100%;margin:0;position:relative;}
+		body>*{width:100%;height:100%;position:absolute;top:0;left:0;transition:.2s;}
+		.cm-editor,.cm-scroller{height:100%;}
+		.cm-gutters,.cm-editor,.cm-activeLineGutter,.cm-activeLine,.cm-panels{background-color:#0000 !important;border-color:#0000 !important;}
+		.hide{visibility:hidden;opacity:0;}
 	</style>
-	<h1>svg</h1>
-	<hr>
-	<a href="https://developer.mozilla.org/ja/docs/Web/SVG/Tutorial/Paths" target="_blank">help</a>
-	<button id="btn" class="button">dl png</button>
-	<div class="wrap">
-		<div id="cme"></div>
-		<img id="img">
-	</div>
+
+	<img id="img" alt="preview">
+	<div id="cme"></div>
 
 	<script type="module">
-		import { EditorView, lineNumbers, highlightActiveLineGutter, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, highlightActiveLine, keymap } from "https://codemirror.net/try/mods/@codemirror-view.js";
+		import { EditorView, lineNumbers, highlightActiveLineGutter, drawSelection, dropCursor, rectangularSelection, highlightActiveLine, keymap, showPanel } from "https://codemirror.net/try/mods/@codemirror-view.js";
 		import { EditorState } from "https://codemirror.net/try/mods/@codemirror-state.js";
-		import { foldGutter, indentOnInput, syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldKeymap } from "https://codemirror.net/try/mods/@codemirror-language.js";
+		import { indentUnit, foldGutter, indentOnInput, syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldKeymap } from "https://codemirror.net/try/mods/@codemirror-language.js";
 		import { history, defaultKeymap, historyKeymap, indentWithTab } from "https://codemirror.net/try/mods/@codemirror-commands.js";
 		import { highlightSelectionMatches, searchKeymap } from "https://codemirror.net/try/mods/@codemirror-search.js";
 		import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "https://codemirror.net/try/mods/@codemirror-autocomplete.js";
@@ -38,54 +36,79 @@
 		import { xml } from 'https://codemirror.net/try/mods/@codemirror-lang-xml.js';
 		import { languages } from 'https://codemirror.net/try/mods/@codemirror-language-data.js';
 		import { oneDark } from 'https://codemirror.net/try/mods/@codemirror-theme-one-dark.js';
-
-		const c=document.createElement('canvas'),ctx=c.getContext('2d'),a=document.createElement('a'),
-			oninput=cm=>img.src='data:image/svg+xml,'+encodeURIComponent(cm.state.doc.toString()),
-			cm=new EditorView({
-				doc:`<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-	<path d="m0 0h512v512h-512v-512z" fill="#fff"/>
-	<path d="m259.99 119.4c-77.352 7.981-111.08 33.197-144.27 60.163m27.319-21.18c-43.042 27.923-78.118 111.25-64.154 159.62m-2.7626-55.559c-6.52 0.686-8.1285 84.177 22.715 97.919m284.6-187.4c-14.081-28.148-85.387-61.851-155.37-48.345m213.16 137.52c24.169 11.679-38.956-114.36-109.44-122.9m96.544 204.55c23.776 15.908 21.297-67.605 8.902-100.37m-189.53-121.7c33.5-108.22 89.221-74.081 29.882-29.708m-106.5 59.689c-6.982-22.789-130.47 67.454-104.92 161.88m253.53-181.13c-39.661-9.984-96.673-11.353-133.44 6.66m268.8 180.61c6.642-61.71-41.394-98.787-51.04-141.85m-304.87 170.53c0 14.953 18.923 14.427 29.468 14.427m309.41-73.669c6.859 41.157 6.91 52.789-10.436 87.482m-26.706-97.918c17.804 2.762 7.981 41.438 32.231 49.112m-80.701-83.018c-52.337 16.325-49.192-17.886-71.255 4.23 0 0 4.371 2.657 6.861-2.56 1.641-3.438-2.284-5.077-0.347-13.046 0 0 0 5.43 11.756 3.76m-84.559-10.354c-26.6 39.58 39.905 8.398 59.687-17.607m-52.352 30.04c-40.924-9.655-124.78 67.855-94.92 89.908m58.153-73.988c-23.688-21.702-75.543 39.997-77.703 65.263m262.15-69.059c16.519 1.835 34.665 34.317 39.597 49.112m-114.8-185.4c-79.829-11.894-148.87 19.031-176.8 82.466m54.71 123.69c-6.561-8.623 29.243-31.305 59.607-30.026m128.59 6.955c-20.11-13.32-58.08-8.554-46.564-3.388m-87.614 19.474c-6.805-6.804-2.767 37.191-2.767 37.191m96.509-38.524c-1.996-10.03-1.215 32.746 1 34.803m-96.047 19.735c-20.398 32.37 2.438 29.709 1.944 20.851" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:3;"/>
-	<path d="m376.26 382.33c-9.222-6.014 17.766-19.265 25.162-5.09 25.732 49.312-136.28 77.742-71.88 53.488 54.731-20.614 54.255-43.483 46.718-48.398z" fill="#6ca" opacity=".25"/>
-	<path d="m366.44 179.5c13.848 15.199-41.033 24.523-74.863 21.973m-170.26 1.893c2.636-21.851 46.579-61.152 50.277-43.642m216.74 23.06c4.078 8.494-25.975 16.493-36.36 17.721m62.245 21.581c15.088 16.393 31.483 51.665 19.472 68.196" fill="#888" opacity=".25"/>
-</svg>
-`,
-				extensions:[
-					lineNumbers(),
-					highlightActiveLineGutter(),
-					highlightSpecialChars({specialChars:/　/g}),
-					history(),
-					foldGutter(),
-					drawSelection(),
-					dropCursor(),
-					EditorState.allowMultipleSelections.of(true),
-					indentOnInput(),
-					syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-					bracketMatching(),
-					closeBrackets(),
-					autocompletion(),
-					rectangularSelection(),
-					highlightActiveLine(),
-					highlightSelectionMatches(),
-					keymap.of([
-							...closeBracketsKeymap,
-							...defaultKeymap,
-							...searchKeymap,
-							...historyKeymap,
-							...foldKeymap,
-							...completionKeymap,
-							...lintKeymap,
-							indentWithTab
-					]),
-					xml({codeLanguages:languages}),
-					oneDark,
-					EditorView.updateListener.of(oninput),
-					EditorView.lineWrapping
+		(async()=>{
+			const panel=document.createElement('div'),
+				oninput=cm=>img.src='data:image/svg+xml,'+encodeURIComponent(cm.state.doc.toString()),
+				save=cm=>location.hash=encodeURIComponent(cm.state.doc.toString()),
+				expsvg=cm=>Object.assign(document.createElement('a'),{href:'data:image/svg+xml,'+encodeURIComponent(cm.state.doc.toString()),download:new Date().toLocaleString()+'.svg'}).click(),
+				exppng=cm=>{const c=Object.assign(document.createElement('canvas'),{width:img.naturalWidth,height:img.naturalHeight});c.getContext('2d').drawImage(img,0,0);Object.assign(document.createElement('a'),{href:c.toDataURL(),download:new Date().toLocaleString()+'.png'}).click();},
+				customKeymap=[
+					{
+						key:"Mod-s",preventDefault:true,
+						run(view){save(view);return true;}
+					},
+					{
+						key:"Mod-e",preventDefault:true,
+						run(view){expsvg(view);return true;},
+						shift(view){exppng(view);return true;}
+					}
 				],
-				parent:cme
-			});
-		img.onload=()=>{c.width=img.naturalWidth;c.height=img.naturalHeight;ctx.drawImage(img,0,0);};
-		btn.onclick=()=>{a.href=c.toDataURL();a.download=new Date().toLocaleString()+'.png';a.click();};
-		oninput(cm);
+				cm=new EditorView({
+					doc:decodeURIComponent(location.hash.slice(1))||await(await fetch('../img/icon.svg')).text(),
+					extensions:[
+						lineNumbers(),
+						highlightActiveLineGutter(),
+						history(),
+						foldGutter(),
+						drawSelection(),
+						dropCursor(),
+						EditorState.allowMultipleSelections.of(true),
+						indentOnInput(),
+						syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+						bracketMatching(),
+						closeBrackets(),
+						autocompletion(),
+						rectangularSelection(),
+						highlightActiveLine(),
+						highlightSelectionMatches(),
+						keymap.of([
+								...closeBracketsKeymap,
+								...defaultKeymap,
+								...searchKeymap,
+								...historyKeymap,
+								...foldKeymap,
+								...completionKeymap,
+								...lintKeymap,
+								indentWithTab,
+								...customKeymap
+						]),
+						xml({codeLanguages:languages}),
+						oneDark,
+						EditorView.updateListener.of(oninput),
+						//EditorView.lineWrapping,
+						EditorState.tabSize.of(2),
+						indentUnit.of('\t'),
+						showPanel.of((_=>({top:true,dom:panel})))
+					],
+					parent:cme
+				});
+			
+			panel.insertAdjacentHTML('beforeend','Save,DL SVG,DL PNG,Hide,Help'.split(',').map(x=>`<button class="button">${x}</button>`).join(' '));
+			[...panel.children].forEach((x,i)=>x.onclick=[
+				_=>save(cm),
+				_=>expsvg(cm),
+				_=>exppng(cm),
+				_=>cme.classList.add('hide'),
+				_=>alert(`Save: Mod-s\nDL SVG: Mod-e\nDL PNG: Mod-Shift-e\n
+
+M x y\nL x y\nH x\nV y\nZ\n
+C x1 y1, x2 y2, x y\nS x2 y2, x y\n
+Q x1 y1, x y\nT x y\n
+A rx ry x-axis-rotation large-arc-flag sweep-flag x y`)
+			][i]);
+			img.onclick=()=>cme.classList.remove('hide');
+			oninput(cm);
+		})();
 	</script>
 </body>
 </html>

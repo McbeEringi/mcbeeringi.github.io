@@ -12,5 +12,5 @@
 hr{border:var(--border) solid var(--g1);}
 .input,.button{margin:var(--border) 0;border:var(--g3) var(--border) solid;border-bottom-color:var(--g1);display:inline-block;transition:background .2s,border .2s;}
 .input{background-color:var(--g3);padding:.5ex;resize:none;}.button{background-color:var(--g2);padding:.5ex 2ex;text-align:center;}
-.input:hover,.input:focus,.button:hover{border-bottom-color:var(--b0);}.button:active{background-color:var(--g0);border-bottom-color:var(--b2);}
+.input:hover,.input:focus,.button:hover,.button:focus{border-bottom-color:var(--b0);}.button:active{background-color:var(--g0);border-bottom-color:var(--b2);}
 .input:disabled,.button:disabled{opacity:.5;border-color:transparent;}.input::placeholder{color:var(--g1);opacity:1;}
