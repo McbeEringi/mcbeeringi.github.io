@@ -28,14 +28,17 @@
 	<script type="module">
 		import { EditorView, lineNumbers, highlightActiveLineGutter, drawSelection, dropCursor, rectangularSelection, highlightActiveLine, keymap, showPanel } from "https://codemirror.net/try/mods/@codemirror-view.js";
 		import { EditorState } from "https://codemirror.net/try/mods/@codemirror-state.js";
-		import { indentUnit, foldGutter, indentOnInput, syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldKeymap } from "https://codemirror.net/try/mods/@codemirror-language.js";
+		import { indentUnit, foldGutter, indentOnInput, bracketMatching, foldKeymap, LRLanguage } from "https://codemirror.net/try/mods/@codemirror-language.js";
 		import { history, defaultKeymap, historyKeymap, indentWithTab } from "https://codemirror.net/try/mods/@codemirror-commands.js";
 		import { highlightSelectionMatches, searchKeymap } from "https://codemirror.net/try/mods/@codemirror-search.js";
 		import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "https://codemirror.net/try/mods/@codemirror-autocomplete.js";
 		import { lintKeymap } from "https://codemirror.net/try/mods/@codemirror-lint.js";
-		import { xml } from 'https://codemirror.net/try/mods/@codemirror-lang-xml.js';
-		import { languages } from 'https://codemirror.net/try/mods/@codemirror-language-data.js';
 		import { oneDark } from 'https://codemirror.net/try/mods/@codemirror-theme-one-dark.js';
+		import { xml } from 'https://codemirror.net/try/mods/@codemirror-lang-xml.js';
+		// import { parser as xmlParser } from 'https://codemirror.net/try/mods/@lezer-xml.js';
+		// import { parser as cssParser } from 'https://codemirror.net/try/mods/@lezer-css.js';
+		// import { parser as jsParser } from 'https://codemirror.net/try/mods/@lezer-javascript.js';
+		// import { parseMixed } from 'https://codemirror.net/try/mods/@lezer-common.js';
 		(async()=>{
 			const panel=document.createElement('div'),
 				oninput=cm=>img.src='data:image/svg+xml,'+encodeURIComponent(cm.state.doc.toString()),
@@ -64,7 +67,6 @@
 						dropCursor(),
 						EditorState.allowMultipleSelections.of(true),
 						indentOnInput(),
-						syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
 						bracketMatching(),
 						closeBrackets(),
 						autocompletion(),
@@ -82,7 +84,10 @@
 								indentWithTab,
 								...customKeymap
 						]),
-						xml({codeLanguages:languages}),
+						xml(),
+						// LRLanguage.define({parser:xmlParser.configure({wrap:parseMixed((node,inp)=>(
+						// 	{style:{parser:cssParser},script:{parser:jsParser}}[node.name=='Text'&&(node=node.node.prevSibling)&&(node=node.getChild('TagName'))&&inp.read(node.from,node.to)]
+						// )||null)})}),
 						oneDark,
 						EditorView.updateListener.of(oninput),
 						//EditorView.lineWrapping,
@@ -99,8 +104,7 @@
 				_=>expsvg(cm),
 				_=>exppng(cm),
 				_=>cme.classList.add('hide'),
-				_=>alert(`Save: Mod-s\nDL SVG: Mod-e\nDL PNG: Mod-Shift-e\n
-
+				_=>alert(`Save: Mod-s\nDL SVG: Mod-e\nDL PNG: Mod-Shift-e\n\n
 M x y\nL x y\nH x\nV y\nZ\n
 C x1 y1, x2 y2, x y\nS x2 y2, x y\n
 Q x1 y1, x y\nT x y\n
