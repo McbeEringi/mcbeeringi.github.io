@@ -13,6 +13,7 @@
 	<a href="https://mcbeeringi.github.io/sky/">Sky Stuff</a>
 	<a href="https://mcbeeringi.github.io/apps/">Apps</a>
 	<a href="https://mcbeeringi.github.io/ta/">TA.js</a>
+	<a href="https://mcbeeringi.github.io/petit/">PetitJS</a>
 	<a href="https://mcbeeringi.github.io/mc/">MC</a>
 	<a href="https://translate.google.com/translate?sl=ja&tl=en&u=${encodeURIComponent(location.href)}" style="background-image:url(https://icongr.am/feather/globe.svg?color=ffffff);color:#0000">Translate</a>
 	<a href="https://twitter.com/mcbeeringi" style="background-image:url(https://icongr.am/feather/twitter.svg?color=ffffff);color:#0000">Twitter</a>
