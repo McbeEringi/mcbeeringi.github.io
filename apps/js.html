@@ -12,53 +12,88 @@
 	<meta name="theme-color" content="#214"/>
 
 	<link rel="stylesheet" href="../src/style.css">
-
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/theme/monokai.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/codemirror/mode/javascript/javascript.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/matchbrackets.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/codemirror/addon/edit/closebrackets.min.js"></script>
 </head>
 <body>
-	<h1>JavaScript</h1>
-	<style>.CodeMirror{height:auto;}</style>
-	<hr>
-	<div></div>
-	<hr>
-	<button class="button">run</button>
-	<button class="button">save</button>
-	<button class="button">copy url</button>
-	<button class="button">copy runner</button>
-	<pre style="white-space:pre-wrap;word-break:break-all;tab-size:2;"></pre>
-	<hr>
-	<script>
-	{
-		const pre=document.querySelector('pre'),
-			btn=document.querySelectorAll('button'),
-			cm=CodeMirror(document.querySelector('div'),{
-				value:'console.clear();\nconsole.log("Hello World.");\n\n\n\n\n\n',mode:'javascript',theme:'monokai',
-				lineNumbers:true,tabSize:2,indentWithTabs:true,matchBrackets:true,autoCloseBrackets: true,
-			}),
-			llog=x=>{
-				const fx=y=>`\n<span style="opacity:0.5;">\t${Object.prototype.toString.call(y).slice(8,-1)}\t</span>${y.toString()}`,
-					time=()=>{const d=new Date();return `[${d.toLocaleTimeString()}.${String(d.getMilliseconds()).padStart(3,0)}]`;};
-				pre.insertAdjacentHTML('beforeend',`<span style="opacity:0.5;">${time()}</span>${x.map(fx).join('')}\n`);
-			},
-			ntv={...console};
-		console.clear=()=>pre.textContent='';
-		console.warn=(...x)=>{ntv.warn(...x);llog(x);};
-		console.info=(...x)=>{ntv.info(...x);llog(x);};
-		console.error=(...x)=>{ntv.error(...x);llog(x);};
-		console.log=(...x)=>{ntv.log(...x);llog(x);};
-		btn[0].onclick=()=>{try{Function(cm.getValue())();}catch(e){console.error(e);}};
-		btn[1].onclick=()=>{location.hash=encodeURIComponent(cm.getValue()).replace(/\(/g,'%28').replace(/\)/g,'%29');console.log('saved!');};
-		btn[2].onclick=()=>navigator.clipboard.writeText(location.href).then(()=>console.log('url copied!'));
-		btn[3].onclick=()=>navigator.clipboard.writeText('https://mcbeeringi.github.io/apps/jsrun.html'+location.hash).then(()=>console.log('runner copied!'));
-		document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.code=='KeyS'){e.preventDefault();btn[1].click();}})
-		if(location.hash)cm.setValue(decodeURIComponent(location.hash.slice(1)));
-		btn[0].onclick();
-	}
+	<script type="module">
+		import { EditorView, lineNumbers, highlightActiveLineGutter, drawSelection, dropCursor, rectangularSelection, highlightActiveLine, keymap, showPanel } from "https://codemirror.net/try/mods/@codemirror-view.js";
+		import { EditorState } from "https://codemirror.net/try/mods/@codemirror-state.js";
+		import { indentUnit, foldGutter, indentOnInput, bracketMatching, foldKeymap } from "https://codemirror.net/try/mods/@codemirror-language.js";
+		import { history, defaultKeymap, historyKeymap, indentWithTab } from "https://codemirror.net/try/mods/@codemirror-commands.js";
+		import { highlightSelectionMatches, searchKeymap } from "https://codemirror.net/try/mods/@codemirror-search.js";
+		import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "https://codemirror.net/try/mods/@codemirror-autocomplete.js";
+		import { lintKeymap } from "https://codemirror.net/try/mods/@codemirror-lint.js";
+		import { oneDark } from 'https://codemirror.net/try/mods/@codemirror-theme-one-dark.js';
+		import { javascript } from 'https://codemirror.net/try/mods/@codemirror-lang-javascript.js';
+
+		(async()=>{
+			['error','unhandledrejection'].forEach(x=>addEventListener(x,y=>console.error(y.reason||y.error)));
+			const panel=document.createElement('div'),pre=document.createElement('pre'),
+				ntv={...console},
+				llog=x=>{
+					const fx=y=>`\n<span style="opacity:0.5;">\t${Object.prototype.toString.call(y).slice(8,-1)}\t</span>${y}`;
+					pre.insertAdjacentHTML('beforeend',`<span style="opacity:0.5;">[${new Date().toISOString()}]</span>${x.map(fx).join('')}\n`);
+				},
+				cm=new EditorView({
+					doc:decodeURIComponent(location.hash.slice(1))||`console.clear();
+console.log("Hello");
+await new Promise(f=>setTimeout(f,1000));
+console.log("World.");
+
+
+
+`,
+					extensions:[
+						lineNumbers(),
+						highlightActiveLineGutter(),
+						history(),
+						foldGutter(),
+						drawSelection(),
+						dropCursor(),
+						EditorState.allowMultipleSelections.of(true),
+						indentOnInput(),
+						bracketMatching(),
+						closeBrackets(),
+						autocompletion(),
+						rectangularSelection(),
+						highlightActiveLine(),
+						highlightSelectionMatches(),
+						keymap.of([
+								...closeBracketsKeymap,
+								...defaultKeymap,
+								...searchKeymap,
+								...historyKeymap,
+								...foldKeymap,
+								...completionKeymap,
+								...lintKeymap,
+								indentWithTab,
+								{
+									key:"Mod-s",preventDefault:true,
+									run(){save();return true;}
+								}
+						]),
+						javascript(),
+						oneDark,
+						EditorState.tabSize.of(2),
+						indentUnit.of('\t'),
+						showPanel.of((_=>({dom:panel})))
+					],
+					parent:document.body
+				}),
+				save=_=>(location.hash=encodeURIComponent(cm.state.doc).replace(/\(/g,'%28').replace(/\)/g,'%29'),console.log('saved!'));
+
+			console.clear=_=>pre.textContent='';
+			['warn','info','error','log'].forEach(x=>console[x]=(...y)=>(ntv[x](...y),llog(y)));
+			panel.insertAdjacentHTML('beforeend','Run,Save,Copy URL,Copy Runner'.split(',').map(x=>`<button class="button">${x}</button>`).join(' '));
+			[...panel.children].forEach((x,i)=>x.onclick=[
+				_=>Object.getPrototypeOf(async()=>{}).constructor(cm.state.doc)(),
+				save,
+				_=>navigator.clipboard.writeText('https://mcbeeringi.github.io/apps/js.html'+location.hash).then(()=>console.log('URL Copied!')),
+				_=>navigator.clipboard.writeText('https://mcbeeringi.github.io/apps/jsrun.html'+location.hash).then(()=>console.log('Runner Copied!'))
+			][i]);
+			pre.style.cssText='white-space:pre-wrap;word-break:break-all;tab-size:2;';
+			document.body.append(pre);
+			panel.children[0].click();
+		})();
 	</script>
 </body>
 </html>
