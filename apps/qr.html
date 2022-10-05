@@ -59,7 +59,7 @@ WIFI:S:[SSID];T:[WEP|WPA|無記入];P:[パスワード];H:[true|false|無記入]
 
 			const c=document.createElement('canvas'),ctx=c.getContext('2d');let cam=!0
 			v.onloadedmetadata=()=>(v.play(),c.width=v.videoWidth,c.height=v.videoHeight);
-			v.onclick=()=>navigator.mediaDevices.getUserMedia({video:(cam=!cam)?'user':'environment'}).then(x=>v.srcObject=x);
+			v.onclick=()=>navigator.mediaDevices.getUserMedia({video:{facingMode:(cam=!cam)?'user':'environment'}}).then(x=>v.srcObject=x);
 			setInterval(x=>(x=[c.width,c.height],ctx.drawImage(v,0,0,...x),x=jsQR(ctx.getImageData(0,0,...x).data,...x),x&&(out.value=x.data,TA.ah(out))),500);
 			TA.sizer(out);
 		})().catch(e=>log.textContent=e);
