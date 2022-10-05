@@ -5,8 +5,8 @@
 
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>McbeEringi QRgen</title>
-	<meta name="description" content="QR code generator">
+	<title>McbeEringi QRutil</title>
+	<meta name="description" content="QR code generator and reader">
 	<link rel="icon" type="image/svg+xml" href="../img/icon.svg">
 	<link rel="apple-touch-icon" href="../img/icon.png">
 	<meta name="theme-color" content="#214"/>
@@ -15,31 +15,59 @@
 </head>
 <body>
 	<style>
-		canvas{display:none;}img{width:100%;max-width:320px;height:auto;}
+		img,video{width:100%;max-width:320px;height:auto;vertical-align:middle;}
+		video{background:#00f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ctext y='100%25' fill='%23fff'%3Eclick to activate camera%3C/text%3E%3C/svg%3E");}
 		textarea{width:100%;}
 	</style>
-	<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-	<canvas id="qr"></canvas>
-	<h1>QRgen</h1>
+	<h1>QRutil</h1>
 	<hr>
-	<textarea id="txt" class="input">Hello World!</textarea><br>
-	<input type="color" value="#000" id="cd"><input type="color" value="#ffffff" id="cl"><br>
-	LMQH<input type="range" value="1" id="ecl" min="0" max="3" step="1"><br>
-	<button onclick="main();" class="button">run</button>
-	<hr>
+	<textarea id="inp" class="input">
+return[
+	[
+		//body
+		`Hello World!`,
+
+		//presets
+		'SMSTO:[電話番号]:[本文]',
+		'geo:[緯度],[経度],[標高]',
+		'WIFI:S:[SSID];T:[WEP|WPA|無記入];P:[パスワード];H:[true|false|無記入];'
+	][0],
+
+	//config
+	{
+		errorCorrectionLevel:'LMQH'[1],
+		margin:4,
+		scale:8,
+		color:{dark:'#000',light:'#fff'}
+	}
+
+	//click to download
+];</textarea>
+	<textarea id="out" class="input" placeholder="reader result"></textarea>
 	<pre id="log"></pre>
-	<a id="qra"><img src="" alt="QRcode" width="1" height="1" id="qri"></a><br>
-	Powerd by <a href="https://github.com/soldair/node-qrcode">node-qrcode</a>
-	<pre>
-SMSTO:[電話番号]:[本文]
-geo:[緯度],[経度],[標高]
-WIFI:S:[SSID];T:[WEP|WPA|無記入];P:[パスワード];H:[true|false|無記入];
-	</pre>
+	<a id="qra"><img src="" alt="QRcode" width="1" height="1" id="qri"></a>
+	<video id="v" width="1" height="1"></video><br>
+	Powerd by <a href="https://github.com/soldair/node-qrcode">node-qrcode</a> & <a href="https://github.com/cozmo/jsQR">jsQR</a>
+
+
+	<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<script>
 		'use strict';
-		const main=()=>QRCode.toDataURL(txt.value,{errorCorrectionLevel:['L','M','Q','H'][ecl.value],margin:4,scale:8,color:{dark:cd.value,light:cl.value}},(e,x)=>{if(e)log.textContent=e;qra.href=qri.src=x;qra.download=txt.value;});
-		TA.sizer(txt);main();
+		(inp.oninput=()=>(async x=>(x=Function(inp.value)(),qra.href=qri.src=await QRCode.toDataURL(...x),qra.download=x[0]+'.png',log.textContent=''))().catch(e=>log.textContent=e))();
+		TA.editor(inp);
+
+		const c=document.createElement('canvas'),ctx=c.getContext('2d');
+		v.onloadedmetadata=()=>(v.play(),c.width=v.videoWidth,c.height=v.videoHeight);
+		v.onclick=()=>navigator.mediaDevices.getUserMedia({video:true}).then(x=>(v.srcObject=x,v.onclick=null));
+		setInterval(x=>(
+			x=[c.width,c.height],
+			ctx.drawImage(v,0,0,...x),
+			x=jsQR(ctx.getImageData(0,0,...x).data,...x),
+			x&&(out.value=x.data,TA.ah(out))
+		),500);
+		TA.sizer(out);
 	</script>
 </body>
 </html>
