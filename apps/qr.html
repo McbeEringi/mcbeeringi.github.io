@@ -16,38 +16,22 @@
 <body>
 	<style>
 		img,video{width:100%;max-width:320px;height:auto;vertical-align:middle;}
-		video{background:#00f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ctext y='100%25' fill='%23fff'%3Eclick to activate camera%3C/text%3E%3C/svg%3E");}
+		video{background:#00f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ctext y='100%25' style='fill:%23fff;font-family:monospace;'%3Eclick to activate camera%3C/text%3E%3C/svg%3E");}
 		textarea{width:100%;}
 	</style>
 	<h1>QRutil</h1>
 	<hr>
-	<textarea id="inp" class="input">
-return[
-	[
-		//body
-		`Hello World!`,
-
-		//presets
-		'SMSTO:[電話番号]:[本文]',
-		'geo:[緯度],[経度],[標高]',
-		'WIFI:S:[SSID];T:[WEP|WPA|無記入];P:[パスワード];H:[true|false|無記入];'
-	][0],
-
-	//config
-	{
-		errorCorrectionLevel:'LMQH'[1],
-		margin:4,
-		scale:8,
-		color:{dark:'#000',light:'#fff'}
-	}
-
-	//click to download
-];</textarea>
+	<textarea id="inp" class="input"></textarea>
 	<textarea id="out" class="input" placeholder="reader result"></textarea>
 	<pre id="log"></pre>
 	<a id="qra"><img src="" alt="QRcode" width="1" height="1" id="qri"></a>
 	<video id="v" width="1" height="1"></video><br>
 	Powerd by <a href="https://github.com/soldair/node-qrcode">node-qrcode</a> & <a href="https://github.com/cozmo/jsQR">jsQR</a>
+	<pre>
+SMSTO:[電話番号]:[本文]
+geo:[緯度],[経度],[標高]
+WIFI:S:[SSID];T:[WEP|WPA|無記入];P:[パスワード];H:[true|false|無記入];
+	</pre>
 
 
 	<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -55,19 +39,33 @@ return[
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<script>
 		'use strict';
-		(inp.oninput=()=>(async x=>(x=Function(inp.value)(),qra.href=qri.src=await QRCode.toDataURL(...x),qra.download=x[0]+'.png',log.textContent=''))().catch(e=>log.textContent=e))();
-		TA.editor(inp);
+		(async()=>{
+			inp.value=decodeURIComponent(location.hash.slice(1))||`return[
 
-		const c=document.createElement('canvas'),ctx=c.getContext('2d');
-		v.onloadedmetadata=()=>(v.play(),c.width=v.videoWidth,c.height=v.videoHeight);
-		v.onclick=()=>navigator.mediaDevices.getUserMedia({video:true}).then(x=>(v.srcObject=x,v.onclick=null));
-		setInterval(x=>(
-			x=[c.width,c.height],
-			ctx.drawImage(v,0,0,...x),
-			x=jsQR(ctx.getImageData(0,0,...x).data,...x),
-			x&&(out.value=x.data,TA.ah(out))
-		),500);
-		TA.sizer(out);
+	//body
+	\`Hello World!\`,
+
+	//config
+	{
+		errorCorrectionLevel:'LMQH'[1],
+		margin:4,scale:8,
+		color:{dark:'#000',light:'#fff'}
+	}
+];`;
+			(inp.oninput=()=>(async x=>(x=Function(inp.value)(),location.hash=encodeURIComponent(inp.value),qra.href=qri.src=await QRCode.toDataURL(...x),qra.download=x[0]+'.png',log.textContent=''))().catch(e=>log.textContent=e))();
+			TA.editor(inp);
+
+			const c=document.createElement('canvas'),ctx=c.getContext('2d'),cams={i:-1,x:(await navigator.mediaDevices.enumerateDevices()).filter(x=>x.kind=='videoinput')};
+			v.onloadedmetadata=()=>(v.play(),c.width=v.videoWidth,c.height=v.videoHeight);
+			v.onclick=()=>navigator.mediaDevices.getUserMedia({video:{deviceId:cams.x[(cams.i+1)%cams.i]}}).then(x=>v.srcObject=x);
+			setInterval(x=>(
+				x=[c.width,c.height],
+				ctx.drawImage(v,0,0,...x),
+				x=jsQR(ctx.getImageData(0,0,...x).data,...x),
+				x&&(out.value=x.data,TA.ah(out))
+			),500);
+			TA.sizer(out);
+		})().catch(e=>log.textContent=e);
 	</script>
 </body>
 </html>
