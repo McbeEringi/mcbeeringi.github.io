@@ -40,22 +40,24 @@ WIFI:S:[SSID];T:[WEP|WPA|無記入];P:[パスワード];H:[true|false|無記入]
 	<script>
 		'use strict';
 		(async()=>{
-			inp.value=decodeURIComponent(location.hash.slice(1))||`return[
+			inp.value=`return[
 
 	//body
-	\`Hello World!\`,
+	\`${decodeURIComponent(location.hash.slice(1))||'Hello World!'}\`,
 
 	//config
+	/*
 	{
 		errorCorrectionLevel:'LMQH'[1],
 		margin:4,scale:8,
 		color:{dark:'#000',light:'#fff'}
 	}
+	*/
 ];`;
-			(inp.oninput=()=>(async x=>(x=Function(inp.value)(),location.hash=encodeURIComponent(inp.value),qra.href=qri.src=await QRCode.toDataURL(...x),qra.download=x[0]+'.png',log.textContent=''))().catch(e=>log.textContent=e))();
+			(inp.oninput=()=>(async x=>(x=Function(inp.value)(),location.hash=encodeURIComponent(x[0]),qra.href=qri.src=await QRCode.toDataURL(...x),qra.download=x[0]+'.png',log.textContent=''))().catch(e=>log.textContent=e))();
 			TA.editor(inp);
 
-			const c=document.createElement('canvas'),ctx=c.getContext('2d'),cams={i:-1,x:(await navigator.mediaDevices.enumerateDevices()).filter(x=>x.kind=='videoinput')};
+			const c=document.createElement('canvas'),ctx=c.getContext('2d'),cams={i:-1,x:await navigator.mediaDevices.enumerateDevices()};
 			v.onloadedmetadata=()=>(v.play(),c.width=v.videoWidth,c.height=v.videoHeight);
 			v.onclick=()=>navigator.mediaDevices.getUserMedia({video:{deviceId:cams.x[(cams.i+1)%cams.i]}}).then(x=>v.srcObject=x);
 			setInterval(x=>(x=[c.width,c.height],ctx.drawImage(v,0,0,...x),x=jsQR(ctx.getImageData(0,0,...x).data,...x),x&&(out.value=x.data,TA.ah(out))),500);
