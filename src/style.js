@@ -1,7 +1,7 @@
 'use strict';
 (w=>document.readyState=='loading'?addEventListener('DOMContentLoaded',w,{once:true}):w())(()=>{
 	document.body.insertAdjacentHTML('afterbegin',`<style>
-	header{position:fixed;top:0;right:0;z-index:10;max-height:100%;display:flex;flex-direction:column;align-items:end;}
+	header{position:fixed;top:0;right:0;z-index:10;max-height:100%;display:flex;flex-direction:column;align-items:end;pointer-events:none;}header>*{pointer-events:initial;}
 	header>button{appearance:none;-webkit-appearance:none;flex-shrink:0;display:block;width:48px;height:48px;margin:0;padding:0;border:0;background:no-repeat center/70% url(https://icongr.am/feather/menu.svg?color=ffffff);}
 	header>nav{transform:translateX(100%);visibility:hidden;transition:.2s;overflow:auto;}
 	header>nav>*{display:block;text-align:center;padding:8px 32px;margin:4px 8px;border-radius:8px;background:var(--g2) no-repeat center/contain;transform:scale(1);transition:inherit;text-decoration:none;font-weight:bold;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
