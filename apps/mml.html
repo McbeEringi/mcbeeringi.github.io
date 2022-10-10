@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi mml</title>
+	<meta name="description" content="mml for SAZANKA Robotics music box">
+	<link rel="icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+</head>
+<body>
+	<h1>mml</h1>
+	<hr>
+	<textarea id="inp" class="input" placeholder="mml goes here..." style="width:100%;"></textarea>
+	<button id="btn" class="button">run</button>
+	<script type="module">
+		import TA from'https://mcbeeringi.github.io/ta/ta+.mjs';
+		const
+		play=(w=inp.value)=>{
+				w
+					.replace(/[\uff01-\uff5e]/g,x=>String.fromCharCode(x.charCodeAt(0)-0xfee0))
+					.match(/([cdefgab][#\+-]?|r)\d*\.?|[olvt]\d+|[<>]/ig)
+					.reduce((a,x)=>(
+						(
+							{'>':_=>a.o++,'<':_=>a.o--}[x]||
+							('olvt'.includes(x[0])&&(_=>a[x[0]]=+x.slice(1)))||
+							(_=>{
+
+							})
+						)(),a
+					),{o:4,l:4,v:127,t:120})
+		};
+
+		btn.onclick=_=>play();
+		TA.editor(inp);
+	</script>
+</body>
+</html>
