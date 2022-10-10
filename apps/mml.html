@@ -16,28 +16,53 @@
 <body>
 	<h1>mml</h1>
 	<hr>
-	<textarea id="inp" class="input" placeholder="mml goes here..." style="width:100%;"></textarea>
+	<textarea id="inp" class="input" placeholder="mml goes here..." style="width:100%;" spellcheck="false">cdercdergedcdedr
+cdercdergedcdecr
+ggegaagreeddc</textarea>
 	<button id="btn" class="button">run</button>
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta+.mjs';
 		const
+		actx=new(window.AudioContext||webkitAudioContext)(),
+		master=actx.createGain(),
+		fft=(w,l=12)=>{
+			w=w.flatMap(x=>new Array(2**l/w.length).fill().map(()=>[x,0]));
+			const add=([[a,b],[c,d]])=>[a+c,b+d],sub=([[a,b],[c,d]])=>[a-c,b-d],mul=([a,b],[c,d])=>[a*c-b*d,a*d+b*c],cm=t=>[Math.cos(t),Math.sin(t)],trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
+				core=(n=w.length,t=-Math.PI/n,p=0,o=1,x,y)=>n==1?[w[p]]:(y=core(n/=2,t*=2,p+o,o*=2),x=core(n,t,p,o).map((z,i)=>[z,mul(y[i],cm(t*i))]),x.map(add).concat(x.map(sub)));
+			return trs(core()).map(x=>new Float32Array([0,...x.slice(1)]));
+		},
+		pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
 		play=(w=inp.value)=>{
 				w
 					.replace(/[\uff01-\uff5e]/g,x=>String.fromCharCode(x.charCodeAt(0)-0xfee0))
 					.match(/([cdefgab][#\+-]?|r)\d*\.?|[olvt]\d+|[<>]/ig)
 					.reduce((a,x)=>(
+						x=x.toLowerCase(),
 						(
 							{'>':_=>a.o++,'<':_=>a.o--}[x]||
-							('olvt'.includes(x[0])&&(_=>a[x[0]]=+x.slice(1)))||
+							('olvt'.includes(x[0])&&(_=>a[x[0]]=x.slice(1)))||
 							(_=>{
-
+								const
+								osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),
+								nn=(+a.o+1)*12+Object.fromEntries([...'c d ef g a b'].map(Array))[x[0]]+({'#':1,'+':1,'-':-1}[x[1]]||0),
+								l=240/(+a.t)*(y=>[0,...(y.match(/\.+/)||[''])[0]].reduce((a,_,i)=>(a.a+=1/(a.x<<i),a),{a:0,x:+y.match(/\d+/)[0]}).a)(x.slice(1+'#+-'.includes(x[1]))||a.l);
+								if(!isNaN(nn)){
+									osc.setPeriodicWave(pwav[4]);
+									osc.frequency.value=440*(2**((nn-69)/12));
+									g0.gain.setTargetAtTime(0,a._,230/(nn**1.5));
+									g1.gain.setValueAtTime(0,0);g1.gain.setValueAtTime(0,a._);g1.gain.linearRampToValueAtTime(a.v/127,a._+.01);g1.gain.setValueAtTime(a.v/127,a._+l);g1.gain.linearRampToValueAtTime(0,a._+l+.02);
+									[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
+									osc.start(a._);osc.stop(a._+l+.02);
+								}
+								a._+=l;
 							})
 						)(),a
-					),{o:4,l:4,v:127,t:120})
+					),{o:'4',l:'4',v:'127',t:'120',_:actx.currentTime})
 		};
 
 		btn.onclick=_=>play();
 		TA.editor(inp);
+		master.gain.value=.2;master.connect(actx.destination);
 	</script>
 </body>
 </html>
