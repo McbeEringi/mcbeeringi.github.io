@@ -46,7 +46,8 @@
 				[/apps\/ant/i,'amuse/ant'],
 				[/apps\/jsbm/i,'amuse/jsbm'],
 				[/amuse\/ta/i,'ta/index'],
-				[/amuse\/smf/i,'apps/smf']
+				[/amuse\/smf/i,'apps/smf'],
+				[/apps\/mml/i,'t85_musicbox/index']
 			].reduce((a,x)=>a.replace(...x),location.href);
 			if(location.href!=url){
 				log.textContent='';
