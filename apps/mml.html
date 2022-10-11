@@ -33,23 +33,23 @@ ggegaagreeddc</textarea>
 		},
 		pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
 		play=(w=inp.value)=>{
-				w
+				w.split(':').forEach(p=>p
 					.replace(/[\uff01-\uff5e]/g,x=>String.fromCharCode(x.charCodeAt(0)-0xfee0))
-					.match(/([cdefgab][#\+-]?|r)\d*\.?|[olvt]\d+|[<>]/ig)
+					.match(/([cdefgab][#\+-]?|r)\d*\.?|[olvt@]\d+|[<>]/ig)
 					.reduce((a,x)=>(
 						x=x.toLowerCase(),
 						(
 							{'>':_=>a.o++,'<':_=>a.o--}[x]||
-							('olvt'.includes(x[0])&&(_=>a[x[0]]=x.slice(1)))||
+							('olvt@'.includes(x[0])&&(_=>a[x[0]]=x.slice(1)))||
 							(_=>{
 								const
 								osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),
 								nn=(+a.o+1)*12+Object.fromEntries([...'c d ef g a b'].map(Array))[x[0]]+({'#':1,'+':1,'-':-1}[x[1]]||0),
-								l=240/(+a.t)*(y=>[0,...(y.match(/\.+/)||[''])[0]].reduce((a,_,i)=>(a.a+=1/(a.x<<i),a),{a:0,x:+y.match(/\d+/)[0]}).a)(x.slice(1+'#+-'.includes(x[1]))||a.l);
+								l=240/(+a.t)*(y=>(y.slice(-1)=='.'?1.5:1)/+y.match(/\d+/)[0])(x.slice(1+'#+-'.includes(x[1]))||a.l);
 								if(!isNaN(nn)){
-									osc.setPeriodicWave(pwav[4]);
+									osc.setPeriodicWave(pwav[a['@']]);
 									osc.frequency.value=440*(2**((nn-69)/12));
-									g0.gain.setTargetAtTime(0,a._,230/(nn**1.5));
+									g0.gain.setTargetAtTime(0,a._,.3);
 									g1.gain.setValueAtTime(0,0);g1.gain.setValueAtTime(0,a._);g1.gain.linearRampToValueAtTime(a.v/127,a._+.01);g1.gain.setValueAtTime(a.v/127,a._+l);g1.gain.linearRampToValueAtTime(0,a._+l+.02);
 									[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 									osc.start(a._);osc.stop(a._+l+.02);
@@ -57,12 +57,12 @@ ggegaagreeddc</textarea>
 								a._+=l;
 							})
 						)(),a
-					),{o:'4',l:'4',v:'127',t:'120',_:actx.currentTime})
+					),{o:'4',l:'4',v:'127',t:'120','@':0,_:actx.currentTime}))
 		};
 
 		btn.onclick=_=>play();
 		TA.editor(inp);
-		master.gain.value=.2;master.connect(actx.destination);
+		master.gain.value=.5;master.connect(actx.destination);
 	</script>
 </body>
 </html>
