@@ -102,7 +102,7 @@
 				}
 			);
 
-		btn.onclick=_=>(stop&&stop(),console.log({stop,h:log.textContent}=play(Function(`return(${cfg.value});`)())),anc.href='https://mcbeeringi.github.io/apps/qr.html#'+encodeURIComponent(log.textContent));
+		btn.onclick=_=>(actx.resume(),stop&&stop(),console.log({stop,h:log.textContent}=play(Function(`return(${cfg.value});`)())),anc.href='https://mcbeeringi.github.io/apps/qr.html#'+encodeURIComponent(log.textContent));
 		TA.editor(cfg);TA.editor(inp);
 		master.gain.value=.2;master.connect(actx.destination);
 	</script>
