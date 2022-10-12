@@ -21,11 +21,11 @@
 	<textarea class="input" id="cfg" spellcheck="false">{
 	bpm:131,// テンポ
 	minNote:1/16,// 音符の最小単位
-	wvd:[// 音色(2bit) 音量(2bit) 減衰(1bit)
-		0b01110,
-		0b01111,
-		0b01111,
-		0b01110
+	wvd:[// 音色(2bit)_音量(2bit)_減衰(1bit)
+		0b01_11_0,
+		0b01_11_1,
+		0b01_11_1,
+		0b01_11_0
 	]
 }</textarea>
 	<textarea class="input" id="inp" spellcheck="false">&gt;1ar4a1brarFr2ar
@@ -52,6 +52,14 @@
 4bFbFbF3b1F2ba
 4gdg&gt;d&lt;gd2gdgb
 4aeaeae&gt;2C&lt;b4a</textarea>
+	<pre>
+cdefgab : ドレミファソラシ (大文字で♯)
+r : 休符
+1から16 : 音符(休符)の長さを更新 (デフォルトは4) (最小単位の{数字}倍)
+> : 1オクターブ上げる
+< : 1オクターブ下げる
+, : 新しいパートを作成
+	</pre>
 	<button class="button" id="btn">run</button>
 	<pre id="log"></pre>
 	<a id="anc">qr</a>
@@ -69,11 +77,11 @@
 				return trs(core()).map(x=>new Float32Array([0,...x.slice(1)]));
 			},
 			pwav=[[1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
-			parse=({w=inp.value,bpm=120,minNote=1/16,wvd=new Array(4).fill(0b00111)})=>(
+			parse=({notes=inp.value,bpm=120,minNote=1/16,wvd=new Array(4).fill(0b00111)})=>(
 				minNote=1/minNote,
 				[
 					(bpm<<8)|minNote,
-					...w.split(',').flatMap((p,i)=>p.match(/[cdefgabr><]|\d+/ig).reduce((a,x)=>(
+					...notes.split(',').flatMap((p,i)=>p.match(/[cdefgabr><]|\d+/ig).reduce((a,x)=>(
 						isNaN(x)?({'>':_=>a.o++,'<':_=>a.o--}[x]||(_=>{
 							const n=Object.fromEntries([...'c d ef g a b'].map(Array))[x.toLowerCase()]+(x==x.toUpperCase());
 							a.a+=a.x;
