@@ -15,9 +15,19 @@
 </head>
 <body>
 	<style>
-		#inp{font-family:monospace;width:100%;}
+		.input{font-family:monospace;width:100%;white-space:pre;}
 		pre{white-space:pre-wrap;word-break:break-all;}
 	</style>
+	<textarea class="input" id="cfg" spellcheck="false">{
+	bpm:131,// テンポ
+	minNote:1/16,// 音符の最小単位
+	wvd:[// 音色(2bit) 音量(2bit) 減衰(1bit)
+		0b01110,
+		0b01111,
+		0b01111,
+		0b01110
+	]
+}</textarea>
 	<textarea class="input" id="inp" spellcheck="false">&gt;1ar4a1brarFr2ar
 1ar4a1brarFr2ar
 1drdrdrer5F1rdr
@@ -48,6 +58,7 @@
 	
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta+.mjs';
+		let stop;
 		const
 			actx=new(window.AudioContext||webkitAudioContext)(),
 			master=actx.createGain(),
@@ -58,32 +69,41 @@
 				return trs(core()).map(x=>new Float32Array([0,...x.slice(1)]));
 			},
 			pwav=[[1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
-			play=(w=inp.value,bpm=131,mn=16)=>`static const uint16_t PROGMEM sheet[]={\n\t${(bpm<<8)|mn},//((BPM=${bpm})<<8)|(minNote=${mn})\n`+
-				w.split(',').map((p,i)=>
-					'\t'+p
+			play=({w=inp.value,bpm=120,minNote=1/16,wvd=new Array(4).fill(0b00111)})=>(
+				minNote=1/minNote,
+				w=w.split(',').map((p,i)=>(
+					p=p
 					.match(/[cdefgabr><]|\d+/ig)
 					.reduce((a,x)=>{
 						if(isNaN(x))
 							({'>':_=>a.o++,'<':_=>a.o--}[x]||(_=>{
 								const n=Object.fromEntries([...'c d ef g a b'].map(Array))[x.toLowerCase()]+(x==x.toUpperCase());
 								if(!isNaN(n)){
-									const osc=actx.createOscillator(),g0=actx.createGain(),ct=actx.currentTime+a.a*a.dt,d=a.x*a.dt;
-									osc.setPeriodicWave(pwav[1]);
+									const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),ct=actx.currentTime+a.a*a.dt,d=a.x*a.dt;
+									osc.setPeriodicWave(pwav[wvd[i]>>3]);
 									osc.frequency.value=440*(2**((n-57)/12+a.o));
-									g0.gain.setTargetAtTime(0,ct,.3);
-									[osc,g0,master].reduce((a,x)=>(a.connect(x),x));
+									(wvd[i]&1)&&g0.gain.setTargetAtTime(0,ct,.3);
+									g1.gain.value=[0x40,0x80,0xc0,0xff][((wvd[i]>>1)&3)]/0xff;
+									[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 									osc.start(ct);osc.stop(ct+d);
+									a.s.push(_=>osc.stop())
 								}
 								a.a+=a.x;
-								a.h.push((0b00110<<11)|((a.o&0x7)<<8)|((isNaN(n)?12:n)<<4)|((a.x-1)&0xf))
-							}))()
+								a.h.push((wvd[i]<<11)|((a.o&0x7)<<8)|((isNaN(n)?12:n)<<4)|((a.x-1)&0xf))
+							}))();
 						else a.x=+x;
 						return a;
-					},{a:0,x:4,o:4,h:[0],dt:240/bpm/mn}).h.join(',')
-				).join(',\n')+',\n\t0,0\n};';
+					},{a:0,x:4,o:4,h:[0],s:[],dt:240/bpm/minNote}),
+					{h:'\t'+p.h.join(','),s:_=>p.s.forEach(x=>x())}
+				)),
+				{
+					h:`static const uint16_t PROGMEM sheet[]={\n\t((uint16_t)${bpm}<<8)|${minNote},// (BPM<<8)|minNote\n${w.map(x=>x.h).join(',\n')},\n\t0,0\n};`,
+					stop:_=>w.forEach(x=>x.s())
+				}
+			);
 
-		btn.onclick=_=>(console.log(log.textContent=play()),anc.href='https://mcbeeringi.github.io/apps/qr.html#'+encodeURIComponent(log.textContent));
-		TA.editor(inp);
+		btn.onclick=_=>(stop&&stop(),console.log({stop,h:log.textContent}=play(Function(`return(${cfg.value});`)())),anc.href='https://mcbeeringi.github.io/apps/qr.html#'+encodeURIComponent(log.textContent));
+		TA.editor(cfg);TA.editor(inp);
 		master.gain.value=.2;master.connect(actx.destination);
 	</script>
 </body>
