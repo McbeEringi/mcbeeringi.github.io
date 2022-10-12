@@ -69,40 +69,50 @@
 				return trs(core()).map(x=>new Float32Array([0,...x.slice(1)]));
 			},
 			pwav=[[1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
-			play=({w=inp.value,bpm=120,minNote=1/16,wvd=new Array(4).fill(0b00111)})=>(
+			parse=({w=inp.value,bpm=120,minNote=1/16,wvd=new Array(4).fill(0b00111)})=>(
 				minNote=1/minNote,
-				w=w.split(',').map((p,i)=>(
-					p=p
-					.match(/[cdefgabr><]|\d+/ig)
-					.reduce((a,x)=>{
-						if(isNaN(x))
-							({'>':_=>a.o++,'<':_=>a.o--}[x]||(_=>{
-								const n=Object.fromEntries([...'c d ef g a b'].map(Array))[x.toLowerCase()]+(x==x.toUpperCase());
-								if(!isNaN(n)){
-									const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),ct=actx.currentTime+a.a*a.dt,d=a.x*a.dt;
-									osc.setPeriodicWave(pwav[wvd[i]>>3]);
-									osc.frequency.value=440*(2**((n-57)/12+a.o));
-									(wvd[i]&1)&&g0.gain.setTargetAtTime(0,ct,.3);
-									g1.gain.value=[0x40,0x80,0xc0,0xff][((wvd[i]>>1)&3)]/0xff;
-									[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
-									osc.start(ct);osc.stop(ct+d);
-									a.s.push(_=>osc.stop())
-								}
-								a.a+=a.x;
-								a.h.push((wvd[i]<<11)|((a.o&0x7)<<8)|((isNaN(n)?12:n)<<4)|((a.x-1)&0xf))
-							}))();
-						else a.x=+x;
-						return a;
-					},{a:0,x:4,o:4,h:[0],s:[],dt:240/bpm/minNote}),
-					{h:'\t'+p.h.join(','),s:_=>p.s.forEach(x=>x())}
-				)),
-				{
-					h:`static const uint16_t PROGMEM sheet[]={\n\t((uint16_t)${bpm}<<8)|${minNote},// (BPM<<8)|minNote\n${w.map(x=>x.h).join(',\n')},\n\t0,0\n};`,
-					stop:_=>w.forEach(x=>x.s())
-				}
+				[
+					(bpm<<8)|minNote,
+					...w.split(',').flatMap((p,i)=>p.match(/[cdefgabr><]|\d+/ig).reduce((a,x)=>(
+						isNaN(x)?({'>':_=>a.o++,'<':_=>a.o--}[x]||(_=>{
+							const n=Object.fromEntries([...'c d ef g a b'].map(Array))[x.toLowerCase()]+(x==x.toUpperCase());
+							a.a+=a.x;
+							a.h.push((wvd[i]<<11)|((a.o&0x7)<<8)|((isNaN(n)?12:n)<<4)|((a.x-1)&0xf))
+						}))():a.x=+x,
+						a
+					),{a:0,x:4,o:4,h:[0],dt:240/bpm/minNote}).h),
+					0,0
+				]
+			),
+			play=w=>(
+				w=w.slice(1).reduce((a,x)=>(
+					x?
+					(
+						(x&0x00f0)<0x00c0&&(_=>{
+							const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),t=actx.currentTime+a.a*a.dt,d=((x&0xf)+1)*a.dt;
+							osc.setPeriodicWave(pwav[x>>14]);
+							osc.frequency.value=440*(2**((((x>>4)&0xf)-57)/12+((x>>8)&0x7)));
+							((x>>11)&0x1)&&g0.gain.setTargetAtTime(0,t,.3);
+							g1.gain.value=[0x40,0x80,0xc0,0xff][((x>>12)&0x3)]/0xff;
+							[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
+							osc.start(t);osc.stop(t+d);
+							a.s.push(_=>osc.stop());
+						})(),
+						a.a+=(x&0xf)+1
+					):
+					a.a=0,
+					a
+				),{dt:240/(w[0]>>8)/(w[0]&0xff),s:[]}).s,
+				_=>w.forEach(x=>x())
 			);
 
-		btn.onclick=_=>(actx.resume(),stop&&stop(),console.log({stop,h:log.textContent}=play(Function(`return(${cfg.value});`)())),anc.href='https://mcbeeringi.github.io/apps/qr.html#'+encodeURIComponent(log.textContent));
+		btn.onclick=_=>(
+			actx.resume(),
+			stop&&stop(),
+			stop=play(_=parse(Function(`return(${cfg.value});`)())),
+			log.textContent=`static const uint16_t PROGMEM sheet[]={${_}};`,
+			anc.href='https://mcbeeringi.github.io/apps/qr.html#'+encodeURIComponent(log.textContent)
+		);
 		TA.editor(cfg);TA.editor(inp);
 		master.gain.value=.2;master.connect(actx.destination);
 	</script>
