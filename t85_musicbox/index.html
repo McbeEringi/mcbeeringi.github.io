@@ -18,40 +18,42 @@
 		.input{font-family:monospace;width:100%;white-space:pre;}
 		pre{white-space:pre-wrap;word-break:break-all;}
 	</style>
-	<textarea class="input" id="cfg" spellcheck="false">{
+	<textarea class="input" id="inp" spellcheck="false">{
 	bpm:131,// テンポ
 	minNote:1/16,// 音符の最小単位
-	wvd:[// 音色(2bit)_音量(2bit)_減衰(1bit)
-		0b01_11_0,
-		0b01_11_1,
-		0b01_11_1,
-		0b01_11_0
-	]
+	vwd:[// 音量半分_音色_減衰無効化
+		0b0_1_1,
+		0b0_1_0,
+		0b0_1_0,
+		0b0_1_1
+	],
+	notes:`
+		&gt;1ar4a1brarFr2ar
+		1ar4a1brarFr2ar
+		1drdrdrer5F1rdr
+		5F1rar8a
+		1drdrdrer8F
+		1drdrdrer8F
+		1erererdr2erFrargrFrer,
+
+		&lt;2r
+		1a3r1a3r1aa2r1a3r1a3r1a3r1aa2r1a3r
+		1b3r1b3r1bb2r1b3r1b3r1b3r1bb2r1b3r
+		1b3r1b3r1bb2r1b3r1b3r1b3r1bb2r1b3r
+		1a3r1a3r1aa2r1a3r1a3r1a3r1aa2ra,
+
+		&lt;2r
+		1F3r1F3r1FF2r1F3r1F3r1F3r1FF2r1F3r
+		1F3r1F3r1FF2r1F3r1F3r1F3r1FF2r1F3r
+		1g3r1g3r1gg2r1g3r1g3r1g3r1gg2r1g3r
+		1e3r1e3r1ee2r1e3r1e3r1e3r1ee2re,
+
+		&lt;4d&lt;a&gt;d&lt;a&gt;d&lt;a&gt;3d&lt;1a&gt;2dC&lt;
+		4bFbFbF3b1F2ba
+		4gdg&gt;d&lt;gd2gdgb
+		4aeaeae&gt;2C&lt;b4a
+	`
 }</textarea>
-	<textarea class="input" id="inp" spellcheck="false">&gt;1ar4a1brarFr2ar
-1ar4a1brarFr2ar
-1drdrdrer5F1rdr
-5F1rar8a
-1drdrdrer8F
-1drdrdrer8F
-1erererdr2erFrargrFrer,
-
-&lt;2r
-1a3r1a3r1aa2r1a3r1a3r1a3r1aa2r1a3r
-1b3r1b3r1bb2r1b3r1b3r1b3r1bb2r1b3r
-1b3r1b3r1bb2r1b3r1b3r1b3r1bb2r1b3r
-1a3r1a3r1aa2r1a3r1a3r1a3r1aa2ra,
-
-&lt;2r
-1F3r1F3r1FF2r1F3r1F3r1F3r1FF2r1F3r
-1F3r1F3r1FF2r1F3r1F3r1F3r1FF2r1F3r
-1g3r1g3r1gg2r1g3r1g3r1g3r1gg2r1g3r
-1e3r1e3r1ee2r1e3r1e3r1e3r1ee2re,
-
-&lt;4d&lt;a&gt;d&lt;a&gt;d&lt;a&gt;3d&lt;1a&gt;2dC&lt;
-4bFbFbF3b1F2ba
-4gdg&gt;d&lt;gd2gdgb
-4aeaeae&gt;2C&lt;b4a</textarea>
 	<pre>
 cdefgab : ドレミファソラシ (大文字で♯)
 r : 休符
@@ -76,8 +78,8 @@ r : 休符
 					core=(n=w.length,t=-Math.PI/n,p=0,o=1,x,y)=>n==1?[w[p]]:(y=core(n/=2,t*=2,p+o,o*=2),x=core(n,t,p,o).map((z,i)=>[z,mul(y[i],cm(t*i))]),x.map(add).concat(x.map(sub)));
 				return trs(core()).map(x=>new Float32Array([0,...x.slice(1)]));
 			},
-			pwav=[[1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
-			parse=({notes=inp.value,bpm=120,minNote=1/16,wvd=new Array(4).fill(0b00111)})=>(
+			pwav=[[1,1,0,0],[1,0,0,0]].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1)))),
+			parse=({notes,bpm=120,minNote=1/16,vwd=new Array(4).fill(0b000)})=>(
 				minNote=1/minNote,
 				[
 					(bpm<<8)|minNote,
@@ -85,7 +87,7 @@ r : 休符
 						isNaN(x)?({'>':_=>a.o++,'<':_=>a.o--}[x]||(_=>{
 							const n=Object.fromEntries([...'c d ef g a b'].map(Array))[x.toLowerCase()]+(x==x.toUpperCase());
 							a.a+=a.x;
-							a.h.push((wvd[i]<<11)|((a.o&0x7)<<8)|((isNaN(n)?12:n)<<4)|((a.x-1)&0xf))
+							a.h.push((vwd[i]<<13)|((a.o&0x7)<<10)|((isNaN(n)?12:n)<<6)|((a.x-1)&0x3f))
 						}))():a.x=+x,
 						a
 					),{a:0,x:4,o:4,h:[0],dt:240/bpm/minNote}).h),
@@ -96,12 +98,12 @@ r : 休符
 				w=w.slice(1).reduce((a,x)=>(
 					x?
 					(
-						(x&0x00f0)<0x00c0&&(_=>{
-							const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),t=actx.currentTime+a.a*a.dt,d=((x&0xf)+1)*a.dt;
-							osc.setPeriodicWave(pwav[x>>14]);
-							osc.frequency.value=440*(2**((((x>>4)&0xf)-57)/12+((x>>8)&0x7)));
-							((x>>11)&0x1)&&g0.gain.setTargetAtTime(0,t,.3);
-							g1.gain.value=[0x40,0x80,0xc0,0xff][((x>>12)&0x3)]/0xff;
+						(x&0b1111000000)>0b1011000000||(_=>{
+							const osc=actx.createOscillator(),g0=actx.createGain(),g1=actx.createGain(),t=actx.currentTime+a.a*a.dt,d=((x&0x3f)+1)*a.dt;
+							osc.setPeriodicWave(pwav[(x>>14)&0x1]);
+							osc.frequency.value=440*(2**((((x>>6)&0xf)-57)/12+((x>>10)&0x7)));
+							((x>>13)&0x1)||g0.gain.setTargetAtTime(0,t,.3);
+							g1.gain.value=[1,.5][x>>15];
 							[osc,g0,g1,master].reduce((a,x)=>(a.connect(x),x));
 							osc.start(t);osc.stop(t+d);
 							a.s.push(_=>osc.stop());
@@ -117,44 +119,12 @@ r : 休符
 		btn.onclick=_=>(
 			actx.resume(),
 			stop&&stop(),
-			stop=play(_=parse(Function(`return(${cfg.value});`)())),
-			log.textContent=`static const uint16_t PROGMEM sheet[]={${_}};`,
+			stop=play(_=parse(Function(`return(${inp.value});`)())),
+			log.textContent=`static const uint16_t PROGMEM sheet[]={\n\t${_.join(',').replace(/,0,/g,',\n\t0,')}\n};`,
 			anc.href='https://mcbeeringi.github.io/apps/qr.html#'+encodeURIComponent(log.textContent)
 		);
-		TA.editor(cfg);TA.editor(inp);
+		TA.editor(inp);
 		master.gain.value=.2;master.connect(actx.destination);
-
-/*
-BPM: 168
-
-2r>1gg2ggee4f2r1gg2ggCC4d2r1gg8gd<g>4r2g1gg
-2ergrgrr1gg2frgrgrr1gg2ergrbrargFfedrr1gg
-2ergrgrr1gg2drbrbrr1aa2arar>drd<r4g1gGaA2bgag
-ergregrgfrgrfgrgergrbrargFfedrr1gg
-2ergrgrr1gg2frarar>crer4r2dr4r
-2c<1gGaA2b>c<<r4c,
-
-rr>2CC4drr<2AA4br2r>8Fc2r8g4r<<
-2rgrgrgrgrgrgrgrgrgrgrgrgrgrgrgrg
-rgrgrgrgrbrbrbrbrararara4gr8r
-2rgrgrgrgrgrgrgrgrgrgrgrgrgrgrgrg
-rgrgrgrgrarararargrgrgrg
-gr4r>2cr<4c,
-
-r16rr2rr>8f<b4r8g<
-2rererererfrfrfrfrererererfrfrfrf
-rerererergrgrgrgrFrFrFrF16r
-2rererererfrfrfrfrererererfrfrfrf
-rererererfrfrfrfrerdrfrf
-er4r2rr<4c,
-
-r16rr2rrr>8e<a2r8r
-<4c<gcgdgdg>c<gcgdgdg
->c<gcgdgdgadFdgr8r
->4c<g>cc<gdgg>c<g>cc<gdgg
->c<g>cc<fcff>c<gdg
->2cr4rrr
-*/
 	</script>
 </body>
 </html>
