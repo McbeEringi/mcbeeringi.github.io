@@ -45,6 +45,7 @@ console.log("World.");
 					extensions:[
 						lineNumbers(),
 						highlightActiveLineGutter(),
+						//highlightActiveLine(),//選択範囲消えるバグ
 						history(),
 						foldGutter(),
 						drawSelection(),
@@ -55,7 +56,6 @@ console.log("World.");
 						closeBrackets(),
 						autocompletion(),
 						rectangularSelection(),
-						highlightActiveLine(),
 						highlightSelectionMatches(),
 						keymap.of([
 								...closeBracketsKeymap,
