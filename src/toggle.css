@@ -3,8 +3,8 @@
  *  usage: <input type="checkbox" class="toggle" style="--size:<length(height)>;">
  */
 input[type=checkbox].toggle{--size:24px;appearance:none;-webkit-appearance:none;display:inline-block;position:relative;width:calc(var(--size)*1.62);height:var(--size);border-radius:calc(var(--size)*.5);vertical-align:middle;color:inherit;background-color:#666;transition:.1s;}
-input[type=checkbox].toggle::before{content:attr(O);display:inline-block;width:var(--size);transform:translateX(calc(var(--size)*.7725));vertical-align:middle;color:inherit;text-align:center;font-size:calc(var(--size)*.5);transition:inherit;}
-input[type=checkbox].toggle::after{content:"";display:block;width:var(--size);height:var(--size);border-radius:50%;position:absolute;top:0;transform:scale(.85);background-color:#fff;transition:inherit;}
+input[type=checkbox].toggle::before{content:attr(O);display:inline-block;width:var(--size);transform:translateX(calc(var(--size)*.7725));vertical-align:middle;color:inherit;text-align:center;font-size:calc(var(--size)*.5);transition:inherit;will-change:transform;}
+input[type=checkbox].toggle::after{content:"";display:block;width:var(--size);height:var(--size);border-radius:50%;position:absolute;top:0;transform:scale(.85);background-color:#fff;transition:inherit;will-change:transform;}
 input[type=checkbox]:checked.toggle{background-color:#3d5;}
 input[type=checkbox]:checked.toggle::before{content:attr(I);transform:translateX(calc(var(--size)*-.1525));}
 input[type=checkbox]:checked.toggle::after{transform:translateX(calc(var(--size)*.62))scale(.85);}
