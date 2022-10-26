@@ -14,42 +14,72 @@
 	<link rel="stylesheet" href="../../src/style.css">
 </head>
 <body>
-	<input type="file" id="inp">
+	<style>
+		.input{font-family:monospace;width:100%;tab-size:2;}
+	</style>
+	<h1>poly</h1>
+	<hr>
+	<input type="file" id="inp" class="button">
+	<textarea id="cfg" class="input" spellcheck="false">{
+	v:x=>[x[2],x[1],x[0]].map(y=>y*16),//vertices
+	vn:x=>[x[0],x[1],x[2]],//normals
+	vt:x=>[x[0],x[1]],//uvs
+	fmt:bones=>({//format
+		format_version:'1.12.0',
+		'minecraft:geometry':[{
+			description:{
+				identifier:'geometry.armor_stand',
+				texture_width:64,
+				texture_height:64,
+				visible_bounds_width:1,
+				visible_bounds_height:1,
+				visible_bounds_offset:[0,0,0]
+			},
+			bones
+		}]
+	})
+}</textarea>
+	<button id="btn" class="button">run</button>
+	<hr>
 	<pre id="log" style="white-space:pre-wrap;"></pre>
 
-	<script>
+	<script type="module">
+		import TA from'https://mcbeeringi.github.io/ta/ta+.mjs';
 		const
 			wurl=URL.createObjectURL(new Blob([`'use strict';onmessage=m=>Object.getPrototypeOf(async _=>_).constructor(m.data)();`])),
 			worker=new Worker(wurl),
-			round=(x,y=1e6)=>Math.round(x*y)/y,
-			fmt=x=>(x=x.length?x[0].map((_,i)=>x.flatMap(y=>y[i])):[],{p:x[0],n:x[1],c:x[2],t:x[3],i:x[4]}),
-			obj=w=>((
+			obj2mc=(w,q)=>q.fmt(((
 				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(y=>+y),
-				core=({w,_v=0,_vt=0,_vn=0}={},
-						o=(w.match(/^o (.+)$/m)||[])[1],
-						vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))],
-						vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))],
-						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>round(y*x[3]))):_=>x.slice(0,3))()))
+				core=({w,_v=0,_vt=0,_vn=0}={},round=(x,y=1e6)=>Math.round(x*y)/y,
+						o=(w.match(/^o (.+)$/m)||[])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))].map(q.vt),vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))].map(q.vn),
+						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>round(y*x[3]))):_=>x.slice(0,3))())).map(q.v)
 					)=>({w:{
-						name:o,
-						pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>round(x/v.length)),
+						name:o,pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>round(x/v.length)),
 						poly_mesh:{
 							normalized_uvs:true,positions:v,normals:vn,uvs:vt,
 							polys:(w.match(/^f .+$/gm)||[]).flatMap(x=>(
 								x=spl(x).map(y=>(y=y.split('/'),[y[0]-1-_v,y[2]?y[2]-_vn:0,y[1]?y[1]-_vt:0])),
-								new Array((x.length-1)/2|0).fill().reduce(a=>(a.a.push(x[a.x+2]?[x[0],x[a.x++],x[a.x++],x[a.x]]:[x[0],x[a.x++],x[a.x],x[0]]),
-								a
-							),{a:[],x:1}).a))
+								new Array((x.length-1)/2|0).fill().reduce(a=>(a.a.push(x[a.x+2]?[x[0],x[a.x++],x[a.x++],x[a.x]]:[x[0],x[a.x++],x[a.x],x[0]]),a),{a:[],x:1}).a
+							))
 						}
 					},_v:v.length,_vt:vt.length-1,_vn:vn.length-1})
-			)=>w.split(/\n(?=o)/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[]))(),
-			main=w=>{
-				//return JSON.stringify({bones:obj(w)});
+			)=>w.split(/\n(?=o)/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[]))()),
+			mqo2mc=(w,q)=>q.fmt(
+					
+			);
 
-				return JSON.stringify({format_version:'1.12.0','minecraft:geometry':[{description:{identifier:'geometry.armor_stand',texture_width:64,texture_height:64,visible_bounds_width:1,visible_bounds_height:1,visible_bounds_offset:[0,0,0]},bones:obj(w)}]});
-			};
-		inp.onchange=async()=>log.textContent=main(await new Response(inp.files[0]).text());inp.onchange();
-		onbeforeunload=_=>URL.revokeObjectURL(wurl);
+		worker.onmessage=async m=>(await navigator.clipboard.writeText(m.data),log.textContent='done!\ncopied to clipboard.');
+		btn.onclick=w=>(
+			w=({
+				obj:async()=>worker.postMessage(`postMessage(JSON.stringify((${obj2mc})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),
+				mqo:async()=>1,
+				//mqoz:async()=>1
+			}[inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()]),
+			w?(w(),log.textContent='process started.\nplease wait...'):(log.textContent='can\'t determine file format.\nplease check the file extention.')
+		);
+		TA.editor(cfg);
+		onbeforeunload=_=>(worker.terminate(),URL.revokeObjectURL(wurl));
+		onerror=e=>log.textContent=e;
 	</script>
 </body>
 </html>
