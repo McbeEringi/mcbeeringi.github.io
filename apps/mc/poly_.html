@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi poly</title>
+	<meta name="description" content="mcbe model json converter">
+	<link rel="icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../../src/style.css">
+</head>
+<body>
+	<input type="file" id="inp">
+	<pre id="log" style="white-space:pre-wrap;"></pre>
+
+	<script>
+		const
+			wurl=URL.createObjectURL(new Blob(['"use strict";onmessage=m=>Object.getPrototypeOf(async _=>_).constructor(m.data)();'])),
+			worker=new Worker(wurl),
+			round=(x,y=1e6)=>Math.round(x*y)/y,
+			fmt=x=>(x=x.length?x[0].map((_,i)=>x.flatMap(y=>y[i])):[],{p:x[0],n:x[1],c:x[2],t:x[3],i:x[4]}),
+			obj=w=>((
+				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(y=>+y),
+				core=({w,_v=0,_vt=0,_vn=0}={},
+						o=(w.match(/^o (.+)$/m)||[])[1],
+						vt=(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3)),
+						vn=(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4)),
+						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>round(y*x[3]))):_=>x.slice(0,3))()))
+					)=>({w:{
+						name:o,
+						pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>round(x/v.length)),
+						poly_mesh:{
+							normalized_uvs:true,positions:v,normals:vn,uvs:vt,
+							polys:(w.match(/^f .+$/gm)||[]).flatMap(x=>(x=spl(x).map(y=>(y=y.split('/'),[y[0]-1-_v,y[2]-1-_vn,y[1]-1-_vt])),new Array(((x.length-2)/2|0)+(x.length-2)%2).fill().reduce(a=>(a.a.push(x[a.x+2]?[x[0],x[a.x++],x[a.x++],x[a.x]]:[x[0],x[a.x++],x[a.x]]),a),{a:[],x:1}).a))
+						}
+					},_v:v.length,_vt:vt.length,_vn:vn.length})
+			)=>w.split(/\n(?=o)/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[]))(),
+			main=w=>{
+				//return JSON.stringify({bones:obj(w)});
+
+				return`{"format_version":"1.12.0","minecraft:geometry":[{"description":{"identifier":"geometry.armor_stand","texture_width":64,"texture_height":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0]},"bones":${JSON.stringify(obj(w))}}]}`
+			};
+		inp.onchange=async()=>log.textContent=main(await new Response(inp.files[0]).text());inp.onchange();
+		onbeforeunload=_=>URL.revokeObjectURL(wurl);
+	</script>
+</body>
+</html>
