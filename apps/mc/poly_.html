@@ -27,17 +27,17 @@
 				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(y=>+y),
 				core=({w,_v=0,_vt=0,_vn=0}={},
 						o=(w.match(/^o (.+)$/m)||[])[1],
-						vt=(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3)),
-						vn=(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4)),
+						vt=[[0,0],(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))],
+						vn=[[0,1,0],(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))],
 						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>round(y*x[3]))):_=>x.slice(0,3))()))
 					)=>({w:{
 						name:o,
 						pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>round(x/v.length)),
 						poly_mesh:{
 							normalized_uvs:true,positions:v,normals:vn,uvs:vt,
-							polys:(w.match(/^f .+$/gm)||[]).flatMap(x=>(x=spl(x).map(y=>(y=y.split('/'),[y[0]-1-_v,y[2]-1-_vn,y[1]-1-_vt])),new Array(((x.length-2)/2|0)+(x.length-2)%2).fill().reduce(a=>(a.a.push(x[a.x+2]?[x[0],x[a.x++],x[a.x++],x[a.x]]:[x[0],x[a.x++],x[a.x]]),a),{a:[],x:1}).a))
+							polys:(w.match(/^f .+$/gm)||[]).flatMap(x=>(x=spl(x).map(y=>(y=y.split('/'),[y[0]-1-_v,y[2]?y[2]-_vn:0,y[1]?y[1]-_vt:0])),new Array(((x.length-2)/2|0)+(x.length-2)%2).fill().reduce(a=>(a.a.push(x[a.x+2]?[x[0],x[a.x++],x[a.x++],x[a.x]]:[x[0],x[a.x++],x[a.x]]),a),{a:[],x:1}).a))
 						}
-					},_v:v.length,_vt:vt.length,_vn:vn.length})
+					},_v:v.length,_vt:vt.length-1,_vn:vn.length-1})
 			)=>w.split(/\n(?=o)/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[]))(),
 			main=w=>{
 				//return JSON.stringify({bones:obj(w)});
