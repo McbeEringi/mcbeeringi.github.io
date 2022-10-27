@@ -95,7 +95,7 @@ const exp=(list,mode,mcpack)=>{
 		};
 		var expn=`${ffamily.value}_bmp.zip`;
 		if(mcpack){
-			zip.file('manifest.json',simple_mcmf(`n${ffamily.value}; dfont resource pack.\nmcbeeringi.github.io/apps/glyph; v[0,0,1]; tresources`));
+			zip.file('manifest.json',mcmf({n:ffamily.value,d:'font resource pack.\nmcbeeringi.github.io/apps/glyph'}));
 			log_.textContent+='manifest.json done.\n';
 			c.width=128;c.height=128;ctx.font=`80px ${ffamily.value},sans-serif`;ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#fff';var str='Aa',strm=ctx.measureText(str);
 			ctx.fillText(str,(c.width-strm.width)*.5,(c.height+strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent)*.5-strm.actualBoundingBoxDescent);

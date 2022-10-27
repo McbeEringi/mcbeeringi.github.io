@@ -41,7 +41,7 @@
 }</textarea>
 	<button id="btn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;"></pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2210270</pre>
 
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta+.mjs';
@@ -50,11 +50,12 @@
 			worker=new Worker(wurl),
 			obj2mc=(w,q)=>q.fmt(((
 				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(y=>+y),
+				uuidgen=_=>Array.from('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx',x=>({x:_=>(Math.random()*16|0).toString(16),y:_=>'89ab'[Math.random()*4|0]}[x]||(_=>x))()).join(''),
 				core=({w,_v=0,_vt=0,_vn=0}={},round=(x,y=1e6)=>Math.round(x*y)/y,
-						o=(w.match(/^o (.+)$/m)||[])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))].map(q.vt),vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))].map(q.vn),
+						og=(w.match(/^[og] (.+)$/m)||[,uuidgen()])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))].map(q.vt),vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))].map(q.vn),
 						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>round(y*x[3]))):_=>x.slice(0,3))())).map(q.v)
 					)=>({w:{
-						name:o,pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>round(x/v.length)),
+						name:og,pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>round(x/v.length)),
 						poly_mesh:{
 							normalized_uvs:true,positions:v,normals:vn,uvs:vt,
 							polys:(w.match(/^f .+$/gm)||[]).flatMap(x=>(
@@ -63,7 +64,7 @@
 							))
 						}
 					},_v:v.length,_vt:vt.length-1,_vn:vn.length-1})
-			)=>w.split(/\n(?=o)/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[]))()),
+			)=>w.split(/\n(?=[og])/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[]))()),
 			mqo2mc=(w,q)=>q.fmt(
 					
 			);
@@ -79,7 +80,7 @@
 		);
 		TA.editor(cfg);
 		onbeforeunload=_=>(worker.terminate(),URL.revokeObjectURL(wurl));
-		onerror=e=>log.textContent=e;
+		onunhandledrejection=onerror=e=>log.textContent=e;
 	</script>
 </body>
 </html>

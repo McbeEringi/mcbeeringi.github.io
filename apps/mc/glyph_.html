@@ -96,7 +96,7 @@
 						.then(c=>{log_.textContent+='packaging done.\n';saveAs(c,expn);expb.textContent='export';expb.disabled=false;console.log('done');})
 				},
 				pexppost=()=>{
-					zip.file('manifest.json',simple_mcmf(`n${font_f.value}; dfont resource pack.\nmcbeeringi.github.io/apps/glyph; v[0,0,1]; tresources`));
+					zip.file('manifest.json',mcmf({n:font_f.value,d:'font resource pack.\nmcbeeringi.github.io/apps/glyph'}));
 					log_.textContent+='manifest.json done.\n';
 					html2canvas(document.getElementById("picon"),{"scale":1,"scrollX":0,"scrollY":0}).then(c=>c.toBlob(b=>{
 						zip.file('pack_icon.png',b);
