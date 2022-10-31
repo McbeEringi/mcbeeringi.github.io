@@ -21,9 +21,9 @@
 	<hr>
 	<input type="file" id="inp" class="button">
 	<textarea id="cfg" class="input" spellcheck="false">{
-	v:x=>[x[2],x[1],x[0]].map(y=>y*16),//vertices
-	vn:x=>[x[0],x[1],x[2]],//normals
-	vt:x=>[x[0],x[1]],//uvs
+	v:(x,i,a)=>[x[2],x[1],x[0]].map(y=>y*16),//vertices for .obj
+	vn:(x,i,a)=>[x[0],x[1],x[2]],//normals for .obj
+	vt:(x,i,a)=>[x[0],x[1]],//uvs for .obj
 	fmt:bones=>({//format
 		format_version:'1.12.0',
 		'minecraft:geometry':[{
@@ -37,20 +37,24 @@
 			},
 			bones
 		}]
-	})
+	}),
+	file_name:'armor_stand.geo.json'
 }</textarea>
-	<button id="btn" class="button">run</button>
+	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2210270</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211010</pre>
+	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
+	<button id="dlbtn" class="button" disabled>download</button>
+
 
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta+.mjs';
 		const
 			wurl=URL.createObjectURL(new Blob([`'use strict';onmessage=m=>Object.getPrototypeOf(async _=>_).constructor(m.data)();`])),
 			worker=new Worker(wurl),
-			obj2mc=(w,q)=>q.fmt(((
+			obj2mc=(w,q)=>((
 				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(y=>+y),
-				uuidgen=_=>Array.from('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx',x=>({x:_=>(Math.random()*16|0).toString(16),y:_=>'89ab'[Math.random()*4|0]}[x]||(_=>x))()).join(''),
+				uuidgen=w=>(w=[...crypto.getRandomValues(new Uint8Array(16))].flatMap(x=>[x>>4,x&0xf]),Array.from('00000000-0000-4000-1000-000000000000',x=>([_=>w.pop().toString(16),_=>'89ab'[w.pop()%4]][x]||(_=>x))()).join('')),
 				core=({w,_v=0,_vt=0,_vn=0}={},round=(x,y=1e6)=>Math.round(x*y)/y,
 						og=(w.match(/^[og] (.+)$/m)||[,uuidgen()])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))].map(q.vt),vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))].map(q.vn),
 						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>round(y*x[3]))):_=>x.slice(0,3))())).map(q.v)
@@ -64,22 +68,34 @@
 							))
 						}
 					},_v:v.length,_vt:vt.length-1,_vn:vn.length-1})
-			)=>w.split(/\n(?=[og])/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[]))()),
-			mqo2mc=(w,q)=>q.fmt(
-					
+			)=>q.fmt(w.split(/\n(?=[og])/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[])))(),
+			mqo2mc=(w,q)=>(
+				w=Object.fromEntries((w.match(/Object "[^\n]*" \{.*?\n\}/sg)||[]).map(x=>(
+					x=x.replace(/\t+/g,'').match(/.+/g),
+					x=[x[0].slice(8,-3),x.slice(1,-1).reduce((a,y)=>(isNaN(y[1])?(y=='}'?0:a.a[a.x=y.split(' ',1)[0]]=y.includes('{')?[]:(y=y.split(' ').slice(1)).length>1?y.map(z=>+z):+y[0]):a.a[a.x].push(y),a),{a:{},x:''}).a],
+					x[1].vertex&&(x[1].vertex=x[1].vertex.map(x=>x.split(' ').map(z=>+z))),
+					x[1].face&&(x[1].face=x[1].face),//todo
+					x
+				))),
+				console.log(w)
 			);
 
-		worker.onmessage=async m=>(await navigator.clipboard.writeText(m.data),log.textContent='done!\ncopied to clipboard.');
-		btn.onclick=w=>(
+		worker.onmessage=async m=>(
+			cpbtn.onclick=async()=>(await navigator.clipboard.writeText(m.data),log.textContent+=' copied!'),
+			dlbtn.onclick=_=>(_=document.createElement('a'),_.download=Function('return '+cfg.value)().file_name,_.href=URL.createObjectURL(new Blob([m.data])),_.click(),URL.revokeObjectURL(_.href)),
+			cpbtn.disabled=dlbtn.disabled=false,log.textContent='done!'
+		);
+		runbtn.onclick=w=>(
+			w=inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase(),
 			w=({
 				obj:async()=>worker.postMessage(`postMessage(JSON.stringify((${obj2mc})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),
-				mqo:async()=>1,
-				//mqoz:async()=>1
-			}[inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()]),
-			w?(w(),log.textContent='process started.\nplease wait...'):(log.textContent='can\'t determine file format.\nplease check the file extention.')
+				mqo:async()=>mqo2mc(await new Response(inp.files[0]).text())//worker.postMessage(`postMessage(JSON.stringify('ﾆｬｰﾝ'));`),
+			}[w]),
+			w?(w(),log.textContent='please wait...'):(log.textContent='file extention must be .obj, or .mqo.')
 		);
+		cpbtn.disabled=dlbtn.disabled=true;
 		TA.editor(cfg);
-		onbeforeunload=_=>(worker.terminate(),URL.revokeObjectURL(wurl));
+		onbeforeunload=_=>URL.revokeObjectURL(wurl,worker.terminate());
 		onunhandledrejection=onerror=e=>log.textContent=e;
 	</script>
 </body>
