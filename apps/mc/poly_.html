@@ -85,18 +85,14 @@
 			dlbtn.onclick=_=>(_=document.createElement('a'),_.download=Function('return '+cfg.value)().file_name,_.href=URL.createObjectURL(new Blob([m.data])),_.click(),URL.revokeObjectURL(_.href)),
 			cpbtn.disabled=dlbtn.disabled=false,log.textContent='done!'
 		);
-		runbtn.onclick=w=>(
-			w=inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase(),
-			w=({
-				obj:async()=>worker.postMessage(`postMessage(JSON.stringify((${obj2mc})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),
-				mqo:async()=>mqo2mc(await new Response(inp.files[0]).text())//worker.postMessage(`postMessage(JSON.stringify('ﾆｬｰﾝ'));`),
-			}[w]),
-			w?(w(),log.textContent='please wait...'):(log.textContent='file extention must be .obj, or .mqo.')
-		);
-		cpbtn.disabled=dlbtn.disabled=true;
-		TA.editor(cfg);
+		runbtn.onclick=w=>(w=({
+			obj:async()=>worker.postMessage(`postMessage(JSON.stringify((${obj2mc})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),
+			mqo:async()=>mqo2mc(await new Response(inp.files[0]).text())//worker.postMessage(`postMessage(JSON.stringify('ﾆｬｰﾝ'));`),
+		}[inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()]),w?(w(),log.textContent='please wait...'):(log.textContent='file extention must be .obj, or .mqo.'));
+
+		cpbtn.disabled=dlbtn.disabled=true;TA.editor(cfg);
 		onbeforeunload=_=>URL.revokeObjectURL(wurl,worker.terminate());
-		onunhandledrejection=onerror=e=>log.textContent=e;
+		onunhandledrejection=onerror=e=>log.textContent=e.reason||e;
 	</script>
 </body>
 </html>
