@@ -5,8 +5,8 @@
 
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>McbeEringi obj2mcbe</title>
-	<meta name="description" content="mc .obj to mcbe model json">
+	<title>McbeEringi poly_mesh</title>
+	<meta name="description" content="mcbe model json converter">
 	<link rel="icon" type="image/svg+xml" href="../../img/icon.svg">
 	<link rel="apple-touch-icon" href="../../img/icon.png">
 	<meta name="theme-color" content="#214"/>
@@ -14,106 +14,104 @@
 	<link rel="stylesheet" href="../../src/style.css">
 </head>
 <body>
-	<style>#log{line-height:14px;max-height:448px;overflow:scroll;background-color:#333;}textarea{width:100%;height:360px;}</style>
+	<style>
+		.input{font-family:monospace;width:100%;tab-size:2;}
+	</style>
+	<h1>poly_mesh</h1>
+	<a href="poly_.html">legacy</a>
+	<hr>
+	<input type="file" id="inp" class="button">
+	<textarea id="cfg" class="input" spellcheck="false">/*
+	supported format: .obj .mqo
+	must be convex polygon
+*/
+{
+	obj:{//functions for .obj convertion
+		p:(x,i,a)=>[x[2],x[1],x[0]].map(y=>y*16),//vertices
+		n:(x,i,a)=>[x[0],x[1],x[2]],//normals
+		t:(x,i,a)=>[x[0],x[1]],//uvs
+	},
+	mqo:{//functions for .mqo convertion
+		p:(x,i,a)=>[x[2],x[1],x[0]].map(y=>y*.16),//vertices
+		n:(x,i,a)=>[x[0],x[1],x[2]],//normals
+		t:(x,i,a)=>[x[0],1-x[1]],//uvs
+	},
+	fmt:bones=>({//format
+		format_version:'1.12.0',
+		'minecraft:geometry':[{
+			description:{
+				identifier:'geometry.armor_stand',
+				texture_width:64,texture_height:64,
+				visible_bounds_width:1,visible_bounds_height:1,visible_bounds_offset:[0,0,0]
+			},
+			bones
+		}]
+	}),
+	file_name:'armor_stand.geo.json'//for download button
+}</textarea>
+	<button id="runbtn" class="button">run</button>
+	<hr>
+	<pre id="log" style="white-space:pre-wrap;">build:2211023</pre>
+	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
+	<button id="dlbtn" class="button" disabled>download</button>
 
-	<h1>obj2mcbe</h1>
-	<hr>
-	<h2>.obj</h2>
-	16^3=1block<br>
-	Must be Tris or Quads<br>
-	<input class="input" type="file" id="finp" onchange="read(this)"><span id="finpl"></span>
-	<hr>
-	<h2>settings</h2>
-	<span style="display:inline-block;width:6em;text-align:right;">position:</span><input class="input" type="text" id="vfx" value="[v[2],v[1],v[0]];"><br>
-	<span style="display:inline-block;width:6em;text-align:right;">normal:</span><input class="input" type="text" id="vnfx" value="[vn[0],vn[1],vn[2]];"><br>
-	<span style="display:inline-block;width:6em;text-align:right;">tex_uv:</span><input class="input" type="text" id="vtfx" value="[vt[0],vt[1]];"><br>
-	<br>
-	<label>
-		format:
-		<select id="frm">
-			<option value="null">null</option>
-			<option value="0">1.8.0</option>
-			<option value="1">1.10.0</option>
-			<option value="2">1.12.0</option>
-			<option value="3" selected>1.16.0</option>
-		</select>
-	</label>
-	<div id="frmc">
-		<label>geometry.<input class="input" id="mname" value="armor_stand"></label>
-		<textarea class="input" id="frmtmp"></textarea>
-	</div>
-	<hr>
-	<span class="button" id="run">Run</span><br>
-	<hr>
-	<h2 id="outtitle"></h2>
-	<form id="outm" onchange="outt.style.display=['block','none'][this.m.value];outf.style.display=['none','block'][this.m.value];">
-		<label><input type="radio" name="m" value="1" checked>file</label><br>
-		<label><input type="radio" name="m" value="0">text</label><br>
-	</form>
-	<div id="outt" style="display:none;">
-		<textarea class="input" id="tout"></textarea><br>
-		<span class="button" onclick="navigator.clipboard.writeText(tout.value).then(()=>{this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);});">copy</span>
-	</div>
-	<div id="outf">
-		<br>
-		<a id="fout">Press "Run" to generate converted file</a>
-	</div>
-	<a id="logdl">　</a>
-	<hr>
-	<pre id="log"></pre>
 
-	<script>
-		var reader=new FileReader(),fname='unknown';
-		const worker=new Worker('poly.js'),
-		format_tmp=[
-			'{"format_version":"1.8.0","geometry.NAME":{"texturewidth":64,"textureheight":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0],"bones":[OBJ]}}',
-			'{"format_version":"1.10.0","geometry.NAME":{"texturewidth":64,"textureheight":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0],"bones":[OBJ]}}',
-			'{"format_version":"1.12.0","minecraft:geometry":[{"description":{"identifier":"geometry.NAME","texture_width":64,"texture_height":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0]},"bones":[OBJ]}]}',
-			'{"format_version":"1.16.0","minecraft:geometry":[{"description":{"identifier":"geometry.NAME","texture_width":64,"texture_height":64,"visible_bounds_width":1.0,"visible_bounds_height":1.0,"visible_bounds_offset":[0.0,0.0,0.0]},"bones":[OBJ]}]}',
-		],
-		frmfx=()=>{
-			frmtmp.value=format_tmp[Number(frm.value)];
-			frmc.style.display=(frm.value=='null')?'none':'block';
-			outtitle.textContent=(frm.value=='null')?'mcbe bones(poly_mesh)':'mcbe geometry';
-		}
-		main=()=>{
-			log.textContent='';
-			worker.postMessage({
-				s:reader.result,
-				format:(frm.value=='null')?'':[mname.value,frmtmp.value],
-				cffx:[vfx.value,vnfx.value,vtfx.value],
-				fname:fname
-			});
-			run.textContent='Please wait…';run.style.background='#333';
-			run.onclick=()=>{}
-		},
-		read=_this=>{
-			fname=_this.files[0].name;
-			finpl.textContent='Drag & Drop or click to select';
-			reader.addEventListener('progress',x=>finpl.textContent=x.loaded/x.total+'% loaded…',false);
-			reader.addEventListener('load',x=>finpl.textContent=(x.total>=1e9?Math.round(x.total/1e7)/1e2+'GB':(x.total>=1e6?Math.round(x.total/1e4)/1e2+'MB':(x.total>=1e3?Math.round(x.total/1e1)/1e2+'KB':x.total+'byte'))),false);
-			reader.addEventListener('error',e=>finpl.textContent=e,false);
-			reader.addEventListener('loadend',x=>console.log(x),false);
-			reader.readAsText(_this.files[0]);
-		};
-		worker.addEventListener('message',m=>{
-				console.log(m.data);
-				if(m.data.diffuse){
-					if(m.data.diffuse[1]){
-						var diffuse = m.data.diffuse[1],o = m.data.diffuse[0];
-						tout.value = diffuse;
-						fout.href = 'data:,'+encodeURI(diffuse);fout.download = o+'.geo.json';fout.textContent = `save as "${fout.download}"`;
-						logdl.href = 'data:,'+encodeURI(log.textContent);logdl.download = o+'.log';logdl.textContent = `save log`;
-					}
-					run.textContent='Done!';run.style.background='#555';
-					run.onclick=main;
-					setTimeout(()=>run.textContent='Run',1000);
-				}
-				else{log.textContent+=m.data;}
-		});
-		run.onclick=main;
-		frm.onchange=frmfx;
-		frmfx();
+	<script type="module">
+		import TA from'https://mcbeeringi.github.io/ta/ta+.mjs';
+		const
+			wurl=URL.createObjectURL(new Blob([`'use strict';onmessage=m=>Object.getPrototypeOf(async _=>_).constructor(m.data)();`])),
+			worker=new Worker(wurl),
+			obj2mc=(w,q)=>((
+				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(_=>+_),
+				uuidgen=w=>(w=[...crypto.getRandomValues(new Uint8Array(16))].flatMap(x=>[x>>4,x&0xf]),Array.from('00000000-0000-4000-1000-000000000000',x=>([_=>w.pop().toString(16),_=>'89ab'[w.pop()%4]][x]||(_=>x))()).join('')),
+				core=({w,_v=0,_vt=0,_vn=0}={},
+						og=(w.match(/^[og] (.+)$/m)||[,uuidgen()])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))].map(q.obj.t),vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))].map(q.obj.n),
+						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>y*x[3])):_=>x.slice(0,3))())).map(q.obj.p)
+					)=>({w:{
+						name:og,pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>x/v.length),
+						poly_mesh:{
+							normalized_uvs:true,positions:v,normals:vn,uvs:vt,
+							polys:(w.match(/^f .+$/gm)||[]).flatMap(x=>(
+								x=spl(x).map(y=>(y=y.split('/'),[y[0]-1-_v,y[2]?y[2]-_vn:0,y[1]?y[1]-_vt:0])),
+								new Array((x.length-1)/2|0).fill().reduce(a=>(a.a.push(x[a.x+2]?[x[0],x[a.x++],x[a.x++],x[a.x]]:[x[0],x[a.x++],x[a.x],x[0]]),a),{a:[],x:1}).a
+							))
+						}
+					},_v:v.length,_vt:vt.length-1,_vn:vn.length-1})
+			)=>q.fmt(w.split(/\n(?=[og])/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[])))(),
+			mqo2mc=(w,q)=>(
+				w=(w.match(/Object "[^\n]*" \{.*?\n\}/sg)||[]).reduce((a,x)=>(
+					x=x.replace(/\t+/g,'').match(/.+/g),
+					x=[x[0].slice(8,-3),x.slice(1,-1).reduce((b,y)=>(isNaN(y[1])?(y=='}'?0:b.a[b.x=y.split(' ',1)[0]]=y.includes('{')?[]:(y=y.split(' ').slice(1)).length>1?y.map(_=>+_):+y[0]):b.a[b.x].push(y),b),{a:{},x:''}).a],
+					console.log(...x),
+					x[1]=x[1].vertex&&x[1].face?((
+						spln=x=>x.split(/\s+/).map(_=>+_),vsub=(a,b)=>a.map((x,i)=>x-b[i]),cross=(a,b)=>[...'120'].map(x=>(x+='120'[x],a[x[0]]*b[x[1]]-a[x[1]]*b[x[0]])),norm=w=>(l=>w.map(x=>(x/l)||0))(Math.hypot(...w)),
+						{pi,t}=x[1].face.reduce((b,y)=>(b.pi.push(spln(y.match(/ V\((.+?)\)/)[1])),b.t.push(y.match(/ UV\((.+?)\)/)[1].match(/[^\s]+ [^\s]+/g)),b),{pi:[],t:[]}),
+						p=x[1].vertex.map(spln).map(q.mqo.p),n=pi.map(y=>(y=y.map(z=>p[z]),norm(cross(vsub(y[1],y[0]),vsub(y[2],y[0]))))).map(q.mqo.n),ni=pi.map((y,i)=>[...y].fill(i)),ti
+					)=>({v:t,i:ti}=((v=[...new Set(t.flat())],m=Object.fromEntries(v.map(Array)))=>({v:v.map(spln).map(q.mqo.t),i:t.map(y=>y.map(z=>m[z]))}))(),{p,pi,t,ti,n,ni,o:x[1].translation}))():null,//TODO: smooth shading
+					a.x.push(x),a.mc.push({
+						name:x[0],pivot:x[1].o,
+						poly_mesh:{
+							normalized_uvs:true,positions:x[1].p,normals:x[1].n,uvs:x[1].t,
+							polys:x[1].pi.flatMap((y,i)=>(y=y.map((_,j)=>[x[1].pi[i][j],x[1].ni[i][j],x[1].ti[i][j]]),new Array((y.length-1)/2|0).fill().reduce(b=>(b.a.push(y[b.x+2]?[y[0],y[b.x++],y[b.x++],y[b.x]]:[y[0],y[b.x++],y[b.x],y[0]]),b),{a:[],x:1}).a))
+						}
+					}),a
+				),{x:[],mc:[]}),
+				console.log(Object.fromEntries(w.x)),q.fmt(w.mc)
+			);
+
+		worker.onmessage=async m=>(
+			cpbtn.onclick=async()=>(await navigator.clipboard.writeText(m.data),log.textContent+=' copied!'),
+			dlbtn.onclick=_=>(_=document.createElement('a'),_.download=Function(`return(${cfg.value});`)().file_name,_.href=URL.createObjectURL(new Blob([m.data])),_.click(),URL.revokeObjectURL(_.href)),
+			cpbtn.disabled=dlbtn.disabled=false,log.textContent='done!'
+		);
+		runbtn.onclick=async w=>(
+			w={obj:obj2mc,mqo:mqo2mc}[inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()],
+			log.textContent=w?(worker.postMessage(`postMessage(JSON.stringify((${w})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),'please wait...'):'file extention must be .obj, or .mqo.'
+		);
+
+		cpbtn.disabled=dlbtn.disabled=true;TA.editor(cfg);
+		onbeforeunload=_=>URL.revokeObjectURL(wurl,worker.terminate());
+		onunhandledrejection=onerror=e=>log.textContent=e.reason||e;
 	</script>
 </body>
 </html>
