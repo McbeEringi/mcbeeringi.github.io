@@ -51,7 +51,7 @@
 }</textarea>
 	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2211023</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211024</pre>
 	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
 	<button id="dlbtn" class="button" disabled>download</button>
 
@@ -88,7 +88,7 @@
 						{pi,t}=x[1].face.reduce((b,y)=>(b.pi.push(spln(y.match(/ V\((.+?)\)/)[1])),b.t.push(y.match(/ UV\((.+?)\)/)[1].match(/[^\s]+ [^\s]+/g)),b),{pi:[],t:[]}),
 						p=x[1].vertex.map(spln).map(q.mqo.p),n=pi.map(y=>(y=y.map(z=>p[z]),norm(cross(vsub(y[1],y[0]),vsub(y[2],y[0]))))).map(q.mqo.n),ni=pi.map((y,i)=>[...y].fill(i)),ti
 					)=>({v:t,i:ti}=((v=[...new Set(t.flat())],m=Object.fromEntries(v.map(Array)))=>({v:v.map(spln).map(q.mqo.t),i:t.map(y=>y.map(z=>m[z]))}))(),{p,pi,t,ti,n,ni,o:x[1].translation}))():null,//TODO: smooth shading
-					a.x.push(x),a.mc.push({
+					a.x.push(x),x[1]&&a.mc.push({
 						name:x[0],pivot:x[1].o,
 						poly_mesh:{
 							normalized_uvs:true,positions:x[1].p,normals:x[1].n,uvs:x[1].t,
