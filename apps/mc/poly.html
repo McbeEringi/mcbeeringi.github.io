@@ -51,7 +51,7 @@
 }</textarea>
 	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2211024</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211030</pre>
 	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
 	<button id="dlbtn" class="button" disabled>download</button>
 
@@ -61,6 +61,7 @@
 		const
 			wurl=URL.createObjectURL(new Blob([`'use strict';onmessage=m=>Object.getPrototypeOf(async _=>_).constructor(m.data)();`])),
 			worker=new Worker(wurl),
+			n2si=w=>((x=(Math.log10(w)+28)/3|0,y=' yzafpnum kMGTPEZY'[x].trim())=>w.toPrecision(4)*1e3**(9-x)+y)(),
 			obj2mc=(w,q)=>((
 				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(_=>+_),
 				uuidgen=w=>(w=[...crypto.getRandomValues(new Uint8Array(16))].flatMap(x=>[x>>4,x&0xf]),Array.from('00000000-0000-4000-1000-000000000000',x=>([_=>w.pop().toString(16),_=>'89ab'[w.pop()%4]][x]||(_=>x))()).join('')),
@@ -100,9 +101,10 @@
 			);
 
 		worker.onmessage=async m=>(
-			cpbtn.onclick=async()=>(await navigator.clipboard.writeText(m.data),log.textContent+=' copied!'),
+			m.size=new Blob([m.data]).size,
+			cpbtn.onclick=async()=>((m.size<1e4||confirm('are you sure?'))&&(await navigator.clipboard.writeText(m.data),log.textContent+=' copied!')),
 			dlbtn.onclick=_=>(_=document.createElement('a'),_.download=Function(`return(${cfg.value});`)().file_name,_.href=URL.createObjectURL(new Blob([m.data])),_.click(),URL.revokeObjectURL(_.href)),
-			cpbtn.disabled=dlbtn.disabled=false,log.textContent='done!'
+			cpbtn.disabled=dlbtn.disabled=false,log.textContent=`done! size:${n2si(m.size)}b`
 		);
 		runbtn.onclick=async w=>(
 			w={obj:obj2mc,mqo:mqo2mc}[inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()],
