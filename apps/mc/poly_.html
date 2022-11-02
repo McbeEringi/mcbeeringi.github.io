@@ -53,7 +53,7 @@
 			wurl=URL.createObjectURL(new Blob([`'use strict';onmessage=m=>Object.getPrototypeOf(async _=>_).constructor(m.data)();`])),
 			worker=new Worker(wurl),
 			obj2mc=(w,q)=>((
-				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(y=>+y),
+				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(_=>+_),
 				uuidgen=w=>(w=[...crypto.getRandomValues(new Uint8Array(16))].flatMap(x=>[x>>4,x&0xf]),Array.from('00000000-0000-4000-1000-000000000000',x=>([_=>w.pop().toString(16),_=>'89ab'[w.pop()%4]][x]||(_=>x))()).join('')),
 				core=({w,_v=0,_vt=0,_vn=0}={},round=(x,y=1e6)=>Math.round(x*y)/y,
 						og=(w.match(/^[og] (.+)$/m)||[,uuidgen()])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))].map(q.vt),vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))].map(q.vn),
@@ -72,9 +72,18 @@
 			mqo2mc=(w,q)=>(
 				w=Object.fromEntries((w.match(/Object "[^\n]*" \{.*?\n\}/sg)||[]).map(x=>(
 					x=x.replace(/\t+/g,'').match(/.+/g),
-					x=[x[0].slice(8,-3),x.slice(1,-1).reduce((a,y)=>(isNaN(y[1])?(y=='}'?0:a.a[a.x=y.split(' ',1)[0]]=y.includes('{')?[]:(y=y.split(' ').slice(1)).length>1?y.map(z=>+z):+y[0]):a.a[a.x].push(y),a),{a:{},x:''}).a],
-					x[1].vertex&&(x[1].vertex=x[1].vertex.map(x=>x.split(' ').map(z=>+z))),
-					x[1].face&&(x[1].face=x[1].face),//todo
+					x=[x[0].slice(8,-3),x.slice(1,-1).reduce((a,y)=>(isNaN(y[1])?(y=='}'?0:a.a[a.x=y.split(' ',1)[0]]=y.includes('{')?[]:(y=y.split(' ').slice(1)).length>1?y.map(_=>+_):+y[0]):a.a[a.x].push(y),a),{a:{},x:''}).a],
+					x[1]=x[1].vertex&&x[1].face?(
+						x[1].face.map((y,v,n)=>(
+							v=(y.match(/ V\((.+?)\)/)||'0 ')[1].split(' ').map(z=>x[1].vertex[z]),
+							n=v.reduce((a,z)=>(z=z.split(' '),a.map((_,i)=>+z[i]+_)),[0,0,0]),//TODO: 平均じゃなくて外積
+							{
+								v,
+								vt:((y.match(/ UV\((.+?)\)/)||'0 ')[1].match(/[\d\.]+ [\d\.]+/g)||[]),
+								n:n.map(z=>z/Math.hypot(...n)).join(' ')
+							}
+						))
+					):null,
 					x
 				))),
 				console.log(w)
