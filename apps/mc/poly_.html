@@ -50,7 +50,7 @@
 }</textarea>
 	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2211020</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211021</pre>
 	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
 	<button id="dlbtn" class="button" disabled>download</button>
 
@@ -91,7 +91,7 @@
 						name:x[0],pivot:x[1].o,
 						poly_mesh:{
 							normalized_uvs:true,positions:x[1].p,normals:x[1].n,uvs:x[1].t,
-							polys:(y=>new Array((y.length-1)/2|0).fill().reduce(b=>(b.a.push(y[b.x+2]?[y[0],y[b.x++],y[b.x++],y[b.x]]:[y[0],y[b.x++],y[b.x],y[0]]),b),{a:[],x:1}).a)(x[1].pi.map((y,i)=>y.map((_,j)=>[x[1].pi[i][j],x[1].ni[i][j],x[1].ti[i][j]])))
+							polys:x[1].pi.map((y,i)=>(y=y.map((_,j)=>[x[1].pi[i][j],x[1].ni[i][j],x[1].ti[i][j]]),new Array((y.length-1)/2|0).fill().reduce(b=>(b.a.push(y[b.x+2]?[y[0],y[b.x++],y[b.x++],y[b.x]]:[y[0],y[b.x++],y[b.x],y[0]]),b),{a:[],x:1}).a))
 						}
 					}),a
 				),{x:[],mc:[]}),
