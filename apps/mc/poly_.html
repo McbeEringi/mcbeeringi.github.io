@@ -17,32 +17,40 @@
 	<style>
 		.input{font-family:monospace;width:100%;tab-size:2;}
 	</style>
-	<h1>poly</h1>
+	<h1>poly_mesher</h1>
 	<hr>
 	<input type="file" id="inp" class="button">
-	<textarea id="cfg" class="input" spellcheck="false">{
-	v:(x,i,a)=>[x[2],x[1],x[0]].map(y=>y*16),//vertices for .obj
-	vn:(x,i,a)=>[x[0],x[1],x[2]],//normals for .obj
-	vt:(x,i,a)=>[x[0],x[1]],//uvs for .obj
+	<textarea id="cfg" class="input" spellcheck="false">/*
+	supported format: .obj .mqo
+	must be convex polygon
+*/
+{
+	obj:{//functions for .obj convertion
+		p:(x,i,a)=>[x[2],x[1],x[0]].map(y=>y*16),//vertices
+		n:(x,i,a)=>[x[0],x[1],x[2]],//normals
+		t:(x,i,a)=>[x[0],x[1]],//uvs
+	},
+	mqo:{//functions for .mqo convertion
+		p:(x,i,a)=>[x[2],x[1],x[0]].map(y=>y*.16),//vertices
+		n:(x,i,a)=>[x[0],x[1],x[2]],//normals
+		t:(x,i,a)=>[x[0],1-x[1]],//uvs
+	},
 	fmt:bones=>({//format
 		format_version:'1.12.0',
 		'minecraft:geometry':[{
 			description:{
 				identifier:'geometry.armor_stand',
-				texture_width:64,
-				texture_height:64,
-				visible_bounds_width:1,
-				visible_bounds_height:1,
-				visible_bounds_offset:[0,0,0]
+				texture_width:64,texture_height:64,
+				visible_bounds_width:1,visible_bounds_height:1,visible_bounds_offset:[0,0,0]
 			},
 			bones
 		}]
 	}),
-	file_name:'armor_stand.geo.json'
+	file_name:'armor_stand.geo.json'//for download button
 }</textarea>
 	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2211010</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211020</pre>
 	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
 	<button id="dlbtn" class="button" disabled>download</button>
 
@@ -55,11 +63,11 @@
 			obj2mc=(w,q)=>((
 				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(_=>+_),
 				uuidgen=w=>(w=[...crypto.getRandomValues(new Uint8Array(16))].flatMap(x=>[x>>4,x&0xf]),Array.from('00000000-0000-4000-1000-000000000000',x=>([_=>w.pop().toString(16),_=>'89ab'[w.pop()%4]][x]||(_=>x))()).join('')),
-				core=({w,_v=0,_vt=0,_vn=0}={},round=(x,y=1e6)=>Math.round(x*y)/y,
-						og=(w.match(/^[og] (.+)$/m)||[,uuidgen()])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))].map(q.vt),vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))].map(q.vn),
-						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>round(y*x[3]))):_=>x.slice(0,3))())).map(q.v)
+				core=({w,_v=0,_vt=0,_vn=0}={},
+						og=(w.match(/^[og] (.+)$/m)||[,uuidgen()])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))].map(q.obj.t),vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))].map(q.obj.n),
+						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>y*x[3])):_=>x.slice(0,3))())).map(q.obj.p)
 					)=>({w:{
-						name:og,pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>round(x/v.length)),
+						name:og,pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>x/v.length),
 						poly_mesh:{
 							normalized_uvs:true,positions:v,normals:vn,uvs:vt,
 							polys:(w.match(/^f .+$/gm)||[]).flatMap(x=>(
@@ -70,23 +78,24 @@
 					},_v:v.length,_vt:vt.length-1,_vn:vn.length-1})
 			)=>q.fmt(w.split(/\n(?=[og])/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[])))(),
 			mqo2mc=(w,q)=>(
-				w=Object.fromEntries((w.match(/Object "[^\n]*" \{.*?\n\}/sg)||[]).map(x=>(
+				w=(w.match(/Object "[^\n]*" \{.*?\n\}/sg)||[]).reduce((a,x)=>(
 					x=x.replace(/\t+/g,'').match(/.+/g),
-					x=[x[0].slice(8,-3),x.slice(1,-1).reduce((a,y)=>(isNaN(y[1])?(y=='}'?0:a.a[a.x=y.split(' ',1)[0]]=y.includes('{')?[]:(y=y.split(' ').slice(1)).length>1?y.map(_=>+_):+y[0]):a.a[a.x].push(y),a),{a:{},x:''}).a],
-					x[1]=x[1].vertex&&x[1].face?(
-						x[1].face.map((y,v,n)=>(
-							v=(y.match(/ V\((.+?)\)/)||'0 ')[1].split(' ').map(z=>x[1].vertex[z]),
-							n=v.reduce((a,z)=>(z=z.split(' '),a.map((_,i)=>+z[i]+_)),[0,0,0]),//TODO: 平均じゃなくて外積
-							{
-								v,
-								vt:((y.match(/ UV\((.+?)\)/)||'0 ')[1].match(/[\d\.]+ [\d\.]+/g)||[]),
-								n:n.map(z=>z/Math.hypot(...n)).join(' ')
-							}
-						))
-					):null,
-					x
-				))),
-				console.log(w)
+					x=[x[0].slice(8,-3),x.slice(1,-1).reduce((b,y)=>(isNaN(y[1])?(y=='}'?0:b.a[b.x=y.split(' ',1)[0]]=y.includes('{')?[]:(y=y.split(' ').slice(1)).length>1?y.map(_=>+_):+y[0]):b.a[b.x].push(y),b),{a:{},x:''}).a],
+					console.log(...x),
+					x[1]=x[1].vertex&&x[1].face?((
+						spln=x=>x.split(/\s+/).map(_=>+_),vsub=(a,b)=>a.map((x,i)=>x-b[i]),cross=(a,b)=>[...'120'].map(x=>(x+='120'[x],a[x[0]]*b[x[1]]-a[x[1]]*b[x[0]])),norm=w=>(l=>w.map(x=>(x/l)||0))(Math.hypot(...w)),
+						{pi,t}=x[1].face.reduce((b,y)=>(b.pi.push(spln(y.match(/ V\((.+?)\)/)[1])),b.t.push(y.match(/ UV\((.+?)\)/)[1].match(/[^\s]+ [^\s]+/g)),b),{pi:[],t:[]}),
+						p=x[1].vertex.map(spln).map(q.mqo.p),n=pi.map(y=>(y=y.map(z=>p[z]),norm(cross(vsub(y[1],y[0]),vsub(y[2],y[0]))))).map(q.mqo.n),ni=pi.map((y,i)=>[...y].fill(i)),ti
+					)=>({v:t,i:ti}=((v=[...new Set(t.flat())],m=Object.fromEntries(v.map(Array)))=>({v:v.map(spln).map(q.mqo.t),i:t.map(y=>y.map(z=>m[z]))}))(),{p,pi,t,ti,n,ni,o:x[1].translation}))():null,//TODO: smooth shading
+					a.x.push(x),a.mc.push({
+						name:x[0],pivot:x[1].o,
+						poly_mesh:{
+							normalized_uvs:true,positions:x[1].p,normals:x[1].n,uvs:x[1].t,
+							polys:(y=>new Array((y.length-1)/2|0).fill().reduce(b=>(b.a.push(y[b.x+2]?[y[0],y[b.x++],y[b.x++],y[b.x]]:[y[0],y[b.x++],y[b.x],y[0]]),b),{a:[],x:1}).a)(x[1].pi.map((y,i)=>y.map((_,j)=>[x[1].pi[i][j],x[1].ni[i][j],x[1].ti[i][j]])))
+						}
+					}),a
+				),{x:[],mc:[]}),
+				console.log(Object.fromEntries(w.x)),q.fmt(w.mc)
 			);
 
 		worker.onmessage=async m=>(
@@ -96,7 +105,7 @@
 		);
 		runbtn.onclick=w=>(w=({
 			obj:async()=>worker.postMessage(`postMessage(JSON.stringify((${obj2mc})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),
-			mqo:async()=>mqo2mc(await new Response(inp.files[0]).text())//worker.postMessage(`postMessage(JSON.stringify('ﾆｬｰﾝ'));`),
+			mqo:async()=>worker.postMessage(`postMessage(JSON.stringify((${mqo2mc})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`)
 		}[inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()]),w?(w(),log.textContent='please wait...'):(log.textContent='file extention must be .obj, or .mqo.'));
 
 		cpbtn.disabled=dlbtn.disabled=true;TA.editor(cfg);
