@@ -50,7 +50,7 @@
 }</textarea>
 	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2211021</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211022</pre>
 	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
 	<button id="dlbtn" class="button" disabled>download</button>
 
@@ -91,7 +91,7 @@
 						name:x[0],pivot:x[1].o,
 						poly_mesh:{
 							normalized_uvs:true,positions:x[1].p,normals:x[1].n,uvs:x[1].t,
-							polys:x[1].pi.map((y,i)=>(y=y.map((_,j)=>[x[1].pi[i][j],x[1].ni[i][j],x[1].ti[i][j]]),new Array((y.length-1)/2|0).fill().reduce(b=>(b.a.push(y[b.x+2]?[y[0],y[b.x++],y[b.x++],y[b.x]]:[y[0],y[b.x++],y[b.x],y[0]]),b),{a:[],x:1}).a))
+							polys:x[1].pi.flatMap((y,i)=>(y=y.map((_,j)=>[x[1].pi[i][j],x[1].ni[i][j],x[1].ti[i][j]]),new Array((y.length-1)/2|0).fill().reduce(b=>(b.a.push(y[b.x+2]?[y[0],y[b.x++],y[b.x++],y[b.x]]:[y[0],y[b.x++],y[b.x],y[0]]),b),{a:[],x:1}).a))
 						}
 					}),a
 				),{x:[],mc:[]}),
@@ -103,10 +103,12 @@
 			dlbtn.onclick=_=>(_=document.createElement('a'),_.download=Function(`return(${cfg.value});`)().file_name,_.href=URL.createObjectURL(new Blob([m.data])),_.click(),URL.revokeObjectURL(_.href)),
 			cpbtn.disabled=dlbtn.disabled=false,log.textContent='done!'
 		);
-		runbtn.onclick=w=>(w=({
-			obj:async()=>worker.postMessage(`postMessage(JSON.stringify((${obj2mc})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),
-			mqo:async()=>worker.postMessage(`postMessage(JSON.stringify((${mqo2mc})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`)
-		}[inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()]),w?(w(),log.textContent='please wait...'):(log.textContent='file extention must be .obj, or .mqo.'));
+		runbtn.onclick=w=>(
+			log.textContent='please wait...',
+			worker.postMessage(`postMessage(JSON.stringify((${
+				{obj:obj2mc,mqo:mqo2mc}[inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()]||(_=>'file extention must be .obj, or .mqo.')
+			})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`)
+		);
 
 		cpbtn.disabled=dlbtn.disabled=true;TA.editor(cfg);
 		onbeforeunload=_=>URL.revokeObjectURL(wurl,worker.terminate());
