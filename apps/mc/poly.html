@@ -51,7 +51,7 @@
 }</textarea>
 	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2211030</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211040</pre>
 	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
 	<button id="dlbtn" class="button" disabled>download</button>
 
@@ -82,11 +82,11 @@
 			mqo2mc=(w,q)=>(
 				w=(w.match(/Object "[^\n]*" \{.*?\n\}/sg)||[]).reduce((a,x)=>(
 					x=x.replace(/\t+/g,'').match(/.+/g),
-					x=[x[0].slice(8,-3),x.slice(1,-1).reduce((b,y)=>(isNaN(y[1])?(y=='}'?0:b.a[b.x=y.split(' ',1)[0]]=y.includes('{')?[]:(y=y.split(' ').slice(1)).length>1?y.map(_=>+_):+y[0]):b.a[b.x].push(y),b),{a:{},x:''}).a],
+					x=[x[0].slice(8,-3),x.slice(1,-1).reduce((b,y)=>(b.x?(y[0]=='}'?b.x='':b.a[b.x].push(y)):([y[y.length-1]=='{',y=y.split(' ')][0]?b.a[b.x=y[0]]=[]:b.a[y[0]]=y.length>2?y.slice(1).map(_=>+_):+y[1]),b),{a:{},x:''}).a],
 					console.log(...x),
-					x[1]=x[1].vertex&&x[1].face?((
+					x[1]=x[1].vertex&&x[1].vertex[0]&&x[1].face&&x[1].face[0]?((
 						spln=x=>x.split(/\s+/).map(_=>+_),vsub=(a,b)=>a.map((x,i)=>x-b[i]),cross=(a,b)=>[...'120'].map(x=>(x+='120'[x],a[x[0]]*b[x[1]]-a[x[1]]*b[x[0]])),norm=w=>(l=>w.map(x=>(x/l)||0))(Math.hypot(...w)),
-						{pi,t}=x[1].face.reduce((b,y)=>(b.pi.push(spln(y.match(/ V\((.+?)\)/)[1])),b.t.push(y.match(/ UV\((.+?)\)/)[1].match(/[^\s]+ [^\s]+/g)),b),{pi:[],t:[]}),
+						{pi,t}=x[1].face.reduce((b,y)=>(b.pi.push(spln(y.match(/ V\((.+?)\)/)[1])),b.t.push((y.match(/ UV\((.+?)\)/)||[,'0 0 '.repeat(y.match(/\d+/)[0])])[1].match(/[^\s]+ [^\s]+/g)),b),{pi:[],t:[]}),
 						p=x[1].vertex.map(spln).map(q.mqo.p),n=pi.map(y=>(y=y.map(z=>p[z]),norm(cross(vsub(y[1],y[0]),vsub(y[2],y[0]))))).map(q.mqo.n),ni=pi.map((y,i)=>[...y].fill(i)),ti
 					)=>({v:t,i:ti}=((v=[...new Set(t.flat())],m=Object.fromEntries(v.map(Array)))=>({v:v.map(spln).map(q.mqo.t),i:t.map(y=>y.map(z=>m[z]))}))(),{p,pi,t,ti,n,ni,o:x[1].translation}))():null,//TODO: smooth shading
 					a.x.push(x),x[1]&&a.mc.push({
@@ -108,6 +108,7 @@
 		);
 		runbtn.onclick=async w=>(
 			w={obj:obj2mc,mqo:mqo2mc}[inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()],
+			//worker.onmessage({data:JSON.stringify(w(await new Response(inp.files[0]).text(),Function(`return(${cfg.value});`)()))})//debug
 			log.textContent=w?(worker.postMessage(`postMessage(JSON.stringify((${w})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),'please wait...'):'file extention must be .obj, or .mqo.'
 		);
 
