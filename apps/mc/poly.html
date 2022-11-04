@@ -26,16 +26,18 @@
 	must be convex polygon
 */
 {
-	obj:{//functions for .obj convertion
-		p:(x,i,a)=>[x[2],x[1],x[0]].map(y=>y*16),//vertices
-		n:(x,i,a)=>[x[0],x[1],x[2]],//normals
-		t:(x,i,a)=>[x[0],x[1]],//uvs
-	},
-	mqo:{//functions for .mqo convertion
-		p:(x,i,a)=>[x[2],x[1],x[0]].map(y=>y*.16),//vertices
-		n:(x,i,a)=>[x[0],x[1],x[2]],//normals
-		t:(x,i,a)=>[x[0],1-x[1]],//uvs
-	},
+	obj:({v,vn,vt})=>({//function for .obj convertion
+		v:v.map(x=>[x[2],x[1],x[0]].map(y=>y*16)),//vertices R2L
+		vn:vn.map(x=>[x[2],x[1],x[0]]),//normals R2L
+		vt:vt.map(x=>[x[0],x[1]]),//uvs
+	}),
+	mqo:(parsed,calced)=>({//function for .mqo convertion
+		...calced,
+		p:calced.p.map(x=>[x[2],x[1],x[0]].map(y=>y*.16)),//vertices R2L
+		n:calced.n.map(x=>[x[2],x[1],x[0]]),//normals R2L
+		t:calced.t.map(x=>[x[0],1-x[1]]),//uvs Yflip
+		o:parsed[1].translation
+	}),
 	fmt:bones=>({//format
 		format_version:'1.12.0',
 		'minecraft:geometry':[{
@@ -51,7 +53,7 @@
 }</textarea>
 	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2211041</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211042</pre>
 	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
 	<button id="dlbtn" class="button" disabled>download</button>
 
@@ -64,11 +66,10 @@
 			n2si=w=>((x=(Math.log10(w)+28)/3|0,y=' yzafpnum kMGTPEZY'[x].trim())=>w.toPrecision(4)*1e3**(9-x)+y)(),
 			obj2mc=(w,q)=>((
 				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(_=>+_),
-				uuidgen=w=>(w=[...crypto.getRandomValues(new Uint8Array(16))].flatMap(x=>[x>>4,x&0xf]),Array.from('00000000-0000-4000-1000-000000000000',x=>([_=>w.pop().toString(16),_=>'89ab'[w.pop()%4]][x]||(_=>x))()).join('')),
 				core=({w,_v=0,_vt=0,_vn=0}={},
-						og=(w.match(/^[og] (.+)$/m)||[,uuidgen()])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))].map(q.obj.t),vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))].map(q.obj.n),
-						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>y*x[3])):_=>x.slice(0,3))())).map(q.obj.p)
-					)=>({w:{
+						og=(w.match(/^[og] (.+)$/m)||[,Math.random().toString(36).slice(2)])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))],vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))],
+						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>y*x[3])):_=>x.slice(0,3))()))
+					)=>({vt,vn,v}=q.obj({vt,vn,v}),{w:{
 						name:og,pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>x/v.length),
 						poly_mesh:{
 							normalized_uvs:true,positions:v,normals:vn,uvs:vt,
@@ -86,9 +87,9 @@
 					console.log(...x),
 					x[1]=x[1].vertex&&x[1].vertex[0]&&x[1].face&&x[1].face[0]?((
 						spln=x=>x.split(/\s+/).map(_=>+_),vsub=(a,b)=>a.map((x,i)=>x-b[i]),cross=(a,b)=>[...'120'].map(x=>(x+='120'[x],a[x[0]]*b[x[1]]-a[x[1]]*b[x[0]])),norm=w=>(l=>w.map(x=>(x/l)||0))(Math.hypot(...w)),
-						{pi,t}=x[1].face.reduce((b,y)=>(b.pi.push(spln(y.match(/ V\((.+?)\)/)[1])),b.t.push((y.match(/ UV\((.+?)\)/)||[,'0 0 '.repeat(y.match(/\d+/)[0])])[1].match(/[^\s]+ [^\s]+/g)),b),{pi:[],t:[]}),
-						p=x[1].vertex.map(spln).map(q.mqo.p),n=pi.map(y=>(y=y.map(z=>p[z]),norm(cross(vsub(y[1],y[0]),vsub(y[2],y[0]))))).map(q.mqo.n),ni=pi.map((y,i)=>[...y].fill(i)),ti
-					)=>({v:t,i:ti}=((v=[...new Set(t.flat())],m=Object.fromEntries(v.map(Array)))=>({v:v.map(spln).map(q.mqo.t),i:t.map(y=>y.map(z=>m[z]))}))(),{p,pi,t,ti,n,ni,o:x[1].translation}))():null,//TODO: smooth shading
+						{pi,t}=x[1].face.reduce((b,y)=>(b.pi.push(spln(y.match(/ V\((.+?)\)/)[1]).reverse()),b.t.push((y.match(/ UV\((.+?)\)/)||[,'0 0 '.repeat(y.match(/\d+/)[0])])[1].match(/[^\s]+ [^\s]+/g).reverse()),b),{pi:[],t:[]}),
+						p=x[1].vertex.map(spln),n=pi.map(y=>(y=y.map(z=>p[z]),norm(cross(vsub(y[1],y[0]),vsub(y[2],y[0]))))),ni=pi.map((y,i)=>[...y].fill(i)),ti
+					)=>({v:t,i:ti}=((v=[...new Set(t.flat())],m=Object.fromEntries(v.map(Array)))=>({v:v.map(spln),i:t.map(y=>y.map(z=>m[z]))}))(),q.mqo(x,{p,pi,t,ti,n,ni})))():null,
 					a.x.push(x),x[1]&&a.mc.push({
 						name:x[0],pivot:x[1].o,
 						poly_mesh:{
@@ -108,8 +109,8 @@
 		);
 		runbtn.onclick=async w=>(
 			w={obj:obj2mc,mqo:mqo2mc}[inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()],
-			//worker.onmessage({data:JSON.stringify(w(await new Response(inp.files[0]).text(),Function(`return(${cfg.value});`)()))})//debug
-			log.textContent=w?(worker.postMessage(`postMessage(JSON.stringify((${w})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),'please wait...'):'file extention must be .obj, or .mqo.'
+			worker.onmessage({data:JSON.stringify(w(await new Response(inp.files[0]).text(),Function(`return(${cfg.value});`)()))})//debug
+			//log.textContent=w?(worker.postMessage(`postMessage(JSON.stringify((${w})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),'please wait...'):'file extention must be .obj, or .mqo.'
 		);
 
 		cpbtn.disabled=dlbtn.disabled=true;TA.editor(cfg);
