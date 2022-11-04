@@ -26,19 +26,19 @@
 	must be convex polygon
 */
 {
-	obj:({v,vn,vt})=>({//function for .obj convertion
-		v:v.map(x=>[x[2],x[1],x[0]].map(y=>y*16)),//vertices R2L
-		vn:vn.map(x=>[x[2],x[1],x[0]]),//normals R2L
-		vt:vt.map(x=>[x[0],x[1]]),//uvs
+	obj:({p,n,t},src)=>(console.log(src),{//function for .obj convertion
+		p:p.map(x=>[x[2],x[1],x[0]].map(y=>y*16)),//vertices R2L
+		n:n.map(x=>[x[2],x[1],x[0]]),//normals R2L
+		t:t.map(x=>[x[0],x[1]]),//uvs
+		o:p.reduce((a,x)=>x.map((y,i)=>y+(a[i]||0)),[]).map(x=>x*16/p.length)//centroid as pivot
 	}),
-	mqo:(parsed,calced)=>({//function for .mqo convertion
-		...calced,
-		p:calced.p.map(x=>[x[2],x[1],x[0]].map(y=>y*.16)),//vertices R2L
-		n:calced.n.map(x=>[x[2],x[1],x[0]]),//normals R2L
-		t:calced.t.map(x=>[x[0],1-x[1]]),//uvs Yflip
-		o:parsed[1].translation
+	mqo:({p,n,t},src)=>(console.log(...src),{//function for .mqo convertion
+		p:p.map(x=>[x[2],x[1],x[0]].map(y=>y*.16)),//vertices R2L
+		n:n.map(x=>[x[2],x[1],x[0]]),//normals R2L
+		t:t.map(x=>[x[0],1-x[1]]),//uvs Yflip
+		o:src[1].translation//local coord origin as pivot
 	}),
-	fmt:bones=>({//format
+	format:bones=>({
 		format_version:'1.12.0',
 		'minecraft:geometry':[{
 			description:{
@@ -49,11 +49,11 @@
 			bones
 		}]
 	}),
-	file_name:'armor_stand.geo.json'//for download button
+	file_name:'armor_stand.geo.json'
 }</textarea>
 	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2211042</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211043</pre>
 	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
 	<button id="dlbtn" class="button" disabled>download</button>
 
@@ -68,9 +68,9 @@
 				spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(_=>+_),
 				core=({w,_v=0,_vt=0,_vn=0}={},
 						og=(w.match(/^[og] (.+)$/m)||[,Math.random().toString(36).slice(2)])[1],vt=[[0,0],...(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3))],vn=[[0,1,0],...(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4))],
-						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>y*x[3])):_=>x.slice(0,3))()))
-					)=>({vt,vn,v}=q.obj({vt,vn,v}),{w:{
-						name:og,pivot:v.length&&v.reduce((a,x)=>a.map((y,i)=>y+x[i])).map(x=>x/v.length),
+						v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(x=spln(x),(x.length==4?_=>(x[3]=1/x[3],x.slice(0,3).map(y=>y*x[3])):_=>x.slice(0,3))())),pivot
+					)=>({t:vt,n:vn,p:v,o:pivot}=q.obj({t:vt,n:vn,p:v},w),{w:{
+						name:og,pivot,
 						poly_mesh:{
 							normalized_uvs:true,positions:v,normals:vn,uvs:vt,
 							polys:(w.match(/^f .+$/gm)||[]).flatMap(x=>(
@@ -79,17 +79,16 @@
 							))
 						}
 					},_v:_v+v.length,_vt:_vt+vt.length-1,_vn:_vn+vn.length-1})
-			)=>q.fmt(w.split(/\n(?=[og])/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[])))(),
+			)=>q.format(w.split(/\n(?=[og])/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x})),a),[{}]).flatMap(x=>x.w&&x.w.poly_mesh.polys.length?[x.w]:[])))(),
 			mqo2mc=(w,q)=>(
 				w=(w.match(/Object "[^\n]*" \{.*?\n\}/sg)||[]).reduce((a,x)=>(
 					x=x.replace(/\t+/g,'').match(/.+/g),
 					x=[x[0].slice(8,-3),x.slice(1,-1).reduce((b,y)=>(b.x?(y[0]=='}'?b.x='':b.a[b.x].push(y)):([y[y.length-1]=='{',y=y.split(' ')][0]?b.a[b.x=y[0]]=[]:b.a[y[0]]=y.length>2?y.slice(1).map(_=>+_):+y[1]),b),{a:{},x:''}).a],
-					console.log(...x),
 					x[1]=x[1].vertex&&x[1].vertex[0]&&x[1].face&&x[1].face[0]?((
 						spln=x=>x.split(/\s+/).map(_=>+_),vsub=(a,b)=>a.map((x,i)=>x-b[i]),cross=(a,b)=>[...'120'].map(x=>(x+='120'[x],a[x[0]]*b[x[1]]-a[x[1]]*b[x[0]])),norm=w=>(l=>w.map(x=>(x/l)||0))(Math.hypot(...w)),
 						{pi,t}=x[1].face.reduce((b,y)=>(b.pi.push(spln(y.match(/ V\((.+?)\)/)[1]).reverse()),b.t.push((y.match(/ UV\((.+?)\)/)||[,'0 0 '.repeat(y.match(/\d+/)[0])])[1].match(/[^\s]+ [^\s]+/g).reverse()),b),{pi:[],t:[]}),
 						p=x[1].vertex.map(spln),n=pi.map(y=>(y=y.map(z=>p[z]),norm(cross(vsub(y[1],y[0]),vsub(y[2],y[0]))))),ni=pi.map((y,i)=>[...y].fill(i)),ti
-					)=>({v:t,i:ti}=((v=[...new Set(t.flat())],m=Object.fromEntries(v.map(Array)))=>({v:v.map(spln),i:t.map(y=>y.map(z=>m[z]))}))(),q.mqo(x,{p,pi,t,ti,n,ni})))():null,
+					)=>({v:t,i:ti}=((v=[...new Set(t.flat())],m=Object.fromEntries(v.map(Array)))=>({v:v.map(spln),i:t.map(y=>y.map(z=>m[z]))}))(),{...q.mqo({p,t,n},x),pi,ti,ni}))():null,
 					a.x.push(x),x[1]&&a.mc.push({
 						name:x[0],pivot:x[1].o,
 						poly_mesh:{
@@ -98,7 +97,7 @@
 						}
 					}),a
 				),{x:[],mc:[]}),
-				console.log(Object.fromEntries(w.x)),q.fmt(w.mc)
+				console.log(Object.fromEntries(w.x)),q.format(w.mc)
 			);
 
 		worker.onmessage=async m=>(
