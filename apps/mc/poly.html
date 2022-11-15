@@ -53,7 +53,7 @@
 }</textarea>
 	<button id="runbtn" class="button">run</button>
 	<hr>
-	<pre id="log" style="white-space:pre-wrap;">build:2211043</pre>
+	<pre id="log" style="white-space:pre-wrap;">build:2211160</pre>
 	<button id="cpbtn" class="button" disabled>copy to clipboard</button>
 	<button id="dlbtn" class="button" disabled>download</button>
 
@@ -108,8 +108,8 @@
 		);
 		runbtn.onclick=async w=>(
 			w={obj:obj2mc,mqo:mqo2mc}[inp.files[0]&&inp.files[0].name.match(/[^\.]+$/)[0].toLowerCase()],
-			worker.onmessage({data:JSON.stringify(w(await new Response(inp.files[0]).text(),Function(`return(${cfg.value});`)()))})//debug
-			//log.textContent=w?(worker.postMessage(`postMessage(JSON.stringify((${w})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),'please wait...'):'file extention must be .obj, or .mqo.'
+			//worker.onmessage({data:JSON.stringify(w(await new Response(inp.files[0]).text(),Function(`return(${cfg.value});`)()))})//debug
+			log.textContent=w?(worker.postMessage(`postMessage(JSON.stringify((${w})(${JSON.stringify(await new Response(inp.files[0]).text())},${cfg.value})));`),'please wait...'):'file extention must be .obj, or .mqo.'
 		);
 
 		cpbtn.disabled=dlbtn.disabled=true;TA.editor(cfg);
