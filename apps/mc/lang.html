@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi lang</title>
+	<meta name="description" content="mc lang">
+	<link rel="icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../../src/style.css">
+</head>
+<body>
+	<h1>lang</h1>
+	<hr>
+	<label>JElang: <input type="file" class="input" id="jeinp"></label><br>
+	<label>BElang: <input type="file" class="input" id="beinp"></label><br>
+	<button id="btn">run</button>
+	<progress id="prog" hidden max="1"></progress>
+	<pre id="log"></pre>
+	<hr>
+	<script>
+		let d;
+		const wurl=URL.createObjectURL(new Blob([`'use strict';onmessage=m=>Object.getPrototypeOf(async _=>_).constructor(m.data)();`])),
+			worker=new Worker(wurl),
+			igen=w=>(w=w.map(x=>[x[0],{x:x[1],i:[...new Set((x[0].match(/[A-Z]?[a-z0-9]+|[A-Z]+/g)||[]).map(y=>y.toLowerCase()))]}]),{x:w,i:w.reduce((a,x,i)=>(x[1].i.forEach(y=>a[y]=[...(a[y]||[]),i]),a),{})}),
+			search=(d,w)=>Object.entries(w.flat().reduce((a,x)=>(a[x]=(a[x]||0)+1,a),{})).reduce((a,x)=>(x[0]=d[x[0]],x[1]=x[1]/x[0][1].i.length*x[1]/w.length,a[x[1]]=[...(a[x[1]]||[]),x[0]],a),{}),
+			be2je=w=>[['hardened,clay','terracotta'],['cobblestone,wall','wall']].reduce((a,x)=>a.replace(...x),w.join(',')).split(',').flatMap(x=>[['tile','block,minecraft'],['item','item,minecraft'],['silver','light,gray'],['lines','pillar'],['slab2','slab']].reduce((a,y)=>a.replace(...y),x).split(',')),
+			main=_=>d.be.x.flatMap((x,i,a)=>(
+				x[2]=Object.entries(search(d.je.x,[...new Set(be2je(x[1].i))].map(z=>d.je.i[z]||[]))).sort((a,b)=>b[0]-a[0])[0],
+				x[2]&&x[2][0]>=.5&&x[2][1].length==1&&x[1].x!=x[2][1][0][1].x?(postMessage(i/a.length),[`${x[0]}=${x[2][1][0][1].x}	#`]):[]
+			)).sort().join('\n');
+
+		worker.onmessage=m=>[prog.hidden,log.textContent]=+m.data?[0,(m.data*100).toFixed(2)+' %',prog.value=m.data]:[1,m.data];
+
+		btn.onclick=async()=>(
+			d={
+				je:igen(Object.entries(JSON.parse(await new Response(jeinp.files[0]).text()))),
+				be:igen((await new Response(beinp.files[0]).text()).replace(/^##.*$|\t+#.*$/mg,'').match(/^.+=.+$/mg).map(x=>x.split(/\s*=\s*/)))
+			},
+			console.log(d),
+			console.log(search(d.je.x,[d.je.i.spruce]),search(d.be.x,[d.be.i.spruce])),
+			worker.postMessage(`postMessage(((d=${JSON.stringify(d)},search=${search},be2je=${be2je})=>(${main})())());`)
+		);
+		onbeforeunload=_=>URL.revokeObjectURL(wurl,worker.terminate());
+	</script>
+</body>
+</html>
