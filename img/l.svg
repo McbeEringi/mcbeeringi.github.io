@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1051" height="1500" viewBox="0 0 1050 1483.057">
+	<desc>5x7 icons</desc>
+	<g>
+		<image href="icon.svg" width="210" height="210" id="icon"/>
+		<circle cx="105" cy="105" r="105" id="circle" style="fill:none;stroke:#eee;stroke-width:4;"/>
+		<g id="grid">
+			<use href="#icon"/>
+			<use href="#circle"/>
+		</g>
+		<g id="row">
+			<use href="#grid"/>
+			<use href="#grid" x="210"/>
+			<use href="#grid" x="420"/>
+			<use href="#grid" x="630"/>
+			<use href="#grid" x="840"/>
+			<use href="#grid" y="181.865" x="-105"/>
+			<use href="#grid" y="181.865" x="105"/>
+			<use href="#grid" y="181.865" x="315"/>
+			<use href="#grid" y="181.865" x="525"/>
+			<use href="#grid" y="181.865" x="735"/>
+			<use href="#grid" y="181.865" x="945"/>
+		</g>
+	</g>
+	<rect width="100%" height="100%" fill="#fff"/>
+	<use href="#row"/>
+	<use href="#row" y="363.731"/>
+	<use href="#row" y="727.461"/>
+	<use href="#row" y="1091.192"/>
+</svg>
