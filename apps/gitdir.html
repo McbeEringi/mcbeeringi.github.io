@@ -82,6 +82,7 @@
 			setTimeout(_=>log.remove(),3000);
 		})().catch(e=>(err.textContent=e,console.log(e)));
 
+		location.search&&(inp.value=location.search.slice(1),btn.onclick());
 	</script>
 </body>
 </html>
