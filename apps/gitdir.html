@@ -47,26 +47,29 @@
 				pk[2],zz,zz,...(_=>[_,_])(le(w.length,2)),le(cnt(this.cd)),le(cnt(this.fe)),zz// PK0506 disk 0304startDisk ...[cnt0102disk cnt0102all] 0102size 0102pos cmtLength
 			],{type:'application/zip'});}}))._())();
 
-		inp.onchange=btn.onclick=_=>(async()=>{
+		btn.onclick=_=>(async()=>{
 			let
 				log=document.createElement('pre'),
 				llog=(x,y)=>log.textContent=y?x+JSON.stringify(y,null,'	'):x,
 				[,owner,repo,,ref,...dir]=new URL(inp.value).pathname.split('/'),
 				w=await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`),
 				api_ratelimit={limit:w.headers.get('x-ratelimit-limit'),remaining:w.headers.get('x-ratelimit-remaining'),reset:new Date(w.headers.get('x-ratelimit-reset')*1000).toLocaleString()},
-				core=async(x=w.w[w.q.shift()],d)=>(
-					d={a:w.w.reduce((a,y)=>a+y.size,0)},
-					(x.blob=await(progress(await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${dir}${x.path}`),(l,a)=>(x.loaded=l,
-						llog('step 2/3: downloading assets...\n',{api_ratelimit,step_progress:perc(w.w.reduce((a,y)=>a+(y.loaded||0),0)/d.a),current:w.w.reduce((a,y)=>(y.loaded!=null&&!y.blob&&a.push(y),a),[])})
-					))).blob()),
-					w.q.length&&await core()
+				core=async(x,d)=>(
+					w.q.length&&(
+						x=w.w[w.q.shift()],
+						d={a:w.w.reduce((a,y)=>a+y.size,0)},
+						(x.blob=await(progress(await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${dir}${x.path}`),(l,a)=>(x.loaded=l,
+							llog('step 2/3: downloading assets...\n',{api_ratelimit,step_progress:perc(w.w.reduce((a,y)=>a+(y.loaded||0),0)/d.a),current:w.w.reduce((a,y)=>(y.loaded!=null&&!y.blob&&a.push(y),a),[])})
+						))).blob()),
+						await core()
+					)
 				);
 
 			document.body.append(log);
 			dir=decodeURIComponent(dir.join('/'));
 			w=({r:w,w:(llog('step 1/3: requesting repo info to api.github.com...\n',{api_ratelimit}),await w.json())});
 			if(w.w.tree){
-				w=w.w.tree.reduce((a,x)=>(x.type=='blob'&&x.path.slice(0,dir.length)==dir&&(a.q.push(a.w.length),a.w.push({path:x.path.slice(dir.length),loaded:null,size:x.size,blob:null})),a),{...w,w:[],q:[]});
+				w=w.w.tree.reduce((a,x)=>(x.type=='blob'&&x.path.slice(0,dir.length)==dir&&(a.q.push(a.w.length),a.w.push({path:x.path.slice(dir.length),loaded:null,size:x.size,blob:null})),a),{...w,w:[],q:[]});console.log(w)
 				if(w.w.length){
 					await Promise.all([...Array(8)].map(core));
 					console.log(w.w);
