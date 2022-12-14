@@ -27,6 +27,7 @@
 		const
 			progress=(r,f)=>new Response(new ReadableStream({start:async(c,l=0,x,a=+r.headers.get('content-length'))=>{r=r.body.getReader();while((x=(await r.read()).value)&&!x.done){c.enqueue(x);f(l+=x.byteLength,a);}c.close();}})),
 			perc=x=>(x*100).toFixed(2)+' %',
+			// https://hgotoh.jp/wiki/doku.php/documents/other/other-017
 			// https://gist.github.com/ysakasin/2edf8d3bf55c6ebf63f82851e302b030#relative-offset-of-local-header
 			// https://ja.wikipedia.org/wiki/ZIP_(%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88)#%E6%8A%80%E8%A1%93%E7%9A%84%E3%81%AA%E6%83%85%E5%A0%B1
 			zip=async(w=[],f)=>await(async(
