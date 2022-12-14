@@ -24,20 +24,24 @@
 		const
 			progress=(r,f)=>new Response(new ReadableStream({start:async(c,l=0,x,a=+r.headers.get('content-length'))=>{r=r.body.getReader();while((x=(await r.read()).value)&&!x.done){c.enqueue(x);f(l+=x.byteLength,a);}c.close();}})),
 			llog=x=>log.textContent=x,
-			zip=(w=[])=>((le32=(x,l=4)=>[...Array(l)].map((_,i)=>x>>(i<<3)&255),te=new TextEncoder())=>w.reduce(async(a,{path:n='dummy_'+Math.random().toString(16).slice(2),blob:b=new Blob(),date:d=new Date()},x)=>(
+			zip=async(w=[])=>await(async(
+				le=(x,l=4)=>[...Array(l)].map((_,i)=>x>>(i<<3)&255),te=new TextEncoder(),
+				crct=[...Array(256)].map((_,n)=>[...Array(8)].reduce((c,_,k)=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)),// https://www.rfc-editor.org/rfc/rfc1952
+				crc=(buf,crc=0)=>buf.reduce((c,x)=>crct[(c^x)&0xff]^(c>>>8),crc^-1)^-1
+			)=>(await w.reduce(async(a,{path:n='dummy_'+Math.random().toString(16).slice(2),blob:b=new Blob(),date:d=new Date()},x)=>(
 				a=await a,
 				x={
 					n:te.encode(n),b:new Uint8Array(await new Response(b).arrayBuffer()),
 					d:le(((d.getFullYear()-1980)<<25)|((d.getMonth()+1)<<21)|(d.getDate()<<16)|(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1))// mmmsssss hhhhhmmm MMMDDDDD YYYYYYYM // Y-=1980;s/=2;
 				},
-				x.c=[0,0,0,0],// TODO: CRC32 gen
-				x.x=[10,0, 0,0, 0,0, ...x.d, ...x.c, ...(_=>[..._,..._])(le(x.b.byteLength)), ...le(x.n.byteLength,2), 0,0],// vReq flag cpsType date CRC32 cpsSize rawSize nameLength extLength
+				x.x=[10,0, 0,0, 0,0, ...x.d, ...le(crc(x.b)), ...(_=>[..._,..._])(le(x.b.byteLength)), ...le(x.n.byteLength,2), 0,0],// vReq flag cpsType date CRC32 cpsSize rawSize nameLength extLength
 				a.cd.push(80,75,1,2, 10,0, ...x.x, 0,0, 0,0, 0,0, 0,0,0,0, ...le(a.fe.length), ...x.n),// PK0102 vMade X cmtLength 0304disk intAttr extAttr 0304pos name
-				a.fe.push(80,75,3,4, ...x.x, ...x.n, ...x.b),// PK0304 X name content
+				//a.fe.push(80,75,3,4, ...x.x, ...x.n, ...x.b),// PK0304 X name content
+				a.fe=[...a.fe, 80,75,3,4, ...x.x, ...x.n, ...x.b],
 				a
 			),{fe:[],cd:[],_(){return new Blob([new Uint8Array([...this.fe,...this.cd,
 				80,75,5,6, 0,0, 0,0, ...(_=>[..._,..._])(le(w.length,2)), ...le(this.cd.length), ...le(this.fe.length), 0,0// PK0506 disk 0304startDisk cnt0102disk cnt0102all 0102size 0102pos cmtLength
-			],{type:'application/zip'}).buffer]);}})._())();
+			],{type:'application/zip'}).buffer]);}}))._())();
 
 		btn.onclick=_=>(async()=>{
 			let
@@ -57,7 +61,10 @@
 			w=w.w.tree.reduce((a,x)=>(x.type=='blob'&&x.path.slice(0,dir.length)==dir&&(a.q.push(a.w.length),a.w.push({path:x.path.slice(dir.length),loaded:null,size:x.size,blob:null})),a),{...w,w:[],q:[]});
 			await Promise.all([...Array(8)].map(core));
 			llog('step 3/3: gathering files...');
-			console.log(w);
+			console.log(w.w);
+			const a=Object.assign(document.createElement('a'),{download:dir+'.zip',href:URL.createObjectURL(await zip(w.w))});
+			a.click();URL.revokeObjectURL(a.href);
+			llog('done!');
 		})().catch(llog);
 	</script>
 </body>
