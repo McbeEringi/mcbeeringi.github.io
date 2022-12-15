@@ -38,7 +38,7 @@
 					w.q.length&&(
 						x=w.w[w.q.shift()],
 						d={a:w.w.reduce((a,y)=>a+y.size,0)},
-						(x.blob=await(progress(await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${dir}${x.path}`),(l,a)=>(x.loaded=l,
+						(x.blob=await(progress(await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${dir}${x.path}`),y=>(x.loaded=y[0],
 							llog('step 2/3: downloading assets...\n',{api_ratelimit,step_progress:perc(w.w.reduce((a,y)=>a+(y.loaded||0),0)/d.a),current:w.w.reduce((a,y)=>(y.loaded!=null&&!y.blob&&a.push(y),a),[])})
 						))).blob()),
 						await core()
