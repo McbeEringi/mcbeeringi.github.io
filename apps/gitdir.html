@@ -31,7 +31,7 @@
 				perc=x=>(x*100).toFixed(2)+' %',
 				log=document.createElement('pre'),
 				llog=(x,y)=>log.textContent=y?x+JSON.stringify(y,null,'	'):x,
-				[,owner,repo,,ref='HEAD',...dir]=new URL(inp.value).pathname.split('/'),
+				[,owner,repo,,ref='HEAD',...dir]=new URL(inp.value,'https://github.com/').pathname.split('/'),
 				w=await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`),
 				api_ratelimit={limit:w.headers.get('x-ratelimit-limit'),remaining:w.headers.get('x-ratelimit-remaining'),reset:new Date(w.headers.get('x-ratelimit-reset')*1000).toLocaleString()},
 				core=async(x,d)=>(
