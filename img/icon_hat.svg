@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 64 64">
+	<clipPath id="clip"><path d="M0,30v34h64v-40h-36z"/></clipPath>
+	<image href="https://mcbeeringi.github.io/img/icon.svg" style="width:64;height:64;clip-path:url(#clip);"/>
+	<path d="M10,23c0,0,5-12,18-12" fill="#fea" opacity="0.5"/>
+	<path d="M54,24c0-7-23,0-23,0" fill="#888" opacity="0.5"/>
+	<path d="M9,35c-17-3,5-10,23-11s39,0,24,6m-48-2c1-26,44-25,46-4m-45,0c0,0,14-7,44-4" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;"/>
+</svg>
