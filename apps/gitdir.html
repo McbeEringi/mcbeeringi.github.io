@@ -55,7 +55,7 @@
 					console.log(w.w);
 					dl({
 						name:dir+'.zip',
-						blob:await zip(w.w,x=>llog('step 3/3: gathering files...\n',{api_ratelimit,step_progress:perc((x.pre[0]/x.pre[1]+x.post[0]/x.post[1])/2),current:(w.w[x.post[0]]||{}).path,details:x}))
+						blob:await zip(w.w,{progress:x=>llog('step 3/3: gathering files...\n',{api_ratelimit,step_progress:perc((x.pre[0]/x.pre[1]+x.post[0]/x.post[1])/2),current:(w.w[x.post[0]]||{}).path,details:x})})
 					});
 					llog(dir+' done!');
 				}else llog('No such file or directory.');
