@@ -1,0 +1,13 @@
+:root{
+	--k:#223;--a:#6caa;--w:#ffe;--s:#8888;
+	--bc:var(--w);--fc:var(--k);
+	background-color:var(--bc);image-rendering:pixelated;
+}
+@media(prefers-color-scheme:dark){:root{--bc:var(--k);--fc:var(--w);}}
+:root::before{content:"";position:fixed;width:100%;height:100%;z-index:-1;background:0 0/64px url(../img/asterisk.svg);opacity:.1;}
+:link{color:#48f;}:visited{color:#84f;}:link:active,:visited:active{color:#f48;}
+.button,.input,:root{color:var(--fc);font-family:sans-serif;transition:background-color .2s,border .2s,color .2s;}
+.button,.input,hr{box-sizing:border-box;--border:max(2px,.3ex);border-radius:calc(3*var(--border));-webkit-appearance:none;appearance:none;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+.button,.input{margin:var(--border) 0;outline:0;padding:var(--border);border:#0000 var(--border) solid;background-color:var(--c);display:inline-block;max-width:100%;vertical-align:middle;}
+.input:hover,.input:focus,.button:hover,.button:focus{border-color:var(--c);background-color:#0000;}
+hr{border:var(--border) solid var(--s);}.input{--c:var(--s);resize:none;}.button{--c:var(--a);}::placeholder{color:var(--s);opacity:1;}
