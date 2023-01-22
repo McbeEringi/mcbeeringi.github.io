@@ -4,7 +4,7 @@
 	root=document.querySelector('script[src$="src/style_.js"]').outerHTML.match(/"(.*)src\/style_\.js"/)[1]
 )=>((w=>(
 	w.insertAdjacentHTML('afterbegin',`<style>
-	header{position:-webkit-sticky;position:sticky;top:0;display:flex;flex-flow: wrap;align-items: end;z-index:10;pointer-events:none;}
+	header{position:-webkit-sticky;position:sticky;top:8px;z-index:10;pointer-events:none; display:flex;flex-flow:wrap;align-items:end;}
 	header>*{pointer-events:auto;}
 	header>.button{font-size:large;margin:0;}
 	header>a{align-self:start;}
