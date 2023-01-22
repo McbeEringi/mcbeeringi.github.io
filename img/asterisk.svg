@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="36.95" viewBox="0 0 20 10">
-	<g style="transform-origin:center;transform:scaleY(1.155);stroke:#888;stroke-width:.5;">
-		<path d="M0,0l12,6m-2,-1l12,6m-2,-11l-12,6m2,-1l-12,6" stroke-dasharray="2.236"/>
-		<path d="M0,0v10m10,-11v7,-1,8m10,-13v10" stroke-dasharray="2"/>
-	</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="36.95" viewBox="0 0 17.32 10"><path d="M0,0v11,-1l8.66,-5v-1,1l8.66,-5v-1,12,-1l-8.66,-5v-1,1zm8.66,-1v7,-1,6" style="fill:none;stroke:#888;stroke-width:.5;stroke-dasharray:2;"/></svg>
