@@ -21,7 +21,9 @@
 	<link rel="stylesheet" href="src/comp.css">
 </head>
 <body>
-	<style>@media(max-width:560px){li{font-size:large;}}</style>
+	<style>
+		.ib>*{display:inline-block;vertical-align:top;}
+	</style>
 	<h1>エリンギ@McbeEringi</h1>
 	<p>McbeEringiのツール,配布,解説のトップページです</p>
 	<hr>
@@ -31,6 +33,8 @@
 		<a href="ta" style="--img:url(https://mcbeeringi.github.io/ta/img/icon.svg);">TA.js</a>
 		<a href="petit" style="--img:url(https://mcbeeringi.github.io/petit/img/icon.svg);">PetitJS</a>
 		<a href="mc" style="--img:url(../img/8x8_.png);" class="irp">Minecraft</a>
+	</div>	
+	<div class="stuff" style="--size:100px;">
 		<a href="https://twitter.com/mcbeeringi" style="--img:url(https://icongr.am/jam/twitter.svg);--imgi:url(https://icongr.am/jam/twitter.svg?color=ffffff);">Twiter</a>
 		<a href="https://github.com/mcbeeringi" style="--img:url(https://icongr.am/jam/github.svg);--imgi:url(https://icongr.am/jam/github.svg?color=ffffff);">GitHub</a>
 		<a href="https://youtube.com/@mcbeeringi" style="--img:url(https://icongr.am/jam/youtube.svg);--imgi:url(https://icongr.am/jam/youtube.svg?color=ffffff);">Youtube</a>
@@ -38,40 +42,44 @@
 	<hr>
 	<div>
 		<h2>Site Map</h2>
-		<ul>
-			<li><a href="https://mcbeeringi.github.io/sky">Sky Stuff</a></li>
-			<li><a href="apps">Apps</a>
-				<ul>
-					<li><a href="apps/index.html#webgl">WebGL…</a></li>
-					<li><a href="apps/index.html#mc">mc…</a></li>
-					<li><a href="apps/index.html#others">others…</a></li>
-				</ul>
-			</li>
-			<li><a href="https://mcbeeringi.github.io/ta">TA.js</a></li>
-			<li><a href="https://mcbeeringi.github.io/petit">PetitJS</a></li>
-			<li><a href="mc">Minecraft</a>
-				<ul>
-					<li><a href="mc/index.html#how">HowTo</a>
-						<ul>
-							<li><a href="mc/how.html">…</a></li>
-							<li><a href="mc/how.html?i=7">#7 雲を描く(前編)</a></li>
-							<li><a href="mc/how.html?i=8">#8 雲を描く(後編)</a></li>
-						</ul>
-					</li>
-					<li><a href="mc/index.html#addons">addons</a></li>
-					<li><a href="mc/index.html#worlds">worlds</a></li>
-				</ul>
-			</li>
-			<li><a href="https://mcbeeringi.github.io/petitgl">PetitGL (legacy)</a></li>
-			<li><a href="https://mcbeeringi.github.io/petitaudio">PetitAudio (legacy)</a></li>
-			<li><a href="https://mcbeeringi.github.io/java-jajp">java ja_JP</a></li>
-			<li><a href="esbe-1g">ESBE 1G</a></li>
-			<li><a href="https://mcbeeringi.github.io/esbe-2g">ESBE_2G</a></li>
-			<li><a href="https://mcbeeringi.github.io/esbe-3g">ESBE_3G</a></li>
-			<li><a href="amuse">amuse</a></li>
-			<li><a href="t85_musicbox">t85_musicbox</a></li>
-			<li><a href="https://mcbeeringi.github.io/shirokepu">しろけぷ発言まとめ</a></li>
-		</ul>
+		<div class="ib">
+			<ul>
+				<li><a class="input" href="https://mcbeeringi.github.io/sky">Sky Stuff</a></li>
+				<li><a class="input" href="apps">Apps</a>
+					<ul>
+						<li><a class="input" href="apps/index.html#webgl">WebGL…</a></li>
+						<li><a class="input" href="apps/index.html#mc">mc…</a></li>
+						<li><a class="input" href="apps/index.html#others">others…</a></li>
+					</ul>
+				</li>
+				<li><a class="input" href="https://mcbeeringi.github.io/ta">TA.js</a></li>
+				<li><a class="input" href="https://mcbeeringi.github.io/petit">PetitJS</a></li>
+				<li><a class="input" href="mc">Minecraft</a>
+					<ul>
+						<li><a class="input" href="mc/index.html#how">HowTo</a>
+							<ul>
+								<li><a class="input" href="mc/how.html">…</a></li>
+								<li><a class="input" href="mc/how.html?i=7">#7 雲を描く(前編)</a></li>
+								<li><a class="input" href="mc/how.html?i=8">#8 雲を描く(後編)</a></li>
+							</ul>
+						</li>
+						<li><a class="input" href="mc/index.html#addons">addons</a></li>
+						<li><a class="input" href="mc/index.html#worlds">worlds</a></li>
+					</ul>
+				</li>
+			</ul>
+			<ul>
+				<li><a class="input" href="https://mcbeeringi.github.io/petitgl">PetitGL (legacy)</a></li>
+				<li><a class="input" href="https://mcbeeringi.github.io/petitaudio">PetitAudio (legacy)</a></li>
+				<li><a class="input" href="https://mcbeeringi.github.io/java-jajp">java ja_JP</a></li>
+				<li><a class="input" href="esbe-1g">ESBE 1G</a></li>
+				<li><a class="input" href="https://mcbeeringi.github.io/esbe-2g">ESBE_2G</a></li>
+				<li><a class="input" href="https://mcbeeringi.github.io/esbe-3g">ESBE_3G</a></li>
+				<li><a class="input" href="amuse">amuse</a></li>
+				<li><a class="input" href="t85_musicbox">t85_musicbox</a></li>
+				<li><a class="input" href="https://mcbeeringi.github.io/shirokepu">しろけぷ発言まとめ</a></li>
+			</ul>	
+		</div>
 	</div>
 </body>
 </html>
