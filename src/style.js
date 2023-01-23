@@ -7,7 +7,7 @@ self.root=document.querySelector('script[src$="src/style.js"]').outerHTML.match(
 		header>.input{position:absolute;width:max(32ex,33%);max-height:calc(calc(100vh - 100%) - 16px);overflow:auto;transform:translateX(-5%);transition:.2s;opacity:0;visibility:hidden;pointer-events:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(12ex,100%),1fr));gap:var(--border);}header>.input>*{text-align:center;margin:0;}
 		header>button:hover+nav,header>button:focus+nav,nav:hover,nav:focus-within{top:unset;transform:translateY(0);opacity:1;visibility:visible;pointer-events:auto;}
 	</style><header><button class="button">McbeEringi</button><nav class="input">
-		${a.slice(4)+root}">Top${a+root}sky/">Sky Stuff${a+root}apps/">Apps${a+root}ta/">TA.js${a+root}petit/">PetitJS${a+root}mc/">Minecraft${a}
+		${a.slice(4)+root}/">Top${a+root}sky/">Sky Stuff${a+root}apps/">Apps${a+root}ta/">TA.js${a+root}petit/">PetitJS${a+root}mc/">Minecraft${a}
 		https://translate.google.com/translate?sl=ja&tl=en&u=${encodeURIComponent(location)}">Translate${a}
 		https://twitter.com/mcbeeringi">Twitter${a}https://github.com/mcbeeringi">GitHub${a}https://youtube.com/@mcbeeringi">YouTube${a.slice(0,4)}
 	</nav></header>`),
