@@ -1,5 +1,5 @@
 :root{
-	--k:#223;--a:#6caa;--w:#ffe;--s:#8888;
+	--k:#223;--a:#6ca8;--w:#ffe;--s:#8888;
 	--bc:var(--w);--fc:var(--k);background-color:var(--bc);
 }
 @media(prefers-color-scheme:dark){:root{--bc:var(--k);--fc:var(--w);}:link{color:#8cf;}:visited{color:#c8f;}:link:active,:visited:active{color:#f8c;}}
