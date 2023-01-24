@@ -90,22 +90,17 @@
 				}
 				return a;
 			},new Array(16).fill().map(()=>({notes:new Array(127).fill().map(()=>({pushed:0})),sus:0}))).slice(16).sort((a,b)=>a.t-b.t),
-			toWav=x=>{//https://github.com/Jam3/audiobuffer-to-wav
-				let ch=x.numberOfChannels,rate=x.sampleRate;
-				if(ch==1)x=x.getChannelData(0);else{const l=x.getChannelData(0),r=x.getChannelData(1);x=new Float32Array(l.length+r.length);for(let i=0;i<x.length;i++){x[i*2]=l[i];x[i*2+1]=r[i];}};
-				const b=new ArrayBuffer(44+x.length*2),v=new DataView(b),str=(c,s)=>{for(let i=0;i<s.length;i++)v.setUint8(c+i,s.charCodeAt(i))};
-				str(0,'RIFF');v.setUint32(4,36+x.length*2,true);str(8,'WAVE');
-				str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,rate,true);ch*=2;v.setUint32(28,rate*ch,true);v.setUint16(32,ch,true);v.setUint16(34,16,true);
-				str(36,'data');v.setUint32(40,x.length*2,true);for(let i=0;i<x.length;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);}
-				return b;
-			},
+			toWav=w=>((
+				{numberOfChannels:c,sampleRate:r},l4=x=>[x,x>>>8,x>>>16,x>>>24],l2=x=>[x,x>>>8],
+				x=(x=>[...Array(x[0].length)].flatMap((_,i)=>x.flatMap(y=>l2(y[i]*0x7fff&0xffff))))([...Array(c)].map((_,i)=>w.getChannelData(i)))
+			)=>new Uint8Array([82,73,70,70,l4(36+x.length),87,65,86,69,102,109,116,32,16,0,0,0,1,0,l2(c),l4(r),l4(r*(c*=2)),l2(c),16,0,100,97,116,97,l4(x.length),x].flat()).buffer)(w),
 			dl=(x,n)=>{const a=document.createElement('a');a.download=n;a.href=URL.createObjectURL(x);a.click();URL.revokeObjectURL(a.href);};
 
 		draw(c.width=2048,c.height=512,ctx.lineWidth=2);
 		master.connect(actx.destination);
 		master.connect(aa);
 		master.connect(recn);
-		mr.ondataavailable=e=>new Response(e.data).arrayBuffer().then(x=>new Promise((f,r)=>actx.decodeAudioData(x,f,r))).then(x=>dl(new Blob([toWav(x)]),f.files[0].name+'.wav'));
+		mr.ondataavailable=e=>new Response(e.data).arrayBuffer().then(x=>new Promise((f,r)=>actx.decodeAudioData(x,f,r))).then(x=>dl(new Blob([toWav(x,console.log(x))]),f.files[0].name+'.wav'));
 		lbtn.onclick=async w=>{
 			w=await smfin(f.files[0]);
 			w.tracks.forEach(x=>x.forEach(y=>{if(y.data)y.data=[...y.data]}));
