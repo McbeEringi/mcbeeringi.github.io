@@ -9,7 +9,7 @@ self.root=document.querySelector('script[src$="src/style.js"]').outerHTML.match(
 	</style><header><button class="button">McbeEringi</button><nav class="input">
 		${a.slice(4)+root}/">Top${a+root}sky/">Sky Stuff${a+root}apps/">Apps${a+root}ta/">TA.js${a+root}petit/">PetitJS${a+root}mc/">Minecraft${a}
 		https://translate.google.com/translate?sl=ja&tl=en&u=${encodeURIComponent(location)}">Translate${a}
-		https://twitter.com/mcbeeringi">Twitter${a}https://github.com/mcbeeringi">GitHub${a}https://youtube.com/@mcbeeringi">YouTube${a.slice(0,4)}
+		https://twitter.com/mcbeeringi">Twitter${a}https://github.com/mcbeeringi">GitHub${a}https://qiita.com/mcbeeringi">Qiita${a}https://youtube.com/@mcbeeringi">YouTube${a.slice(0,4)}
 	</nav></header>`),
 	w.insertAdjacentHTML('beforeend',`<hr><footer>2018~ @McbeEringi.｡:+*<br>MIT License</footer>`)
 ))(document.body),(w=>(w.addEventListener('touchstart',_=>_,{passive:true}),w.setAttribute('lang',navigator.language.slice(0,2))))(document.documentElement)));
