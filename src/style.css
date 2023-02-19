@@ -8,4 +8,4 @@
 .button,.input,.stuff>*,hr{box-sizing:border-box;--border:max(2px,.3ex);border-radius:calc(3*var(--border));-webkit-appearance:none;appearance:none;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
 .button,.input,.stuff>*{margin:var(--border) 0;outline:0;padding:var(--border);border:#0000 var(--border) solid;background-color:var(--c);display:inline-block;max-width:100%;vertical-align:middle;}
 .button:hover,.button:focus,.input:hover,.input:focus,.stuff>*:hover,.stuff>*:focus{border-color:var(--c);background-color:#0000;}
-hr{border:var(--border) solid var(--s);}.input,.stuff>*{--c:var(--s);resize:none;}.button{--c:var(--a);}::placeholder{color:var(--s);opacity:1;}
+hr{border:var(--border) solid var(--s);}.input,.stuff>*{--c:var(--s);resize:none;}.button{--c:var(--a);}::placeholder{color:var(--s);opacity:1;}.button:disabled,.input:disabled{opacity:.5;}
