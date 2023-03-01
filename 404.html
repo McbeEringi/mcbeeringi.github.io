@@ -15,13 +15,11 @@
 	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
 </head>
 <body>
-	<h1>404</h1><h2>Page not found :(</h2>
+	<h1>404 Not Found</h1>
 	<script>
-		if(location.href.match(/mcbeeringi\.github\.io\/esbe-1g/i)){
-			document.body.innerHTML=`ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。<br>5秒後にリダイレクトします。<br><br>ESBEシリーズ<br><a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a><br><a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`;
-			setTimeout(()=>location.href='https://nari0978.github.io/1g/1g.html',5000);
-		}else{
-			const url=[
+		location.pathname.match(/^\/esbe-1g/i)?
+			setTimeout(_=>location.replace('https://nari0978.github.io/1g/1g.html'),5000,document.body.innerHTML=`<h1>301 Moved Permanently</h1>ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。<br>5秒後にリダイレクトします。<br><br>ESBEシリーズ<br><a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a><br><a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`):
+			(x=>location!=x&&location.replace(x,document.body.innerHTML='<h1>301 Moved Permanently</h1>Redirecting to correct URL<br>Please wait...'))([
 				[/others\/gl/i,'apps/webgl/index'],
 				[/apps\/fsh/i,'apps/webgl/fsh'],
 				[/others\/col/i,'apps/col'],
@@ -46,12 +44,7 @@
 				[/amuse\/ta/i,'ta/index'],
 				[/amuse\/smf/i,'apps/smf'],
 				[/apps\/mml/i,'t85_musicbox/index']
-			].reduce((a,x)=>a.replace(...x),location.href);
-			if(location.href!=url){
-				document.body.innerHTML='<h2>Redirecting to correct URL\nPlease wait…<h2>';
-				location.href=url;
-			}
-		}
+			].reduce((a,x)=>a.replace(...x),location.href));
 	</script>
 </body>
 </html>
