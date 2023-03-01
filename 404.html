@@ -11,17 +11,14 @@
 	<link rel="apple-touch-icon" href="https://mcbeeringi.github.io/img/icon.png">
 	<meta name="theme-color" content="#214"/>
 
+	<script src="https://mcbeeringi.github.io/src/style.js" async></script>
 	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
 </head>
 <body>
-	McbeEringi
-	<hr>
-	<pre id="log"><h1>404</h1><h2>Page not found :(</h2><a href="https://mcbeeringi.github.io/">back to top</a></pre>
-	<hr>
+	<h1>404</h1><h2>Page not found :(</h2>
 	<script>
 		if(location.href.match(/mcbeeringi\.github\.io\/esbe-1g/i)){
-			log.textContent='';
-			log.insertAdjacentHTML('beforeend',`ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。\n5秒後にリダイレクトします。\n\nESBEシリーズ\n<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a>\n<a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`);
+			document.body.innerHTML=`ESBE 1Gの管理は<a href='https://twitter.com/channel_nari'>NARI氏</a>に委託しました。\n5秒後にリダイレクトします。\n\nESBEシリーズ\n<a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a>\n<a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`;
 			setTimeout(()=>location.href='https://nari0978.github.io/1g/1g.html',5000);
 		}else{
 			const url=[
@@ -51,8 +48,7 @@
 				[/apps\/mml/i,'t85_musicbox/index']
 			].reduce((a,x)=>a.replace(...x),location.href);
 			if(location.href!=url){
-				log.textContent='';
-				log.insertAdjacentHTML('beforeend','<h2>Redirecting to correct URL\nPlease wait…<h2>');
+				document.body.innerHTML='<h2>Redirecting to correct URL\nPlease wait…<h2>';
 				location.href=url;
 			}
 		}

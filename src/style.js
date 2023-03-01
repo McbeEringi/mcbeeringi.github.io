@@ -1,5 +1,5 @@
 'use strict';
-self.root='./'+document.querySelector('script[src$="src/style.js"]').outerHTML.match(/"(.*)src\/style\.js"/)[1];
+self.root=document.querySelector('script[src$="src/style.js"]').outerHTML.match(/"(.*)src\/style\.js"/)[1]||'./';
 (w=>document.readyState=='loading'?addEventListener('DOMContentLoaded',w,{once:true}):w())((_,a='</a><a class="button" href="')=>((w=>(
 	w.insertAdjacentHTML('afterbegin',`<style>
 		header{position:-webkit-sticky;position:sticky;top:8px;z-index:10;pointer-events:none;}
