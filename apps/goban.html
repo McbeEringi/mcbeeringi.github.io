@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi goban</title>
+	<meta name="description" content="simple goban">
+	<link rel="icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+</head>
+<body>
+	<style>
+		:root,body,#c{width:100%;height:100%;margin:0;vertical-align:top;touch-action:pinch-zoom;}
+	</style>
+	<canvas id="c"></canvas>
+	<script>
+		const
+			urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).map(x=>x.split('=',2))),
+			ctx=c.getContext('2d'),
+			w={},
+			s2g=p=>p.map((x,i)=>Math.min(Math.max(Math.round((x-w.o[i])/w.x-w.h),0),w.s-1)),
+			g2s=p=>w.o.map((x,i)=>x+(p[i]+w.h)*w.x),
+			isg=p=>(_=>_[0][0]<p[0]&&p[0]<_[1][0]&&_[0][1]<p[1]&&p[1]<_[1][1])([g2s([-.5,-.5]),g2s([w.s-.5,w.s-.5])]),
+			init=(s=+urlq.size||13)=>onresize(Object.assign(w,{s,h:-(s-1)/2,goban:[...Array(s**2)].fill(0),q:[],hoshi:({9:[40],13:[42,48,84,126,120],19:[60,66,72,174,180,186,288,294,300]}[s]||[]).reduce((a,x)=>(a[x]=!0,a),{})})),
+			render=_=>(
+				ctx.clearRect(0,0,innerWidth,innerHeight),
+				ctx.fillStyle='#c84',ctx.fillRect(...w.o.map(x=>x+(w.h-.5)*w.x),w.x*w.s,w.x*w.s),
+				ctx.strokeStyle='#000',ctx.lineWidth=w.x*.05,[...Array(w.s)].forEach((_,i)=>ctx.stroke(new Path2D(`M${g2s([i,0])}v${w.x*(w.s-1)}M${g2s([0,i])}h${w.x*(w.s-1)}`))),
+				w.goban.reduce((a,x,i)=>(x?a(i,[,'#000','#fff'][x],.95):w.hoshi[i]&&a(i,'#000',.2),a),(i,c,s)=>(ctx.strokeStyle=c,ctx.lineWidth=w.x*s,ctx.stroke(new Path2D(`M${g2s([i%w.s,i/w.s|0])}v.001`)))),
+				ctx.strokeStyle='#fff',ctx.lineWidth=128,ctx.stroke(new Path2D(`M${g2s([-1,-.5])}m-64,64v.001`)),
+				ctx.strokeStyle='#4f48',ctx.lineWidth=4,_=isg(w.crs)?g2s(s2g(w.crs)):w.crs,ctx.stroke(new Path2D(`M${_[0]},0v${innerHeight}M0,${_[1]}h${innerWidth}`)),
+				_=_.map(x=>x+w.x*.25),[...w.q].reverse().forEach((x,i)=>(ctx.strokeStyle=[,'#0008','#fff8'][x],ctx.lineWidth=w.x*.4,ctx.stroke(new Path2D(`M${_}v.001`)),_[0]+=w.x*.5))
+			);
+
+		onpointerdown=e=>e.isPrimary&&(w.prev=[e.clientX,e.clientY]);
+		onpointermove=e=>e.isPrimary&&render(w.crs=e.pointerType=='touch'?[e.clientX,e.clientY].map((x,i)=>Math.min(Math.max(w.crs[i]+(x-w.prev[i]),0),[innerWidth,innerHeight][i])):[e.clientX,e.clientY],w.prev=[e.clientX,e.clientY]);
+		onclick=_=>isg(w.crs)?(
+			_=s2g(w.crs).reduce((a,x,i)=>a+x*w.s**i,0),
+			w.goban[_]?render(w.q.push(w.goban[_]),w.goban[_]=0):w.q.length?render(w.goban[_]=w.q.pop()):0
+		):(
+			1
+		);
+		onresize=_=>render(
+			c.width=innerWidth*devicePixelRatio,c.height=innerHeight*devicePixelRatio,
+			ctx.scale(devicePixelRatio,devicePixelRatio),ctx.lineCap='round',
+			Object.assign(w,{o:[innerWidth/2,innerHeight/2],x:(innerWidth<innerHeight?Math.min(innerWidth,innerHeight-256):Math.min(innerWidth-256,innerHeight))/(w.s+1),v:innerWidth<innerHeight}),
+			Object.assign(w,{crs:w.o})
+		);
+
+		init();
+	</script>
+</body>
+</html>
