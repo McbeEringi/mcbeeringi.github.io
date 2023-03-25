@@ -15,7 +15,7 @@
 </head>
 <body>
 	<style>
-		:root,body,#c{width:100%;height:100%;margin:0;vertical-align:top;touch-action:pinch-zoom;}
+		:root,body,#c{width:100%;height:100%;margin:0;vertical-align:top;touch-action:pinch-zoom;-webkit-user-select:none;user-select:none;}
 	</style>
 	<canvas id="c"></canvas>
 	<script>
@@ -32,7 +32,7 @@
 				ctx.fillStyle='#c84',ctx.fillRect(...w.o.map(x=>x+(w.h-.5)*w.x),w.x*w.s,w.x*w.s),
 				ctx.strokeStyle='#000',ctx.lineWidth=w.x*.05,[...Array(w.s)].forEach((_,i)=>ctx.stroke(new Path2D(`M${g2s([i,0])}v${w.x*(w.s-1)}M${g2s([0,i])}h${w.x*(w.s-1)}`))),
 				w.goban.reduce((a,x,i)=>(x?a(i,[,'#000','#fff'][x],.95):w.hoshi[i]&&a(i,'#000',.2),a),(i,c,s)=>(ctx.strokeStyle=c,ctx.lineWidth=w.x*s,ctx.stroke(new Path2D(`M${g2s([i%w.s,i/w.s|0])}v.001`)))),
-				ctx.strokeStyle='#fff',ctx.lineWidth=128,ctx.stroke(new Path2D(`M${g2s([-1,-.5])}m-64,64v.001`)),
+				//ctx.strokeStyle='#fff',ctx.lineWidth=128,ctx.stroke(new Path2D(`M${g2s([-1,-.5])}m-64,64v.001`)),
 				ctx.strokeStyle='#4f48',ctx.lineWidth=4,_=isg(w.crs)?g2s(s2g(w.crs)):w.crs,ctx.stroke(new Path2D(`M${_[0]},0v${innerHeight}M0,${_[1]}h${innerWidth}`)),
 				_=_.map(x=>x+w.x*.25),[...w.q].reverse().forEach((x,i)=>(ctx.strokeStyle=[,'#0008','#fff8'][x],ctx.lineWidth=w.x*.4,ctx.stroke(new Path2D(`M${_}v.001`)),_[0]+=w.x*.5))
 			);
@@ -48,7 +48,7 @@
 		onresize=_=>render(
 			c.width=innerWidth*devicePixelRatio,c.height=innerHeight*devicePixelRatio,
 			ctx.scale(devicePixelRatio,devicePixelRatio),ctx.lineCap='round',
-			Object.assign(w,{o:[innerWidth/2,innerHeight/2],x:(innerWidth<innerHeight?Math.min(innerWidth,innerHeight-256):Math.min(innerWidth-256,innerHeight))/(w.s+1),v:innerWidth<innerHeight}),
+			Object.assign(w,{o:[innerWidth/2,innerHeight/2],x:Math.min(innerWidth,innerHeight)/(w.s+1),v:innerWidth<innerHeight}),
 			Object.assign(w,{crs:w.o})
 		);
 
