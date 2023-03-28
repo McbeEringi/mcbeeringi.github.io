@@ -26,29 +26,54 @@
 			s2g=p=>p.map((x,i)=>Math.min(Math.max(Math.round((x-w.o[i])/w.x-w.h),0),w.s-1)),
 			g2s=p=>w.o.map((x,i)=>x+(p[i]+w.h)*w.x),
 			isg=p=>(_=>_[0][0]<p[0]&&p[0]<_[1][0]&&_[0][1]<p[1]&&p[1]<_[1][1])([g2s([-.5,-.5]),g2s([w.s-.5,w.s-.5])]),
-			init=(s=+urlq.size||13)=>onresize(Object.assign(w,{s,h:-(s-1)/2,goban:[...Array(s**2)].fill(0),q:[],hoshi:({9:[40],13:[42,48,84,126,120],19:[60,66,72,174,180,186,288,294,300]}[s]||[]).reduce((a,x)=>(a[x]=!0,a),{})})),
+			length=(p,q)=>Math.hypot(...p.map((x,i)=>x-q[i])),
+			// set q_==0 to disable auto refill
+			init=(s=+urlq.size||13)=>onresize(Object.assign(w,{
+				s,h:-(s-1)/2,goban:[...Array(s**2)].fill(0),q:[],q_:0,agehama:[0,0],
+				hoshi:({9:[40],13:[42,48,84,126,120],19:[60,66,72,174,180,186,288,294,300]}[s]||[]).reduce((a,x)=>(a[x]=1,a),{}),
+				col:{goban:{wood:'#c84',sumi:'#000'},get goishi(){return this.goishi_.map(x=>x.slice(0,-1))},goishi_:['#f0f0','#1028','#fed8'],pot:'#842',crs:'#f448'}
+			})),
 			render=_=>(
 				ctx.clearRect(0,0,innerWidth,innerHeight),
-				ctx.fillStyle='#c84',ctx.fillRect(...w.o.map(x=>x+(w.h-.5)*w.x),w.x*w.s,w.x*w.s),
-				ctx.strokeStyle='#000',ctx.lineWidth=w.x*.05,[...Array(w.s)].forEach((_,i)=>ctx.stroke(new Path2D(`M${g2s([i,0])}v${w.x*(w.s-1)}M${g2s([0,i])}h${w.x*(w.s-1)}`))),
-				w.goban.reduce((a,x,i)=>(x?a(i,[,'#000','#fff'][x],.95):w.hoshi[i]&&a(i,'#000',.2),a),(i,c,s)=>(ctx.strokeStyle=c,ctx.lineWidth=w.x*s,ctx.stroke(new Path2D(`M${g2s([i%w.s,i/w.s|0])}v.001`)))),
-				//ctx.strokeStyle='#fff',ctx.lineWidth=128,ctx.stroke(new Path2D(`M${g2s([-1,-.5])}m-64,64v.001`)),
-				ctx.strokeStyle='#4f48',ctx.lineWidth=4,_=isg(w.crs)?g2s(s2g(w.crs)):w.crs,ctx.stroke(new Path2D(`M${_[0]},0v${innerHeight}M0,${_[1]}h${innerWidth}`)),
-				_=_.map(x=>x+w.x*.25),[...w.q].reverse().forEach((x,i)=>(ctx.strokeStyle=[,'#0008','#fff8'][x],ctx.lineWidth=w.x*.4,ctx.stroke(new Path2D(`M${_}v.001`)),_[0]+=w.x*.5))
+				//goban
+				ctx.fillStyle=w.col.goban.wood,ctx.fillRect(...w.o.map(x=>x+(w.h-.5)*w.x),w.x*w.s,w.x*w.s),
+				ctx.strokeStyle=w.col.goban.sumi,ctx.lineWidth=w.x*.05,[...Array(w.s)].forEach((_,i)=>ctx.stroke(new Path2D(`M${g2s([i,0])}v${w.x*(w.s-1)}M${g2s([0,i])}h${w.x*(w.s-1)}`))),
+
+				//crosshair
+				isg(w.crs)?(ctx.strokeStyle=w.col.goishi_[w.q.length?w.q[w.q.length-1]:w.q_],ctx.lineWidth=w.x*.5,ctx.stroke(new Path2D(`M${_=g2s(s2g(w.crs))}v.001`))):_=w.crs,
+
+				//goishi
+				w.goban.reduce((a,x,i)=>(x?a(i,w.col.goishi[x],.95):w.hoshi[i]&&a(i,w.col.goban.sumi,.2),a),(i,c,s)=>(ctx.strokeStyle=c,ctx.lineWidth=w.x*s,ctx.stroke(new Path2D(`M${g2s([i%w.s,i/w.s|0])}v.001`)))),
+				ctx.strokeStyle=w.col.pot,
+				ctx.lineWidth=w.x*2.5,ctx.stroke(new Path2D(`M${g2s([w.s+1,w.s-1])}v.001M${g2s([-2,0])}v.001`)),
+				ctx.lineWidth=w.x*2,ctx.stroke(new Path2D(`M${g2s([w.s+1,w.s-3.5])}v.001M${g2s([-2,2.5])}v.001`)),
+				ctx.font=`${ctx.lineWidth*.5}px monospace`,
+				ctx.fillStyle=ctx.strokeStyle=w.col.goishi[1],ctx.stroke(new Path2D(`M${g2s([w.s+1,w.s-1])}v.001`)),ctx.fillText(w.agehama[1],...g2s([-2,2.5]),ctx.lineWidth),
+				ctx.fillStyle=ctx.strokeStyle=w.col.goishi[2],ctx.stroke(new Path2D(`M${g2s([-2,0])}v.001`)),ctx.fillText(w.agehama[0],...g2s([w.s+1,w.s-3.5]),ctx.lineWidth),
+
+				//crosshair
+				w.q.length&&(ctx.fillStyle=w.col.crs,ctx.fillRect(..._,...[Math.min(w.q.length,5),Math.ceil(w.q.length/5)].map(x=>x*.5*w.x))),
+				[...w.q].reverse().reduce((a,x,i)=>(ctx.strokeStyle=w.col.goishi[x],ctx.lineWidth=w.x*.4,ctx.stroke(new Path2D(`M${a}m${[i%5,i/5|0].map(y=>y*w.x*.5)}v.001`)),a),_.map(x=>x+w.x*.25)),
+				ctx.strokeStyle=w.col.crs,ctx.lineWidth=w.x*.1,ctx.stroke(new Path2D(`M${_[0]},0v${innerHeight}M0,${_[1]}h${innerWidth}`))
 			);
 
 		onpointerdown=e=>e.isPrimary&&(w.prev=[e.clientX,e.clientY]);
 		onpointermove=e=>e.isPrimary&&render(w.crs=e.pointerType=='touch'?[e.clientX,e.clientY].map((x,i)=>Math.min(Math.max(w.crs[i]+(x-w.prev[i]),0),[innerWidth,innerHeight][i])):[e.clientX,e.clientY],w.prev=[e.clientX,e.clientY]);
-		onclick=_=>isg(w.crs)?(
-			_=s2g(w.crs).reduce((a,x,i)=>a+x*w.s**i,0),
-			w.goban[_]?render(w.q.push(w.goban[_]),w.goban[_]=0):w.q.length?render(w.goban[_]=w.q.pop()):0
-		):(
-			1
+		onclick=_=>render(
+			isg(w.crs)?(
+				_=s2g(w.crs).reduce((a,x,i)=>a+x*w.s**i,0),
+				w.goban[_]?(w.q.push(w.goban[_]),w.goban[_]=0):(w.goban[_]=w.q.length?w.q.pop():[w.q_,w.q_=[0,2,1][w.q_]][0])
+			):
+			length(g2s([w.s+1,w.s-1]),w.crs)<w.x*1.25?w.q.push(1):
+			length(g2s([-2,0]),w.crs)<w.x*1.25?w.q.push(2):
+			length(g2s([w.s+1,w.s-3.5]),w.crs)<w.x?(_=w.q.filter(x=>x==2).length)&&(w.agehama[0]+=_,w.q=w.q.filter(x=>x==1)):
+			length(g2s([-2,2.5]),w.crs)<w.x?(_=w.q.filter(x=>x==1).length)&&(w.agehama[1]+=_,w.q=w.q.filter(x=>x==2)):
+			w.q.pop()
 		);
 		onresize=_=>render(
 			c.width=innerWidth*devicePixelRatio,c.height=innerHeight*devicePixelRatio,
-			ctx.scale(devicePixelRatio,devicePixelRatio),ctx.lineCap='round',
-			Object.assign(w,{o:[innerWidth/2,innerHeight/2],x:Math.min(innerWidth,innerHeight)/(w.s+1),v:innerWidth<innerHeight}),
+			ctx.scale(devicePixelRatio,devicePixelRatio),ctx.lineCap='round',ctx.textAlign='center',ctx.textBaseline='middle',
+			Object.assign(w,{o:[innerWidth/2,innerHeight/2],x:Math.min(innerWidth,innerHeight)/(w.s+5)}),
 			Object.assign(w,{crs:w.o})
 		);
 
