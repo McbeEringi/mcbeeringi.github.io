@@ -57,9 +57,9 @@
 				ctx.strokeStyle=w.col.crs,ctx.lineWidth=w.x*.1,ctx.stroke(new Path2D(`M${_[0]},0v${innerHeight}M0,${_[1]}h${innerWidth}`))
 			);
 
-		onpointerdown=e=>e.isPrimary&&(w.prev=[e.clientX,e.clientY]);
-		onpointermove=e=>e.isPrimary&&render(w.crs=e.pointerType=='touch'?[e.clientX,e.clientY].map((x,i)=>Math.min(Math.max(w.crs[i]+(x-w.prev[i]),0),[innerWidth,innerHeight][i])):[e.clientX,e.clientY],w.prev=[e.clientX,e.clientY]);
-		c.onclick=_=>render(
+		onpointerdown=e=>e.isPrimary&&(w.prev=[e.clientX,e.clientY],w.click=true);
+		onpointermove=e=>e.isPrimary&&render(w.crs=e.pointerType=='touch'?[e.clientX,e.clientY].map((x,i)=>Math.min(Math.max(w.crs[i]+(x-w.prev[i]),0),[innerWidth,innerHeight][i])):[e.clientX,e.clientY],w.prev=[e.clientX,e.clientY],w.click=false);
+		onpointerup=(e,_)=>e.isPrimary&&w.click&&render(
 			isg(w.crs)?(
 				_=s2g(w.crs).reduce((a,x,i)=>a+x*w.s**i,0),
 				w.goban[_]?(w.q.push(w.goban[_]),w.goban[_]=0):(w.goban[_]=w.q.length?w.q.pop():[w.q_,w.q_=[0,2,1][w.q_]][0])
