@@ -6,5 +6,5 @@
 	header>button:hover+nav,header>button:focus+nav,nav:hover,nav:focus-within{transform:none;opacity:1;visibility:visible;pointer-events:auto;}
 </style><header><button class="button">McbeEringi</button><nav class="input">`+`
 ,Top;sky/,Sky Stuff;apps/,Apps;ta/,TA.js;petit/,PetitJS;mc/,Minecraft;
-translate.google.com/translate?sl=ja&tl=en&u=${encodeURIComponent(location)},Translate;twitter.com/mcbeeringi,Twitter;github.com/mcbeeringi,GitHub;qiita.com/mcbeeringi,Qiita;youtube.com/@mcbeeringi,YouTube;
+translate.google.com/translate?sl=ja&tl=en&u=${encodeURIComponent(location)},Translate;misskey.io/@mcbeeringi,misskey.io;github.com/mcbeeringi,GitHub;qiita.com/mcbeeringi,Qiita;youtube.com/@mcbeeringi,YouTube;twitter.com/mcbeeringi,Twitter;
 </nav></header>`.replace(/(.*?),(.*?);/g,(_,x,y,p)=>`<a class="button" href="${p<60?root:'https://'}${x}">${y}</a>`)],['beforeend',`<hr><footer>2018~ @McbeEringi.｡:+*<br>MIT License</footer>`]].map(x=>d.body.insertAdjacentHTML(...x)))))(document);
