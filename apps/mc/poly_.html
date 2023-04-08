@@ -21,12 +21,12 @@
 	<h2>.obj</h2>
 	16^3=1block<br>
 	Must be Tris or Quads<br>
-	<input class="input" type="file" id="finp" onchange="read(this)"><span id="finpl"></span>
+	<input class="zab" type="file" id="finp" onchange="read(this)"><span id="finpl"></span>
 	<hr>
 	<h2>settings</h2>
-	<span style="display:inline-block;width:6em;text-align:right;">position:</span><input class="input" type="text" id="vfx" value="[v[2],v[1],v[0]];"><br>
-	<span style="display:inline-block;width:6em;text-align:right;">normal:</span><input class="input" type="text" id="vnfx" value="[vn[0],vn[1],vn[2]];"><br>
-	<span style="display:inline-block;width:6em;text-align:right;">tex_uv:</span><input class="input" type="text" id="vtfx" value="[vt[0],vt[1]];"><br>
+	<span style="display:inline-block;width:6em;text-align:right;">position:</span><input class="zab" type="text" id="vfx" value="[v[2],v[1],v[0]];"><br>
+	<span style="display:inline-block;width:6em;text-align:right;">normal:</span><input class="zab" type="text" id="vnfx" value="[vn[0],vn[1],vn[2]];"><br>
+	<span style="display:inline-block;width:6em;text-align:right;">tex_uv:</span><input class="zab" type="text" id="vtfx" value="[vt[0],vt[1]];"><br>
 	<br>
 	<label>
 		format:
@@ -39,11 +39,11 @@
 		</select>
 	</label>
 	<div id="frmc">
-		<label>geometry.<input class="input" id="mname" value="armor_stand"></label>
-		<textarea class="input" id="frmtmp"></textarea>
+		<label>geometry.<input class="zab" id="mname" value="armor_stand"></label>
+		<textarea class="zab" id="frmtmp"></textarea>
 	</div>
 	<hr>
-	<span class="button" id="run">Run</span><br>
+	<span class="zab bgca" id="run">Run</span><br>
 	<hr>
 	<h2 id="outtitle"></h2>
 	<form id="outm" onchange="outt.style.display=['block','none'][this.m.value];outf.style.display=['none','block'][this.m.value];">
@@ -51,8 +51,8 @@
 		<label><input type="radio" name="m" value="0">text</label><br>
 	</form>
 	<div id="outt" style="display:none;">
-		<textarea class="input" id="tout"></textarea><br>
-		<span class="button" onclick="navigator.clipboard.writeText(tout.value).then(()=>{this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);});">copy</span>
+		<textarea class="zab" id="tout"></textarea><br>
+		<span class="zab bgca" onclick="navigator.clipboard.writeText(tout.value).then(()=>{this.textContent='copied!';setTimeout(()=>this.textContent='copy',1000);});">copy</span>
 	</div>
 	<div id="outf">
 		<br>

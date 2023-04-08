@@ -17,11 +17,11 @@
 	<style>#diffuse,textarea{width:100%;font-family:monospace;}#diffuse{max-width:1024px;image-rendering:pixelated;}.ofs{overflow:scroll;}</style>
 	<h1>dither</h1>
 	<hr>
-	<input type="file" class="input" id="f"><br>
+	<input type="file" class="zab" id="f"><br>
 	<br>
-	<label>height: <input class="input" id="ih" value="256">px</label><br>
-	rgba→mono: <textarea class="input" id="il">return(col[0]*.298912+col[1]*.586611+col[2]*.114478)*col[3]+0*(1-col[3]);</textarea><br>
-	dither: <textarea class="input" id="im">[//→,↓,weight
+	<label>height: <input class="zab" id="ih" value="256">px</label><br>
+	rgba→mono: <textarea class="zab" id="il">return(col[0]*.298912+col[1]*.586611+col[2]*.114478)*col[3]+0*(1-col[3]);</textarea><br>
+	dither: <textarea class="zab" id="im">[//→,↓,weight
 
 	//Floyd-Steinberg
 	//[ 1,0,7/16],[-1,1,3/16],[ 0,1,5/16],[ 1,1,1/16]
@@ -29,10 +29,10 @@
 	//Atkinson
 	[ 1,0,1/8],[ 2,0,1/8],[-1,1,1/8],[ 0,1,1/8],[ 1,1,1/8],[ 0,2,1/8]
 ]</textarea><br>
-	<label>gap: <input class="input" id="ig" value="[0.7,1]"></label><br>
-	<label>padding: <input class="input" id="ip" value="1"></label><br>
+	<label>gap: <input class="zab" id="ig" value="[0.7,1]"></label><br>
+	<label>padding: <input class="zab" id="ip" value="1"></label><br>
 	<br>
-	<button type="button" class="button" id="b">run</button>
+	<button type="button" class="zab bgca" id="b">run</button>
 	<hr>
 	<img id="diffuse">
 	<div class="ofs"><pre id="out"></pre></div>
