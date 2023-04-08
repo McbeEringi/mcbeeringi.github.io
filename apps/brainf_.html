@@ -12,7 +12,7 @@
 	<meta name="theme-color" content="#214"/>
 
 	<link rel="stylesheet" href="../src/style.css">
-	<link rel="stylesheet" href="../src/toggle.css">
+	<link rel="stylesheet" href="../src/comp.css">
 </head>
 <body>
 	<style>
@@ -34,18 +34,18 @@
 	<hr>
 	<h2>encoder</h2>
 	<pre id="srcout"></pre>
-	<button class="button" onclick="srcout.textContent=enmain(eninp.value,mmind.value)">run</button>  <button class="button" onclick="romaji(eninp.value).then(x=>srcout.textContent=enmain(x,mmind.value))">run (ja)</button>
-	<label>chained threshold: <input class="input" type="number" id="mmind" value="10" min="0" max="127" step="1"> [0~127] less calc <<< less memory</label><br>
+	<button class="zab bgca" onclick="srcout.textContent=enmain(eninp.value,mmind.value)">run</button>  <button class="zab bgca" onclick="romaji(eninp.value).then(x=>srcout.textContent=enmain(x,mmind.value))">run (ja)</button>
+	<label>chained threshold: <input class="zab" type="number" id="mmind" value="10" min="0" max="127" step="1"> [0~127] less calc <<< less memory</label><br>
 	<br>
-	inp: <button class="button" onclick="eninp.select();">select all</button><br>
-	<textarea class="input" id="eninp">Hello World!</textarea><br>
+	inp: <button class="zab bgca" onclick="eninp.select();">select all</button><br>
+	<textarea class="zab" id="eninp">Hello World!</textarea><br>
 	morphed by <a href="https://labs.goo.ne.jp/api/jp/morphological-analysis/">goo 形態素解析API</a><br>
 	<hr>
 	<h2>interpreter</h2>
 	<div id="mv"><div></div><p>0</p></div>
 	<pre id="out"></pre>
-	<button class="button" id="btn">run</button> <button class="button" id="stopb">stop</button> <label for="skipcb">skip:</label><input type="checkbox" id="skipcb" class="toggle"> <span>speed:<input type="range" id="spd" min="0" max="200" value="20"></span> <br>
-	src: <button class="button" id="qbtn">paste &amp; run</button> <button class="button" onclick="src.select();">select all</button>
+	<button class="zab bgca" id="btn">run</button> <button class="zab bgca" id="stopb">stop</button> <label for="skipcb">skip:</label><input type="checkbox" id="skipcb" class="toggle"> <span>speed:<input type="range" id="spd" min="0" max="200" value="20"></span> <br>
+	src: <button class="zab bgca" id="qbtn">paste &amp; run</button> <button class="zab bgca" onclick="src.select();">select all</button>
 	<div class="wrapper">
 	<textarea style="background-color:#0008;color:#fff;border:0;resize:none;" id="src" >++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
 >>>>>++.	H
@@ -63,9 +63,9 @@
 <+[,.]			input</textarea><pre id="srcprv"></pre>
 	</div>
 	<br>
-	","inp: <button class="button" onclick="inp.select();">select all</button>
+	","inp: <button class="zab bgca" onclick="inp.select();">select all</button>
 	<div class="wrapper">
-	<textarea class="input" id="inp">To use input command,
+	<textarea class="zab" id="inp">To use input command,
 type here before run.</textarea><pre id="inpprv"></pre>
 	</div>
 	<hr>

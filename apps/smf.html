@@ -10,7 +10,7 @@
 	<meta name="theme-color" content="#214"/>
 
 	<link rel="stylesheet" href="../src/style.css">
-	<link rel="stylesheet" href="../src/toggle.css">
+	<link rel="stylesheet" href="../src/comp.css">
 	<script src="../src/smf.js"></script>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 </head>
@@ -20,13 +20,13 @@
 	</style>
 	<h1>smf</h1>
 	<hr>
-	<input type="file" class="input" id="f">
-	<button id="lbtn" class="button">load</button>
-	<button id="pbtn" class="button">play</button>
-	<button id="sbtn" class="button">download</button>
+	<input type="file" class="zab" id="f">
+	<button id="lbtn" class="zab bgca">load</button>
+	<button id="pbtn" class="zab bgca">play</button>
+	<button id="sbtn" class="zab bgca">download</button>
 	<label>record wav<input type="checkbox" class="toggle" id="reccb"></label><br>
 	<canvas id="c" style="max-width:100%;"></canvas><br>
-	<textarea id="ta" class="input" spellcheck="false"></textarea>
+	<textarea id="ta" class="zab" spellcheck="false"></textarea>
 	<script>
 		TA.editor(ta);
 		let txt='select_file > load > play',path=[];

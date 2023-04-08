@@ -20,11 +20,11 @@
 	</style>
 	<h1>bayer</h1>
 	<hr>
-	<input type="file" class="input" id="f"><br>
+	<input type="file" class="zab" id="f"><br>
 	<br>
 
-	<label>height: <input class="input" id="ih" value="189"></label><br>
-	rgba→bool: <textarea class="input" id="il">const lum=(col[0]*.298912+col[1]*.586611+col[2]*.114478)*col[3]+0*(1-col[3]),
+	<label>height: <input class="zab" id="ih" value="189"></label><br>
+	rgba→bool: <textarea class="zab" id="il">const lum=(col[0]*.298912+col[1]*.586611+col[2]*.114478)*col[3]+0*(1-col[3]),
 	p=[i%w,Math.floor(i/w)],
 	bayer=[
 		1,9,3,11,
@@ -33,12 +33,12 @@
 		16,8,14,6
 	];
 return lum*17>bayer[p[0]%4+p[1]%4*4];</textarea><br>
-	<label>gap: <input class="input" id="ig" value="[0.7,1]"></label><br>
-	<label>padding: <input class="input" id="ip" value="1"></label><br>
-	<label>font-size: <input class="input" id="ifs" value="16"></label><br>
+	<label>gap: <input class="zab" id="ig" value="[0.7,1]"></label><br>
+	<label>padding: <input class="zab" id="ip" value="1"></label><br>
+	<label>font-size: <input class="zab" id="ifs" value="16"></label><br>
 	<hr>
 	<video src="badapple.mp4" controls id="v"></video><br>
-	<button type="button" class="button" id="b">full screen</button><br>
+	<button type="button" class="zab bgca" id="b">full screen</button><br>
 	<div class="ofs"><pre id="out"></pre></div>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<script>

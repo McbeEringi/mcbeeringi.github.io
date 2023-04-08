@@ -17,27 +17,27 @@
 <style>#c,textarea{width:100%;}</style>
 <h1>ant</h1>
 <hr>
-ants:{p:[x,y],r:rotindex[-length~length]}<textarea class="input" id="ants">[
+ants:{p:[x,y],r:rotindex[-length~length]}<textarea class="zab" id="ants">[
 	{"p":[256,256],"r":0}
 ]</textarea>
-rot:[x,y]<textarea class="input" id="rot">[
+rot:[x,y]<textarea class="zab" id="rot">[
 	[0,1],
 	[1,0],
 	[0,-1],
 	[-1,0]
 ]</textarea>
-grid:{c:"rrggbbaa",r:rotindex[-length~length]}||rotindex[-length~length]<textarea class="input" id="grid">[
+grid:{c:"rrggbbaa",r:rotindex[-length~length]}||rotindex[-length~length]<textarea class="zab" id="grid">[
 	{"c":"00000000","r":1},
 	-1,1,1,-1,
 	-1,1,1,1,
 	1,1,-1,1,
 	1,-1,-1
 ]</textarea>
-size:<input class="input" id="size" type="number" value="512">
+size:<input class="zab" id="size" type="number" value="512">
 speed:<input id="spd" type="range" min="1" max="512" step="1" value="128">
-<button class="button" onclick="init()">set</button>
-<button class="button" onclick="if(!timer)timer=setInterval(main,1);">run</button>
-<button class="button" onclick="clearInterval(timer);timer=0;log.textContent=`tick: ${tick}\npos:\n${pli.map(x=>x.p.join(', ')).join('\n')}`;">stop</button>
+<button class="zab bgca" onclick="init()">set</button>
+<button class="zab bgca" onclick="if(!timer)timer=setInterval(main,1);">run</button>
+<button class="zab bgca" onclick="clearInterval(timer);timer=0;log.textContent=`tick: ${tick}\npos:\n${pli.map(x=>x.p.join(', ')).join('\n')}`;">stop</button>
 <hr>
 <pre id="log"></pre>
 <canvas id="c"></canvas>

@@ -12,24 +12,24 @@
 	<meta name="theme-color" content="#214"/>
 
 	<link rel="stylesheet" href="../src/style.css">
-	<link rel="stylesheet" href="../src/toggle.css">
+	<link rel="stylesheet" href="../src/comp.css">
 </head>
 <body>
-	<style>textarea{width:100%;max-height:100vh;font-family:monospace !important;}.input.button{text-align:initial;}input[type=range]{vertical-align:middle;}</style>
+	<style>textarea{width:100%;max-height:100vh;font-family:monospace !important;}input[type=range]{vertical-align:middle;}</style>
 	<h1>brainf***</h1>
 	<a href="brainf_.html">legacy</a>
 	<hr>
 	<div id="enwrap">
 		<h2>encoder</h2>
-		<textarea class="input" spellcheck="false" placeholder="text">Hello World!</textarea>
-		<label><input class="input" type="number" value="10" min="0" max="127" step="1" placeholder="chained threshold"> [0~127] less calc <<< less memory</label><br>
-		<button class="button">run</button>
-		<textarea class="input button" spellcheck="false" placeholder="brainf***" readonly></textarea>
+		<textarea class="zab" spellcheck="false" placeholder="text">Hello World!</textarea>
+		<label><input class="zab" type="number" value="10" min="0" max="127" step="1" placeholder="chained threshold"> [0~127] less calc <<< less memory</label><br>
+		<button class="zab bgca">run</button>
+		<textarea class="zab bgca" spellcheck="false" placeholder="brainf***" readonly></textarea>
 	</div>
 	<hr>
 	<div id="dewrap">
 		<h2>decoder</h2>
-		<textarea class="input" spellcheck="false" placeholder="brainf***">++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
+		<textarea class="zab" spellcheck="false" placeholder="brainf***">++++++++++[->++++++++++>+++>++++++++++++>+++++>+++++++<<<<<]
 >>>>>++.	H
 <<<<+.		e
 +++++++..	ll
@@ -43,11 +43,11 @@
 >>>----.
 >>++[>+++++<-]>.\n
 <+[,.]		input</textarea>
-		<textarea class="input" spellcheck="false" placeholder="ASCII">To use input command,
+		<textarea class="zab" spellcheck="false" placeholder="ASCII">To use input command,
 type here before run.</textarea>
-		<button class="button">run</button> <button class="button">discard</button> <label>transpile:<input type="checkbox" class="toggle" checked></label> <label>speed:<input type="range" min="-256" max="-1"></label> <label>pause:<input type="checkbox" class="toggle"></label> <label>log:<input type="checkbox" class="toggle" checked></label>
-		<textarea class="input" spellcheck="false" placeholder="log" readonly style="white-space:pre;"></textarea>
-		<textarea class="input button" spellcheck="false" placeholder="text" readonly style="white-space:pre;height:100vh;"></textarea>
+		<button class="zab bgca">run</button> <button class="zab bgca">discard</button> <label>transpile:<input type="checkbox" class="toggle" checked></label> <label>speed:<input type="range" min="-256" max="-1"></label> <label>pause:<input type="checkbox" class="toggle"></label> <label>log:<input type="checkbox" class="toggle" checked></label>
+		<textarea class="zab" spellcheck="false" placeholder="log" readonly style="white-space:pre;"></textarea>
+		<textarea class="zab bgca" spellcheck="false" placeholder="text" readonly style="white-space:pre;height:100vh;"></textarea>
 		build: 2203191<br>
 		<a href="https://github.com/fabianishere/brainfuck/blob/master/examples/mandelbrot/mandelbrot.bf">mandelbrot example</a>
 	</div>

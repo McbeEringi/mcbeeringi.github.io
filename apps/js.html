@@ -83,7 +83,7 @@ console.log("World.");
 
 			console.clear=_=>pre.textContent='';
 			['warn','info','error','log'].forEach(x=>console[x]=(...y)=>(ntv[x](...y),llog(y)));
-			panel.insertAdjacentHTML('beforeend','Run,Save,Copy URL,Copy Runner'.split(',').map(x=>`<button class="button">${x}</button>`).join(' '));
+			panel.insertAdjacentHTML('beforeend','Run,Save,Copy URL,Copy Runner'.split(',').map(x=>`<button class="zab bgca">${x}</button>`).join(' '));
 			[...panel.children].forEach((x,i)=>x.onclick=[
 				_=>Object.getPrototypeOf(async()=>{}).constructor(cm.state.doc)(),
 				save,

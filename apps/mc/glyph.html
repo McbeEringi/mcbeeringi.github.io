@@ -30,22 +30,22 @@
 <hr>
 <h2>config</h2>
 <div id="configp">
-	<label><span>img:</span><input class="input" id="csize" type="number" value="64" onchange="csize_(this.value);dl_();">px²</label><br>
-	<label><span>size:</span><input class="input" id="fsize" type="number" value="56" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
-	<label><span>font:</span><input class="input" id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);dl_();"></label> or <input class="input" type="file" onchange="load(this);" accept=".ttf,.otf,.woff,.woff2"><br>
+	<label><span>img:</span><input class="zab" id="csize" type="number" value="64" onchange="csize_(this.value);dl_();">px²</label><br>
+	<label><span>size:</span><input class="zab" id="fsize" type="number" value="56" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
+	<label><span>font:</span><input class="zab" id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);dl_();"></label> or <input class="zab" type="file" onchange="load(this);" accept=".ttf,.otf,.woff,.woff2"><br>
 	<a id="dl" href="#">…</a><br>
 	<br>
 	<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
-	<label>list:<input class="input" id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
+	<label>list:<input class="zab" id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
 	<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
 </div>
 <br>
-<button class="button" id="expb" onclick="exp(expl.value,expmode.checked,expmcpack.checked);">export</button>
+<button class="zab bgca" id="expb" onclick="exp(expl.value,expmode.checked,expmcpack.checked);">export</button>
 <progress id="pbar" value="0"></progress>
 <pre id="log"></pre><pre id="log_"></pre>
 <hr>
 <h2>preview</h2>
-<label><span>block:</span><input class="input"id="ward" value="00" onchange="set(this.value);dl_();"></label>
+<label><span>block:</span><input class="zab"id="ward" value="00" onchange="set(this.value);dl_();"></label>
 <canvas id="c">canvas</canvas>
 <hr>
 <script>
