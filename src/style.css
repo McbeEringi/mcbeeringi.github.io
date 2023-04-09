@@ -1,4 +1,4 @@
-:root{--k:#223;--a:#6ca8;--w:#ffe;--s:#8888;--bc:var(--w);--fc:var(--k);--bor:max(2px,.2em);background-color:var(--bc);}
+:root{--k:#223;--a:#6ca8;--w:#ffe;--s:#8884;--bc:var(--w);--fc:var(--k);--bor:max(2px,.2em);background-color:var(--bc);}
 @media(prefers-color-scheme:dark){:root{--bc:var(--k);--fc:var(--w);}:link{color:#8cf;}:visited{color:#c8f;}:link:active,:visited:active{color:#f8c;}}
 :root::before{content:"";position:fixed;width:100%;height:100%;z-index:-1;background:0 0/64px url(../img/asterisk.svg);opacity:.1;}
 .zab,.stuff>*,:root{color:var(--fc);font-family:sans-serif;transition:.2s;}
