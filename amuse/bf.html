@@ -15,9 +15,9 @@
 <button onclick="ltxt='';out.value=enmain(inp.value,mmind.value);">run</button>
 <textarea id="out"></textarea>
 <pre id="log"></pre>
-<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
 <script>
 'use strict';
+requestIdleCallback||(requestIdleCallback=x=>setTimeout(x),cancelIdleCallback=x=>clearTimeout(x));
 let ltxt='',lid,clog=console.log;
 console.log=(...x)=>{cancelIdleCallback(lid);clog(...x);ltxt+=x.map(y=>JSON.stringify(y)).join(', ')+'\n';lid=requestIdleCallback(()=>log.textContent=ltxt);}
 const enmain=(s,md)=>{

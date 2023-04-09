@@ -21,7 +21,6 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
-<script src="../../src/requestIdleCallback.min.js"></script>
 <script src="mcmf.js"></script>
 
 
@@ -50,6 +49,7 @@
 <hr>
 <script>
 'use strict';
+requestIdleCallback||(requestIdleCallback=x=>setTimeout(x));
 var ctx=c.getContext('2d');
 const set=x=>{ctx.clearRect(0,0,c.width,c.height);var li=[];
 	for(var i=0;i<256;i++){
