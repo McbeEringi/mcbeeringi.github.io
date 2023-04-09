@@ -21,7 +21,7 @@
 		<script>
 			var reader = new FileReader();
 			var r = true;
-			Tesseract.recognize("../img/6x6.png","jpn+eng",{
+			Tesseract.recognize("../../img/6x6.png","jpn+eng",{
 				logger:(m) => {
 					console.log(m);
 					document.getElementById("llog").innerText += m.status+": "+m.progress*100+"%\n";
