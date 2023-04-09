@@ -15,10 +15,10 @@
 	<hr>
 	<textarea id="out" class="zab"></textarea>
 	<pre id="log"></pre>
-	<script src="https://mcbeeringi.github.io/src/requestIdleCallback.min.js"></script>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<script>
 		'use strict';
+		requestIdleCallback||(requestIdleCallback=x=>setTimeout(x),cancelIdleCallback=x=>clearTimeout(x));
 		TA.sizer(inp);TA.sizer(out);
 		let ltxt='',lid,clog=console.log;
 		console.log=(...x)=>{cancelIdleCallback(lid);clog(...x);ltxt+=x.map(y=>JSON.stringify(y))+'\n';lid=requestIdleCallback(()=>log.textContent=ltxt);}
