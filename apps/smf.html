@@ -11,7 +11,6 @@
 
 	<link rel="stylesheet" href="../src/style.css">
 	<link rel="stylesheet" href="../src/comp.css">
-	<script src="../src/smf.js"></script>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 </head>
 <body>
@@ -45,7 +44,7 @@
 			aa=actx.createAnalyser();
 			aaa=new Uint8Array((aa.fftSize=8192,aa.smoothingTimeConstant=0,1024)),
 			recn=actx.createMediaStreamDestination(),
-			mr=new MediaRecorder(recn.stream);
+			mr=new MediaRecorder(recn.stream),
 			draw=()=>{
 				const stroke=(x,l)=>{
 					ctx.strokeStyle=x;
@@ -64,6 +63,128 @@
 				ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText(txt,0,16);
 				requestAnimationFrame(draw);
 			},
+			smfin=w=>((w,r=(p,l)=>1<l?w.slice(p,p+l).reduce((a,x)=>a<<8|x):w[p])=>r(0,4)==0x4d546864?{
+				header:{format:r(8,2),division:r(12)&0x80?[0x80-(r(12)&0x7f),r(13)]:r(12,2)},
+				tracks:[...Array(r(10,2))].reduce((a,_)=>(a.a.push(a.r(4)==0x4d54726b?((p=a.r(4)+a.p,dt,ch,x,b=[])=>{
+					if(r(p-3,3)!=0xff2f00)return'EOT not found.';
+					while(a.p<p){
+						dt=a.n();(x=r(a.p))&0x80?(_=x,a.p++):x=_;ch=x&0xf;
+						b.push({dt,...[
+							_=>a.ro({ch,name:'noteOff'},'note','vel'),
+							_=>a.ro({ch,name:'noteOn'},'note','vel'),
+							_=>a.ro({ch,name:'polyPress'},'note','vel'),
+							_=>a.ro({ch,name:'ctrl'},'ctrl','value'),
+							_=>a.ro({ch,name:'prg'},'prg'),
+							_=>a.ro({ch,name:'chPress'},'vel'),
+							_=>a.ro({ch,name:'bend',value:(a.r()|(a.r()<<7))-0x2000}),
+							{
+								0:_=>({name:'sysEx0',data:[0xf0,..._()]}),7:_=>({name:'sysEx7',data:_()}),
+								15:_=>({name:'meta',type:a.r()&0x7f,data:_()})
+							}[ch]
+						][x>>4&0b111]((_=a.n())=>w.slice(a.p,a.p+=_))});
+					}
+					return b;
+				})():'MTrk not found.'),a),{
+					a:[],p:8+r(4,4),n(){let x=0;while(1){x=x<<7|r(this.p)&0x7f;if(~r(this.p++)&0x80)return x;}},
+					r(l=1){return r(this.p,l,this.p+=l);},ro(a,...x){return x.reduce((a,x)=>(a[x]=this.r(),a),a);}
+				}).a
+			}:'MThd not found.')(new Uint8Array(w)),
+			smfout=w=>{
+				let vln=x=>{let s=[];while(1){s.unshift((x&0x7f)|(s.length?0x80:0));x>>=7;if(!x)break;}return s;},
+					num=(x,l)=>new Array(l--).fill().map((_,i)=>(x>>(8*(l-i)))&0xff),
+					r,rs=(x,y,...z)=>((z=z.map(_=>_&0x7f))&&(r==(r=x+(y.ch&0xf))))?z:[r,...z];
+				return new Blob([new Uint8Array([
+					0x4d,0x54,0x68,0x64, 0,0,0,6,
+					...num(w.header.format,2),
+					...num(w.header.ntrks||w.tracks.length,2),
+					...typeof w.header.division=='number'?num(w.header.division&0x7fff,2):[0x80|0x80-(w.header.division.smpte&0x7f),w.header.division.tpf&0xff],
+					...w.tracks.flatMap(x=>{
+						x=x.flatMap(y=>[
+							...vln(y.dt),
+							...({
+								noteOff:()=>rs(0x80,y,y.note,y.vel),
+								noteOn:()=>rs(0x90,y,y.note,y.vel),
+								polyPress:()=>rs(0xa0,y,y.note,y.vel),
+								ctrl:()=>rs(0xb0,y,y.ctrl,y.value),
+								prg:()=>rs(0xc0,y,y.prg),
+								chPress:()=>rs(0xd0,y,y.vel),
+								bend:(z=y.value+0x2000)=>rs(0xe0,y,z,z>>7),
+								sysEx0:()=>[r=0xf0,...vln(y.data.length-1),...y.data.slice(1)],
+								sysEx7:()=>[r=0xf7,...vln(y.data.length),...y.data],
+								meta:()=>[r=0xff,y.type&0x7f,...vln(y.data.length),...y.data]
+							}[y.name]())
+						]);
+						return[0x4d,0x54,0x72,0x6b,...num(x.length,4),...x];
+					})
+				]).buffer]);
+			},
+			smfuni=w=>w.tracks//returns unified track with absolute time 't'
+				.flatMap((x,trk)=>x.reduce((a,y)=>(y={...y,t:a[0]+=y.dt,trk},delete y.dt,a.push(y),a),[0]).slice(1))//absolutify
+				.sort((a,b)=>a.t-b.t)
+				.reduce((a,x)=>(
+					[x.t,a[0]]=[x.t-a[0],x.t],//relativify & store
+					x.t=a[1]*x.t+a[a.length-1].t,//absolutify after scaling
+					x.name=='meta'&&x.type==0x51&&(a[1]=((x.data[0]<<16)|(x.data[1]<<8)|x.data[2])/w.header.division*1e-6),//get tempo
+					a.push(x),a),[0,0,{t:0}]).slice(3),
+//json format
+/*
+{
+	header:{
+		format:Uint16,
+		ntrks:Uint16,
+		division:Int16 or{smpte,tpf}
+	},
+	tracks:[
+		[
+			event(see l17~l27)
+			...
+		]
+		...
+	]
+}
+*/
+
+//example
+/*
+smfin(
+	new Blob([new Uint8Array(`
+		4d 54 68 64
+		00 00 00 06
+		00 01
+		00 02
+		00 30
+
+		4d 54 72 6b
+		00 00 00 2a
+		00 ff 01 04 74 65 73 74
+		00 ff 02 02 43 52
+		00 ff 03 05 74 69 74 6c 65
+		00 ff 51 03 07 a1 20
+		00 ff 58 04 04 02 18 08
+		00 ff 2f 00
+
+		4d 54 72 6b
+		00 00 00 17
+		00 90 3c 7f
+		30    3c 00
+		00    3e 7f
+		30    3e 00
+		00    40 7f
+		60    40 00
+		00 ff 2f 00
+	`.match(/[\da-f]{2}/g).map(x=>parseInt(x,16))).buffer])
+).then(smfout).then(smfin).then(console.log);
+*/
+//TODO
+/*
+sysEx
+	master volume : f0 7f 7f 04 01 LL MM f7
+		(LL&0x7f)&((MM&0x7f)<<7)
+https://ja.wikipedia.org/wiki/General_MIDI
+
+cc,rpn,	prg
+http://www.eonet.ne.jp/~a-ton/dtm/gmcc/index.html
+*/
 			fmt=(w=Function(`return(${ta.value});`)())=>smfuni(w).reduce((a,x)=>{
 				if(x.name=='noteOn'&&x.vel>0){
 					if(a[x.ch].notes[x.note].pushed!=0){
@@ -94,7 +215,8 @@
 				{numberOfChannels:c,sampleRate:r},l4=x=>[x,x>>>8,x>>>16,x>>>24],l2=x=>[x,x>>>8],
 				x=(x=>[...Array(x[0].length)].flatMap((_,i)=>x.flatMap(y=>l2(y[i]*0x7fff))))([...Array(c)].map((_,i)=>w.getChannelData(i)))
 			)=>new Uint8Array([82,73,70,70,l4(36+x.length),87,65,86,69,102,109,116,32,16,0,0,0,1,0,l2(c),l4(r),l4(r*(c*=2)),l2(c),16,0,100,97,116,97,l4(x.length),x].flat()).buffer)(w),
-			dl=(x,n)=>{const a=document.createElement('a');a.download=n;a.href=URL.createObjectURL(x);a.click();URL.revokeObjectURL(a.href);};
+			dl=(x,n)=>{const a=document.createElement('a');a.download=n;a.href=URL.createObjectURL(x);a.click();URL.revokeObjectURL(a.href);},
+			td=new TextDecoder('sjis');
 
 		draw(c.width=2048,c.height=512,ctx.lineWidth=2);
 		master.connect(actx.destination);
@@ -102,8 +224,9 @@
 		master.connect(recn);
 		mr.ondataavailable=e=>new Response(e.data).arrayBuffer().then(x=>new Promise((f,r)=>actx.decodeAudioData(x,f,r))).then(x=>dl(new Blob([toWav(x,console.log(x))]),f.files[0].name+'.wav'));
 		lbtn.onclick=async w=>{
-			w=await smfin(f.files[0]);
-			w.tracks.forEach(x=>x.forEach(y=>{if(y.data)y.data=[...y.data]}));
+			w=smfin(await new Response(f.files[0]).arrayBuffer());
+			w.tracks.forEach(x=>x.forEach(y=>y.data&&(y.name=='meta'&&0<y.type&&y.type<8&&(y[[,'text','copyright','trackname','instrument','lyric','marker','queue'][y.type]]=td.decode(y.data)),y.data=[...y.data])));
+			console.log(w);
 			ta.value=JSON.stringify(w,null,'\t').replace(/\n\t{4,}(.*)|\n\t{3}([\]\}].*)/g,'$1$2');
 			TA.ah(ta);
 		};
