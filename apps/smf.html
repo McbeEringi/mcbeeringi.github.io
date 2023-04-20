@@ -37,7 +37,7 @@
 				n=[...Array(Math.log2(w.length))],br=x=>n.reduce((a,_,i)=>(a<<1)|(x>>>i&1),0),trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
 				pm=(a,b,[c,d])=>[[a+c,b+d],[a-c,b-d]],mul=(a,b,c,d)=>[a*c-b*d,a*d+b*c],core=([a,b],[c,d],t)=>pm(a,b,mul(c,d,Math.cos(t*=-Math.PI),Math.sin(t)))
 			)=>trs(n.reduce((a,x,i)=>(x=2**i,[...Array(a.length/2)].forEach((_,j)=>[a[i+j],a[i+j+x]]=core(a[(i=(j/x|0)*x*2)+(j%=x)],a[i+j+x],j/x)),a),w.map((_,i)=>[w[br(i)],0]))))(),
-			pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(w=>actx.createPeriodicWave(
+			pwav=[[0,0,0,0,0,0,0,1],[0,0,0,0,0,0,1,1],[0,0,0,0,1,1,1,1],[1,1,1,1,1,1,0,0],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(w=>actx.createPeriodicWave(
 				...fft(w.flatMap(x=>Array(4096/w.length).fill(x*2-1))).map(x=>new Float32Array([0,...x.slice(1)]))
 			)),
 			master=actx.createGain(),//DynamicsCompressor(),
