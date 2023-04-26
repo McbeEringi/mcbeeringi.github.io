@@ -22,7 +22,7 @@
 	<script>
 		let timer;
 		ta.value=decodeURIComponent(location.hash.slice(1))||'# Hello World!\n---\n- にゃんにゃん\n- にゃーん';
-		TA.ah(ta);
+		TA.sizer(ta);
 		(ta.oninput=_=>(
 			timer&&clearTimeout(timer),
 			timer=setTimeout(_=>location.hash=encodeURIComponent(ta.value),3000),
