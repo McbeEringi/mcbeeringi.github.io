@@ -78,7 +78,7 @@ const exp=(list,mode,mcpack)=>{
 	log_.textContent='';
 	var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)),zip=new JSZip(),fontFolder=zip.folder('font');
 	if(list){
-		list = list.split(',').map(x=>x.split('~')).map(x=>{if(x[1])return [...Array(parseInt(x[1],16)-parseInt(x,16)+1).keys()].map(y=>(y+parseInt(x[0],16)).toString(16).toUpperCase());else return x;}).join(',').split(',');
+		list = list.split(',').map(x=>x.split('~')).map(x=>{if(x[1])return [...Array(parseInt(x[1],16)-parseInt(x,16)+1).keys()].map(y=>(y+parseInt(x[0],16)).toString(16).toUpperCase());else return x;}).join(',').split(',').map(x=>('00'+x.toString(16)).slice(-2));
 		console.log(list);
 		if(mode)arr=list;else arr=arr.filter(x=>!(list.includes(x)));
 	}else if(mode)return;
