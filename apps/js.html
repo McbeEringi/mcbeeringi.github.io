@@ -15,15 +15,15 @@
 </head>
 <body>
 	<script type="module">
-		import { EditorView, lineNumbers, highlightActiveLineGutter, drawSelection, dropCursor, rectangularSelection, highlightActiveLine, keymap, showPanel } from "https://codemirror.net/try/mods/@codemirror-view.js";
-		import { EditorState } from "https://codemirror.net/try/mods/@codemirror-state.js";
-		import { indentUnit, foldGutter, indentOnInput, bracketMatching, foldKeymap } from "https://codemirror.net/try/mods/@codemirror-language.js";
-		import { history, defaultKeymap, historyKeymap, indentWithTab } from "https://codemirror.net/try/mods/@codemirror-commands.js";
-		import { highlightSelectionMatches, searchKeymap } from "https://codemirror.net/try/mods/@codemirror-search.js";
-		import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "https://codemirror.net/try/mods/@codemirror-autocomplete.js";
-		import { lintKeymap } from "https://codemirror.net/try/mods/@codemirror-lint.js";
-		import { oneDark } from 'https://codemirror.net/try/mods/@codemirror-theme-one-dark.js';
-		import { javascript } from 'https://codemirror.net/try/mods/@codemirror-lang-javascript.js';
+		import { EditorView, lineNumbers, highlightActiveLineGutter, drawSelection, dropCursor, rectangularSelection, highlightActiveLine, keymap, showPanel } from "../src/cm/@codemirror-view.js";
+		import { EditorState } from "../src/cm/@codemirror-state.js";
+		import { indentUnit, foldGutter, indentOnInput, bracketMatching, foldKeymap } from "../src/cm/@codemirror-language.js";
+		import { history, defaultKeymap, historyKeymap, indentWithTab } from "../src/cm/@codemirror-commands.js";
+		import { highlightSelectionMatches, searchKeymap } from "../src/cm/@codemirror-search.js";
+		import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "../src/cm/@codemirror-autocomplete.js";
+		import { lintKeymap } from "../src/cm/@codemirror-lint.js";
+		import { oneDark } from '../src/cm/@codemirror-theme-one-dark.js';
+		import { javascript } from '../src/cm/@codemirror-lang-javascript.js';
 
 		(async()=>{
 			['error','unhandledrejection'].forEach(x=>addEventListener(x,y=>console.error(y.reason||y.error)));
