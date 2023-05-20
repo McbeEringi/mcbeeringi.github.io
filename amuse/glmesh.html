@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>glmesh</title>
+</head>
+<body>
+	<style>
+		:root{font-family:sans-serif;background-color:#000;color:#fff;}
+		:root,body{height:100%;width:100%;margin:0;}
+		canvas{width:100%;height:100%;object-fit:contain;position:fixed;}
+	</style>
+	<pre>Welcome to glmesh!(WIP)
+
+Loading Editor
+Please wait...
+
+</pre>
+	<script>new PerformanceObserver(_=>document.querySelector('pre').textContent+=_.getEntries().map(_=>_.name+'\n').join('')).observe({entryTypes:['resource']});</script>
+	<script type="module">
+		import{basicSetup}from'https://mcbeeringi.github.io/src/cm/codemirror.js';
+		import{EditorView,keymap,showPanel,highlightWhitespace}from'https://mcbeeringi.github.io/src/cm/@codemirror-view.js';
+		import{EditorState}from'https://mcbeeringi.github.io/src/cm/@codemirror-state.js';
+		import{indentWithTab,selectAll}from'https://mcbeeringi.github.io/src/cm/@codemirror-commands.js';
+		import{indentUnit}from'https://mcbeeringi.github.io/src/cm/@codemirror-language.js';
+		import{openSearchPanel}from'https://mcbeeringi.github.io/src/cm/@codemirror-search.js';
+		import{oneDark}from'https://mcbeeringi.github.io/src/cm/@codemirror-theme-one-dark.js';
+		import{cpp}from'https://mcbeeringi.github.io/src/cm/@codemirror-lang-cpp.js';
+
+		await(async _=>(
+			_.textContent+='\nLoaded.',
+			await new Promise(f=>setTimeout(f,50)),
+			_.remove()
+		))(document.querySelector('pre'));
+		Object.assign(self,{
+			c:document.createElement('canvas'),
+			panel:document.createElement('div')
+		});
+		Object.assign(self,{
+			cm:new EditorView({
+				doc:'float scene(vec3 p){\n\treturn length(p)-.5;\n}',parent:document.body,
+				extensions:[highlightWhitespace(),EditorView.theme({'&':{backgroundColor:'#0000'},'.cm-panels':{zIndex:1}}),oneDark,cpp(),keymap.of([indentWithTab]),EditorState.tabSize.of(2),indentUnit.of('\t'),showPanel.of(_=>({top:1,dom:panel})),basicSetup]
+			}),
+			ctx:c.getContext('webgl')
+		});
+		panel.append(
+			...[
+				w=>Object.assign(w,{textContent:'btn',onclick:_=>alert(cm.state.doc)}),
+				w=>Object.assign(w,{textContent:'🔍',onclick:_=>openSearchPanel(cm)}),
+				w=>Object.assign(w,{textContent:'selectAll',onclick:_=>selectAll(cm)}),
+			].map(x=>x((_=>(_.classList.add('cm-button'),_))(document.createElement('button')))),
+			(w=>(w.textContent='autoRender',w.prepend(Object.assign(document.createElement('input'),{type:'checkbox'})),w))(document.createElement('label'))
+		);
+		document.body.prepend(c);
+	</script>
+</body>
+</html>
