@@ -34,7 +34,7 @@
 				col:{goban:{wood:'#c84',sumi:'#000'},get goishi(){return this.goishi_.map(x=>x.slice(0,-1))},goishi_:['#f0f0','#1028','#fed8'],pot:'#842',crs:'#f448'}
 			})),
 			render=_=>(
-				ctx.clearRect(0,0,innerWidth,innerHeight),
+				ctx.clearRect(0,0,ctx.width,ctx.height),
 				//goban
 				ctx.fillStyle=w.col.goban.wood,ctx.fillRect(...w.o.map(x=>x+(w.h-.5)*w.x),w.x*w.s,w.x*w.s),
 				ctx.strokeStyle=w.col.goban.sumi,ctx.lineWidth=w.x*.05,[...Array(w.s)].forEach((_,i)=>ctx.stroke(new Path2D(`M${g2s([i,0])}v${w.x*(w.s-1)}M${g2s([0,i])}h${w.x*(w.s-1)}`))),
@@ -54,11 +54,11 @@
 				//crosshair
 				w.q.length&&(ctx.fillStyle=w.col.crs,ctx.fillRect(..._,...[Math.min(w.q.length,5),Math.ceil(w.q.length/5)].map(x=>x*.5*w.x))),
 				[...w.q].reverse().reduce((a,x,i)=>(ctx.strokeStyle=w.col.goishi[x],ctx.lineWidth=w.x*.4,ctx.stroke(new Path2D(`M${a}m${[i%5,i/5|0].map(y=>y*w.x*.5)}v.001`)),a),_.map(x=>x+w.x*.25)),
-				ctx.strokeStyle=w.col.crs,ctx.lineWidth=w.x*.1,ctx.stroke(new Path2D(`M${_[0]},0v${innerHeight}M0,${_[1]}h${innerWidth}`))
+				ctx.strokeStyle=w.col.crs,ctx.lineWidth=w.x*.1,ctx.stroke(new Path2D(`M${_[0]},0v${ctx.height}M0,${_[1]}h${ctx.width}`))
 			);
 
 		onpointerdown=e=>e.isPrimary&&(w.prev=[e.clientX,e.clientY],w.click=true);
-		onpointermove=e=>e.isPrimary&&render(w.crs=e.pointerType=='touch'?[e.clientX,e.clientY].map((x,i)=>Math.min(Math.max(w.crs[i]+(x-w.prev[i]),0),[innerWidth,innerHeight][i])):[e.clientX,e.clientY],w.prev=[e.clientX,e.clientY],w.click=false);
+		onpointermove=e=>e.isPrimary&&render(w.crs=e.pointerType=='touch'?[e.clientX,e.clientY].map((x,i)=>Math.min(Math.max(w.crs[i]+(x-w.prev[i]),0),[ctx.width,ctx.height][i])):[e.clientX,e.clientY],w.prev=[e.clientX,e.clientY],w.click=false);
 		onpointerup=(e,_)=>e.isPrimary&&w.click&&render(
 			isg(w.crs)?(
 				_=s2g(w.crs).reduce((a,x,i)=>a+x*w.s**i,0),
@@ -70,10 +70,10 @@
 			length(g2s([-2,2.5]),w.crs)<w.x?(_=w.q.filter(x=>x==1).length)&&(w.agehama[1]+=_,w.q=w.q.filter(x=>x==2)):
 			w.q.pop()
 		);
-		onresize=_=>render(
-			c.width=innerWidth*devicePixelRatio,c.height=innerHeight*devicePixelRatio,
-			ctx.scale(devicePixelRatio,devicePixelRatio),ctx.lineCap='round',ctx.textAlign='center',ctx.textBaseline='middle',
-			Object.assign(w,{o:[innerWidth/2,innerHeight/2],x:Math.min(innerWidth,innerHeight)/(w.s+5)}),
+		onresize=(_,bcr=c.getBoundingClientRect(),dpr=devicePixelRatio)=>render(
+			c.width=(ctx.width=bcr.width)*dpr,c.height=(ctx.height=bcr.height)*dpr,
+			ctx.scale(dpr,dpr),ctx.lineCap='round',ctx.textAlign='center',ctx.textBaseline='middle',
+			Object.assign(w,{o:[ctx.width/2,ctx.height/2],x:Math.min(ctx.width,ctx.height)/(w.s+5)}),
 			Object.assign(w,{crs:w.o})
 		);
 
