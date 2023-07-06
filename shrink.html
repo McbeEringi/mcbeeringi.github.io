@@ -18,8 +18,9 @@
 self.d={
 	pcb_ch340k:'https://github.com/mcbeeringi/pcb-stuff/tree/main/serial'
 };
-location.search&&(x=>x&&(location=x))(d[location.search.slice(1)]);
-document.body.innerHTML=Object.entries(d).map(([i,x])=>`<a href="${x}">[${i}](${x})</a>`).join('<br>');
+location.search&&
+(x=>x&&(document.body.textContent='Redirecting...',location=x))(d[location.search.slice(1)])||
+(document.body.innerHTML=Object.entries(d).map(([i,x])=>`<a href="${x}">[${i}](${x})</a>`).join('<br>'));
 </script>
 </body>
 </html>
