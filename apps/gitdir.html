@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>McbeEringi GitDir</title>
-	<meta name="description" content="xor encrypter">
+	<meta name="description" content="GitHub directory downloader">
 	<link rel="icon" type="image/svg+xml" href="../img/icon.svg">
 	<link rel="apple-touch-icon" href="../img/icon.png">
 	<meta name="theme-color" content="#214"/>
@@ -21,7 +21,8 @@
 	<hr>
 	<input class="zab" id="inp" placeholder="https://github.com/OWNER/REPO/TYPE/REF/PATH/" style="width:100%;">
 	<button id="btn" class="zab bgca">download</button><br>
-	<pre id="err"></pre><br>
+	<pre id="err">Some decompression software will not work properly without the trailing .
+ex. Minecraft</pre><br>
 
 	<script type="module">
 		import{zip,dl,progress}from'https://mcbeeringi.github.io/petit/zip.mjs';
@@ -54,7 +55,7 @@
 					await Promise.all([...Array(8)].map(core));
 					console.log(w.w);
 					dl({
-						name:dir+'.zip',
+						name:dir+(location.hash?location.hash.slice(1):'.zip'),
 						blob:await zip(w.w,{progress:x=>llog('step 3/3: gathering files...\n',{api_ratelimit,step_progress:perc((x.pre[0]/x.pre[1]+x.post[0]/x.post[1])/2),current:(w.w[x.post[0]]||{}).path,details:x})})
 					});
 					llog(dir+' done!');
