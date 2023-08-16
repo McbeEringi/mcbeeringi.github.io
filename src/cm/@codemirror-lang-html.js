@@ -364,22 +364,22 @@ function elementName(doc, tree, max = doc.length) {
     return name ? doc.sliceString(name.from, Math.min(name.to, max)) : "";
 }
 function findParentElement(tree, skip = false) {
-    for (let cur = tree.parent; cur; cur = cur.parent)
-        if (cur.name == "Element") {
+    for (; tree; tree = tree.parent)
+        if (tree.name == "Element") {
             if (skip)
                 skip = false;
             else
-                return cur;
+                return tree;
         }
     return null;
 }
 function allowedChildren(doc, tree, schema) {
-    let parentInfo = schema.tags[elementName(doc, findParentElement(tree, true))];
+    let parentInfo = schema.tags[elementName(doc, findParentElement(tree))];
     return (parentInfo === null || parentInfo === void 0 ? void 0 : parentInfo.children) || schema.allTags;
 }
 function openTags(doc, tree) {
     let open = [];
-    for (let parent = tree; parent = findParentElement(parent);) {
+    for (let parent = findParentElement(tree); parent && !parent.type.isTop; parent = findParentElement(parent.parent)) {
         let tagName = elementName(doc, parent);
         if (tagName && parent.lastChild.name == "CloseTag")
             break;
@@ -391,8 +391,9 @@ function openTags(doc, tree) {
 const identifier = /^[:\-\.\w\u00b7-\uffff]*$/;
 function completeTag(state, schema, tree, from, to) {
     let end = /\s*>/.test(state.sliceDoc(to, to + 5)) ? "" : ">";
+    let parent = findParentElement(tree, true);
     return { from, to,
-        options: allowedChildren(state.doc, tree, schema).map(tagName => ({ label: tagName, type: "type" })).concat(openTags(state.doc, tree).map((tag, i) => ({ label: "/" + tag, apply: "/" + tag + end,
+        options: allowedChildren(state.doc, parent, schema).map(tagName => ({ label: tagName, type: "type" })).concat(openTags(state.doc, tree).map((tag, i) => ({ label: "/" + tag, apply: "/" + tag + end,
             type: "type", boost: 99 - i }))),
         validFor: /^\/?[:\-\.\w\u00b7-\uffff]*$/ };
 }
@@ -449,7 +450,7 @@ function completeAttrValue(state, schema, tree, from, to) {
     return { from, to, options, validFor: token };
 }
 function htmlCompletionFor(schema, context) {
-    let { state, pos } = context, around = syntaxTree(state).resolveInner(pos), tree = around.resolve(pos, -1);
+    let { state, pos } = context, tree = syntaxTree(state).resolveInner(pos, -1), around = tree.resolve(pos);
     for (let scan = pos, before; around == tree && (before = tree.childBefore(scan));) {
         let last = before.lastChild;
         if (!last || !last.type.isError || last.from < last.to)

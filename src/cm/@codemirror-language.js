@@ -24,7 +24,7 @@ function defineLanguageFacet(baseData) {
     });
 }
 /**
-Syntax node prop used to register sublangauges. Should be added to
+Syntax node prop used to register sublanguages. Should be added to
 the top level node type for the language.
 */
 const sublanguageProp = /*@__PURE__*/new NodeProp();
@@ -240,8 +240,15 @@ function syntaxParserRunning(view) {
     var _a;
     return ((_a = view.plugin(parseWorker)) === null || _a === void 0 ? void 0 : _a.isWorking()) || false;
 }
-// Lezer-style Input object for a Text document.
+/**
+Lezer-style
+[`Input`](https://lezer.codemirror.net/docs/ref#common.Input)
+object for a [`Text`](https://codemirror.net/6/docs/ref/#state.Text) object.
+*/
 class DocInput {
+    /**
+    Create an input object for the given document.
+    */
     constructor(doc) {
         this.doc = doc;
         this.cursorPos = 0;
@@ -854,7 +861,7 @@ function getIndentation(context, pos) {
             return result;
     }
     let tree = syntaxTree(context.state);
-    return tree ? syntaxIndentation(context, tree, pos) : null;
+    return tree.length >= pos ? syntaxIndentation(context, tree, pos) : null;
 }
 /**
 Create a change set that auto-indents all lines touched by the
@@ -1051,13 +1058,20 @@ class TreeIndentContext extends IndentContext {
     on if it is covered by another such node.
     */
     get baseIndent() {
-        let line = this.state.doc.lineAt(this.node.from);
+        return this.baseIndentFor(this.node);
+    }
+    /**
+    Get the indentation for the reference line of the given node
+    (see [`baseIndent`](https://codemirror.net/6/docs/ref/#language.TreeIndentContext.baseIndent)).
+    */
+    baseIndentFor(node) {
+        let line = this.state.doc.lineAt(node.from);
         // Skip line starts that are covered by a sibling (or cousin, etc)
         for (;;) {
-            let atBreak = this.node.resolve(line.from);
+            let atBreak = node.resolve(line.from);
             while (atBreak.parent && atBreak.parent.from == atBreak.from)
                 atBreak = atBreak.parent;
-            if (isParent(atBreak, this.node))
+            if (isParent(atBreak, node))
                 break;
             line = this.state.doc.lineAt(atBreak.from);
         }
@@ -1286,11 +1300,16 @@ const foldState = /*@__PURE__*/StateField.define({
     update(folded, tr) {
         folded = folded.map(tr.changes);
         for (let e of tr.effects) {
-            if (e.is(foldEffect) && !foldExists(folded, e.value.from, e.value.to))
-                folded = folded.update({ add: [foldWidget.range(e.value.from, e.value.to)] });
-            else if (e.is(unfoldEffect))
+            if (e.is(foldEffect) && !foldExists(folded, e.value.from, e.value.to)) {
+                let { preparePlaceholder } = tr.state.facet(foldConfig);
+                let widget = !preparePlaceholder ? foldWidget :
+                    Decoration.replace({ widget: new PreparedFoldWidget(preparePlaceholder(tr.state, e.value)) });
+                folded = folded.update({ add: [widget.range(e.value.from, e.value.to)] });
+            }
+            else if (e.is(unfoldEffect)) {
                 folded = folded.update({ filter: (from, to) => e.value.from != from || e.value.to != to,
                     filterFrom: e.value.from, filterTo: e.value.to });
+            }
         }
         // Clear folded ranges that cover the selection head
         if (tr.selection) {
@@ -1467,6 +1486,7 @@ const foldKeymap = [
 ];
 const defaultConfig = {
     placeholderDOM: null,
+    preparePlaceholder: null,
     placeholderText: "…"
 };
 const foldConfig = /*@__PURE__*/Facet.define({
@@ -1481,27 +1501,36 @@ function codeFolding(config) {
         result.push(foldConfig.of(config));
     return result;
 }
+function widgetToDOM(view, prepared) {
+    let { state } = view, conf = state.facet(foldConfig);
+    let onclick = (event) => {
+        let line = view.lineBlockAt(view.posAtDOM(event.target));
+        let folded = findFold(view.state, line.from, line.to);
+        if (folded)
+            view.dispatch({ effects: unfoldEffect.of(folded) });
+        event.preventDefault();
+    };
+    if (conf.placeholderDOM)
+        return conf.placeholderDOM(view, onclick, prepared);
+    let element = document.createElement("span");
+    element.textContent = conf.placeholderText;
+    element.setAttribute("aria-label", state.phrase("folded code"));
+    element.title = state.phrase("unfold");
+    element.className = "cm-foldPlaceholder";
+    element.onclick = onclick;
+    return element;
+}
 const foldWidget = /*@__PURE__*/Decoration.replace({ widget: /*@__PURE__*/new class extends WidgetType {
-        toDOM(view) {
-            let { state } = view, conf = state.facet(foldConfig);
-            let onclick = (event) => {
-                let line = view.lineBlockAt(view.posAtDOM(event.target));
-                let folded = findFold(view.state, line.from, line.to);
-                if (folded)
-                    view.dispatch({ effects: unfoldEffect.of(folded) });
-                event.preventDefault();
-            };
-            if (conf.placeholderDOM)
-                return conf.placeholderDOM(view, onclick);
-            let element = document.createElement("span");
-            element.textContent = conf.placeholderText;
-            element.setAttribute("aria-label", state.phrase("folded code"));
-            element.title = state.phrase("unfold");
-            element.className = "cm-foldPlaceholder";
-            element.onclick = onclick;
-            return element;
-        }
+        toDOM(view) { return widgetToDOM(view, null); }
     } });
+class PreparedFoldWidget extends WidgetType {
+    constructor(value) {
+        super();
+        this.value = value;
+    }
+    eq(other) { return this.value == other.value; }
+    toDOM(view) { return widgetToDOM(view, this.value); }
+}
 const foldGutterDefaults = {
     openText: "⌄",
     closedText: "›",
@@ -2471,9 +2500,9 @@ function createTokenType(extra, tagStr) {
     return type.id;
 }
 function docID(data) {
-    let type = NodeType.define({ id: typeArray.length, name: "Document", props: [languageDataProp.add(() => data)] });
+    let type = NodeType.define({ id: typeArray.length, name: "Document", props: [languageDataProp.add(() => data)], top: true });
     typeArray.push(type);
     return type;
 }
 
-export { HighlightStyle, IndentContext, LRLanguage, Language, LanguageDescription, LanguageSupport, ParseContext, StreamLanguage, StringStream, TreeIndentContext, bracketMatching, bracketMatchingHandle, codeFolding, continuedIndent, defaultHighlightStyle, defineLanguageFacet, delimitedIndent, ensureSyntaxTree, flatIndent, foldAll, foldCode, foldEffect, foldGutter, foldInside, foldKeymap, foldNodeProp, foldService, foldState, foldable, foldedRanges, forceParsing, getIndentUnit, getIndentation, highlightingFor, indentNodeProp, indentOnInput, indentRange, indentService, indentString, indentUnit, language, languageDataProp, matchBrackets, sublanguageProp, syntaxHighlighting, syntaxParserRunning, syntaxTree, syntaxTreeAvailable, toggleFold, unfoldAll, unfoldCode, unfoldEffect };
+export { DocInput, HighlightStyle, IndentContext, LRLanguage, Language, LanguageDescription, LanguageSupport, ParseContext, StreamLanguage, StringStream, TreeIndentContext, bracketMatching, bracketMatchingHandle, codeFolding, continuedIndent, defaultHighlightStyle, defineLanguageFacet, delimitedIndent, ensureSyntaxTree, flatIndent, foldAll, foldCode, foldEffect, foldGutter, foldInside, foldKeymap, foldNodeProp, foldService, foldState, foldable, foldedRanges, forceParsing, getIndentUnit, getIndentation, highlightingFor, indentNodeProp, indentOnInput, indentRange, indentService, indentString, indentUnit, language, languageDataProp, matchBrackets, sublanguageProp, syntaxHighlighting, syntaxParserRunning, syntaxTree, syntaxTreeAvailable, toggleFold, unfoldAll, unfoldCode, unfoldEffect };

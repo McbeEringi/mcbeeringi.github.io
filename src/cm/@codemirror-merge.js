@@ -1503,7 +1503,7 @@ function buildDeletedChunks(state) {
 const deletedChunks = /*@__PURE__*/StateField.define({
     create: state => buildDeletedChunks(state),
     update(deco, tr) {
-        return tr.state.field(ChunkField) != tr.startState.field(ChunkField) ? buildDeletedChunks(tr.state) : deco;
+        return tr.state.field(ChunkField, false) != tr.startState.field(ChunkField, false) ? buildDeletedChunks(tr.state) : deco;
     },
     provide: f => EditorView.decorations.from(f)
 });

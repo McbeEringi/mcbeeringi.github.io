@@ -82,12 +82,13 @@ class SearchCursor {
             for (let i = 0, pos = start;; i++) {
                 let code = norm.charCodeAt(i);
                 let match = this.match(code, pos);
-                if (match) {
-                    this.value = match;
-                    return this;
-                }
-                if (i == norm.length - 1)
+                if (i == norm.length - 1) {
+                    if (match) {
+                        this.value = match;
+                        return this;
+                    }
                     break;
+                }
                 if (pos == start && i < str.length && str.charCodeAt(i) == code)
                     pos++;
             }
@@ -342,10 +343,10 @@ function createLineDialog(view) {
             line = line * (sign == "-" ? -1 : 1) + startLine.number;
         }
         let docLine = state.doc.line(Math.max(1, Math.min(state.doc.lines, line)));
+        let selection = EditorSelection.cursor(docLine.from + Math.max(0, Math.min(col, docLine.length)));
         view.dispatch({
-            effects: dialogEffect.of(false),
-            selection: EditorSelection.cursor(docLine.from + Math.max(0, Math.min(col, docLine.length))),
-            scrollIntoView: true
+            effects: [dialogEffect.of(false), EditorView.scrollIntoView(selection.from, { y: 'center' })],
+            selection,
         });
         view.focus();
     }
@@ -555,6 +556,7 @@ const searchConfigFacet = /*@__PURE__*/Facet.define({
             top: false,
             caseSensitive: false,
             literal: false,
+            regexp: false,
             wholeWord: false,
             createPanel: view => new SearchPanel(view),
             scrollToMatch: range => EditorView.scrollIntoView(range)
@@ -649,7 +651,7 @@ class StringQuery extends QueryType {
             cursor = stringCursor(this.spec, state, 0, curFrom).nextOverlapping();
         return cursor.done ? null : cursor.value;
     }
-    // Searching in reverse is, rather than implementing inverted search
+    // Searching in reverse is, rather than implementing an inverted search
     // cursor, done by scanning chunk after chunk forward.
     prevMatchInRange(state, from, to) {
         for (let pos = to;;) {
@@ -958,7 +960,7 @@ function createSearchPanel(view) {
     return view.state.facet(searchConfigFacet).createPanel(view);
 }
 function defaultQuery(state, fallback) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     let sel = state.selection.main;
     let selText = sel.empty || sel.to > sel.from + 100 ? "" : state.sliceDoc(sel.from, sel.to);
     if (fallback && !selText)
@@ -968,7 +970,8 @@ function defaultQuery(state, fallback) {
         search: ((_a = fallback === null || fallback === void 0 ? void 0 : fallback.literal) !== null && _a !== void 0 ? _a : config.literal) ? selText : selText.replace(/\n/g, "\\n"),
         caseSensitive: (_b = fallback === null || fallback === void 0 ? void 0 : fallback.caseSensitive) !== null && _b !== void 0 ? _b : config.caseSensitive,
         literal: (_c = fallback === null || fallback === void 0 ? void 0 : fallback.literal) !== null && _c !== void 0 ? _c : config.literal,
-        wholeWord: (_d = fallback === null || fallback === void 0 ? void 0 : fallback.wholeWord) !== null && _d !== void 0 ? _d : config.wholeWord
+        regexp: (_d = fallback === null || fallback === void 0 ? void 0 : fallback.regexp) !== null && _d !== void 0 ? _d : config.regexp,
+        wholeWord: (_e = fallback === null || fallback === void 0 ? void 0 : fallback.wholeWord) !== null && _e !== void 0 ? _e : config.wholeWord
     });
 }
 function getSearchInput(view) {

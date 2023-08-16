@@ -1,8 +1,9 @@
-import { EditorSelection, Prec } from "./@codemirror-state.js";
+import { EditorSelection, Prec, EditorState } from "./@codemirror-state.js";
 import { keymap } from "./@codemirror-view.js";
 import { defineLanguageFacet, foldNodeProp, indentNodeProp, languageDataProp, foldService, syntaxTree, Language, LanguageDescription, ParseContext, LanguageSupport } from "./@codemirror-language.js";
+import { CompletionContext } from "./@codemirror-autocomplete.js";
 import { parser, GFM, Subscript, Superscript, Emoji, MarkdownParser, parseCode } from "./@lezer-markdown.js";
-import { html } from "./@codemirror-lang-html.js";
+import { html, htmlCompletionSource } from "./@codemirror-lang-html.js";
 import { NodeProp } from "./@lezer-common.js";
 
 const data = /*@__PURE__*/defineLanguageFacet({ commentTokens: { block: { open: "<!--", close: "-->" } } });
@@ -345,7 +346,7 @@ const htmlNoMatch = /*@__PURE__*/html({ matchClosingTags: false });
 Markdown language support.
 */
 function markdown(config = {}) {
-    let { codeLanguages, defaultCodeLanguage, addKeymap = true, base: { parser } = commonmarkLanguage } = config;
+    let { codeLanguages, defaultCodeLanguage, addKeymap = true, base: { parser } = commonmarkLanguage, completeHTMLTags = true } = config;
     if (!(parser instanceof MarkdownParser))
         throw new RangeError("Base parser provided to `markdown` should be a Markdown parser");
     let extensions = config.extensions ? [config.extensions] : [];
@@ -361,7 +362,34 @@ function markdown(config = {}) {
     extensions.push(parseCode({ codeParser, htmlParser: htmlNoMatch.language.parser }));
     if (addKeymap)
         support.push(Prec.high(keymap.of(markdownKeymap)));
-    return new LanguageSupport(mkLang(parser.configure(extensions)), support);
+    let lang = mkLang(parser.configure(extensions));
+    if (completeHTMLTags)
+        support.push(lang.data.of({ autocomplete: htmlTagCompletion }));
+    return new LanguageSupport(lang, support);
+}
+function htmlTagCompletion(context) {
+    let { state, pos } = context, m = /<[:\-\.\w\u00b7-\uffff]*$/.exec(state.sliceDoc(pos - 25, pos));
+    if (!m)
+        return null;
+    let tree = syntaxTree(state).resolveInner(pos, -1);
+    while (tree && !tree.type.isTop) {
+        if (tree.name == "CodeBlock" || tree.name == "FencedCode" || tree.name == "ProcessingInstructionBlock" ||
+            tree.name == "CommentBlock" || tree.name == "Link" || tree.name == "Image")
+            return null;
+        tree = tree.parent;
+    }
+    return {
+        from: pos - m[0].length, to: pos,
+        options: htmlTagCompletions(),
+        validFor: /^<[:\-\.\w\u00b7-\uffff]*$/
+    };
+}
+let _tagCompletions = null;
+function htmlTagCompletions() {
+    if (_tagCompletions)
+        return _tagCompletions;
+    let result = htmlCompletionSource(new CompletionContext(EditorState.create({ extensions: htmlNoMatch }), 0, true));
+    return _tagCompletions = result ? result.options : [];
 }
 
 export { commonmarkLanguage, deleteMarkupBackward, insertNewlineContinueMarkup, markdown, markdownKeymap, markdownLanguage };

@@ -1,5 +1,5 @@
 import { Annotation, StateEffect, EditorSelection, codePointAt, codePointSize, fromCodePoint, Facet, combineConfig, StateField, Prec, Text, MapMode, RangeValue, RangeSet, CharCategory } from "./@codemirror-state.js";
-import { Direction, ViewPlugin, logException, getTooltip, showTooltip, EditorView, Decoration, WidgetType, keymap } from "./@codemirror-view.js";
+import { Direction, logException, showTooltip, EditorView, ViewPlugin, getTooltip, Decoration, WidgetType, keymap } from "./@codemirror-view.js";
 import { syntaxTree, indentUnit } from "./@codemirror-language.js";
 
 /**
@@ -198,6 +198,8 @@ class FuzzyMatcher {
         this.any = [];
         this.precise = [];
         this.byWord = [];
+        this.score = 0;
+        this.matched = [];
         for (let p = 0; p < pattern.length;) {
             let char = codePointAt(pattern, p), size = codePointSize(char);
             this.chars.push(char);
@@ -207,18 +209,23 @@ class FuzzyMatcher {
         }
         this.astral = pattern.length != this.chars.length;
     }
+    ret(score, matched) {
+        this.score = score;
+        this.matched = matched;
+        return true;
+    }
     // Matches a given word (completion) against the pattern (input).
-    // Will return null for no match, and otherwise an array that starts
-    // with the match score, followed by any number of `from, to` pairs
-    // indicating the matched parts of `word`.
+    // Will return a boolean indicating whether there was a match and,
+    // on success, set `this.score` to the score, `this.matched` to an
+    // array of `from, to` pairs indicating the matched parts of `word`.
     //
     // The score is a number that is more negative the worse the match
     // is. See `Penalty` above.
     match(word) {
         if (this.pattern.length == 0)
-            return [-100 /* Penalty.NotFull */];
+            return this.ret(-100 /* Penalty.NotFull */, []);
         if (word.length < this.pattern.length)
-            return null;
+            return false;
         let { chars, folded, any, precise, byWord } = this;
         // For single-character queries, only match when they occur right
         // at the start
@@ -229,12 +236,12 @@ class FuzzyMatcher {
             else if (first == folded[0])
                 score += -200 /* Penalty.CaseFold */;
             else
-                return null;
-            return [score, 0, firstSize];
+                return false;
+            return this.ret(score, [0, firstSize]);
         }
         let direct = word.indexOf(this.pattern);
         if (direct == 0)
-            return [word.length == this.pattern.length ? 0 : -100 /* Penalty.NotFull */, 0, this.pattern.length];
+            return this.ret(word.length == this.pattern.length ? 0 : -100 /* Penalty.NotFull */, [0, this.pattern.length]);
         let len = chars.length, anyTo = 0;
         if (direct < 0) {
             for (let i = 0, e = Math.min(word.length, 200); i < e && anyTo < len;) {
@@ -245,7 +252,7 @@ class FuzzyMatcher {
             }
             // No match, exit immediately
             if (anyTo < len)
-                return null;
+                return false;
         }
         // This tracks the extent of the precise (non-folded, not
         // necessarily adjacent) match
@@ -290,28 +297,29 @@ class FuzzyMatcher {
         if (byWordTo == len && byWord[0] == 0 && wordAdjacent)
             return this.result(-100 /* Penalty.ByWord */ + (byWordFolded ? -200 /* Penalty.CaseFold */ : 0), byWord, word);
         if (adjacentTo == len && adjacentStart == 0)
-            return [-200 /* Penalty.CaseFold */ - word.length + (adjacentEnd == word.length ? 0 : -100 /* Penalty.NotFull */), 0, adjacentEnd];
+            return this.ret(-200 /* Penalty.CaseFold */ - word.length + (adjacentEnd == word.length ? 0 : -100 /* Penalty.NotFull */), [0, adjacentEnd]);
         if (direct > -1)
-            return [-700 /* Penalty.NotStart */ - word.length, direct, direct + this.pattern.length];
+            return this.ret(-700 /* Penalty.NotStart */ - word.length, [direct, direct + this.pattern.length]);
         if (adjacentTo == len)
-            return [-200 /* Penalty.CaseFold */ + -700 /* Penalty.NotStart */ - word.length, adjacentStart, adjacentEnd];
+            return this.ret(-200 /* Penalty.CaseFold */ + -700 /* Penalty.NotStart */ - word.length, [adjacentStart, adjacentEnd]);
         if (byWordTo == len)
             return this.result(-100 /* Penalty.ByWord */ + (byWordFolded ? -200 /* Penalty.CaseFold */ : 0) + -700 /* Penalty.NotStart */ +
                 (wordAdjacent ? 0 : -1100 /* Penalty.Gap */), byWord, word);
-        return chars.length == 2 ? null : this.result((any[0] ? -700 /* Penalty.NotStart */ : 0) + -200 /* Penalty.CaseFold */ + -1100 /* Penalty.Gap */, any, word);
+        return chars.length == 2 ? false
+            : this.result((any[0] ? -700 /* Penalty.NotStart */ : 0) + -200 /* Penalty.CaseFold */ + -1100 /* Penalty.Gap */, any, word);
     }
     result(score, positions, word) {
-        let result = [score - word.length], i = 1;
+        let result = [], i = 0;
         for (let pos of positions) {
             let to = pos + (this.astral ? codePointSize(codePointAt(word, pos)) : 1);
-            if (i > 1 && result[i - 1] == pos)
+            if (i && result[i - 1] == pos)
                 result[i - 1] = to;
             else {
                 result[i++] = pos;
                 result[i++] = to;
             }
         }
-        return result;
+        return this.ret(score - word.length, result);
     }
 }
 
@@ -376,6 +384,572 @@ function defaultPositionInfo(view, list, option, info, space) {
     };
 }
 
+function optionContent(config) {
+    let content = config.addToOptions.slice();
+    if (config.icons)
+        content.push({
+            render(completion) {
+                let icon = document.createElement("div");
+                icon.classList.add("cm-completionIcon");
+                if (completion.type)
+                    icon.classList.add(...completion.type.split(/\s+/g).map(cls => "cm-completionIcon-" + cls));
+                icon.setAttribute("aria-hidden", "true");
+                return icon;
+            },
+            position: 20
+        });
+    content.push({
+        render(completion, _s, match) {
+            let labelElt = document.createElement("span");
+            labelElt.className = "cm-completionLabel";
+            let label = completion.displayLabel || completion.label, off = 0;
+            for (let j = 0; j < match.length;) {
+                let from = match[j++], to = match[j++];
+                if (from > off)
+                    labelElt.appendChild(document.createTextNode(label.slice(off, from)));
+                let span = labelElt.appendChild(document.createElement("span"));
+                span.appendChild(document.createTextNode(label.slice(from, to)));
+                span.className = "cm-completionMatchedText";
+                off = to;
+            }
+            if (off < label.length)
+                labelElt.appendChild(document.createTextNode(label.slice(off)));
+            return labelElt;
+        },
+        position: 50
+    }, {
+        render(completion) {
+            if (!completion.detail)
+                return null;
+            let detailElt = document.createElement("span");
+            detailElt.className = "cm-completionDetail";
+            detailElt.textContent = completion.detail;
+            return detailElt;
+        },
+        position: 80
+    });
+    return content.sort((a, b) => a.position - b.position).map(a => a.render);
+}
+function rangeAroundSelected(total, selected, max) {
+    if (total <= max)
+        return { from: 0, to: total };
+    if (selected < 0)
+        selected = 0;
+    if (selected <= (total >> 1)) {
+        let off = Math.floor(selected / max);
+        return { from: off * max, to: (off + 1) * max };
+    }
+    let off = Math.floor((total - selected) / max);
+    return { from: total - (off + 1) * max, to: total - off * max };
+}
+class CompletionTooltip {
+    constructor(view, stateField, applyCompletion) {
+        this.view = view;
+        this.stateField = stateField;
+        this.applyCompletion = applyCompletion;
+        this.info = null;
+        this.infoDestroy = null;
+        this.placeInfoReq = {
+            read: () => this.measureInfo(),
+            write: (pos) => this.placeInfo(pos),
+            key: this
+        };
+        this.space = null;
+        this.currentClass = "";
+        let cState = view.state.field(stateField);
+        let { options, selected } = cState.open;
+        let config = view.state.facet(completionConfig);
+        this.optionContent = optionContent(config);
+        this.optionClass = config.optionClass;
+        this.tooltipClass = config.tooltipClass;
+        this.range = rangeAroundSelected(options.length, selected, config.maxRenderedOptions);
+        this.dom = document.createElement("div");
+        this.dom.className = "cm-tooltip-autocomplete";
+        this.updateTooltipClass(view.state);
+        this.dom.addEventListener("mousedown", (e) => {
+            for (let dom = e.target, match; dom && dom != this.dom; dom = dom.parentNode) {
+                if (dom.nodeName == "LI" && (match = /-(\d+)$/.exec(dom.id)) && +match[1] < options.length) {
+                    this.applyCompletion(view, options[+match[1]]);
+                    e.preventDefault();
+                    return;
+                }
+            }
+        });
+        this.dom.addEventListener("focusout", (e) => {
+            let state = view.state.field(this.stateField, false);
+            if (state && state.tooltip && view.state.facet(completionConfig).closeOnBlur &&
+                e.relatedTarget != view.contentDOM)
+                view.dispatch({ effects: closeCompletionEffect.of(null) });
+        });
+        this.list = this.dom.appendChild(this.createListBox(options, cState.id, this.range));
+        this.list.addEventListener("scroll", () => {
+            if (this.info)
+                this.view.requestMeasure(this.placeInfoReq);
+        });
+    }
+    mount() { this.updateSel(); }
+    update(update) {
+        var _a, _b, _c;
+        let cState = update.state.field(this.stateField);
+        let prevState = update.startState.field(this.stateField);
+        this.updateTooltipClass(update.state);
+        if (cState != prevState) {
+            this.updateSel();
+            if (((_a = cState.open) === null || _a === void 0 ? void 0 : _a.disabled) != ((_b = prevState.open) === null || _b === void 0 ? void 0 : _b.disabled))
+                this.dom.classList.toggle("cm-tooltip-autocomplete-disabled", !!((_c = cState.open) === null || _c === void 0 ? void 0 : _c.disabled));
+        }
+    }
+    updateTooltipClass(state) {
+        let cls = this.tooltipClass(state);
+        if (cls != this.currentClass) {
+            for (let c of this.currentClass.split(" "))
+                if (c)
+                    this.dom.classList.remove(c);
+            for (let c of cls.split(" "))
+                if (c)
+                    this.dom.classList.add(c);
+            this.currentClass = cls;
+        }
+    }
+    positioned(space) {
+        this.space = space;
+        if (this.info)
+            this.view.requestMeasure(this.placeInfoReq);
+    }
+    updateSel() {
+        let cState = this.view.state.field(this.stateField), open = cState.open;
+        if (open.selected > -1 && open.selected < this.range.from || open.selected >= this.range.to) {
+            this.range = rangeAroundSelected(open.options.length, open.selected, this.view.state.facet(completionConfig).maxRenderedOptions);
+            this.list.remove();
+            this.list = this.dom.appendChild(this.createListBox(open.options, cState.id, this.range));
+            this.list.addEventListener("scroll", () => {
+                if (this.info)
+                    this.view.requestMeasure(this.placeInfoReq);
+            });
+        }
+        if (this.updateSelectedOption(open.selected)) {
+            this.destroyInfo();
+            let { completion } = open.options[open.selected];
+            let { info } = completion;
+            if (!info)
+                return;
+            let infoResult = typeof info === "string" ? document.createTextNode(info) : info(completion);
+            if (!infoResult)
+                return;
+            if ("then" in infoResult) {
+                infoResult.then(obj => {
+                    if (obj && this.view.state.field(this.stateField, false) == cState)
+                        this.addInfoPane(obj, completion);
+                }).catch(e => logException(this.view.state, e, "completion info"));
+            }
+            else {
+                this.addInfoPane(infoResult, completion);
+            }
+        }
+    }
+    addInfoPane(content, completion) {
+        this.destroyInfo();
+        let wrap = this.info = document.createElement("div");
+        wrap.className = "cm-tooltip cm-completionInfo";
+        if (content.nodeType != null) {
+            wrap.appendChild(content);
+            this.infoDestroy = null;
+        }
+        else {
+            let { dom, destroy } = content;
+            wrap.appendChild(dom);
+            this.infoDestroy = destroy || null;
+        }
+        this.dom.appendChild(wrap);
+        this.view.requestMeasure(this.placeInfoReq);
+    }
+    updateSelectedOption(selected) {
+        let set = null;
+        for (let opt = this.list.firstChild, i = this.range.from; opt; opt = opt.nextSibling, i++) {
+            if (opt.nodeName != "LI" || !opt.id) {
+                i--; // A section header
+            }
+            else if (i == selected) {
+                if (!opt.hasAttribute("aria-selected")) {
+                    opt.setAttribute("aria-selected", "true");
+                    set = opt;
+                }
+            }
+            else {
+                if (opt.hasAttribute("aria-selected"))
+                    opt.removeAttribute("aria-selected");
+            }
+        }
+        if (set)
+            scrollIntoView(this.list, set);
+        return set;
+    }
+    measureInfo() {
+        let sel = this.dom.querySelector("[aria-selected]");
+        if (!sel || !this.info)
+            return null;
+        let listRect = this.dom.getBoundingClientRect();
+        let infoRect = this.info.getBoundingClientRect();
+        let selRect = sel.getBoundingClientRect();
+        let space = this.space;
+        if (!space) {
+            let win = this.dom.ownerDocument.defaultView || window;
+            space = { left: 0, top: 0, right: win.innerWidth, bottom: win.innerHeight };
+        }
+        if (selRect.top > Math.min(space.bottom, listRect.bottom) - 10 ||
+            selRect.bottom < Math.max(space.top, listRect.top) + 10)
+            return null;
+        return this.view.state.facet(completionConfig).positionInfo(this.view, listRect, selRect, infoRect, space);
+    }
+    placeInfo(pos) {
+        if (this.info) {
+            if (pos) {
+                if (pos.style)
+                    this.info.style.cssText = pos.style;
+                this.info.className = "cm-tooltip cm-completionInfo " + (pos.class || "");
+            }
+            else {
+                this.info.style.cssText = "top: -1e6px";
+            }
+        }
+    }
+    createListBox(options, id, range) {
+        const ul = document.createElement("ul");
+        ul.id = id;
+        ul.setAttribute("role", "listbox");
+        ul.setAttribute("aria-expanded", "true");
+        ul.setAttribute("aria-label", this.view.state.phrase("Completions"));
+        let curSection = null;
+        for (let i = range.from; i < range.to; i++) {
+            let { completion, match } = options[i], { section } = completion;
+            if (section) {
+                let name = typeof section == "string" ? section : section.name;
+                if (name != curSection && (i > range.from || range.from == 0)) {
+                    curSection = name;
+                    if (typeof section != "string" && section.header) {
+                        ul.appendChild(section.header(section));
+                    }
+                    else {
+                        let header = ul.appendChild(document.createElement("completion-section"));
+                        header.textContent = name;
+                    }
+                }
+            }
+            const li = ul.appendChild(document.createElement("li"));
+            li.id = id + "-" + i;
+            li.setAttribute("role", "option");
+            let cls = this.optionClass(completion);
+            if (cls)
+                li.className = cls;
+            for (let source of this.optionContent) {
+                let node = source(completion, this.view.state, match);
+                if (node)
+                    li.appendChild(node);
+            }
+        }
+        if (range.from)
+            ul.classList.add("cm-completionListIncompleteTop");
+        if (range.to < options.length)
+            ul.classList.add("cm-completionListIncompleteBottom");
+        return ul;
+    }
+    destroyInfo() {
+        if (this.info) {
+            if (this.infoDestroy)
+                this.infoDestroy();
+            this.info.remove();
+            this.info = null;
+        }
+    }
+    destroy() {
+        this.destroyInfo();
+    }
+}
+// We allocate a new function instance every time the completion
+// changes to force redrawing/repositioning of the tooltip
+function completionTooltip(stateField, applyCompletion) {
+    return (view) => new CompletionTooltip(view, stateField, applyCompletion);
+}
+function scrollIntoView(container, element) {
+    let parent = container.getBoundingClientRect();
+    let self = element.getBoundingClientRect();
+    if (self.top < parent.top)
+        container.scrollTop -= parent.top - self.top;
+    else if (self.bottom > parent.bottom)
+        container.scrollTop += self.bottom - parent.bottom;
+}
+
+// Used to pick a preferred option when two options with the same
+// label occur in the result.
+function score(option) {
+    return (option.boost || 0) * 100 + (option.apply ? 10 : 0) + (option.info ? 5 : 0) +
+        (option.type ? 1 : 0);
+}
+function sortOptions(active, state) {
+    let options = [];
+    let sections = null;
+    let addOption = (option) => {
+        options.push(option);
+        let { section } = option.completion;
+        if (section) {
+            if (!sections)
+                sections = [];
+            let name = typeof section == "string" ? section : section.name;
+            if (!sections.some(s => s.name == name))
+                sections.push(typeof section == "string" ? { name } : section);
+        }
+    };
+    for (let a of active)
+        if (a.hasResult()) {
+            let getMatch = a.result.getMatch;
+            if (a.result.filter === false) {
+                for (let option of a.result.options) {
+                    addOption(new Option(option, a.source, getMatch ? getMatch(option) : [], 1e9 - options.length));
+                }
+            }
+            else {
+                let matcher = new FuzzyMatcher(state.sliceDoc(a.from, a.to));
+                for (let option of a.result.options)
+                    if (matcher.match(option.label)) {
+                        let matched = !option.displayLabel ? matcher.matched : getMatch ? getMatch(option, matcher.matched) : [];
+                        addOption(new Option(option, a.source, matched, matcher.score + (option.boost || 0)));
+                    }
+            }
+        }
+    if (sections) {
+        let sectionOrder = Object.create(null), pos = 0;
+        let cmp = (a, b) => { var _a, _b; return ((_a = a.rank) !== null && _a !== void 0 ? _a : 1e9) - ((_b = b.rank) !== null && _b !== void 0 ? _b : 1e9) || (a.name < b.name ? -1 : 1); };
+        for (let s of sections.sort(cmp)) {
+            pos -= 1e5;
+            sectionOrder[s.name] = pos;
+        }
+        for (let option of options) {
+            let { section } = option.completion;
+            if (section)
+                option.score += sectionOrder[typeof section == "string" ? section : section.name];
+        }
+    }
+    let result = [], prev = null;
+    let compare = state.facet(completionConfig).compareCompletions;
+    for (let opt of options.sort((a, b) => (b.score - a.score) || compare(a.completion, b.completion))) {
+        let cur = opt.completion;
+        if (!prev || prev.label != cur.label || prev.detail != cur.detail ||
+            (prev.type != null && cur.type != null && prev.type != cur.type) ||
+            prev.apply != cur.apply || prev.boost != cur.boost)
+            result.push(opt);
+        else if (score(opt.completion) > score(prev))
+            result[result.length - 1] = opt;
+        prev = opt.completion;
+    }
+    return result;
+}
+class CompletionDialog {
+    constructor(options, attrs, tooltip, timestamp, selected, disabled) {
+        this.options = options;
+        this.attrs = attrs;
+        this.tooltip = tooltip;
+        this.timestamp = timestamp;
+        this.selected = selected;
+        this.disabled = disabled;
+    }
+    setSelected(selected, id) {
+        return selected == this.selected || selected >= this.options.length ? this
+            : new CompletionDialog(this.options, makeAttrs(id, selected), this.tooltip, this.timestamp, selected, this.disabled);
+    }
+    static build(active, state, id, prev, conf) {
+        let options = sortOptions(active, state);
+        if (!options.length) {
+            return prev && active.some(a => a.state == 1 /* State.Pending */) ?
+                new CompletionDialog(prev.options, prev.attrs, prev.tooltip, prev.timestamp, prev.selected, true) : null;
+        }
+        let selected = state.facet(completionConfig).selectOnOpen ? 0 : -1;
+        if (prev && prev.selected != selected && prev.selected != -1) {
+            let selectedValue = prev.options[prev.selected].completion;
+            for (let i = 0; i < options.length; i++)
+                if (options[i].completion == selectedValue) {
+                    selected = i;
+                    break;
+                }
+        }
+        return new CompletionDialog(options, makeAttrs(id, selected), {
+            pos: active.reduce((a, b) => b.hasResult() ? Math.min(a, b.from) : a, 1e8),
+            create: completionTooltip(completionState, applyCompletion),
+            above: conf.aboveCursor,
+        }, prev ? prev.timestamp : Date.now(), selected, false);
+    }
+    map(changes) {
+        return new CompletionDialog(this.options, this.attrs, Object.assign(Object.assign({}, this.tooltip), { pos: changes.mapPos(this.tooltip.pos) }), this.timestamp, this.selected, this.disabled);
+    }
+}
+class CompletionState {
+    constructor(active, id, open) {
+        this.active = active;
+        this.id = id;
+        this.open = open;
+    }
+    static start() {
+        return new CompletionState(none, "cm-ac-" + Math.floor(Math.random() * 2e6).toString(36), null);
+    }
+    update(tr) {
+        let { state } = tr, conf = state.facet(completionConfig);
+        let sources = conf.override ||
+            state.languageDataAt("autocomplete", cur(state)).map(asSource);
+        let active = sources.map(source => {
+            let value = this.active.find(s => s.source == source) ||
+                new ActiveSource(source, this.active.some(a => a.state != 0 /* State.Inactive */) ? 1 /* State.Pending */ : 0 /* State.Inactive */);
+            return value.update(tr, conf);
+        });
+        if (active.length == this.active.length && active.every((a, i) => a == this.active[i]))
+            active = this.active;
+        let open = this.open;
+        if (open && tr.docChanged)
+            open = open.map(tr.changes);
+        if (tr.selection || active.some(a => a.hasResult() && tr.changes.touchesRange(a.from, a.to)) ||
+            !sameResults(active, this.active))
+            open = CompletionDialog.build(active, state, this.id, open, conf);
+        else if (open && open.disabled && !active.some(a => a.state == 1 /* State.Pending */))
+            open = null;
+        if (!open && active.every(a => a.state != 1 /* State.Pending */) && active.some(a => a.hasResult()))
+            active = active.map(a => a.hasResult() ? new ActiveSource(a.source, 0 /* State.Inactive */) : a);
+        for (let effect of tr.effects)
+            if (effect.is(setSelectedEffect))
+                open = open && open.setSelected(effect.value, this.id);
+        return active == this.active && open == this.open ? this : new CompletionState(active, this.id, open);
+    }
+    get tooltip() { return this.open ? this.open.tooltip : null; }
+    get attrs() { return this.open ? this.open.attrs : baseAttrs; }
+}
+function sameResults(a, b) {
+    if (a == b)
+        return true;
+    for (let iA = 0, iB = 0;;) {
+        while (iA < a.length && !a[iA].hasResult)
+            iA++;
+        while (iB < b.length && !b[iB].hasResult)
+            iB++;
+        let endA = iA == a.length, endB = iB == b.length;
+        if (endA || endB)
+            return endA == endB;
+        if (a[iA++].result != b[iB++].result)
+            return false;
+    }
+}
+const baseAttrs = {
+    "aria-autocomplete": "list"
+};
+function makeAttrs(id, selected) {
+    let result = {
+        "aria-autocomplete": "list",
+        "aria-haspopup": "listbox",
+        "aria-controls": id
+    };
+    if (selected > -1)
+        result["aria-activedescendant"] = id + "-" + selected;
+    return result;
+}
+const none = [];
+function getUserEvent(tr) {
+    return tr.isUserEvent("input.type") ? "input" : tr.isUserEvent("delete.backward") ? "delete" : null;
+}
+class ActiveSource {
+    constructor(source, state, explicitPos = -1) {
+        this.source = source;
+        this.state = state;
+        this.explicitPos = explicitPos;
+    }
+    hasResult() { return false; }
+    update(tr, conf) {
+        let event = getUserEvent(tr), value = this;
+        if (event)
+            value = value.handleUserEvent(tr, event, conf);
+        else if (tr.docChanged)
+            value = value.handleChange(tr);
+        else if (tr.selection && value.state != 0 /* State.Inactive */)
+            value = new ActiveSource(value.source, 0 /* State.Inactive */);
+        for (let effect of tr.effects) {
+            if (effect.is(startCompletionEffect))
+                value = new ActiveSource(value.source, 1 /* State.Pending */, effect.value ? cur(tr.state) : -1);
+            else if (effect.is(closeCompletionEffect))
+                value = new ActiveSource(value.source, 0 /* State.Inactive */);
+            else if (effect.is(setActiveEffect))
+                for (let active of effect.value)
+                    if (active.source == value.source)
+                        value = active;
+        }
+        return value;
+    }
+    handleUserEvent(tr, type, conf) {
+        return type == "delete" || !conf.activateOnTyping ? this.map(tr.changes) : new ActiveSource(this.source, 1 /* State.Pending */);
+    }
+    handleChange(tr) {
+        return tr.changes.touchesRange(cur(tr.startState)) ? new ActiveSource(this.source, 0 /* State.Inactive */) : this.map(tr.changes);
+    }
+    map(changes) {
+        return changes.empty || this.explicitPos < 0 ? this : new ActiveSource(this.source, this.state, changes.mapPos(this.explicitPos));
+    }
+}
+class ActiveResult extends ActiveSource {
+    constructor(source, explicitPos, result, from, to) {
+        super(source, 2 /* State.Result */, explicitPos);
+        this.result = result;
+        this.from = from;
+        this.to = to;
+    }
+    hasResult() { return true; }
+    handleUserEvent(tr, type, conf) {
+        var _a;
+        let from = tr.changes.mapPos(this.from), to = tr.changes.mapPos(this.to, 1);
+        let pos = cur(tr.state);
+        if ((this.explicitPos < 0 ? pos <= from : pos < this.from) ||
+            pos > to ||
+            type == "delete" && cur(tr.startState) == this.from)
+            return new ActiveSource(this.source, type == "input" && conf.activateOnTyping ? 1 /* State.Pending */ : 0 /* State.Inactive */);
+        let explicitPos = this.explicitPos < 0 ? -1 : tr.changes.mapPos(this.explicitPos), updated;
+        if (checkValid(this.result.validFor, tr.state, from, to))
+            return new ActiveResult(this.source, explicitPos, this.result, from, to);
+        if (this.result.update &&
+            (updated = this.result.update(this.result, from, to, new CompletionContext(tr.state, pos, explicitPos >= 0))))
+            return new ActiveResult(this.source, explicitPos, updated, updated.from, (_a = updated.to) !== null && _a !== void 0 ? _a : cur(tr.state));
+        return new ActiveSource(this.source, 1 /* State.Pending */, explicitPos);
+    }
+    handleChange(tr) {
+        return tr.changes.touchesRange(this.from, this.to) ? new ActiveSource(this.source, 0 /* State.Inactive */) : this.map(tr.changes);
+    }
+    map(mapping) {
+        return mapping.empty ? this :
+            new ActiveResult(this.source, this.explicitPos < 0 ? -1 : mapping.mapPos(this.explicitPos), this.result, mapping.mapPos(this.from), mapping.mapPos(this.to, 1));
+    }
+}
+function checkValid(validFor, state, from, to) {
+    if (!validFor)
+        return false;
+    let text = state.sliceDoc(from, to);
+    return typeof validFor == "function" ? validFor(text, from, to, state) : ensureAnchor(validFor, true).test(text);
+}
+const setActiveEffect = /*@__PURE__*/StateEffect.define({
+    map(sources, mapping) { return sources.map(s => s.map(mapping)); }
+});
+const setSelectedEffect = /*@__PURE__*/StateEffect.define();
+const completionState = /*@__PURE__*/StateField.define({
+    create() { return CompletionState.start(); },
+    update(value, tr) { return value.update(tr); },
+    provide: f => [
+        showTooltip.from(f, val => val.tooltip),
+        EditorView.contentAttributes.from(f, state => state.attrs)
+    ]
+});
+function applyCompletion(view, option) {
+    const apply = option.completion.apply || option.completion.label;
+    let result = view.state.field(completionState).active.find(a => a.source == option.source);
+    if (!(result instanceof ActiveResult))
+        return false;
+    if (typeof apply == "string")
+        view.dispatch(Object.assign(Object.assign({}, insertCompletionText(view.state, apply, result.from, result.to)), { annotations: pickedCompletion.of(option.completion) }));
+    else
+        apply(view, option.completion, result.from, result.to);
+    return true;
+}
+
 /**
 Returns a command that moves the completion selection forward or
 backward by the given amount.
@@ -405,12 +979,10 @@ Accept the current completion.
 */
 const acceptCompletion = (view) => {
     let cState = view.state.field(completionState, false);
-    if (view.state.readOnly || !cState || !cState.open || cState.open.selected < 0 ||
+    if (view.state.readOnly || !cState || !cState.open || cState.open.selected < 0 || cState.open.disabled ||
         Date.now() - cState.open.timestamp < view.state.facet(completionConfig).interactionDelay)
         return false;
-    if (!cState.open.disabled)
-        return applyCompletion(view, cState.open.options[cState.open.selected]);
-    return true;
+    return applyCompletion(view, cState.open.options[cState.open.selected]);
 };
 /**
 Explicitly start autocompletion.
@@ -589,555 +1161,6 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
             this.composing = 0 /* CompositionState.None */;
         }
     }
-});
-function applyCompletion(view, option) {
-    const apply = option.completion.apply || option.completion.label;
-    let result = view.state.field(completionState).active.find(a => a.source == option.source);
-    if (!(result instanceof ActiveResult))
-        return false;
-    if (typeof apply == "string")
-        view.dispatch(Object.assign(Object.assign({}, insertCompletionText(view.state, apply, result.from, result.to)), { annotations: pickedCompletion.of(option.completion) }));
-    else
-        apply(view, option.completion, result.from, result.to);
-    return true;
-}
-
-function optionContent(config) {
-    let content = config.addToOptions.slice();
-    if (config.icons)
-        content.push({
-            render(completion) {
-                let icon = document.createElement("div");
-                icon.classList.add("cm-completionIcon");
-                if (completion.type)
-                    icon.classList.add(...completion.type.split(/\s+/g).map(cls => "cm-completionIcon-" + cls));
-                icon.setAttribute("aria-hidden", "true");
-                return icon;
-            },
-            position: 20
-        });
-    content.push({
-        render(completion, _s, match) {
-            let labelElt = document.createElement("span");
-            labelElt.className = "cm-completionLabel";
-            let { label } = completion, off = 0;
-            for (let j = 1; j < match.length;) {
-                let from = match[j++], to = match[j++];
-                if (from > off)
-                    labelElt.appendChild(document.createTextNode(label.slice(off, from)));
-                let span = labelElt.appendChild(document.createElement("span"));
-                span.appendChild(document.createTextNode(label.slice(from, to)));
-                span.className = "cm-completionMatchedText";
-                off = to;
-            }
-            if (off < label.length)
-                labelElt.appendChild(document.createTextNode(label.slice(off)));
-            return labelElt;
-        },
-        position: 50
-    }, {
-        render(completion) {
-            if (!completion.detail)
-                return null;
-            let detailElt = document.createElement("span");
-            detailElt.className = "cm-completionDetail";
-            detailElt.textContent = completion.detail;
-            return detailElt;
-        },
-        position: 80
-    });
-    return content.sort((a, b) => a.position - b.position).map(a => a.render);
-}
-function rangeAroundSelected(total, selected, max) {
-    if (total <= max)
-        return { from: 0, to: total };
-    if (selected < 0)
-        selected = 0;
-    if (selected <= (total >> 1)) {
-        let off = Math.floor(selected / max);
-        return { from: off * max, to: (off + 1) * max };
-    }
-    let off = Math.floor((total - selected) / max);
-    return { from: total - (off + 1) * max, to: total - off * max };
-}
-class CompletionTooltip {
-    constructor(view, stateField) {
-        this.view = view;
-        this.stateField = stateField;
-        this.info = null;
-        this.placeInfoReq = {
-            read: () => this.measureInfo(),
-            write: (pos) => this.placeInfo(pos),
-            key: this
-        };
-        this.space = null;
-        this.currentClass = "";
-        let cState = view.state.field(stateField);
-        let { options, selected } = cState.open;
-        let config = view.state.facet(completionConfig);
-        this.optionContent = optionContent(config);
-        this.optionClass = config.optionClass;
-        this.tooltipClass = config.tooltipClass;
-        this.range = rangeAroundSelected(options.length, selected, config.maxRenderedOptions);
-        this.dom = document.createElement("div");
-        this.dom.className = "cm-tooltip-autocomplete";
-        this.updateTooltipClass(view.state);
-        this.dom.addEventListener("mousedown", (e) => {
-            for (let dom = e.target, match; dom && dom != this.dom; dom = dom.parentNode) {
-                if (dom.nodeName == "LI" && (match = /-(\d+)$/.exec(dom.id)) && +match[1] < options.length) {
-                    applyCompletion(view, options[+match[1]]);
-                    e.preventDefault();
-                    return;
-                }
-            }
-        });
-        this.dom.addEventListener("focusout", (e) => {
-            let state = view.state.field(this.stateField, false);
-            if (state && state.tooltip && view.state.facet(completionConfig).closeOnBlur &&
-                e.relatedTarget != view.contentDOM)
-                view.dispatch({ effects: closeCompletionEffect.of(null) });
-        });
-        this.list = this.dom.appendChild(this.createListBox(options, cState.id, this.range));
-        this.list.addEventListener("scroll", () => {
-            if (this.info)
-                this.view.requestMeasure(this.placeInfoReq);
-        });
-    }
-    mount() { this.updateSel(); }
-    update(update) {
-        var _a, _b, _c;
-        let cState = update.state.field(this.stateField);
-        let prevState = update.startState.field(this.stateField);
-        this.updateTooltipClass(update.state);
-        if (cState != prevState) {
-            this.updateSel();
-            if (((_a = cState.open) === null || _a === void 0 ? void 0 : _a.disabled) != ((_b = prevState.open) === null || _b === void 0 ? void 0 : _b.disabled))
-                this.dom.classList.toggle("cm-tooltip-autocomplete-disabled", !!((_c = cState.open) === null || _c === void 0 ? void 0 : _c.disabled));
-        }
-    }
-    updateTooltipClass(state) {
-        let cls = this.tooltipClass(state);
-        if (cls != this.currentClass) {
-            for (let c of this.currentClass.split(" "))
-                if (c)
-                    this.dom.classList.remove(c);
-            for (let c of cls.split(" "))
-                if (c)
-                    this.dom.classList.add(c);
-            this.currentClass = cls;
-        }
-    }
-    positioned(space) {
-        this.space = space;
-        if (this.info)
-            this.view.requestMeasure(this.placeInfoReq);
-    }
-    updateSel() {
-        let cState = this.view.state.field(this.stateField), open = cState.open;
-        if (open.selected > -1 && open.selected < this.range.from || open.selected >= this.range.to) {
-            this.range = rangeAroundSelected(open.options.length, open.selected, this.view.state.facet(completionConfig).maxRenderedOptions);
-            this.list.remove();
-            this.list = this.dom.appendChild(this.createListBox(open.options, cState.id, this.range));
-            this.list.addEventListener("scroll", () => {
-                if (this.info)
-                    this.view.requestMeasure(this.placeInfoReq);
-            });
-        }
-        if (this.updateSelectedOption(open.selected)) {
-            if (this.info) {
-                this.info.remove();
-                this.info = null;
-            }
-            let { completion } = open.options[open.selected];
-            let { info } = completion;
-            if (!info)
-                return;
-            let infoResult = typeof info === 'string' ? document.createTextNode(info) : info(completion);
-            if (!infoResult)
-                return;
-            if ('then' in infoResult) {
-                infoResult.then(node => {
-                    if (node && this.view.state.field(this.stateField, false) == cState)
-                        this.addInfoPane(node);
-                }).catch(e => logException(this.view.state, e, "completion info"));
-            }
-            else {
-                this.addInfoPane(infoResult);
-            }
-        }
-    }
-    addInfoPane(content) {
-        let dom = this.info = document.createElement("div");
-        dom.className = "cm-tooltip cm-completionInfo";
-        dom.appendChild(content);
-        this.dom.appendChild(dom);
-        this.view.requestMeasure(this.placeInfoReq);
-    }
-    updateSelectedOption(selected) {
-        let set = null;
-        for (let opt = this.list.firstChild, i = this.range.from; opt; opt = opt.nextSibling, i++) {
-            if (opt.nodeName != "LI" || !opt.id) {
-                i--; // A section header
-            }
-            else if (i == selected) {
-                if (!opt.hasAttribute("aria-selected")) {
-                    opt.setAttribute("aria-selected", "true");
-                    set = opt;
-                }
-            }
-            else {
-                if (opt.hasAttribute("aria-selected"))
-                    opt.removeAttribute("aria-selected");
-            }
-        }
-        if (set)
-            scrollIntoView(this.list, set);
-        return set;
-    }
-    measureInfo() {
-        let sel = this.dom.querySelector("[aria-selected]");
-        if (!sel || !this.info)
-            return null;
-        let listRect = this.dom.getBoundingClientRect();
-        let infoRect = this.info.getBoundingClientRect();
-        let selRect = sel.getBoundingClientRect();
-        let space = this.space;
-        if (!space) {
-            let win = this.dom.ownerDocument.defaultView || window;
-            space = { left: 0, top: 0, right: win.innerWidth, bottom: win.innerHeight };
-        }
-        if (selRect.top > Math.min(space.bottom, listRect.bottom) - 10 ||
-            selRect.bottom < Math.max(space.top, listRect.top) + 10)
-            return null;
-        return this.view.state.facet(completionConfig).positionInfo(this.view, listRect, selRect, infoRect, space);
-    }
-    placeInfo(pos) {
-        if (this.info) {
-            if (pos) {
-                if (pos.style)
-                    this.info.style.cssText = pos.style;
-                this.info.className = "cm-tooltip cm-completionInfo " + (pos.class || "");
-            }
-            else {
-                this.info.style.cssText = "top: -1e6px";
-            }
-        }
-    }
-    createListBox(options, id, range) {
-        const ul = document.createElement("ul");
-        ul.id = id;
-        ul.setAttribute("role", "listbox");
-        ul.setAttribute("aria-expanded", "true");
-        ul.setAttribute("aria-label", this.view.state.phrase("Completions"));
-        let curSection = null;
-        for (let i = range.from; i < range.to; i++) {
-            let { completion, match } = options[i], { section } = completion;
-            if (section) {
-                let name = typeof section == "string" ? section : section.name;
-                if (name != curSection && (i > range.from || range.from == 0)) {
-                    curSection = name;
-                    if (typeof section != "string" && section.header) {
-                        ul.appendChild(section.header(section));
-                    }
-                    else {
-                        let header = ul.appendChild(document.createElement("completion-section"));
-                        header.textContent = name;
-                    }
-                }
-            }
-            const li = ul.appendChild(document.createElement("li"));
-            li.id = id + "-" + i;
-            li.setAttribute("role", "option");
-            let cls = this.optionClass(completion);
-            if (cls)
-                li.className = cls;
-            for (let source of this.optionContent) {
-                let node = source(completion, this.view.state, match);
-                if (node)
-                    li.appendChild(node);
-            }
-        }
-        if (range.from)
-            ul.classList.add("cm-completionListIncompleteTop");
-        if (range.to < options.length)
-            ul.classList.add("cm-completionListIncompleteBottom");
-        return ul;
-    }
-}
-// We allocate a new function instance every time the completion
-// changes to force redrawing/repositioning of the tooltip
-function completionTooltip(stateField) {
-    return (view) => new CompletionTooltip(view, stateField);
-}
-function scrollIntoView(container, element) {
-    let parent = container.getBoundingClientRect();
-    let self = element.getBoundingClientRect();
-    if (self.top < parent.top)
-        container.scrollTop -= parent.top - self.top;
-    else if (self.bottom > parent.bottom)
-        container.scrollTop += self.bottom - parent.bottom;
-}
-
-// Used to pick a preferred option when two options with the same
-// label occur in the result.
-function score(option) {
-    return (option.boost || 0) * 100 + (option.apply ? 10 : 0) + (option.info ? 5 : 0) +
-        (option.type ? 1 : 0);
-}
-function sortOptions(active, state) {
-    let options = [];
-    let sections = null;
-    let addOption = (option) => {
-        options.push(option);
-        let { section } = option.completion;
-        if (section) {
-            if (!sections)
-                sections = [];
-            let name = typeof section == "string" ? section : section.name;
-            if (!sections.some(s => s.name == name))
-                sections.push(typeof section == "string" ? { name } : section);
-        }
-    };
-    for (let a of active)
-        if (a.hasResult()) {
-            if (a.result.filter === false) {
-                let getMatch = a.result.getMatch;
-                for (let option of a.result.options) {
-                    let match = [1e9 - options.length];
-                    if (getMatch)
-                        for (let n of getMatch(option))
-                            match.push(n);
-                    addOption(new Option(option, a.source, match, match[0]));
-                }
-            }
-            else {
-                let matcher = new FuzzyMatcher(state.sliceDoc(a.from, a.to)), match;
-                for (let option of a.result.options)
-                    if (match = matcher.match(option.label)) {
-                        addOption(new Option(option, a.source, match, match[0] + (option.boost || 0)));
-                    }
-            }
-        }
-    if (sections) {
-        let sectionOrder = Object.create(null), pos = 0;
-        let cmp = (a, b) => { var _a, _b; return ((_a = a.rank) !== null && _a !== void 0 ? _a : 1e9) - ((_b = b.rank) !== null && _b !== void 0 ? _b : 1e9) || (a.name < b.name ? -1 : 1); };
-        for (let s of sections.sort(cmp)) {
-            pos -= 1e5;
-            sectionOrder[s.name] = pos;
-        }
-        for (let option of options) {
-            let { section } = option.completion;
-            if (section)
-                option.score += sectionOrder[typeof section == "string" ? section : section.name];
-        }
-    }
-    let result = [], prev = null;
-    let compare = state.facet(completionConfig).compareCompletions;
-    for (let opt of options.sort((a, b) => (b.score - a.score) || compare(a.completion, b.completion))) {
-        if (!prev || prev.label != opt.completion.label || prev.detail != opt.completion.detail ||
-            (prev.type != null && opt.completion.type != null && prev.type != opt.completion.type) ||
-            prev.apply != opt.completion.apply)
-            result.push(opt);
-        else if (score(opt.completion) > score(prev))
-            result[result.length - 1] = opt;
-        prev = opt.completion;
-    }
-    return result;
-}
-class CompletionDialog {
-    constructor(options, attrs, tooltip, timestamp, selected, disabled) {
-        this.options = options;
-        this.attrs = attrs;
-        this.tooltip = tooltip;
-        this.timestamp = timestamp;
-        this.selected = selected;
-        this.disabled = disabled;
-    }
-    setSelected(selected, id) {
-        return selected == this.selected || selected >= this.options.length ? this
-            : new CompletionDialog(this.options, makeAttrs(id, selected), this.tooltip, this.timestamp, selected, this.disabled);
-    }
-    static build(active, state, id, prev, conf) {
-        let options = sortOptions(active, state);
-        if (!options.length) {
-            return prev && active.some(a => a.state == 1 /* State.Pending */) ?
-                new CompletionDialog(prev.options, prev.attrs, prev.tooltip, prev.timestamp, prev.selected, true) : null;
-        }
-        let selected = state.facet(completionConfig).selectOnOpen ? 0 : -1;
-        if (prev && prev.selected != selected && prev.selected != -1) {
-            let selectedValue = prev.options[prev.selected].completion;
-            for (let i = 0; i < options.length; i++)
-                if (options[i].completion == selectedValue) {
-                    selected = i;
-                    break;
-                }
-        }
-        return new CompletionDialog(options, makeAttrs(id, selected), {
-            pos: active.reduce((a, b) => b.hasResult() ? Math.min(a, b.from) : a, 1e8),
-            create: completionTooltip(completionState),
-            above: conf.aboveCursor,
-        }, prev ? prev.timestamp : Date.now(), selected, false);
-    }
-    map(changes) {
-        return new CompletionDialog(this.options, this.attrs, Object.assign(Object.assign({}, this.tooltip), { pos: changes.mapPos(this.tooltip.pos) }), this.timestamp, this.selected, this.disabled);
-    }
-}
-class CompletionState {
-    constructor(active, id, open) {
-        this.active = active;
-        this.id = id;
-        this.open = open;
-    }
-    static start() {
-        return new CompletionState(none, "cm-ac-" + Math.floor(Math.random() * 2e6).toString(36), null);
-    }
-    update(tr) {
-        let { state } = tr, conf = state.facet(completionConfig);
-        let sources = conf.override ||
-            state.languageDataAt("autocomplete", cur(state)).map(asSource);
-        let active = sources.map(source => {
-            let value = this.active.find(s => s.source == source) ||
-                new ActiveSource(source, this.active.some(a => a.state != 0 /* State.Inactive */) ? 1 /* State.Pending */ : 0 /* State.Inactive */);
-            return value.update(tr, conf);
-        });
-        if (active.length == this.active.length && active.every((a, i) => a == this.active[i]))
-            active = this.active;
-        let open = this.open;
-        if (open && tr.docChanged)
-            open = open.map(tr.changes);
-        if (tr.selection || active.some(a => a.hasResult() && tr.changes.touchesRange(a.from, a.to)) ||
-            !sameResults(active, this.active))
-            open = CompletionDialog.build(active, state, this.id, open, conf);
-        else if (open && open.disabled && !active.some(a => a.state == 1 /* State.Pending */))
-            open = null;
-        if (!open && active.every(a => a.state != 1 /* State.Pending */) && active.some(a => a.hasResult()))
-            active = active.map(a => a.hasResult() ? new ActiveSource(a.source, 0 /* State.Inactive */) : a);
-        for (let effect of tr.effects)
-            if (effect.is(setSelectedEffect))
-                open = open && open.setSelected(effect.value, this.id);
-        return active == this.active && open == this.open ? this : new CompletionState(active, this.id, open);
-    }
-    get tooltip() { return this.open ? this.open.tooltip : null; }
-    get attrs() { return this.open ? this.open.attrs : baseAttrs; }
-}
-function sameResults(a, b) {
-    if (a == b)
-        return true;
-    for (let iA = 0, iB = 0;;) {
-        while (iA < a.length && !a[iA].hasResult)
-            iA++;
-        while (iB < b.length && !b[iB].hasResult)
-            iB++;
-        let endA = iA == a.length, endB = iB == b.length;
-        if (endA || endB)
-            return endA == endB;
-        if (a[iA++].result != b[iB++].result)
-            return false;
-    }
-}
-const baseAttrs = {
-    "aria-autocomplete": "list"
-};
-function makeAttrs(id, selected) {
-    let result = {
-        "aria-autocomplete": "list",
-        "aria-haspopup": "listbox",
-        "aria-controls": id
-    };
-    if (selected > -1)
-        result["aria-activedescendant"] = id + "-" + selected;
-    return result;
-}
-const none = [];
-function getUserEvent(tr) {
-    return tr.isUserEvent("input.type") ? "input" : tr.isUserEvent("delete.backward") ? "delete" : null;
-}
-class ActiveSource {
-    constructor(source, state, explicitPos = -1) {
-        this.source = source;
-        this.state = state;
-        this.explicitPos = explicitPos;
-    }
-    hasResult() { return false; }
-    update(tr, conf) {
-        let event = getUserEvent(tr), value = this;
-        if (event)
-            value = value.handleUserEvent(tr, event, conf);
-        else if (tr.docChanged)
-            value = value.handleChange(tr);
-        else if (tr.selection && value.state != 0 /* State.Inactive */)
-            value = new ActiveSource(value.source, 0 /* State.Inactive */);
-        for (let effect of tr.effects) {
-            if (effect.is(startCompletionEffect))
-                value = new ActiveSource(value.source, 1 /* State.Pending */, effect.value ? cur(tr.state) : -1);
-            else if (effect.is(closeCompletionEffect))
-                value = new ActiveSource(value.source, 0 /* State.Inactive */);
-            else if (effect.is(setActiveEffect))
-                for (let active of effect.value)
-                    if (active.source == value.source)
-                        value = active;
-        }
-        return value;
-    }
-    handleUserEvent(tr, type, conf) {
-        return type == "delete" || !conf.activateOnTyping ? this.map(tr.changes) : new ActiveSource(this.source, 1 /* State.Pending */);
-    }
-    handleChange(tr) {
-        return tr.changes.touchesRange(cur(tr.startState)) ? new ActiveSource(this.source, 0 /* State.Inactive */) : this.map(tr.changes);
-    }
-    map(changes) {
-        return changes.empty || this.explicitPos < 0 ? this : new ActiveSource(this.source, this.state, changes.mapPos(this.explicitPos));
-    }
-}
-class ActiveResult extends ActiveSource {
-    constructor(source, explicitPos, result, from, to) {
-        super(source, 2 /* State.Result */, explicitPos);
-        this.result = result;
-        this.from = from;
-        this.to = to;
-    }
-    hasResult() { return true; }
-    handleUserEvent(tr, type, conf) {
-        var _a;
-        let from = tr.changes.mapPos(this.from), to = tr.changes.mapPos(this.to, 1);
-        let pos = cur(tr.state);
-        if ((this.explicitPos < 0 ? pos <= from : pos < this.from) ||
-            pos > to ||
-            type == "delete" && cur(tr.startState) == this.from)
-            return new ActiveSource(this.source, type == "input" && conf.activateOnTyping ? 1 /* State.Pending */ : 0 /* State.Inactive */);
-        let explicitPos = this.explicitPos < 0 ? -1 : tr.changes.mapPos(this.explicitPos), updated;
-        if (checkValid(this.result.validFor, tr.state, from, to))
-            return new ActiveResult(this.source, explicitPos, this.result, from, to);
-        if (this.result.update &&
-            (updated = this.result.update(this.result, from, to, new CompletionContext(tr.state, pos, explicitPos >= 0))))
-            return new ActiveResult(this.source, explicitPos, updated, updated.from, (_a = updated.to) !== null && _a !== void 0 ? _a : cur(tr.state));
-        return new ActiveSource(this.source, 1 /* State.Pending */, explicitPos);
-    }
-    handleChange(tr) {
-        return tr.changes.touchesRange(this.from, this.to) ? new ActiveSource(this.source, 0 /* State.Inactive */) : this.map(tr.changes);
-    }
-    map(mapping) {
-        return mapping.empty ? this :
-            new ActiveResult(this.source, this.explicitPos < 0 ? -1 : mapping.mapPos(this.explicitPos), this.result, mapping.mapPos(this.from), mapping.mapPos(this.to, 1));
-    }
-}
-function checkValid(validFor, state, from, to) {
-    if (!validFor)
-        return false;
-    let text = state.sliceDoc(from, to);
-    return typeof validFor == "function" ? validFor(text, from, to, state) : ensureAnchor(validFor, true).test(text);
-}
-const setActiveEffect = /*@__PURE__*/StateEffect.define({
-    map(sources, mapping) { return sources.map(s => s.map(mapping)); }
-});
-const setSelectedEffect = /*@__PURE__*/StateEffect.define();
-const completionState = /*@__PURE__*/StateField.define({
-    create() { return CompletionState.start(); },
-    update(value, tr) { return value.update(tr); },
-    provide: f => [
-        showTooltip.from(f, val => val.tooltip),
-        EditorView.contentAttributes.from(f, state => state.attrs)
-    ]
 });
 
 const baseTheme = /*@__PURE__*/EditorView.baseTheme({

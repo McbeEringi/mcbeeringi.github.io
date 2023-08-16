@@ -193,7 +193,7 @@ Autocompletion for built-in Python globals and keywords.
 const globalCompletion = /*@__PURE__*/ifNotIn(dontComplete, /*@__PURE__*/completeFromList(/*@__PURE__*/globals.concat(snippets)));
 
 function indentBody(context, node) {
-    let base = context.lineIndent(node.from);
+    let base = context.baseIndentFor(node);
     let line = context.lineAt(context.pos, -1), to = line.from + line.text.length;
     // Don't consider blank, deindented lines at the end of the
     // block part of the block

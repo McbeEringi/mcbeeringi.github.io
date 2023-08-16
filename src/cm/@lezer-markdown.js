@@ -2,6 +2,10 @@ import { NodeType, NodeProp, NodeSet, Tree, Parser, parseMixed } from "./@lezer-
 import { styleTags, tags, Tag } from "./@lezer-highlight.js";
 
 class CompositeBlock {
+    static create(type, value, from, parentHash, end) {
+        let hash = (parentHash + (parentHash << 8) + type + (value << 4)) | 0;
+        return new CompositeBlock(type, value, from, hash, end, [], []);
+    }
     constructor(type, 
     // Used for indentation in list items, markup character in lists
     value, from, hash, end, children, positions) {
@@ -13,10 +17,6 @@ class CompositeBlock {
         this.children = children;
         this.positions = positions;
         this.hashProp = [[NodeProp.contextHash, hash]];
-    }
-    static create(type, value, from, parentHash, end) {
-        let hash = (parentHash + (parentHash << 8) + type + (value << 4)) | 0;
-        return new CompositeBlock(type, value, from, hash, end, [], []);
     }
     addChild(child, pos) {
         if (child.prop(NodeProp.contextHash) != this.hash)
@@ -522,14 +522,14 @@ const DefaultBlockParsers = {
 // creates a link reference if there's a valid reference up to the current point.
 class LinkReferenceParser {
     constructor(leaf) {
-        this.stage = 0 /* Start */;
+        this.stage = 0 /* RefStage.Start */;
         this.elts = [];
         this.pos = 0;
         this.start = leaf.start;
         this.advance(leaf.content);
     }
     nextLine(cx, line, leaf) {
-        if (this.stage == -1 /* Failed */)
+        if (this.stage == -1 /* RefStage.Failed */)
             return false;
         let content = leaf.content + "\n" + line.scrub();
         let finish = this.advance(content);
@@ -538,7 +538,7 @@ class LinkReferenceParser {
         return false;
     }
     finish(cx, leaf) {
-        if ((this.stage == 2 /* Link */ || this.stage == 3 /* Title */) && skipSpace(leaf.content, this.pos) == leaf.content.length)
+        if ((this.stage == 2 /* RefStage.Link */ || this.stage == 3 /* RefStage.Title */) && skipSpace(leaf.content, this.pos) == leaf.content.length)
             return this.complete(cx, leaf, leaf.content.length);
         return false;
     }
@@ -554,27 +554,27 @@ class LinkReferenceParser {
             return true;
         }
         if (elt === false)
-            this.stage = -1 /* Failed */;
+            this.stage = -1 /* RefStage.Failed */;
         return false;
     }
     advance(content) {
         for (;;) {
-            if (this.stage == -1 /* Failed */) {
+            if (this.stage == -1 /* RefStage.Failed */) {
                 return -1;
             }
-            else if (this.stage == 0 /* Start */) {
+            else if (this.stage == 0 /* RefStage.Start */) {
                 if (!this.nextStage(parseLinkLabel(content, this.pos, this.start, true)))
                     return -1;
                 if (content.charCodeAt(this.pos) != 58 /* ':' */)
-                    return this.stage = -1 /* Failed */;
+                    return this.stage = -1 /* RefStage.Failed */;
                 this.elts.push(elt(Type.LinkMark, this.pos + this.start, this.pos + this.start + 1));
                 this.pos++;
             }
-            else if (this.stage == 1 /* Label */) {
+            else if (this.stage == 1 /* RefStage.Label */) {
                 if (!this.nextStage(parseURL(content, skipSpace(content, this.pos), this.start)))
                     return -1;
             }
-            else if (this.stage == 2 /* Link */) {
+            else if (this.stage == 2 /* RefStage.Link */) {
                 let skip = skipSpace(content, this.pos), end = 0;
                 if (skip > this.pos) {
                     let title = parseLinkTitle(content, skip, this.start);
@@ -1288,7 +1288,7 @@ const DefaultInline = {
         let rightFlanking = !sBefore && (!pBefore || sAfter || pAfter);
         let canOpen = leftFlanking && (next == 42 || !rightFlanking || pBefore);
         let canClose = rightFlanking && (next == 42 || !leftFlanking || pAfter);
-        return cx.append(new InlineDelimiter(next == 95 ? EmphasisUnderscore : EmphasisAsterisk, start, pos, (canOpen ? 1 /* Open */ : 0) | (canClose ? 2 /* Close */ : 0)));
+        return cx.append(new InlineDelimiter(next == 95 ? EmphasisUnderscore : EmphasisAsterisk, start, pos, (canOpen ? 1 /* Mark.Open */ : 0) | (canClose ? 2 /* Mark.Close */ : 0)));
     },
     HardBreak(cx, next, start) {
         if (next == 92 /* '\\' */ && cx.char(start + 1) == 10 /* '\n' */)
@@ -1303,11 +1303,11 @@ const DefaultInline = {
         return -1;
     },
     Link(cx, next, start) {
-        return next == 91 /* '[' */ ? cx.append(new InlineDelimiter(LinkStart, start, start + 1, 1 /* Open */)) : -1;
+        return next == 91 /* '[' */ ? cx.append(new InlineDelimiter(LinkStart, start, start + 1, 1 /* Mark.Open */)) : -1;
     },
     Image(cx, next, start) {
         return next == 33 /* '!' */ && cx.char(start + 1) == 91 /* '[' */
-            ? cx.append(new InlineDelimiter(ImageStart, start, start + 2, 1 /* Open */)) : -1;
+            ? cx.append(new InlineDelimiter(ImageStart, start, start + 2, 1 /* Mark.Open */)) : -1;
     },
     LinkEnd(cx, next, start) {
         if (next != 93 /* ']' */)
@@ -1480,7 +1480,7 @@ class InlineContext {
     /// or both. Returns the end of the delimiter, for convenient
     /// returning from [parse functions](#InlineParser.parse).
     addDelimiter(type, from, to, open, close) {
-        return this.append(new InlineDelimiter(type, from, to, (open ? 1 /* Open */ : 0) | (close ? 2 /* Close */ : 0)));
+        return this.append(new InlineDelimiter(type, from, to, (open ? 1 /* Mark.Open */ : 0) | (close ? 2 /* Mark.Close */ : 0)));
     }
     /// Add an inline element. Returns the end of the element.
     addElement(elt) {
@@ -1492,7 +1492,7 @@ class InlineContext {
         // Scan forward, looking for closing tokens
         for (let i = from; i < this.parts.length; i++) {
             let close = this.parts[i];
-            if (!(close instanceof InlineDelimiter && close.type.resolve && (close.side & 2 /* Close */)))
+            if (!(close instanceof InlineDelimiter && close.type.resolve && (close.side & 2 /* Mark.Close */)))
                 continue;
             let emp = close.type == EmphasisUnderscore || close.type == EmphasisAsterisk;
             let closeSize = close.to - close.from;
@@ -1500,9 +1500,9 @@ class InlineContext {
             // Continue scanning for a matching opening token
             for (; j >= from; j--) {
                 let part = this.parts[j];
-                if (part instanceof InlineDelimiter && (part.side & 1 /* Open */) && part.type == close.type &&
+                if (part instanceof InlineDelimiter && (part.side & 1 /* Mark.Open */) && part.type == close.type &&
                     // Ignore emphasis delimiters where the character count doesn't match
-                    !(emp && ((close.side & 1 /* Open */) || (part.side & 2 /* Close */)) &&
+                    !(emp && ((close.side & 1 /* Mark.Open */) || (part.side & 2 /* Mark.Close */)) &&
                         (part.to - part.from + closeSize) % 3 == 0 && ((part.to - part.from) % 3 || closeSize % 3))) {
                     open = part;
                     break;
@@ -1908,7 +1908,7 @@ const TaskList = {
     parseBlock: [{
             name: "TaskList",
             leaf(cx, leaf) {
-                return /^\[[ xX]\]/.test(leaf.content) && cx.parentType().name == "ListItem" ? new TaskParser : null;
+                return /^\[[ xX]\][ \t]/.test(leaf.content) && cx.parentType().name == "ListItem" ? new TaskParser : null;
             },
             after: "SetextHeading"
         }]
