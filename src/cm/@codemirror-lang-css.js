@@ -237,7 +237,7 @@ const cssLanguage = /*@__PURE__*/LRLanguage.define({
                 Declaration: /*@__PURE__*/continuedIndent()
             }),
             /*@__PURE__*/foldNodeProp.add({
-                Block: foldInside
+                "Block KeyframeList": foldInside
             })
         ]
     }),

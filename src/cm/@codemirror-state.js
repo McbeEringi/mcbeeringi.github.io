@@ -96,7 +96,8 @@ class Text {
         return new LineCursor(inner);
     }
     /**
-    @internal
+    Return the document as a string, using newline characters to
+    separate lines.
     */
     toString() { return this.sliceString(0); }
     /**

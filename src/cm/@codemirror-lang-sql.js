@@ -59,6 +59,19 @@ function readDoubleDollarLiteral(input) {
         input.advance();
     }
 }
+function readPLSQLQuotedLiteral(input, openDelim) {
+    let matchingDelim = "[{<(".indexOf(String.fromCharCode(openDelim));
+    let closeDelim = matchingDelim < 0 ? openDelim : "]}>)".charCodeAt(matchingDelim);
+    for (;;) {
+        if (input.next < 0)
+            return;
+        if (input.next == closeDelim && input.peek(1) == 39 /* Ch.SingleQuote */) {
+            input.advance(2);
+            return;
+        }
+        input.advance();
+    }
+}
 function readWord(input, result) {
     for (;;) {
         if (input.next != 95 /* Ch.Underscore */ && !isAlpha(input.next))
@@ -143,6 +156,7 @@ const defaults = {
     unquotedBitLiterals: false,
     treatBitsAsBytes: false,
     charSetCasts: false,
+    plsqlQuotingMechanism: false,
     operatorChars: "*+\-%<>!=&|~^/",
     specialVar: "?",
     identifierQuotes: '"',
@@ -226,6 +240,14 @@ function tokensFor(d) {
                     break;
                 input.advance();
             }
+        }
+        else if (d.plsqlQuotingMechanism &&
+            (next == 113 /* Ch.q */ || next == 81 /* Ch.Q */) && input.next == 39 /* Ch.SingleQuote */ &&
+            input.peek(1) > 0 && !inString(input.peek(1), Space)) {
+            let openDelim = input.peek(1);
+            input.advance(2);
+            readPLSQLQuotedLiteral(input, openDelim);
+            input.acceptToken(String$1);
         }
         else if (next == 40 /* Ch.ParenL */) {
             input.acceptToken(ParenL);
@@ -424,31 +446,51 @@ class CompletionLevel {
         this.list = [];
         this.children = undefined;
     }
-    child(name) {
+    child(name, idQuote) {
         let children = this.children || (this.children = Object.create(null));
-        return children[name] || (children[name] = new CompletionLevel);
+        let found = children[name];
+        if (found)
+            return found;
+        if (name)
+            this.list.push(nameCompletion(name, "type", idQuote));
+        return (children[name] = new CompletionLevel);
     }
-    childCompletions(type) {
-        return this.children ? Object.keys(this.children).filter(x => x).map(name => ({ label: name, type })) : [];
+    addCompletions(list) {
+        for (let option of list) {
+            let found = this.list.findIndex(o => o.label == option.label);
+            if (found > -1)
+                this.list[found] = option;
+            else
+                this.list.push(option);
+        }
     }
 }
-function completeFromSchema(schema, tables, schemas, defaultTableName, defaultSchemaName) {
+function nameCompletion(label, type, idQuote) {
+    if (!/[^\w\xb5-\uffff]/.test(label))
+        return { label, type };
+    return { label, type, apply: idQuote + label + idQuote };
+}
+function completeFromSchema(schema, tables, schemas, defaultTableName, defaultSchemaName, dialect) {
+    var _a;
     let top = new CompletionLevel;
-    let defaultSchema = top.child(defaultSchemaName || "");
+    let idQuote = ((_a = dialect === null || dialect === void 0 ? void 0 : dialect.spec.identifierQuotes) === null || _a === void 0 ? void 0 : _a[0]) || '"';
+    let defaultSchema = top.child(defaultSchemaName || "", idQuote);
     for (let table in schema) {
-        let dot = table.indexOf(".");
-        let schemaCompletions = dot > -1 ? top.child(table.slice(0, dot)) : defaultSchema;
-        let tableCompletions = schemaCompletions.child(dot > -1 ? table.slice(dot + 1) : table);
-        tableCompletions.list = schema[table].map(val => typeof val == "string" ? { label: val, type: "property" } : val);
+        let parts = table.replace(/\\?\./g, p => p == "." ? "\0" : p).split("\0");
+        let base = parts.length == 1 ? defaultSchema : top;
+        for (let part of parts)
+            base = base.child(part.replace(/\\\./g, "."), idQuote);
+        for (let option of schema[table])
+            if (option)
+                base.list.push(typeof option == "string" ? nameCompletion(option, "property", idQuote) : option);
     }
-    defaultSchema.list = (tables || defaultSchema.childCompletions("type"))
-        .concat(defaultTableName ? defaultSchema.child(defaultTableName).list : []);
-    for (let sName in top.children) {
-        let schema = top.child(sName);
-        if (!schema.list.length)
-            schema.list = schema.childCompletions("type");
-    }
-    top.list = defaultSchema.list.concat(schemas || top.childCompletions("type"));
+    if (tables)
+        defaultSchema.addCompletions(tables);
+    if (schemas)
+        top.addCompletions(schemas);
+    top.addCompletions(defaultSchema.list);
+    if (defaultTableName)
+        top.addCompletions(defaultSchema.child(defaultTableName, idQuote).list);
     return (context) => {
         let { parents, from, quoted, empty, aliases } = sourceContext(context.state, context.pos);
         if (empty && !context.explicit)
@@ -461,11 +503,11 @@ function completeFromSchema(schema, tables, schemas, defaultTableName, defaultSc
                 if (level == top)
                     level = defaultSchema;
                 else if (level == defaultSchema && defaultTableName)
-                    level = level.child(defaultTableName);
+                    level = level.child(defaultTableName, idQuote);
                 else
                     return null;
             }
-            level = level.child(name);
+            level = level.child(name, idQuote);
         }
         let quoteAfter = quoted && context.state.sliceDoc(context.pos, context.pos + 1) == quoted;
         let options = level.list;
@@ -532,9 +574,14 @@ class SQLDialect {
     /**
     The language for this dialect.
     */
-    language) {
+    language, 
+    /**
+    The spec used to define this dialect.
+    */
+    spec) {
         this.dialect = dialect;
         this.language = language;
+        this.spec = spec;
     }
     /**
     Returns the language for this dialect as an extension.
@@ -555,7 +602,7 @@ class SQLDialect {
                 closeBrackets: { brackets: ["(", "[", "{", "'", '"', "`"] }
             }
         });
-        return new SQLDialect(d, language);
+        return new SQLDialect(d, language, spec);
     }
 }
 /**
@@ -578,7 +625,7 @@ Returns a completion sources that provides schema-based completion
 for the given configuration.
 */
 function schemaCompletionSource(config) {
-    return config.schema ? completeFromSchema(config.schema, config.tables, config.schemas, config.defaultTable, config.defaultSchema)
+    return config.schema ? completeFromSchema(config.schema, config.tables, config.schemas, config.defaultTable, config.defaultSchema, config.dialect || StandardSQL)
         : () => null;
 }
 /**
@@ -688,7 +735,8 @@ const PLSQL = /*@__PURE__*/SQLDialect.define({
     types: SQLTypes + "ascii bfile bfilename bigserial bit blob dec long number nvarchar nvarchar2 serial smallint string text uid varchar2 xml",
     operatorChars: "*/+-%<>!=~",
     doubleQuotedStrings: true,
-    charSetCasts: true
+    charSetCasts: true,
+    plsqlQuotingMechanism: true
 });
 
 export { Cassandra, MSSQL, MariaSQL, MySQL, PLSQL, PostgreSQL, SQLDialect, SQLite, StandardSQL, keywordCompletion, keywordCompletionSource, schemaCompletion, schemaCompletionSource, sql };

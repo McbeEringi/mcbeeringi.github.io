@@ -179,10 +179,10 @@ function styleTags(spec) {
             tags = [tags];
         for (let part of prop.split(" "))
             if (part) {
-                let pieces = [], mode = 2 /* Normal */, rest = part;
+                let pieces = [], mode = 2 /* Mode.Normal */, rest = part;
                 for (let pos = 0;;) {
                     if (rest == "..." && pos > 0 && pos + 3 == part.length) {
-                        mode = 1 /* Inherit */;
+                        mode = 1 /* Mode.Inherit */;
                         break;
                     }
                     let m = /^"(?:[^"\\]|\\.)*?"|[^\/!]+/.exec(rest);
@@ -194,7 +194,7 @@ function styleTags(spec) {
                         break;
                     let next = part[pos++];
                     if (pos == part.length && next == "!") {
-                        mode = 0 /* Opaque */;
+                        mode = 0 /* Mode.Opaque */;
                         break;
                     }
                     if (next != "/")
@@ -218,8 +218,8 @@ class Rule {
         this.context = context;
         this.next = next;
     }
-    get opaque() { return this.mode == 0 /* Opaque */; }
-    get inherit() { return this.mode == 1 /* Inherit */; }
+    get opaque() { return this.mode == 0 /* Mode.Opaque */; }
+    get inherit() { return this.mode == 1 /* Mode.Inherit */; }
     sort(other) {
         if (!other || other.depth < this.depth) {
             this.next = other;
@@ -230,7 +230,7 @@ class Rule {
     }
     get depth() { return this.context ? this.context.length : 0; }
 }
-Rule.empty = new Rule([], 2 /* Normal */, null);
+Rule.empty = new Rule([], 2 /* Mode.Normal */, null);
 /**
 Define a [highlighter](#highlight.Highlighter) from an array of
 tag/class pairs. Classes associated with more specific tags will
@@ -327,7 +327,7 @@ class HighlightBuilder {
             if (cls)
                 cls += " ";
             cls += tagCls;
-            if (rule.mode == 1 /* Inherit */)
+            if (rule.mode == 1 /* Mode.Inherit */)
                 inheritedClass += (inheritedClass ? " " : "") + tagCls;
         }
         this.startSpan(cursor.from, cls);

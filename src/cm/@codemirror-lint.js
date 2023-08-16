@@ -47,7 +47,8 @@ function findDiagnostic(diagnostics, diagnostic = null, after = 0) {
     return found;
 }
 function hideTooltip(tr, tooltip) {
-    return !!(tr.effects.some(e => e.is(setDiagnosticsEffect)) || tr.changes.touchesRange(tooltip.pos));
+    let line = tr.startState.doc.lineAt(tooltip.pos);
+    return !!(tr.effects.some(e => e.is(setDiagnosticsEffect)) || tr.changes.touchesRange(line.from, line.to));
 }
 function maybeEnableLint(state, effects) {
     return state.field(lintState, false) ? effects : effects.concat(StateEffect.appendConfig.of(lintExtensions));
@@ -170,6 +171,30 @@ const nextDiagnostic = (view) => {
             return false;
     }
     view.dispatch({ selection: { anchor: next.from, head: next.to }, scrollIntoView: true });
+    return true;
+};
+/**
+Move the selection to the previous diagnostic.
+*/
+const previousDiagnostic = (view) => {
+    let { state } = view, field = state.field(lintState, false);
+    if (!field)
+        return false;
+    let sel = state.selection.main;
+    let prevFrom, prevTo, lastFrom, lastTo;
+    field.diagnostics.between(0, state.doc.length, (from, to) => {
+        if (to < sel.to && (prevFrom == null || prevFrom < from)) {
+            prevFrom = from;
+            prevTo = to;
+        }
+        if (lastFrom == null || from > lastFrom) {
+            lastFrom = from;
+            lastTo = to;
+        }
+    });
+    if (lastFrom == null || prevFrom == null && lastFrom == sel.from)
+        return false;
+    view.dispatch({ selection: { anchor: prevFrom !== null && prevFrom !== void 0 ? prevFrom : lastFrom, head: prevTo !== null && prevTo !== void 0 ? prevTo : lastTo }, scrollIntoView: true });
     return true;
 };
 /**
@@ -754,4 +779,4 @@ function forEachDiagnostic(state, f) {
             f(iter.value.spec.diagnostic, iter.from, iter.to);
 }
 
-export { closeLintPanel, diagnosticCount, forEachDiagnostic, forceLinting, lintGutter, lintKeymap, linter, nextDiagnostic, openLintPanel, setDiagnostics, setDiagnosticsEffect };
+export { closeLintPanel, diagnosticCount, forEachDiagnostic, forceLinting, lintGutter, lintKeymap, linter, nextDiagnostic, openLintPanel, previousDiagnostic, setDiagnostics, setDiagnosticsEffect };

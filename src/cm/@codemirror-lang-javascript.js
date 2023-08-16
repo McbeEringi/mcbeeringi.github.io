@@ -208,7 +208,7 @@ function enumeratePropertyCompletions(obj, top) {
     let options = [], seen = new Set;
     for (let depth = 0;; depth++) {
         for (let name of (Object.getOwnPropertyNames || Object.keys)(obj)) {
-            if (seen.has(name))
+            if (!/^[a-zA-Z_$][\w$]*$/.test(name) || seen.has(name))
                 continue;
             seen.add(name);
             let value;
