@@ -7,18 +7,18 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>McbeEringi HowTo</title>
 	<meta name="description" content="McbeEringi's shader tutorial for MCBE">
-	<link rel="icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="icon" type="image/svg+xml" href="../../img/icon.svg">
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="McbeEringi HowTo">
 	<meta property="og:description" content="McbeEringi's shader tutorial for MCBE">
 	<meta property="og:url" content="https://mcbeeringi.github.io/mc/">
 	<meta property="og:image" content="https://mcbeeringi.github.io/img/icon.png">
-	<link rel="apple-touch-icon" href="../img/icon.png">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
 	<meta name="theme-color" content="#214"/>
 
-	<script src="../src/style.js" async></script>
-	<link rel="stylesheet" href="../src/style.css">
-	<link rel="stylesheet" href="../src/comp.css">
+	<script src="../../src/style.js" async></script>
+	<link rel="stylesheet" href="../../src/style.css">
+	<link rel="stylesheet" href="../../src/comp.css">
 </head>
 <body>
 	<style>
@@ -31,7 +31,7 @@
 		const urlq=Object.fromEntries(location.search.substr(1).split('&').filter(y=>y).map(x=>x.split('=',2).map(y=>y.split('+')))),
 		ins=x=>{wrap.textContent='';wrap.insertAdjacentHTML('afterbegin',x);};
 		if(urlq.i&&urlq.i[0])
-			fetch(`how/${urlq.i[0]}.md`).then(x=>x.text()).then(x=>ins(marked.parse(x,{baseUrl:'how/'})));
+			fetch(`${urlq.i[0]}.md`).then(x=>x.text()).then(x=>ins(marked.parse(x,{baseUrl:'./'})));
 		else
 			ins(`<h1>Shader HowTo</h1>
 <p>
