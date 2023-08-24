@@ -17,37 +17,42 @@
 <body>
 	<h1>404 Not Found</h1>
 	<script>
-		location.pathname.match(/^\/esbe-1g/i)?
-			setTimeout(_=>location.replace('https://nari0978.github.io/1g/1g.html'),5000,document.body.innerHTML=`<h1>301 Moved Permanently</h1>ESBE 1Gの管理は<a href='https://twitter.com/nari_0978'>NARI氏</a>に委託しました。<br>5秒後にリダイレクトします。<br><br>ESBEシリーズ<br><a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a><br><a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`):
+		location.pathname.match(/^(\/mc)?\/esbe-1g/i)?
+			setTimeout(_=>location.replace('https://nari0978.github.io/esbe-1g/esbe-1g.html'),5000,document.body.innerHTML=`<h1>301 Moved Permanently</h1>ESBE 1Gの管理は<a href='https://twitter.com/nari_0978'>NARI氏</a>に委託しました。<br>5秒後にリダイレクトします。<br><br>ESBEシリーズ<br><a href='https://mcbeeringi.github.io/esbe-2g'>ESBE_2G</a><br><a href='https://mcbeeringi.github.io/esbe-3g'>ESBE_3G</a>`):
 			(x=>location!=x&&location.replace(x,document.body.innerHTML='<h1>301 Moved Permanently</h1>Redirecting to correct URL<br>Please wait...'))([
+
+				//grep
+				///other2apps
+				[/\/others\/(col|calpis)/i,'/apps/$1'],
+				[/\/others\/(arch|poly)/i,'/apps/mc/$1'],
+
+				///apps2amuse
+				[/\/apps\/(ant|jsbm)/i,'/amuse/$1'],
+				[/\/apps\/mc\/(lang)/i,'/amuse/$1'],
+				[/\/(others|apps)\/(sosu-|aes)/i,'/amuse/$1'],
+
+				///amuse2apps
+				[/\/amuse\/(js|textarea|smf|md)/i,'/apps/$1'],
+				[/\/amuse\/(jdsm)/i,'/apps/mc/$1'],
+
+				///root2mc
+				[/\.io\/(how|esbe-([23])g|java-jajp)/i,'.io/mc/$1'],
+
+				//indv
 				[/\/others\/gl/i,'/apps/webgl/index'],
-				[/\/apps\/fsh/i,'/apps/webgl/fsh'],
-				[/\/others\/col/i,'/apps/col'],
 				[/\/others\/unicode/i,'/apps/unc'],
-				[/\/others\/sosu-/i,'/amuse/sosu-'],[/\/apps\/sosu-/i,'/amuse/sosu-'],
-				[/\/others\/calpis/i,'/apps/calpis'],
+				[/\/apps\/fsh/i,'/apps/webgl/fsh'],
 				[/\/apps\/inv/i,'/apps/xor'],
 				[/\/apps\/s2i/i,'/apps/minimap'],
-				[/\/others\/aes/i,'/amuse/aes'],[/\/apps\/aes/i,'/amuse/aes'],
-				[/\/others\/bmp/i,'/apps/mc/glyph'],[/\/apps\/mc\/bmp/i,'/apps/mc/glyph'],
-				[/\/others\/arch/i,'/apps/mc/arch'],
-				[/\/others\/poly/i,'/apps/mc/poly'],
-				[/\/apps\/mc\/lang/i,'/amuse/lang'],
-				[/\/others\/sky/i,'/sky'],[/\/apps\/sky/i,'/sky'],
-				[/\/amuse\/js/i,'/apps/js'],[/\/amuse\/textarea/i,'/apps/js'],
-				[/\/amuse\/jdsm/i,'/apps/mc/jdsm'],
+				[/\/(others|apps\/mc)\/bmp/i,'/apps/mc/glyph'],
+				[/\/(others|apps)\/sky/i,'/sky'],
 				[/\/amuse\/seq/i,'/sky/stuff/index'],
 				[/\/worlds/i,'/mc'],
-				[/\.io\/how/i,'.io/mc/how'],[/\/mc\/how.*/i,'/mc/how/'],
-				[/\/apps\/ant/i,'/amuse/ant'],
-				[/\/apps\/jsbm/i,'/amuse/jsbm'],
+				[/\/mc\/how.*/i,'/mc/how/'],
 				[/\/amuse\/ta/i,'/ta/index'],
-				[/\/amuse\/smf/i,'/apps/smf'],
-				[/\/apps\/mml/i,'/t85_musicbox/index'],
-				[/\/amuse\/md/i,'/apps/md'],
-				[/\/t85_musicbox/i,'/avr-musicbox'],
-				[/\/avr_musicbox/i,'/avr-musicbox'],
-			].reduce((a,x)=>a.replace(...x),location.href));
+				[/\/apps\/mml/i,'/avr-musicbox/mml'],[/\/(t85|avr)_musicbox/i,'/avr-musicbox'],
+
+			].reduce((a,x)=>a.replace(...x),location+''));
 	</script>
 </body>
 </html>
