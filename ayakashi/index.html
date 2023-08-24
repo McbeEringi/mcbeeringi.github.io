@@ -1,257 +1,33 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-
+<html lang="en" dir="ltr" prefix="og:http://ogp.me/ns#">
 <head>
-<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
 	<meta charset="utf-8">
-	<title>ayakashi</title>
-	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
-	<!--
-	<meta http-equiv="refresh" content="20; URL=">
-	-->
-	<script src="ayakashi.js"></script>
-	<style media="screen">
-		body {
-			background-image: linear-gradient(#aaa4, #aaa4), url("ayakasi.jpg");
-			font-family: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
-			word-wrap: break-word;
-			background-size: cover;
-			background-position: center;
-		}
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>tkb130-4 ayakashi</title>
+	<meta name="description" content="筑附高130回4組">
+	<link rel="icon" type="image/jpeg" href="shooting/ayakashi.jpg">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="tkb130-4 ayakashi">
+	<meta property="og:description" content="筑附高130回4組">
+	<meta property="og:url" content="https://mcbeeringi.github.io/ayakashi/">
+	<meta property="og:image" content="https://mcbeeringi.github.io/ayakashi/shooting/ayakashi.jpg">
+	<link rel="apple-touch-icon" href="shooting/ayakashi.jpg">
+	<meta name="theme-color" content="#5e9159"/>
 
-		table {
-			border-collapse: collapse;
-		}
-
-		td,
-		th {
-			border: solid 2px #888;
-			padding: 0.5em;
-			text-align: center;
-			height: 2ex;
-
-		}
-
-		th {
-			background: #98fb98aa
-		}
-
-		td {
-			background-color: #fffa;
-
-			padding: 0;
-			font-size: 3ex;
-		}
-
-		p {
-			color: #000;
-			margin: 0;
-		}
-
-		h1 {
-			color: #f44;
-		}
-
-		.num {
-			font-size: 3ex;
-		}
-
-		.text {
-			background: #fffa
-		}
-
-		.a1 {
-			animation: test 1s ease-in-out 0s; // 5s infinite alternate;
-		}
-
-		.a2 {
-			animation: test 1s ease-in-out 0.1s;
-		}
-
-		.a3 {
-			animation: test 1s ease-in-out 0.2s;
-		}
-
-		.a4 {
-			animation: test 1s ease-in-out 0.3s;
-		}
-
-		.a5 {
-			animation: test 1s ease-in-out 0.4s;
-		}
-
-		.a6 {
-			animation: test 1s ease-in-out 0.5s;
-		}
-
-		.a7 {
-			animation: test 1s ease-in-out 0.6s;
-		}
-
-		.a8 {
-			animation: test 1s ease-in-out 0.7s;
-		}
-
-		.a9 {
-			animation: test 1s ease-in-out 0.8s;
-		}
-
-		.a10 {
-			animation: test 1s ease-in-out 0.9s;
-		}
-
-		@keyframes test {
-			0% {
-				transform: rotateX(0deg);
-			}
-
-			50% {
-				transform: rotateX(360deg);
-			}
-
-			100% {
-				transform: rotateX(0deg);
-			}
-		}
-	</style>
+	<link rel="stylesheet" href="../src/style.css">
 </head>
-
-<body style="display:flex;">
-	<div>
-		<h1 style="animation: test 1s ease-in-out 2.5s;">ランキング</h1>
-		<p class="text">1-4"あやかしシューティング"はお陰様で 展示部門2位 装飾部門3位 総合2位 を取ることができました!</p>
-		<p class="text">ご来場、投票いただき有難うございますm(_ _)m</p>
-		<video src="ayakashi.mov" preload="none"></video>
-		<!--
-		<img src="qr.png">
-		<p class="text">↑ここ↑にアクセスすればいつでも確認できます!</p>
-		<img src="tohyo.png">
-		<p class="text">投票は↑こちら↑でお願いします!</p>
-		-->
-	</div>
-	<div>
-		<p class="text" style="font-size:24px">過去最高得点…"かずきん"さん 8点</p>
-		<table align=center>
-			<tr>
-				<td style="width:10vw; font-size:2ex">1-4<br>ayakashi</td>
-				<th style="width:50vw;">名前(本日分)</th>
-				<th style="width:20vw;">得点</th>
-			</tr>
-			<tr class="a1">
-				<th class="num">1st</th>
-				<td>
-					<p id="1">loading…</p>
-				</td>
-				<td>
-					<p id="1s">-<p>
-				</td>
-			</tr>
-			<tr class="a2">
-				<th class="num">2nd</th>
-				<td>
-					<p id="2">loading…</p>
-				</td>
-				<td>
-					<p id="2s">-</p>
-				</td>
-			</tr>
-			<tr class="a3">
-				<th class="num">3rd</th>
-				<td>
-					<p id="3">loading…</p>
-				</td>
-				<td>
-					<p id="3s">-</p>
-				</td>
-			</tr>
-			<tr class="a4">
-				<th class="num">4th</th>
-				<td>
-					<p id="4">loading…</p>
-				</td>
-				<td>
-					<p id="4s">-</p>
-				</td>
-			</tr>
-			<tr class="a5">
-				<th class="num">5th</th>
-				<td>
-					<p id="5">loading…</p>
-				</td>
-				<td>
-					<p id="5s">-</p>
-				</td>
-			</tr>
-			<tr class="a6">
-				<th class="num">6th</th>
-				<td>
-					<p id="6">loading…</p>
-				</td>
-				<td>
-					<p id="6s">-</p>
-				</td>
-			</tr>
-			<tr class="a7">
-				<th class="num">7th</th>
-				<td>
-					<p id="7">loading…</p>
-				</td>
-				<td>
-					<p id="7s">-</p>
-				</td>
-			</tr>
-			<tr class="a8">
-				<th class="num">8th</th>
-				<td>
-					<p id="8">loading…</p>
-				</td>
-				<td>
-					<p id="8s">-</p>
-				</td>
-			</tr>
-			<tr class="a9">
-				<th class="num">9th</th>
-				<td>
-					<p id="9">loading…</p>
-				</td>
-				<td>
-					<p id="9s">-</p>
-				</td>
-			</tr>
-			<tr class="a10">
-				<th class="num">10th</th>
-				<td>
-					<p id="10">loading…</p>
-				</td>
-				<td>
-					<p id="10s">-</p>
-				</td>
-			</tr>
-		</table>
-	</div>
-	<script>
-		document.getElementById("1").innerHTML = l1[0];
-		document.getElementById("2").innerHTML = l2[0];
-		document.getElementById("3").innerHTML = l3[0];
-		document.getElementById("4").innerHTML = l4[0];
-		document.getElementById("5").innerHTML = l5[0];
-		document.getElementById("6").innerHTML = l6[0];
-		document.getElementById("7").innerHTML = l7[0];
-		document.getElementById("8").innerHTML = l8[0];
-		document.getElementById("9").innerHTML = l9[0];
-		document.getElementById("10").innerHTML = l10[0];
-
-		document.getElementById("1s").innerHTML = l1[1];
-		document.getElementById("2s").innerHTML = l2[1];
-		document.getElementById("3s").innerHTML = l3[1];
-		document.getElementById("4s").innerHTML = l4[1];
-		document.getElementById("5s").innerHTML = l5[1];
-		document.getElementById("6s").innerHTML = l6[1];
-		document.getElementById("7s").innerHTML = l7[1];
-		document.getElementById("8s").innerHTML = l8[1];
-		document.getElementById("9s").innerHTML = l9[1];
-		document.getElementById("10s").innerHTML = l10[1];
-	</script>
+<body>
+	<h1>TKB130-4 Ayakasi</h1>
+	<p>筑波大学付属高等学校第130回4組</p>
+	<hr>
+	<h2>桐陰祭</h2>
+	<ul>
+		<li><a href="shooting">62nd 妖シューティング</a></li>
+		<li><a href="casino">64th Casino in Tsuku Vegas</a></li>
+	</ul>
+	<h2>おまけ</h2>
+	<ul>
+		<li><a href="casino/col">クラスカラーライト</a><p>64回桐陰祭で事前に配布されたカラーセロファンをロッカーにいれっぱにした人が続出した</p></li>		
+	</ul>
 </body>
-
 </html>
