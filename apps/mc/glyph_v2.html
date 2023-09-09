@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi glyph_gen</title>
+	<meta name="description" content="mc glyph generator">
+	<link rel="icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../../src/style.css">
+</head>
+<body>
+<style>
+	:root{tab-size:2;}
+	#ta{width:100%;font-family:monospace;}
+	#c{width:min(720px,100%);background:0 0/12.5% url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%238884'/%3E%3C/svg%3E");}
+</style>
+<h1>glyph_gen</h1>
+<hr>
+<label>font-file: <input type="file" id="file" class="zab" accept=".ttf,.ttc,.otf,.otc,.woff,.woff2"></label>
+<pre id="flog"></pre>
+<textarea id="ta" class="zab" spellcheck="false">// configs
+{
+	name:'font resource pack',
+	img:64,
+	font:'56px sans-serif',// after loading your font file, set the file name enclosed in "" as font family name
+	list:[...Array(256).keys()].filter(i=>i<0xd8||0xf5<i),
+
+	preview:0x00
+}</textarea>
+<button id="btn" class="zab bgca">export</button>
+<div id="elog"></div>
+<canvas id="c"></canvas>
+
+
+<script type="module">
+import TA from 'https://mcbeeringi.github.io/ta/ta.mjs';
+import {zip,dl} from 'https://mcbeeringi.github.io/petit/zip.mjs';
+const
+ctx=c.getContext('2d'),
+cfgget=_=>{try{return Function(`return(${ta.value});`)()}catch(e){}},
+cfgset=(ctx,_)=>(ctx.canvas.width=ctx.canvas.height=_.img*16,ctx.fillStyle='#fff',ctx.textBaseline='middle',ctx.font=_.font),
+draw=(ctx,p)=>(ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height),[...Array(255)].forEach((x=c.width/16,i)=>ctx.fillText(String.fromCharCode(p<<8|i),(i%16)*x,((i/16|0)+.5)*x,x))),
+main=async w=>(w=cfgget())&&(
+	elog.append(w.log=document.createElement('pre')),
+	w.fb=1,//!OffscreenCanvas,
+	w.ctx=(w.fb?document.createElement('canvas'):new OffscreenCanvas(1,1)).getContext('2d'),
+	cfgset(w.ctx,w),
+	w.fb?(
+		w.blob=await zip(await Promise.all(w.list.map((x,i,a)=>new Promise(f=>setTimeout(async _=>(
+			draw(w.ctx,x=x&0xff),
+			x={path:`font/${x.toString(16).padStart(2,0)}.png`},
+			w.log.textContent=`${i+1}/${a.length} ( ${x.path} )`,
+			x.blob=await new Promise(f=>w.ctx.canvas.toBlob(f)),
+			f(x)
+		))))),w.log.textContent=`packing...`)
+	):(
+		w.blob=await zip(await Promise.all(w.list.map(async x=>(draw(w.ctx,x=x&0xff),console.log(x),x={path:`font/${x.toString(16).padStart(2,0)}.png`},x.blob=await w.ctx.canvas.convertToBlob(),x))))
+	),
+	dl({name:w.name+'.zip',blob:w.blob}),
+	w.log.remove()
+);
+
+TA.editor(ta);
+ta.oninput=_=>(_=cfgget())&&(
+	cfgset(ctx,_),
+	draw(ctx,_.preview&0xff)
+);
+(file.onchange=async _=>(
+	file.files[0]&&(document.fonts.add(await new FontFace(`"${file.files[0].name}"`,`url(${_=URL.createObjectURL(file.files[0])})`).load()),URL.revokeObjectURL(_),flog.textContent=JSON.stringify({loaded_fonts:(_=>(document.fonts.forEach(x=>_.push(x.family)),_))([])},0,'	')),
+	ta.oninput()
+))();
+
+btn.onclick=_=>main();
+
+</script>
+
+
+
+
+</body>
+<html>
