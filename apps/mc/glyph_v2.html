@@ -27,7 +27,7 @@
 {
 	name:'font resource pack',
 	img:64,
-	font:'56px sans-serif',// "your-loaded-font-file.ttf"
+	font:'56px "your-loaded-font-file.ttf",sans-serif',
 	list:[...Array(256).keys()].filter(i=>i<0xd8||0xf5<i),
 
 	threads:4,// If less than or equal to 0, the main thread is used.(higher browser compatibility)
@@ -44,7 +44,7 @@ import {zip,dl} from 'https://mcbeeringi.github.io/petit/zip.mjs';
 const
 ctx=c.getContext('2d'),
 cfgget=_=>{try{return Function(`return(${ta.value});`)()}catch(e){}},
-cfgset=(ctx,_)=>(ctx.canvas.width=ctx.canvas.height=_.img*16,ctx.fillStyle='#fff',ctx.textBaseline='middle',ctx.font=_.font),
+cfgset=(ctx,cfg)=>(ctx.canvas.width=ctx.canvas.height=cfg.img*16,ctx.fillStyle='#fff',ctx.textBaseline='middle',ctx.font=cfg.font),
 draw=(ctx,p)=>(ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height),[...Array(255)].forEach((x=ctx.canvas.width/16,i)=>ctx.fillText(String.fromCharCode(p<<8|i),(i%16)*x,((i/16|0)+.5)*x,x))),
 i2p=i=>`font/${i.toString(16).padStart(2,0)}.png`,
 flist=[],
@@ -53,24 +53,28 @@ main=async w=>(w=cfgget())&&(
 	w={cfg:w,log:document.createElement('pre')},
 	w.log.textContent='running...',
 	elog.append(w.log),
-	w.blob=OffscreenCanvas&&0<w.cfg.threads?await new Promise((f,r,q=[])=>[...Array(w.cfg.threads)].forEach(async(x,i,a)=>(
-		x=new Worker('data:application/javascript,onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'),
-		await new Promise(f=>(
-			x.onmessage=f,
-			x.postMessage({flist,cfg:w.cfg,main:`
-				self.draw=${draw};self.i2p=${i2p};self.fload=${fload};
-				await Promise.all(w.flist.map(x=>fload(x,self)));
-				(${cfgset})(self.ctx=new OffscreenCanvas(1,1).getContext('2d'),w.cfg);
-				onmessage=m=>m.data.map(async x=>postMessage({path:i2p(x),blob:await ctx.canvas.convertToBlob(draw(ctx,x&0xff))}));
-				postMessage(0);
-			`})
-		)),
-		x.onmessage=m=>(q.push(m.data),w.log.textContent=`${q.length}/${w.cfg.list.length} ( ${m.data.path} )`,w.cfg.list.length<=q.length&&f(q)),
-		a=Math.ceil(w.cfg.list.length/a.length),
-		x.postMessage(w.cfg.list.slice(a*i,a*(i+1)))
-	))):(
+	self.OffscreenCanvas&&0<w.cfg.threads?(
+		w.wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
+		w.blob=await new Promise((f,r,q=[])=>[...Array(w.cfg.threads)].forEach(async(x,i,a)=>(
+			x=new Worker(w.wurl),
+			await new Promise(f=>(
+				x.onmessage=f,
+				x.postMessage({flist,cfg:w.cfg,main:`
+					self.draw=${draw};self.i2p=${i2p};self.fload=${fload};
+					await Promise.all(w.flist.map(x=>fload(x,self)));
+					(${cfgset})(self.ctx=new OffscreenCanvas(1,1).getContext('2d'),w.cfg);
+					onmessage=m=>m.data.map(async x=>postMessage({path:i2p(x),blob:await ctx.canvas.convertToBlob(draw(ctx,x&0xff))}));
+					postMessage(0);
+				`})
+			)),
+			x.onmessage=m=>(q.push(m.data),w.log.textContent=`${q.length}/${w.cfg.list.length} ( ${m.data.path} )`,w.cfg.list.length<=q.length&&f(q)),
+			a=Math.ceil(w.cfg.list.length/a.length),
+			x.postMessage(w.cfg.list.slice(a*i,a*(i+1)))
+		))),
+		URL.revokeObjectURL(w.wurl)
+	):(
 		cfgset(w.ctx=document.createElement('canvas').getContext('2d'),w.cfg),
-		await Promise.all(w.cfg.list.map((x,i,a)=>new Promise(f=>setTimeout(async _=>(
+		w.blob=await Promise.all(w.cfg.list.map((x,i,a)=>new Promise(f=>setTimeout(async _=>(
 			draw(w.ctx,x=x&0xff),
 			x={path:i2p(x),blob:await new Promise(f=>w.ctx.canvas.toBlob(f))},
 			w.log.textContent=`${i+1}/${a.length} ( ${x.path} )`,
@@ -87,7 +91,7 @@ ta.oninput=_=>(_=cfgget())&&(
 	draw(ctx,_.preview&0xff)
 );
 (file.onchange=async _=>(
-	file.files[0]&&(flist.push(file.files[0]),await fload(file.files[0]),flog.textContent=JSON.stringify({loaded_fonts:flist.map(x=>x.name)},0,'	')),
+	file.files[0]&&(flist.push(file.files[0]),await fload(file.files[0]),ta.value=ta.value.replace(/".+"/,`"${file.files[0].name}"`),flog.textContent=JSON.stringify({loaded_fonts:flist.map(x=>x.name)},0,'	')),
 	ta.oninput()
 ))();
 btn.onclick=_=>main();
