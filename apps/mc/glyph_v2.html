@@ -27,10 +27,10 @@
 {
 	name:'font resource pack',
 	img:64,
-	font:'56px sans-serif',// after loading your font file, set the file name enclosed in "" as font family name
+	font:'56px sans-serif',// "your-loaded-font-file.ttf"
 	list:[...Array(256).keys()].filter(i=>i<0xd8||0xf5<i),
 
-	threads:4,
+	threads:4,// If less than or equal to 0, the main thread is used.(higher browser compatibility)
 	preview:0x00
 }</textarea>
 <button id="btn" class="zab bgca">export</button>
@@ -47,13 +47,24 @@ cfgget=_=>{try{return Function(`return(${ta.value});`)()}catch(e){}},
 cfgset=(ctx,_)=>(ctx.canvas.width=ctx.canvas.height=_.img*16,ctx.fillStyle='#fff',ctx.textBaseline='middle',ctx.font=_.font),
 draw=(ctx,p)=>(ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height),[...Array(255)].forEach((x=ctx.canvas.width/16,i)=>ctx.fillText(String.fromCharCode(p<<8|i),(i%16)*x,((i/16|0)+.5)*x,x))),
 i2p=i=>`font/${i.toString(16).padStart(2,0)}.png`,
+flist=[],
+fload=async(x,w=document,_)=>(w.fonts.add(await new FontFace(`"${x.name}"`,`url(${_=URL.createObjectURL(x)})`).load()),URL.revokeObjectURL(_)),
 main=async w=>(w=cfgget())&&(
 	w={cfg:w,log:document.createElement('pre')},
-	w.log.textContent='preparing...',
+	w.log.textContent='running...',
 	elog.append(w.log),
-	w.blob=OffscreenCanvas?await new Promise((f,r,q=[])=>[...Array(w.cfg.threads)].forEach((x,i,a)=>(
-		x=new Worker('data:application/javascript,onmessage=m=>Function(m.data)();'),
-		x.postMessage(`self.draw=${draw};self.i2p=${i2p};(${cfgset})(self.ctx=new OffscreenCanvas(1,1).getContext('2d'),${JSON.stringify(w.cfg)});onmessage=m=>m.data.map(async x=>postMessage({path:i2p(x),blob:await ctx.canvas.convertToBlob(draw(ctx,x&0xff))}));`),
+	w.blob=OffscreenCanvas&&0<w.cfg.threads?await new Promise((f,r,q=[])=>[...Array(w.cfg.threads)].forEach(async(x,i,a)=>(
+		x=new Worker('data:application/javascript,onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'),
+		await new Promise(f=>(
+			x.onmessage=f,
+			x.postMessage({flist,cfg:w.cfg,main:`
+				self.draw=${draw};self.i2p=${i2p};self.fload=${fload};
+				await Promise.all(w.flist.map(x=>fload(x,self)));
+				(${cfgset})(self.ctx=new OffscreenCanvas(1,1).getContext('2d'),w.cfg);
+				onmessage=m=>m.data.map(async x=>postMessage({path:i2p(x),blob:await ctx.canvas.convertToBlob(draw(ctx,x&0xff))}));
+				postMessage(0);
+			`})
+		)),
 		x.onmessage=m=>(q.push(m.data),w.log.textContent=`${q.length}/${w.cfg.list.length} ( ${m.data.path} )`,w.cfg.list.length<=q.length&&f(q)),
 		a=Math.ceil(w.cfg.list.length/a.length),
 		x.postMessage(w.cfg.list.slice(a*i,a*(i+1)))
@@ -76,7 +87,7 @@ ta.oninput=_=>(_=cfgget())&&(
 	draw(ctx,_.preview&0xff)
 );
 (file.onchange=async _=>(
-	file.files[0]&&(document.fonts.add(await new FontFace(`"${file.files[0].name}"`,`url(${_=URL.createObjectURL(file.files[0])})`).load()),URL.revokeObjectURL(_),flog.textContent=JSON.stringify({loaded_fonts:(_=>(document.fonts.forEach(x=>_.push(x.family)),_))([])},0,'	')),
+	file.files[0]&&(flist.push(file.files[0]),await fload(file.files[0]),flog.textContent=JSON.stringify({loaded_fonts:flist.map(x=>x.name)},0,'	')),
 	ta.oninput()
 ))();
 btn.onclick=_=>main();
