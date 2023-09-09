@@ -57,7 +57,7 @@
 
 		<script>
 			'use strict'
-			requestIdleCallback||(requestIdleCallback=x=>setTimeout(x));
+			self.requestIdleCallback||(self.requestIdleCallback=x=>setTimeout(x));
 			window.onload=()=>window.scrollTo(0,0);
 			dpr.textContent='*'+window.devicePixelRatio;
 			/////base
