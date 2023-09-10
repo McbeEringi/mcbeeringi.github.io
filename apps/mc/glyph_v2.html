@@ -25,7 +25,7 @@
 <pre id="flog"></pre>
 <textarea id="ta" class="zab" spellcheck="false">// configs
 {
-	name:'font resource pack.zip',
+	name:'font resource pack',
 	img:64,
 	font:'56px _your_loaded_font_file_ttf,sans-serif',
 	list:[...Array(256).keys()].filter(i=>i<0xd8||0xf5<i),
@@ -37,7 +37,7 @@
 <div id="elog"></div>
 <canvas></canvas>
 
-
+<script src="./mcmf.js"></script>
 <script type="module">
 import TA from 'https://mcbeeringi.github.io/ta/ta.mjs';
 import {zip,dl} from 'https://mcbeeringi.github.io/petit/zip.mjs';
@@ -57,7 +57,7 @@ main=async w=>(w=cfgget())&&(
 	elog.append(w.prg,w.log),
 	self.OffscreenCanvas&&0<w.cfg.threads?(
 		w.wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
-		w.blob=(await Promise.all([...Array(w.cfg.threads)].map(async(x,i,a)=>(
+		w.files=(await Promise.all([...Array(w.cfg.threads)].map(async(x,i,a)=>(
 			x=new Worker(w.wurl),
 			await new Promise(f=>(
 				x.onmessage=f,
@@ -70,23 +70,29 @@ main=async w=>(w=cfgget())&&(
 			)),
 			w.prg.value=0,
 			await new Promise(f=>(
-				x.onmessage=m=>Array.isArray(m.data)?f(m.data):(w.prg.value=+w.prg.value+1,w.log.textContent=`${pcent(w.prg)}% ${m.data.path}`),
+				x.onmessage=m=>Array.isArray(m.data)?(f(m.data),x.terminate()):(w.prg.value=+w.prg.value+1,w.log.textContent=`${pcent(w.prg)}% ${m.data.path}`),
 				a=Math.ceil(w.cfg.list.length/a.length),x.postMessage(w.cfg.list.slice(a*i,a*(i+1)))
 			))
 		)))).flat(),
 		URL.revokeObjectURL(w.wurl)
 	):(
 		cfgset(ctx,w.cfg),
-		w.blob=await Promise.all(w.cfg.list.map((x,i)=>new Promise(f=>setTimeout(async _=>(
-			draw(ctx,x),x={path:i2p(x)},
-			w.prg.value=i+1,
-			w.log.textContent=`${pcent(w.prg)}% ${x.path}`,
-			x.blob=await new Promise(f=>ctx.canvas.toBlob(f)),
-			f(x)
+		w.files=await Promise.all(w.cfg.list.map((x,i)=>new Promise(f=>setTimeout(async _=>(
+			draw(ctx,x),x={path:i2p(x)},w.prg.value=i+1,w.log.textContent=`${pcent(w.prg)}% ${x.path}`,
+			x.blob=await new Promise(f=>ctx.canvas.toBlob(f)),f(x)
 		)))))
 	),
-	dl({name:w.cfg.name,blob:await zip(w.blob,w.prg.removeAttribute('value'),w.log.textContent='packing...')}),
-	w.prg.remove(),w.log.remove()
+	w.prg.removeAttribute('value'),w.log.textContent='please wait...',
+	(x=>x&&w.files.push({path:x.path.replace(/glyph_00/,'default8'),blob:x.blob}))(w.files.find(x=>x.path.includes('_00.'))),
+	w.files.push(
+		{path:'manifest.json',blob:new Blob([mcmf({n:w.cfg.name,d:w.cfg.font})])},
+		{path:'pack_icon.png',blob:await new Promise((f,r,x)=>(
+			cfgset(x=document.createElement('canvas').getContext('2d'),{...w.cfg,img:w.cfg.img/16*2}),
+			x.textAlign='center',x.fillText('Aa',w.cfg.img,w.cfg.img),x.canvas.toBlob(f)
+		))}
+	),
+	dl(w.zip={name:w.cfg.name+'.mcpack',blob:await zip(w.files,w.log.textContent='packing...')}),
+	console.log(w),w.prg.remove(),w.log.remove()
 );
 
 TA.editor(ta);
