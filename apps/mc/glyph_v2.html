@@ -49,36 +49,44 @@ draw=(ctx,p)=>(ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height),[...Array(2
 i2p=i=>`font/glyph_${(i&0xff).toString(16).padStart(2,0)}.png`,
 flist=[],
 fload=async(x,w=document,_)=>(w.fonts.add(await new FontFace(x.name,`url(${_=URL.createObjectURL(x)})`).load()),URL.revokeObjectURL(_)),
+pcent=e=>Math.round(e.value/e.max*100),
 main=async w=>(w=cfgget())&&(
-	w={cfg:w,log:document.createElement('pre')},
-	w.log.textContent='running...',
-	elog.append(w.log),
+	w={cfg:w,prg:document.createElement('progress'),log:document.createElement('pre')},
+	w.prg.max=w.cfg.list.length,
+	w.log.textContent='please wait...',
+	elog.append(w.prg,w.log),
 	self.OffscreenCanvas&&0<w.cfg.threads?(
 		w.wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
-		w.blob=await new Promise((f,r,q=[])=>[...Array(w.cfg.threads)].forEach(async(x,i,a)=>(
+		w.blob=(await Promise.all([...Array(w.cfg.threads)].map(async(x,i,a)=>(
 			x=new Worker(w.wurl),
 			await new Promise(f=>(
 				x.onmessage=f,
 				x.postMessage({flist,cfg:w.cfg,main:`
 					self.draw=${draw};self.i2p=${i2p};self.fload=${fload};await Promise.all(w.flist.map(x=>fload(x,self)));
 					(${cfgset})(self.ctx=new OffscreenCanvas(1,1).getContext('2d'),w.cfg);
-					onmessage=m=>m.data.map(async x=>postMessage({path:i2p(x),blob:await ctx.canvas.convertToBlob(draw(ctx,x))}));
+					onmessage=async m=>postMessage(await Promise.all(m.data.map(async x=>(draw(ctx,x),x={path:i2p(x)},postMessage(x),x.blob=await ctx.canvas.convertToBlob(),x))));
 					postMessage(0);
 				`})
 			)),
-			x.onmessage=m=>(q.push(m.data),w.log.textContent=`${q.length}/${w.cfg.list.length} ( ${m.data.path} )`,w.cfg.list.length<=q.length&&f(q)),
-			a=Math.ceil(w.cfg.list.length/a.length),x.postMessage(w.cfg.list.slice(a*i,a*(i+1)))
-		))),
+			w.prg.value=0,
+			await new Promise(f=>(
+				x.onmessage=m=>Array.isArray(m.data)?f(m.data):(w.prg.value=+w.prg.value+1,w.log.textContent=`${pcent(w.prg)}% ${m.data.path}`),
+				a=Math.ceil(w.cfg.list.length/a.length),x.postMessage(w.cfg.list.slice(a*i,a*(i+1)))
+			))
+		)))).flat(),
 		URL.revokeObjectURL(w.wurl)
 	):(
 		cfgset(ctx,w.cfg),
-		w.blob=await Promise.all(w.cfg.list.map((x,i,a)=>new Promise(f=>setTimeout(async _=>(
-			x={path:i2p(x),blob:await new Promise(f=>ctx.canvas.toBlob(f,draw(ctx,x)))},
-			w.log.textContent=`${i+1}/${a.length} ( ${x.path} )`,f(x)
+		w.blob=await Promise.all(w.cfg.list.map((x,i)=>new Promise(f=>setTimeout(async _=>(
+			draw(ctx,x),x={path:i2p(x)},
+			w.prg.value=i+1,
+			w.log.textContent=`${pcent(w.prg)}% ${x.path}`,
+			x.blob=await new Promise(f=>ctx.canvas.toBlob(f)),
+			f(x)
 		)))))
 	),
-	dl({name:w.cfg.name,blob:await zip(w.blob,w.log.textContent='packing...')}),
-	w.log.remove()
+	dl({name:w.cfg.name,blob:await zip(w.blob,w.prg.removeAttribute('value'),w.log.textContent='packing...')}),
+	w.prg.remove(),w.log.remove()
 );
 
 TA.editor(ta);
