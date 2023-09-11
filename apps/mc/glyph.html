@@ -28,7 +28,7 @@
 	name:'font resource pack',
 	img:64,
 	font:'56px _your_loaded_font_file_ttf,sans-serif',// make smaller when too many magenta char
-	list:[...Array(256).keys()].filter(i=>i<0xd8||0xf5<i),
+	list:[-1,...Array(256).keys()].filter(i=>i<0xd8||0xf5<i),// 0x00~0xff ? glyph_xx : default8
 
 	threads:4,// If less than or equal to 0, the main thread is used.(higher browser compatibility)
 	preview:0x00
@@ -47,20 +47,22 @@
 import TA from 'https://mcbeeringi.github.io/ta/ta.mjs';
 import {zip,dl} from 'https://mcbeeringi.github.io/petit/zip.mjs';
 const
+d8=`ÀÁÂÈÊËÍÓÔÕÚßãõğİıŒœŞşŴŵžȇ§©      !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~⌂ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αβΓπΣσμτΦΘΩδ∞∅∈∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ `,
 ctx=document.querySelector('canvas').getContext('2d'),
 cfgget=_=>{try{return Function(`return(${ta.value});`)()}catch(e){}},
 cfgset=(ctx,cfg)=>(ctx.canvas.width=ctx.canvas.height=cfg.img*16,ctx.fillStyle='#fff',ctx.font=cfg.font),
 draw=(ctx,p,dbg)=>(
 	ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height),
 	[...Array(255)].forEach((a=ctx.canvas.width/16,i,s,m,h,b)=>(
-		m=ctx.measureText(s=String.fromCharCode((p&0xff)<<8|i)),
+		s=p==(p&0xff)?String.fromCharCode((p&0xff)<<8|i):d8[i],
+		m=ctx.measureText(s),
 		h=m.actualBoundingBoxAscent+(b=Math.max(m.fontBoundingBoxDescent||0,m.actualBoundingBoxDescent+1))+1,
 		a<h&&ctx.scale(1,a/h,dbg&&(dbg=ctx.fillStyle,ctx.fillStyle='#f0f')),
 		ctx.fillText(s,(i%16)*a+m.actualBoundingBoxLeft+1,((i/16|0)+1)*Math.max(h,a)-b,a-m.actualBoundingBoxLeft-1),
 		a<h&&ctx.scale(1,h/a,dbg&&(ctx.fillStyle=dbg))
 	))
 ),
-i2p=i=>`font/glyph_${(i&0xff).toString(16).toUpperCase().padStart(2,0)}.png`,
+i2p=i=>i==(i&0xff)?`font/glyph_${(i&0xff).toString(16).toUpperCase().padStart(2,0)}.png`:`font/default8.png`,
 flist=[],
 fload=async(x,w=document,_)=>(w.fonts.add(await new FontFace(x.name,`url(${_=URL.createObjectURL(x)})`).load()),URL.revokeObjectURL(_)),
 pcent=e=>Math.round(e.value/e.max*100),
@@ -76,7 +78,7 @@ main=async w=>(w=cfgget())&&(
 			await new Promise(f=>(
 				x.onmessage=f,
 				x.postMessage({flist,cfg:w.cfg,main:`
-					self.draw=${draw};self.i2p=${i2p};self.fload=${fload};await Promise.all(w.flist.map(x=>fload(x,self)));
+					self.d8=${JSON.stringify(d8)};self.draw=${draw};self.i2p=${i2p};self.fload=${fload};await Promise.all(w.flist.map(x=>fload(x,self)));
 					(${cfgset})(self.ctx=new OffscreenCanvas(1,1).getContext('2d'),w.cfg);
 					onmessage=async m=>postMessage(await Promise.all(m.data.map(async x=>(draw(ctx,x),x={path:i2p(x)},postMessage(x),x.blob=await ctx.canvas.convertToBlob(),x))));
 					postMessage(0);
@@ -97,7 +99,6 @@ main=async w=>(w=cfgget())&&(
 		)))))
 	),
 	w.prg.removeAttribute('value'),w.log.textContent='please wait...',
-	(x=>x&&w.files.push({path:x.path.replace(/glyph_00/,'default8'),blob:x.blob}))(w.files.find(x=>x.path.includes('_00.'))),
 	w.files.push(
 		{path:'manifest.json',blob:new Blob([mcmf({n:w.cfg.name,d:w.cfg.font})])},
 		{path:'pack_icon.png',blob:await new Promise((f,r,x)=>(
