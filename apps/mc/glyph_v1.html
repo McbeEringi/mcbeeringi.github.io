@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+	<script data-ad-client="ca-pub-6462086334272944" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi glyph_gen</title>
+	<meta name="description" content="mc glyph generator">
+	<link rel="icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../../src/style.css">
+</head>
+<body>
+<style>
+	progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}canvas{width:100%;border:1px solid;margin-top:4px;background-size:12.5%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")}
+	.clear_fix::after{content:"";clear:both;display:block;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
+<script src="mcmf.js"></script>
+
+
+<h1>glyph_gen</h1>
+<a href="glyph_v0.html">old page</a>
+<hr>
+<h2>config</h2>
+<div id="configp">
+	<label><span>img:</span><input class="zab" id="csize" type="number" value="64" onchange="csize_(this.value);dl_();">px²</label><br>
+	<label><span>size:</span><input class="zab" id="fsize" type="number" value="56" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
+	<label><span>font:</span><input class="zab" id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);dl_();"></label> or <input class="zab" type="file" onchange="load(this);" accept=".ttf,.otf,.woff,.woff2"><br>
+	<a id="dl" href="#">…</a><br>
+	<br>
+	<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
+	<label>list:<input class="zab" id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
+	<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
+</div>
+<br>
+<button class="zab bgca" id="expb" onclick="exp(expl.value,expmode.checked,expmcpack.checked);">export</button>
+<progress id="pbar" value="0"></progress>
+<pre id="log"></pre><pre id="log_"></pre>
+<hr>
+<h2>preview</h2>
+<label><span>block:</span><input class="zab"id="ward" value="00" onchange="set(this.value);dl_();"></label>
+<canvas id="c">canvas</canvas>
+<hr>
+<script>
+'use strict';
+self.requestIdleCallback||(self.requestIdleCallback=x=>setTimeout(x));
+var ctx=c.getContext('2d');
+const set=x=>{ctx.clearRect(0,0,c.width,c.height);var li=[];
+	for(var i=0;i<256;i++){
+		var str=String.fromCodePoint(parseInt(x,16)*0x100+i),strm=ctx.measureText(str),hs=1,cw=c.width*.0625,ch=c.height*.0625,
+		btm=Math.max(strm.fontBoundingBoxDescent||0,(strm.actualBoundingBoxDescent||0)+1),abb=btm+strm.actualBoundingBoxAscent;
+		if(abb>ch){hs=ch/abb;ctx.scale(1,hs);li.push([str,hs])}
+		ctx.fillText(str,cw*(i%16)+strm.actualBoundingBoxLeft,ch*(Math.floor(i*.0625)+1)/hs-btm,cw-strm.actualBoundingBoxLeft);
+		if(hs!=1)ctx.scale(1,1/hs);
+	}
+	if(li.length)console.log('shrunked',x,li);
+},
+font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
+csize_=x=>{c.width=x*16;c.height=x*16;ctx.fillStyle='#fff';ctx.textAlign='left';font_(fsize.value,ffamily.value);},
+load=async f=>{
+	var fname=f.files[0].name;fname=fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1);
+	const font = new FontFace(fname,`url(${URL.createObjectURL(f.files[0])})`);
+	await font.load();
+	document.fonts.add(font);
+	ffamily.value=fname;font_(fsize.value,ffamily.value);
+},
+dl_=()=>{c.toBlob(b=>{dl.href=URL.createObjectURL(b);dl.download=`glyph_${ward.value}.png`;dl.textContent=`download as ${dl.download}`;})};
+
+csize_(csize.value);dl_();
+
+const exp=(list,mode,mcpack)=>{
+	log_.textContent='';
+	var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)),zip=new JSZip(),fontFolder=zip.folder('font');
+	if(list){
+		list = list.split(',').map(x=>x.split('~')).map(x=>{if(x[1])return [...Array(parseInt(x[1],16)-parseInt(x,16)+1).keys()].map(y=>(y+parseInt(x[0],16)).toString(16).toUpperCase());else return x;}).join(',').split(',').map(x=>('00'+x.toString(16)).slice(-2));
+		console.log(list);
+		if(mode)arr=list;else arr=arr.filter(x=>!(list.includes(x)));
+	}else if(mode)return;
+	expb.disabled=true;expb.textContent='Running…';
+	configp.style.opacity=0.2;configp.style.pointerEvents='none';
+	pbar.max=(arr.length-1)*2;
+	const post=()=>{
+		const post_=()=>{
+			zip.generateAsync({type:"blob"},d=>{pbar.value=(1+d.percent*.01)*(pbar.max*.5);log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;}).then(c=>{
+				log_.textContent+='packaging done.\n';saveAs(c,expn);
+				expb.disabled=false;expb.textContent='export';
+				configp.style.opacity=1;configp.style.pointerEvents='auto';
+			});
+		};
+		var expn=`${ffamily.value}_bmp.zip`;
+		if(mcpack){
+			zip.file('manifest.json',mcmf({n:ffamily.value,d:'font resource pack.\nmcbeeringi.github.io/apps/glyph'}));
+			log_.textContent+='manifest.json done.\n';
+			c.width=128;c.height=128;ctx.font=`80px ${ffamily.value},sans-serif`;ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#fff';var str='Aa',strm=ctx.measureText(str);
+			ctx.fillText(str,(c.width-strm.width)*.5,(c.height+strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent)*.5-strm.actualBoundingBoxDescent);
+			c.toBlob(b=>{
+				zip.file('pack_icon.png',b);
+				log_.textContent+='pack_icon.png done.\n';
+				expn=`${ffamily.value}_resource.mcpack`;
+				csize_(csize.value);
+				post_();
+			});
+		}else{set(ward.value);post_();}
+	}
+	arr.forEach((x,i)=>requestIdleCallback(()=>{
+		set(x);
+		c.toBlob(b=>{
+			fontFolder.file(`glyph_${x}.png`,b);
+			if(x=='00')fontFolder.file('default8.png',b);
+		});
+		pbar.value=i;//log.textContent=x;
+		log.textContent=`step 1/2 rendering… ${(i/(arr.length-1)*100).toFixed(2)}%   ( ${i} / ${arr.length-1}  ${x} )`;
+		if(i==arr.length-1){log_.textContent+='rendering done.\n';post();}
+	}));
+};
+</script>
+<!-- hor_ad --><ins class="adsbygoogle"style="display:block"data-ad-client="ca-pub-6462086334272944"data-ad-slot="5283762489"data-ad-format="auto"data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+</body>
+<html>
