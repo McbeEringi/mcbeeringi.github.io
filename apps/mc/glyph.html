@@ -2,7 +2,6 @@
 <html lang="en" dir="ltr">
 <head>
 	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
-	<script data-ad-client="ca-pub-6462086334272944" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
@@ -16,110 +15,108 @@
 </head>
 <body>
 <style>
-	progress{width:100%;}pre{line-height:14px;font-size:12px;margin:0;}canvas{width:100%;border:1px solid;margin-top:4px;background-size:12.5%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%230008'/%3E%3C/svg%3E")}
-	.clear_fix::after{content:"";clear:both;display:block;}
+	:root{tab-size:2;image-rendering:pixelated;}
+	#ta{width:100%;font-family:monospace;}
+	canvas{width:min(720px,100%);background:#0004 0 0/12.5% url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,0 1,0 1,2 2,2 2,1 0,1' fill='%238884'/%3E%3C/svg%3E");}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
-<script src="mcmf.js"></script>
-
-
 <h1>glyph_gen</h1>
-<a href="glyph_v0.html">old page</a>
 <hr>
-<h2>config</h2>
-<div id="configp">
-	<label><span>img:</span><input class="zab" id="csize" type="number" value="64" onchange="csize_(this.value);dl_();">px²</label><br>
-	<label><span>size:</span><input class="zab" id="fsize" type="number" value="56" oninput="font_(this.value,ffamily.value);dl_();">px</label><br>
-	<label><span>font:</span><input class="zab" id="ffamily" value="sans-serif" onchange="font_(fsize.value,this.value);dl_();"></label> or <input class="zab" type="file" onchange="load(this);" accept=".ttf,.otf,.woff,.woff2"><br>
-	<a id="dl" href="#">…</a><br>
-	<br>
-	<label>list mode:<input type="checkbox" id="expmode"> (☐:black list(BMP) ☑️:white list)</label><br>
-	<label>list:<input class="zab" id="expl" value="D8~F5" oninput="this.value=this.value.toUpperCase().replace(/[^\dABCDEF,~]/,'')"></label><br>
-	<label>mcpack:<input type="checkbox" id="expmcpack" checked></label>
-</div>
-<br>
-<button class="zab bgca" id="expb" onclick="exp(expl.value,expmode.checked,expmcpack.checked);">export</button>
-<progress id="pbar" value="0"></progress>
-<pre id="log"></pre><pre id="log_"></pre>
-<hr>
-<h2>preview</h2>
-<label><span>block:</span><input class="zab"id="ward" value="00" onchange="set(this.value);dl_();"></label>
-<canvas id="c">canvas</canvas>
-<hr>
-<script>
-'use strict';
-self.requestIdleCallback||(self.requestIdleCallback=x=>setTimeout(x));
-var ctx=c.getContext('2d');
-const set=x=>{ctx.clearRect(0,0,c.width,c.height);var li=[];
-	for(var i=0;i<256;i++){
-		var str=String.fromCodePoint(parseInt(x,16)*0x100+i),strm=ctx.measureText(str),hs=1,cw=c.width*.0625,ch=c.height*.0625,
-		btm=Math.max(strm.fontBoundingBoxDescent||0,(strm.actualBoundingBoxDescent||0)+1),abb=btm+strm.actualBoundingBoxAscent;
-		if(abb>ch){hs=ch/abb;ctx.scale(1,hs);li.push([str,hs])}
-		ctx.fillText(str,cw*(i%16)+strm.actualBoundingBoxLeft,ch*(Math.floor(i*.0625)+1)/hs-btm,cw-strm.actualBoundingBoxLeft);
-		if(hs!=1)ctx.scale(1,1/hs);
-	}
-	if(li.length)console.log('shrunked',x,li);
-},
-font_=(s,f)=>{console.log(s,f);ctx.font=`${s}px ${f},sans-serif`;set(ward.value);},
-csize_=x=>{c.width=x*16;c.height=x*16;ctx.fillStyle='#fff';ctx.textAlign='left';font_(fsize.value,ffamily.value);},
-load=async f=>{
-	var fname=f.files[0].name;fname=fname.slice(0,(fname.lastIndexOf('.')-1>>>0)+1);
-	const font = new FontFace(fname,`url(${URL.createObjectURL(f.files[0])})`);
-	await font.load();
-	document.fonts.add(font);
-	ffamily.value=fname;font_(fsize.value,ffamily.value);
-},
-dl_=()=>{c.toBlob(b=>{dl.href=URL.createObjectURL(b);dl.download=`glyph_${ward.value}.png`;dl.textContent=`download as ${dl.download}`;})};
+<label>font-file: <input type="file" id="file" class="zab" accept=".ttf,.ttc,.otf,.otc,.woff,.woff2"></label>
+<pre id="flog"></pre>
+<textarea id="ta" class="zab" spellcheck="false">// configs
+{
+	name:'font resource pack',
+	img:64,
+	font:'56px _your_loaded_font_file_ttf,sans-serif',// make smaller when too many magenta char
+	list:[...Array(256).keys()].filter(i=>i<0xd8||0xf5<i),
 
-csize_(csize.value);dl_();
+	threads:4,// If less than or equal to 0, the main thread is used.(higher browser compatibility)
+	preview:0x00
+}</textarea>
+<button id="btn" class="zab bgca">export</button>
+<div id="elog"></div>
+<canvas></canvas>
+<ul>
+	<li><a href="glyph_v0.html">v0</a></li>
+	<li><a href="glyph_v0.html">v1</a></li>
+	<li>v2</li>
+</ul>
 
-const exp=(list,mode,mcpack)=>{
-	log_.textContent='';
-	var arr=[...Array(256).keys()].map(x=>('00'+x.toString(16).toUpperCase()).slice(-2)),zip=new JSZip(),fontFolder=zip.folder('font');
-	if(list){
-		list = list.split(',').map(x=>x.split('~')).map(x=>{if(x[1])return [...Array(parseInt(x[1],16)-parseInt(x,16)+1).keys()].map(y=>(y+parseInt(x[0],16)).toString(16).toUpperCase());else return x;}).join(',').split(',').map(x=>('00'+x.toString(16)).slice(-2));
-		console.log(list);
-		if(mode)arr=list;else arr=arr.filter(x=>!(list.includes(x)));
-	}else if(mode)return;
-	expb.disabled=true;expb.textContent='Running…';
-	configp.style.opacity=0.2;configp.style.pointerEvents='none';
-	pbar.max=(arr.length-1)*2;
-	const post=()=>{
-		const post_=()=>{
-			zip.generateAsync({type:"blob"},d=>{pbar.value=(1+d.percent*.01)*(pbar.max*.5);log.textContent=`step 2/2 packaging… ${d.percent.toFixed(2)}%`;}).then(c=>{
-				log_.textContent+='packaging done.\n';saveAs(c,expn);
-				expb.disabled=false;expb.textContent='export';
-				configp.style.opacity=1;configp.style.pointerEvents='auto';
-			});
-		};
-		var expn=`${ffamily.value}_bmp.zip`;
-		if(mcpack){
-			zip.file('manifest.json',mcmf({n:ffamily.value,d:'font resource pack.\nmcbeeringi.github.io/apps/glyph'}));
-			log_.textContent+='manifest.json done.\n';
-			c.width=128;c.height=128;ctx.font=`80px ${ffamily.value},sans-serif`;ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#fff';var str='Aa',strm=ctx.measureText(str);
-			ctx.fillText(str,(c.width-strm.width)*.5,(c.height+strm.actualBoundingBoxDescent+strm.actualBoundingBoxAscent)*.5-strm.actualBoundingBoxDescent);
-			c.toBlob(b=>{
-				zip.file('pack_icon.png',b);
-				log_.textContent+='pack_icon.png done.\n';
-				expn=`${ffamily.value}_resource.mcpack`;
-				csize_(csize.value);
-				post_();
-			});
-		}else{set(ward.value);post_();}
-	}
-	arr.forEach((x,i)=>requestIdleCallback(()=>{
-		set(x);
-		c.toBlob(b=>{
-			fontFolder.file(`glyph_${x}.png`,b);
-			if(x=='00')fontFolder.file('default8.png',b);
-		});
-		pbar.value=i;//log.textContent=x;
-		log.textContent=`step 1/2 rendering… ${(i/(arr.length-1)*100).toFixed(2)}%   ( ${i} / ${arr.length-1}  ${x} )`;
-		if(i==arr.length-1){log_.textContent+='rendering done.\n';post();}
-	}));
-};
+<script src="./mcmf.js"></script>
+<script type="module">
+import TA from 'https://mcbeeringi.github.io/ta/ta.mjs';
+import {zip,dl} from 'https://mcbeeringi.github.io/petit/zip.mjs';
+const
+ctx=document.querySelector('canvas').getContext('2d'),
+cfgget=_=>{try{return Function(`return(${ta.value});`)()}catch(e){}},
+cfgset=(ctx,cfg)=>(ctx.canvas.width=ctx.canvas.height=cfg.img*16,ctx.fillStyle='#fff',ctx.font=cfg.font),
+draw=(ctx,p,dbg)=>(
+	ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height),
+	[...Array(255)].forEach((a=ctx.canvas.width/16,i,s,m,h,b)=>(
+		m=ctx.measureText(s=String.fromCharCode((p&0xff)<<8|i)),
+		h=m.actualBoundingBoxAscent+(b=Math.max(m.fontBoundingBoxDescent||0,m.actualBoundingBoxDescent+1))+1,
+		a<h&&ctx.scale(1,a/h,dbg&&(dbg=ctx.fillStyle,ctx.fillStyle='#f0f')),
+		ctx.fillText(s,(i%16)*a+m.actualBoundingBoxLeft+1,((i/16|0)+1)*Math.max(h,a)-b,a-m.actualBoundingBoxLeft-1),
+		a<h&&ctx.scale(1,h/a,dbg&&(ctx.fillStyle=dbg))
+	))
+),
+i2p=i=>`font/glyph_${(i&0xff).toString(16).toUpperCase().padStart(2,0)}.png`,
+flist=[],
+fload=async(x,w=document,_)=>(w.fonts.add(await new FontFace(x.name,`url(${_=URL.createObjectURL(x)})`).load()),URL.revokeObjectURL(_)),
+pcent=e=>Math.round(e.value/e.max*100),
+main=async w=>(w=cfgget())&&(
+	w={cfg:w,prg:document.createElement('progress'),log:document.createElement('pre')},
+	w.prg.max=w.cfg.list.length,
+	w.log.textContent='please wait...',
+	elog.append(w.prg,w.log),
+	self.OffscreenCanvas&&0<w.cfg.threads?(
+		w.wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
+		w.files=(await Promise.all([...Array(w.cfg.threads)].map(async(x,i,a)=>(
+			x=new Worker(w.wurl),
+			await new Promise(f=>(
+				x.onmessage=f,
+				x.postMessage({flist,cfg:w.cfg,main:`
+					self.draw=${draw};self.i2p=${i2p};self.fload=${fload};await Promise.all(w.flist.map(x=>fload(x,self)));
+					(${cfgset})(self.ctx=new OffscreenCanvas(1,1).getContext('2d'),w.cfg);
+					onmessage=async m=>postMessage(await Promise.all(m.data.map(async x=>(draw(ctx,x),x={path:i2p(x)},postMessage(x),x.blob=await ctx.canvas.convertToBlob(),x))));
+					postMessage(0);
+				`})
+			)),
+			w.prg.value=0,
+			await new Promise(f=>(
+				x.onmessage=m=>Array.isArray(m.data)?(f(m.data),x.terminate()):(w.prg.value=+w.prg.value+1,w.log.textContent=`${pcent(w.prg)}% ${m.data.path}`),
+				a=Math.ceil(w.cfg.list.length/a.length),x.postMessage(w.cfg.list.slice(a*i,a*(i+1)))
+			))
+		)))).flat(),
+		URL.revokeObjectURL(w.wurl)
+	):(
+		cfgset(ctx,w.cfg),
+		w.files=await Promise.all(w.cfg.list.map((x,i)=>new Promise(f=>setTimeout(async _=>(
+			draw(ctx,x),x={path:i2p(x)},w.prg.value=i+1,w.log.textContent=`${pcent(w.prg)}% ${x.path}`,
+			x.blob=await new Promise(f=>ctx.canvas.toBlob(f)),f(x)
+		)))))
+	),
+	w.prg.removeAttribute('value'),w.log.textContent='please wait...',
+	(x=>x&&w.files.push({path:x.path.replace(/glyph_00/,'default8'),blob:x.blob}))(w.files.find(x=>x.path.includes('_00.'))),
+	w.files.push(
+		{path:'manifest.json',blob:new Blob([mcmf({n:w.cfg.name,d:w.cfg.font})])},
+		{path:'pack_icon.png',blob:await new Promise((f,r,x)=>(
+			cfgset(x=document.createElement('canvas').getContext('2d'),{...w.cfg,img:w.cfg.img/8}),
+			x.textBaseline='middle',x.textAlign='center',x.fillText('Aa',w.cfg.img,w.cfg.img),x.canvas.toBlob(f)
+		))}
+	),
+	dl(w.zip={name:w.cfg.name+'.mcpack',blob:await zip(w.files,w.log.textContent='packing...')}),
+	console.log(w),w.prg.remove(),w.log.remove()
+);
+
+TA.editor(ta);
+ta.oninput=_=>(_=cfgget())&&(
+	cfgset(ctx,_),draw(ctx,_.preview,1));
+(file.onchange=async _=>(
+	file.files[0]&&(_=new File([file.files[0]],'_'+file.files[0].name.replace(/\W/g,'_')),flist.push(_),await fload(_),ta.value=ta.value.replace(/_\w+/,_.name),flog.textContent=`loaded_fonts:${flist.map(x=>'\n\t'+x.name).join('')}`),
+	ta.oninput()
+))();
+btn.onclick=_=>main();
 </script>
-<!-- hor_ad --><ins class="adsbygoogle"style="display:block"data-ad-client="ca-pub-6462086334272944"data-ad-slot="5283762489"data-ad-format="auto"data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 </body>
 <html>
