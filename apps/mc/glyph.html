@@ -28,7 +28,7 @@
 	name:'font resource pack',
 	img:64,
 	font:'56px _your_loaded_font_file_ttf,sans-serif',// make smaller when too many magenta char
-	list:[-1,...Array(256).keys()].filter(i=>i<0xd8||0xf5<i),// 0x00~0xff ? glyph_xx : default8
+	list:[-1,...Array(256).keys()].filter(i=>i<0xd8||0xf5<i),// xx<0 ? default8 : glyph_xx
 
 	threads:4,// If less than or equal to 0, the main thread is used.(higher browser compatibility)
 	preview:0x00
@@ -54,7 +54,7 @@ cfgset=(ctx,cfg)=>(ctx.canvas.width=ctx.canvas.height=cfg.img*16,ctx.fillStyle='
 draw=(ctx,p,dbg)=>(
 	ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height),
 	[...Array(255)].forEach((a=ctx.canvas.width/16,i,s,m,h,b)=>(
-		s=p==(p&0xff)?String.fromCharCode((p&0xff)<<8|i):d8[i],
+		s=p<0?d8[i]:String.fromCodePoint(p<<8|i),
 		m=ctx.measureText(s),
 		h=m.actualBoundingBoxAscent+(b=Math.max(m.fontBoundingBoxDescent||0,m.actualBoundingBoxDescent+1))+1,
 		a<h&&ctx.scale(1,a/h,dbg&&(dbg=ctx.fillStyle,ctx.fillStyle='#f0f')),
@@ -62,7 +62,7 @@ draw=(ctx,p,dbg)=>(
 		a<h&&ctx.scale(1,h/a,dbg&&(ctx.fillStyle=dbg))
 	))
 ),
-i2p=i=>i==(i&0xff)?`font/glyph_${(i&0xff).toString(16).toUpperCase().padStart(2,0)}.png`:`font/default8.png`,
+i2p=i=>i<0?`font/default8.png`:`font/glyph_${i.toString(16).toUpperCase().padStart(2,0)}.png`,
 flist=[],
 fload=async(x,w=document,_)=>(w.fonts.add(await new FontFace(x.name,`url(${_=URL.createObjectURL(x)})`).load()),URL.revokeObjectURL(_)),
 pcent=e=>Math.round(e.value/e.max*100),
