@@ -39,7 +39,7 @@
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<script>
 		'use strict';
-		[il,im].forEach(TA.editor);
+		[il,im].forEach(x=>TA.editor(x));
 		ih.oninput=()=>ih.value=ih.value.replace(/\D+/g,'');
 		const wurl=URL.createObjectURL(new Blob([`
 const dither=(arr,w,m)=>{

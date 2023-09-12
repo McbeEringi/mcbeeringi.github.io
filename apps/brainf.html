@@ -167,7 +167,7 @@ type here before run.</textarea>
 				return s.x;
 			};
 
-			[...document.body.querySelectorAll('textarea:not([readonly])')].forEach(TA.sizer);
+			[...document.body.querySelectorAll('textarea:not([readonly])')].forEach(x=>TA.sizer(x));
 			en[2].onclick=()=>{en[3].value=enmain(en[0].value,en[1].value);en[3].value+=en[3].value.length;TA.ah(en[3]);};
 			en[3].onclick=()=>copy(en[3].value);
 			de[2].onclick=()=>{de[9].value='';de[8].value='Running...';pmax=0;demain(de[0].value,de[1].value,de[4].checked,de[7].checked);};

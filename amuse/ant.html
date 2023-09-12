@@ -45,7 +45,7 @@ speed:<input id="spd" type="range" min="1" max="512" step="1" value="128">
 <script>
 let ctx=c.getContext('2d'),pli,colli,rotli,timer,tick;
 ctx.imageSmoothingEnabled=false;
-[ants,rot,grid].forEach(TA.editor);
+[ants,rot,grid].forEach(x=>TA.editor(x));
 const bhex=(l=1)=>new Array(l).fill().map(()=>Math.floor(Math.random()*0xff).toString(16).padStart(2,'0')).join(''),
 init=()=>{
 	try{

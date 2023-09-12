@@ -24,7 +24,7 @@
 	<textarea id="out" class="zab"></textarea>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
 	<script>
-		[inp,out].forEach(TA.editor);
+		[inp,out].forEach(x=>TA.editor(x));
 		inp.oninput=()=>{
 			let i=0,reg=/`[^`]+`/g,tmp=inp.value.match(reg)||[];
 			out.value='javascript:'+encodeURIComponent(inp.value.replace(/[\n\r\t\u2028\u2029]+/g,'').replace(reg,()=>tmp[i++]));
