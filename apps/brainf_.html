@@ -90,7 +90,7 @@ type here before run.</textarea><pre id="inpprv"></pre>
 	stopb.onclick=()=>{if(btn.disabled)stopb.disabled=true;}
 	const copy=e=>navigator.clipboard.writeText(e.target.textContent).then(()=>{e.target.style.background='#48f';setTimeout(()=>e.target.style.background='',100);});
 	out.onclick=srcout.onclick=copy;
-	[eninp,src,inp].forEach(TA.editor);
+	[eninp,src,inp].forEach(x=>TA.editor(x));
 
 	const romaji=x=>fetch('https://labs.goo.ne.jp/api/morph',{
 		method:'POST',mode:'cors',
