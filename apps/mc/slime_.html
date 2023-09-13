@@ -14,6 +14,7 @@
 	<link rel="stylesheet" href="../../src/style.css">
 </head>
 <body>
+<style>canvas{display:block;width:min(100%,720px);margin:0 auto;cursor:grab;}canvas:active{cursor:grabbing;}label{white-space:nowrap;}</style>
 <h1>slime_chunk_be</h1>
 <hr>
 <label>x:<input type="number" id="ipx" value="0" class="zab"></label>
@@ -24,6 +25,8 @@
 
 <script>
 const
+ctx=document.querySelector('canvas').getContext('2d'),
+w={cache:{}},
 slime=m=>{// der MersenneTwister
 	m=Math.imul(m[0],0x1f1f1f1f)^m[1];// seed
 	const f=(x,y)=>Math.imul(x^x>>>30,0x6c078965)+y,a=m&0x80000000|(m=f(m,1))&0x7fffffff;
@@ -34,7 +37,44 @@ slime=m=>{// der MersenneTwister
 	m^=m<< 15 &0xefc60000;
 	m^=m>>>18;
 	return!((m>>>0)%10);// slime
-};
+},
+wmain=p=>'data:image/bmp;base64,'+btoa(String.fromCharCode(// little endian
+	// file
+	66,77,
+	122,16,0,0,// file size: 14+108+4*1024=4218
+	0,0,0,0,
+	122,0,0,0,// offset: 14+108=122
+	// info v4
+	108,0,0,0,
+	32,0,0,0,// width: 32
+	32,0,0,0,// height: 32
+	1,0,
+	32,0,// bit/px: 32
+	3,0,0,0,// compress: RGB
+	0,16,0,0,// img size: 32*32*32/8=4096
+	19,11,0,0,// x px/m: 72 dpi
+	19,11,0,0,// y px/m: 72 dpi
+	0,0,0,0,// col cnt
+	0,0,0,0,// col imp cont
+	0,0,255,0, 0,255,0,0, 255,0,0,0, 0,0,0,255,// mask RGBA: ARGB
+	66,71,82,115,...Array(48).fill(0),// color: sRGB
+	// img Y-flipped BGRA
+	...[...Array(1024)].flatMap((_,i,{length:l})=>(l=Math.sqrt(l),i=[p[0]*l+i%l,p[1]*l+(l-1)-(i/l|0)],[
+		[128,128,128,32],[128,128,128,64],[0,255,0,224],[0,255,0,192],
+		[128,128,128,128],[128,128,128,64],[0,255,0,224],[0,255,0,240]
+	][((p[0]^p[1])&1)|(slime(i)<<1)|(((i[0]^i[1])&1)<<2)]))
+)),
+wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
+worker=[...Array(4)].map(x=>(
+	x=new Worker(wurl),
+	x.onmessage=m=>Object.assign(new Image(),{onload(){w.cache[m.data.key]=this},src:m.data.src}),
+	x.postMessage({main:`self.slime=${slime};self.wmain=${wmain};onmessage=m=>postMessage({key:m.data.join(),src:wmain(m.data)});`}),
+	x
+));
+
+
+
+onbeforeunload=_=>URL.revokeObjectURL(wurl)
 
 </script>
 </body>
