@@ -72,8 +72,8 @@ draw=(_,s=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>(
 
 
 ctx.canvas.height=ctx.canvas.width=1024;
-
-Promise.all([...Array(4096)].map(async()=>document.body.append((await req([Math.random()*4096|0,Math.random()*4096|0])).img.cloneNode()))).then(_=>alert([performance.now()/1000,_.length]));
+self.t0=performance.now();
+Promise.all([...Array(4096)].map(async()=>document.body.append((await req([Math.random()*4096|0,Math.random()*4096|0])).img.cloneNode()))).then(_=>alert((performance.now()-t0)/1000));
 
 
 </script>
