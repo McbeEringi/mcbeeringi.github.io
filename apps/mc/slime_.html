@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+	<!-- <script async src="https://mcbeeringi.github.io/src/gas.js"></script> -->
 
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,7 +14,7 @@
 	<link rel="stylesheet" href="../../src/style.css">
 </head>
 <body>
-<style>canvas{display:block;width:min(100%,720px);margin:0 auto;cursor:grab;}canvas:active{cursor:grabbing;}label{white-space:nowrap;}</style>
+<style>canvas{display:block;width:min(100%,720px);margin:0 auto;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);cursor:grab;}canvas:active{cursor:grabbing;}label{white-space:nowrap;}</style>
 <h1>slime_chunk_be</h1>
 <hr>
 <label>x:<input type="number" id="ipx" value="0" class="zab"></label>
@@ -26,7 +26,7 @@
 <script>
 const
 ctx=document.querySelector('canvas').getContext('2d'),
-w={cache:{}},
+w={region:{}},
 crct=[...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)),crc=(buf,crc=0)=>~buf.reduce((c,x)=>crct[(c^x)&0xff]^(c>>>8),~crc)// https://www.rfc-editor.org/rfc/rfc1952
 adler=data=>{let a=1,b=0,len=data.length,tlen,i=0;while(len>0){len-=(tlen=Math.min(1024,len));do{b+=(a+=data[i++]);}while(--tlen);a%=65521;b%=65521;}return(b<<16)|a;},// https://ja.wikipedia.org/wiki/Adler-32
 slime=m=>{// der MersenneTwister
@@ -56,16 +56,25 @@ wmain=p=>(_=>(
 	))
 ))(),
 wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
-worker=[...Array(4)].map(x=>(
-	x=new Worker(wurl),
-	x.onmessage=m=>Object.assign(new Image(),{onload(){document.body.append(w.cache[m.data.key]=this)},src:m.data.src}),
-	x.postMessage({crct,main:`self.crct=w.crct;self.crc=${crc};self.adler=${adler};self.slime=${slime};self.wmain=${wmain};onmessage=m=>postMessage({key:m.data.join(),src:wmain(m.data)});`}),
-	x
-));
+worker=[...Array(4)].reduce((a,x=new Worker(a.x))=>(
+	x.onmessage=m=>(m=m.data,Object.assign(new Image(),{onload(){w.region[m.key]&&w.region[m.key].f({p:m.p,img:this});},src:m.src})),
+	x.postMessage({crct,main:`self.crct=w.crct;self.crc=${crc};self.adler=${adler};self.slime=${slime};self.wmain=${wmain};onmessage=m=>postMessage({p:m.data,key:m.data.join(),src:wmain(m.data)});`}),
+	a.a.push(x),a
+),{x:URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),a:[],_(){URL.revokeObjectURL(this.x);return this.a;}})._(),
+req=async x=>(x={p:x,key:x.join()},w.region[x.key]||await((_,f,r)=>(_=new Promise((x,y)=>(f=x,r=y)),_.f=f,_.r=r,w.region[x.key]=_,worker[Object.keys(w.region).length%worker.length].postMessage(x.p),_))()),
 
-[...Array(4096)].forEach((_,i)=>worker[i%worker.length].postMessage([Math.random()*256|0,Math.random()*256|0]));
+draw=(_,s=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>(
+	_={
 
-onbeforeunload=_=>URL.revokeObjectURL(wurl);
+	}
+)
+
+
+
+ctx.canvas.height=ctx.canvas.width=1024;
+
+[...Array(4096)].forEach(async()=>document.body.append((await req([Math.random()*16|0,Math.random()*16|0])).img.cloneNode()));
+
 
 </script>
 </body>
