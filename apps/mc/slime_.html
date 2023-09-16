@@ -27,6 +27,8 @@
 const
 ctx=document.querySelector('canvas').getContext('2d'),
 w={cache:{}},
+crct=[...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)),crc=(buf,crc=0)=>~buf.reduce((c,x)=>crct[(c^x)&0xff]^(c>>>8),~crc)// https://www.rfc-editor.org/rfc/rfc1952
+adler=data=>{let a=1,b=0,len=data.length,tlen,i=0;while(len>0){len-=(tlen=Math.min(1024,len));do{b+=(a+=data[i++]);}while(--tlen);a%=65521;b%=65521;}return(b<<16)|a;},// https://ja.wikipedia.org/wiki/Adler-32
 slime=m=>{// der MersenneTwister
 	m=Math.imul(m[0],0x1f1f1f1f)^m[1];// seed
 	const f=(x,y)=>Math.imul(x^x>>>30,0x6c078965)+y,a=m&0x80000000|(m=f(m,1))&0x7fffffff;
@@ -38,43 +40,32 @@ slime=m=>{// der MersenneTwister
 	m^=m>>>18;
 	return!((m>>>0)%10);// slime
 },
-wmain=p=>'data:image/bmp;base64,'+btoa(String.fromCharCode(// little endian
-	// file
-	66,77,
-	122,16,0,0,// file size: 14+108+4*1024=4218
-	0,0,0,0,
-	122,0,0,0,// offset: 14+108=122
-	// info v4
-	108,0,0,0,
-	32,0,0,0,// width: 32
-	32,0,0,0,// height: 32
-	1,0,
-	32,0,// bit/px: 32
-	3,0,0,0,// compress: RGB
-	0,16,0,0,// img size: 32*32*32/8=4096
-	19,11,0,0,// x px/m: 72 dpi
-	19,11,0,0,// y px/m: 72 dpi
-	0,0,0,0,// col cnt
-	0,0,0,0,// col imp cont
-	0,0,255,0, 0,255,0,0, 255,0,0,0, 0,0,0,255,// mask RGBA: ARGB
-	66,71,82,115,...Array(48).fill(0),// color: sRGB
-	// img Y-flipped BGRA
-	...[...Array(1024)].flatMap((_,i,{length:l})=>(l=Math.sqrt(l),i=[p[0]*l+i%l,p[1]*l+(l-1)-(i/l|0)],[
-		[128,128,128,32],[128,128,128,64],[0,255,0,224],[0,255,0,192],
-		[128,128,128,128],[128,128,128,64],[0,255,0,224],[0,255,0,240]
-	][((p[0]^p[1])&1)|(slime(i)<<1)|(((i[0]^i[1])&1)<<2)]))
-)),
+wmain=p=>(_=>(
+	_=[...Array(256)].flatMap((_,i,{length:m})=>(_=[...Array(4)].reduce((a,_,j,{length:n})=>(
+		_={i:i*n+j,l:Math.sqrt(m*n)},_=[p[0]*_.l+_.i%_.l,p[1]*_.l+(_.i/_.l|0)],
+		(slime(_)<<1|(_[0]^_[1])&1)<<(8/n*(n-1-j))|a
+	),0),i%8?[_]:[0,_])),
+	_=[73,68,65,84, 8,29, 1, 32,1, 223,254, ..._,...(_=>[_>>>24&255,_>>>16&255,_>>>8&255,_>>>0&255])(adler(_))],// IDAT zlib CMF:08 FLG:1d uncompressed final block length:256+32=288(little endian)
+	'data:image/png;base64,'+btoa(String.fromCharCode(// big endian
+		137,80,78,71,13,10,26,10,// header
+		0,0,0,13,73,72,68,82, 0,0,0,32,0,0,0,32, 2,3, 0,0,0, 14,20,146,103,// IHDR: 32*32 2bit indexed
+		0,0,0,12,80,76,84,69, 128,128,128, 128,128,128, 0,255,0, 0,255,0, 32,242,49,113,// PLTE
+		0,0,0,4,116,82,78,83, ...((p[0]^p[1])&1?[32,64,224,192, 166,33,117,56]:[128,64,224,240, 205,147,92,145]),// tRNS
+		0,0,1,43,..._,...(_=>[_>>>24&255,_>>>16&255,_>>>8&255,_>>>0&255])(crc(_)),// IDAT
+		0,0,0,0,73,69,78,68,174,66,96,130// IEND
+	))
+))(),
 wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
 worker=[...Array(4)].map(x=>(
 	x=new Worker(wurl),
-	x.onmessage=m=>Object.assign(new Image(),{onload(){w.cache[m.data.key]=this},src:m.data.src}),
-	x.postMessage({main:`self.slime=${slime};self.wmain=${wmain};onmessage=m=>postMessage({key:m.data.join(),src:wmain(m.data)});`}),
+	x.onmessage=m=>Object.assign(new Image(),{onload(){document.body.append(w.cache[m.data.key]=this)},src:m.data.src}),
+	x.postMessage({crct,main:`self.crct=w.crct;self.crc=${crc};self.adler=${adler};self.slime=${slime};self.wmain=${wmain};onmessage=m=>postMessage({key:m.data.join(console.log(m.data)),src:wmain(m.data)});`}),
 	x
 ));
 
+[...Array(4096)].forEach((_,i)=>worker[i%worker.length].postMessage([Math.random()*256|0,Math.random()*256|0]));
 
-
-onbeforeunload=_=>URL.revokeObjectURL(wurl)
+onbeforeunload=_=>URL.revokeObjectURL(wurl);
 
 </script>
 </body>
