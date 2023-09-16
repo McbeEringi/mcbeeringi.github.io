@@ -56,7 +56,7 @@ wmain=p=>(_=>(
 	))
 ))(),
 wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
-worker=[...Array(4)].reduce((a,x=new Worker(a.x))=>(
+worker=[...Array(8)].reduce((a,x=new Worker(a.x))=>(
 	x.onmessage=m=>(m=m.data,Object.assign(new Image(),{onload(){w.region[m.key]&&w.region[m.key].f({p:m.p,img:this});},src:m.src})),
 	x.postMessage({crct,main:`self.crct=w.crct;self.crc=${crc};self.adler=${adler};self.slime=${slime};self.wmain=${wmain};onmessage=m=>postMessage({p:m.data,key:m.data.join(),src:wmain(m.data)});`}),
 	a.a.push(x),a
@@ -73,7 +73,7 @@ draw=(_,s=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>(
 
 ctx.canvas.height=ctx.canvas.width=1024;
 
-[...Array(4096)].forEach(async()=>document.body.append((await req([Math.random()*16|0,Math.random()*16|0])).img.cloneNode()));
+Promise.all([...Array(4096)].map(async()=>document.body.append((await req([Math.random()*4096|0,Math.random()*4096|0])).img.cloneNode()))).then(_=>alert([performance.now()/1000,_.length]));
 
 
 </script>
