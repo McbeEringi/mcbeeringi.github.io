@@ -59,7 +59,7 @@ wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>
 worker=[...Array(4)].map(x=>(
 	x=new Worker(wurl),
 	x.onmessage=m=>Object.assign(new Image(),{onload(){document.body.append(w.cache[m.data.key]=this)},src:m.data.src}),
-	x.postMessage({crct,main:`self.crct=w.crct;self.crc=${crc};self.adler=${adler};self.slime=${slime};self.wmain=${wmain};onmessage=m=>postMessage({key:m.data.join(console.log(m.data)),src:wmain(m.data)});`}),
+	x.postMessage({crct,main:`self.crct=w.crct;self.crc=${crc};self.adler=${adler};self.slime=${slime};self.wmain=${wmain};onmessage=m=>postMessage({key:m.data.join(),src:wmain(m.data)});`}),
 	x
 ));
 
