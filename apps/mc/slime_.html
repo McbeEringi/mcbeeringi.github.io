@@ -128,7 +128,7 @@ loop();
 ['mousemove','touchmove'].forEach(_=>ctx.canvas.addEventListener(_,e=>(e.targetTouches?2<=e.targetTouches.length:w.cur.length)&&(
 	e.preventDefault(),e=[...(e.targetTouches||[e])],_=getComputedStyle(ctx.canvas),_=['width','height'].map(x=>+_[x].slice(0,-2)),
 	(([x,y])=>x.map((x,i,e)=>(e=window[['inpx','inpz'][i]],e.value=(+e.value-(x-y[i])/_[i]*2**(+inps.value+4)).toFixed(2))))([e,w.cur].map(_=>_.reduce((a,x)=>[a[0]+x.clientX,a[1]+x.clientY],[0,0]).map(x=>x/_.length))),
-	2<=e.length&&(([x,y])=>inps.value=+inps.value*(1-(x-y)/_[0]*.5))([e,w.cur].map(_=>Math.hypot(_[0].clientX-_[1].clientX,_[0].clientY-_[1].clientY))),
+	2<=e.length&&(([x,y])=>inps.value=+inps.value-(x-y)/_[0]*4)([e,w.cur].map(_=>Math.hypot(_[0].clientX-_[1].clientX,_[0].clientY-_[1].clientY))),
 	w.cur=e,w.draw=1
 )));
 ctx.canvas.addEventListener('wheel',e=>(e.preventDefault(),inps.value=+inps.value+e.deltaY*.01,w.draw=1));
