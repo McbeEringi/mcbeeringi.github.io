@@ -17,8 +17,8 @@
 <style>canvas{display:block;width:min(100%,720px);margin:0 auto;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);cursor:grab;}canvas:active{cursor:grabbing;}label{white-space:nowrap;}</style>
 <h1>slime_chunk_be</h1>
 <hr>
-<label>x:<input type="number" id="ipx" value="0" class="zab"></label>
-<label>z:<input type="number" id="ipz" value="0" class="zab"></label>
+<label>x:<input type="number" id="inpx" value="0" class="zab"></label>
+<label>z:<input type="number" id="inpz" value="0" class="zab"></label>
 <label>size:<input type="range" id="inps" value="5" min="1" max="10" step="any"></label>
 <button id="dlbtn" class="zab bgca">dl img</button>
 <canvas></canvas>
@@ -26,9 +26,10 @@
 <script>
 const
 ctx=document.querySelector('canvas').getContext('2d'),
-w={region:{}},
+w={region:{},draw:0,cur:[]},
 crct=[...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)),crc=(buf,crc=0)=>~buf.reduce((c,x)=>crct[(c^x)&0xff]^(c>>>8),~crc)// https://www.rfc-editor.org/rfc/rfc1952
 adler=data=>{let a=1,b=0,len=data.length,tlen,i=0;while(len>0){len-=(tlen=Math.min(1024,len));do{b+=(a+=data[i++]);}while(--tlen);a%=65521;b%=65521;}return(b<<16)|a;},// https://ja.wikipedia.org/wiki/Adler-32
+be4=x=>[x>>>24&255,x>>>16&255,x>>>8&255,x>>>0&255],
 slime=m=>{// der MersenneTwister
 	m=Math.imul(m[0],0x1f1f1f1f)^m[1];// seed
 	const f=(x,y)=>Math.imul(x^x>>>30,0x6c078965)+y,a=m&0x80000000|(m=f(m,1))&0x7fffffff;
@@ -40,42 +41,47 @@ slime=m=>{// der MersenneTwister
 	m^=m>>>18;
 	return!((m>>>0)%10);// slime
 },
-wmain=p=>(_=>(
+main=p=>(_=>(
 	_=[...Array(256)].flatMap((_,i,{length:m})=>(_=[...Array(4)].reduce((a,_,j,{length:n})=>(
 		_={i:i*n+j,l:Math.sqrt(m*n)},_=[p[0]*_.l+_.i%_.l,p[1]*_.l+(_.i/_.l|0)],
 		(slime(_)<<1|(_[0]^_[1])&1)<<(8/n*(n-1-j))|a
 	),0),i%8?[_]:[0,_])),
-	_=[73,68,65,84, 8,29, 1, 32,1, 223,254, ..._,...(_=>[_>>>24&255,_>>>16&255,_>>>8&255,_>>>0&255])(adler(_))],// IDAT zlib CMF:08 FLG:1d uncompressed final block length:256+32=288(little endian)
+	_=[73,68,65,84, 8,29, 1, 32,1, 223,254, ..._,...be4(adler(_))],// IDAT zlib CMF:08 FLG:1d uncompressed final block length:256+32=288(little endian)
 	'data:image/png;base64,'+btoa(String.fromCharCode(// big endian
 		137,80,78,71,13,10,26,10,// header
 		0,0,0,13,73,72,68,82, 0,0,0,32,0,0,0,32, 2,3, 0,0,0, 14,20,146,103,// IHDR: 32*32 2bit indexed
 		0,0,0,12,80,76,84,69, 128,128,128, 128,128,128, 0,255,0, 0,255,0, 32,242,49,113,// PLTE
 		0,0,0,4,116,82,78,83, ...((p[0]^p[1])&1?[32,64,224,192, 166,33,117,56]:[128,64,224,240, 205,147,92,145]),// tRNS
-		0,0,1,43,..._,...(_=>[_>>>24&255,_>>>16&255,_>>>8&255,_>>>0&255])(crc(_)),// IDAT
+		0,0,1,43,..._,...be4(crc(_)),// IDAT
 		0,0,0,0,73,69,78,68,174,66,96,130// IEND
 	))
 ))(),
 wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
 worker=[...Array(8)].reduce((a,x=new Worker(a.x))=>(
-	x.onmessage=m=>(m=m.data,Object.assign(new Image(),{onload(){w.region[m.key]&&w.region[m.key].f({p:m.p,img:this});},src:m.src})),
-	x.postMessage({crct,main:`self.crct=w.crct;self.crc=${crc};self.adler=${adler};self.slime=${slime};self.wmain=${wmain};onmessage=m=>postMessage({p:m.data,key:m.data.join(),src:wmain(m.data)});`}),
+	x.onmessage=m=>(m=m.data,Object.assign(new Image(),{onload(){w.region[m.key].img=this;w.draw=1;},src:m.src})),
+	x.postMessage({crct,main:`self.crct=w.crct;${[crc,adler,be4,slime,main].map(x=>'self.'+x.name+'='+x+';').join('')}onmessage=m=>postMessage({key:m.data.join(),src:main(m.data)});`}),
 	a.a.push(x),a
 ),{x:URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),a:[],_(){URL.revokeObjectURL(this.x);return this.a;}})._(),
-req=async x=>(x={p:x,key:x.join()},w.region[x.key]||await((_,f,r)=>(_=new Promise((x,y)=>(f=x,r=y)),_.f=f,_.r=r,w.region[x.key]=_,worker[Object.keys(w.region).length%worker.length].postMessage(x.p),_))()),
+req=p=>w.region[p.join()]||(worker[Object.keys(w.region).length%worker.length].postMessage(p),w.region[p.join()]={p}),
 
-draw=(_,s=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>(
+draw=(_,s=2**+inps.value,p=[+inpx.value,+inpz.value])=>(
 	_={
-
+	// ねこ
 	}
-)
+),
+loop=_=>(w.draw&&(draw(),w.draw=0),requestAnimationFrame(loop));
 
-
-
-ctx.canvas.height=ctx.canvas.width=1024;
-self.t0=performance.now();
-Promise.all([...Array(4096)].map(async()=>document.body.append((await req([Math.random()*4096|0,Math.random()*4096|0])).img.cloneNode()))).then(_=>alert((performance.now()-t0)/1000));
-
-
+ctx.canvas.height=ctx.canvas.width=1024;loop();
+['mousedown','touchstart'].forEach(_=>ctx.canvas.addEventListener(_,e=>w.cur=[...(e.targetTouches||[e])]));
+['mouseup','touchend','touchcanceled'].forEach(_=>addEventListener(_,e=>w.cur=[...(e.targetTouches||[])]));
+['mousemove','touchmove'].forEach(_=>ctx.canvas.addEventListener(_,e=>(e.targetTouches?2<=e.targetTouches.length:w.cur.length)&&(
+	e.preventDefault(),e=[...(e.targetTouches||[e])],_=getComputedStyle(ctx.canvas),_=['width','height'].map(x=>_[x].slice(0,-2)),
+	(([x,y])=>x.map((x,i,e)=>(e=window[['inpx','inpz'][i]],e.value=(+e.value+(x-y[i])/_[i]*2**(+inps.value+4)).toFixed(2))))([e,w.cur].map(_=>_.reduce((a,x)=>[a[0]+x.clientX,a[1]+x.clientY],[0,0]).map(x=>x/_.length))),
+	2<=e.length&&(([x,y])=>inps.value=+inps.value/x*y)([e,w.cur].map(_=>Math.hypot(_[0].clientX-_[1].clientX,_[0].clientY-_[1].clientY))),
+	w.cur=e,w.draw=1
+)));
+ctx.canvas.addEventListener('wheel',e=>(e.preventDefault(),inps.value=+inps.value+e.deltaY*.01,w.draw=1));
+dlbtn.onclick=_=>Object.assign(document.createElement('a'),{href:ctx.canvas.toDataURL(),download:new Date()}).click();
 </script>
 </body>
 </html>
