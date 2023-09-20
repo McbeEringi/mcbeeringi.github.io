@@ -26,11 +26,12 @@
 <script>
 const
 ctx=document.querySelector('canvas').getContext('2d'),
+ctxset=(x,y=x,c=ctx)=>(c.canvas.width=x,c.canvas.height=y,c.imageSmoothingEnabled=false,c.textBaseline='middle',c.globalCompositeOperation='screen',c),
 w={region:{},draw:1,cur:[]},
 crct=[...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)),crc=(buf,crc=0)=>~buf.reduce((c,x)=>crct[(c^x)&0xff]^(c>>>8),~crc)// https://www.rfc-editor.org/rfc/rfc1952
 adler=data=>{let a=1,b=0,len=data.length,tlen,i=0;while(len>0){len-=(tlen=Math.min(1024,len));do{b+=(a+=data[i++]);}while(--tlen);a%=65521;b%=65521;}return(b<<16)|a;},// https://ja.wikipedia.org/wiki/Adler-32
 be4=x=>[x>>>24&255,x>>>16&255,x>>>8&255,x>>>0&255],
-mod=(x,y=1)=>(x%y+y)%y,
+fract=(x,y=1)=>(x%y+y)%y,
 slime=m=>{// der MersenneTwister
 	m=Math.imul(m[0],0x1f1f1f1f)^m[1];// seed
 	const f=(x,y)=>Math.imul(x^x>>>30,0x6c078965)+y,a=m&0x80000000|(m=f(m,1))&0x7fffffff;
@@ -65,27 +66,28 @@ worker=[...Array(8)].reduce((a,x=new Worker(a.x))=>(
 ),{x:URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),a:[],_(){URL.revokeObjectURL(this.x);return this.a;}})._(),
 req=p=>w.region[p.join()]||(worker[Object.keys(w.region).length%worker.length].postMessage(p),w.region[p.join()]={p}),
 
-draw=(c=ctx,s=2**+inps.value,p=[+inpx.value,+inpz.value])=>(
+draw=(c=ctx,p=[+inpx.value,+inpz.value],s=2**+inps.value)=>(
 	c.clearRect(0,0,c.canvas.width,c.canvas.height),
 	s/=32,s=[s,s/c.canvas.width*c.canvas.height],
 	[...Array(s.reduce((a,x)=>a*Math.ceil(x+1),1))].forEach((_,i)=>(
 		i=[i%Math.ceil(s[0]+1),i/Math.ceil(s[0]+1)|0],
-		(_=req(p.map((_,j)=>Math.floor(_/512-s[j]/2)+i[j]))).img&&c.drawImage(_.img,...p.map((_,j)=>(-mod(_/512-s[j]/2)+i[j])*c.canvas.width/s[0]),...[...Array(2)].fill(c.canvas.width/s[0]))
+		(_=req(p.map((_,j)=>Math.floor(_/512-s[j]/2)+i[j]))).img&&c.drawImage(_.img,...p.map((_,j)=>(-fract(_/512-s[j]/2)+i[j])*c.canvas.width/s[0]),...[...Array(2)].fill(c.canvas.width/s[0]))
 	)),
+	((_,n=s.reduce((a,x)=>a*Math.ceil(x+1),2))=>n<_.length&&_.map(x=>(x[1]=x[1].p.reduce((a,x,i)=>Math.max(a,Math.abs((p[i]/512-x-.5)/s[i]*s[0])),0),x)).sort((a,b)=>a[1]-b[1]).slice(n+1).forEach(x=>delete w.region[x[0]]))(Object.entries(w.region)),
 
-	c.strokeStyle='#f00c',c.lineWidth=2,c.stroke(new Path2D(`M${c.canvas.width/2},0v${c.canvas.height}M0,${c.canvas.height/2}h${c.canvas.width}`)),
-	c.fillStyle='#f008',c.fillRect(...p.map((_,i)=>c.canvas[['width','height'][i]]/2-mod(_)*c.canvas.width/s[0]/512),...[...Array(2)].fill(c.canvas.width/s[0]/512)),
-
-	c.fillStyle='#fffc',c.font=`24px monospace`,
+	c.strokeStyle='#f00',c.lineWidth=2,c.stroke(new Path2D(`M${c.canvas.width/2},0v${c.canvas.height}M0,${c.canvas.height/2}h${c.canvas.width}`)),
+	c.fillStyle='#c00',c.fillRect(...p.map((_,i)=>c.canvas[['width','height'][i]]/2-fract(_)*c.canvas.width/s[0]/512),...[...Array(2)].fill(c.canvas.width/s[0]/512)),
+	c.fillStyle='#f0f',c.font='24px monospace',
 	`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}${(_=>_?'\nqueue: '+_:'')((Object.values(w.region).filter(x=>!x.img).length))}`.split('\n').forEach((x,i)=>c.fillText(x,c.canvas.width/2,c.canvas.height/2+24*(i+.5)*1.2)),
-
-	((_,n=s.reduce((a,x)=>a*Math.ceil(x+1),2))=>n<_.length&&_.map(x=>(x[1]=x[1].p.reduce((a,x,i)=>Math.max(a,Math.abs((p[i]/512-x-.5)/s[i]*s[0])),0),x)).sort((a,b)=>a[1]-b[1]).slice(n+1).forEach(x=>delete w.region[x[0]]))(Object.entries(w.region))
+	(n=>['width','height'].forEach((d,j)=>(
+		c.rotate((-1)**j*Math.PI/2),
+		[...Array((s[j]*256/n+1|0)*2)].forEach((_,i,{length:l})=>c.fillText((i+Math.floor(p[j]/n)-(s[j]*256/n|0))*n,0,(-1)**j*-(c.canvas[d]/s[j]/512*(i-l/2+1-fract(p[j]/n))*n+c.canvas[d]/2)))
+	)))(2**Math.floor(Math.log2(s[0])+9-3)),
+	c
 ),
 loop=_=>(w.draw&&(draw(),w.draw=0),requestAnimationFrame(loop));
 
-inpx.oninput=inpz.oninput=inps.oninput=_=>w.draw=1;
-ctx.canvas.height=ctx.canvas.width=1024;ctx.imageSmoothingEnabled=false;ctx.textBaseline='middle';
-loop();
+inpx.oninput=inpz.oninput=inps.oninput=_=>w.draw=1;ctxset(1024);loop();
 ['mousedown','touchstart'].forEach(_=>ctx.canvas.addEventListener(_,e=>w.cur=[...(e.targetTouches||[e])]));
 ['mouseup','touchend','touchcanceled'].forEach(_=>addEventListener(_,e=>w.cur=[...(e.targetTouches||[])]));
 ['mousemove','touchmove'].forEach(_=>ctx.canvas.addEventListener(_,e=>(e.targetTouches?2<=e.targetTouches.length:w.cur.length)&&(
@@ -95,7 +97,7 @@ loop();
 	w.cur=e,w.draw=1
 )));
 ctx.canvas.addEventListener('wheel',e=>(e.preventDefault(),inps.value=+inps.value+e.deltaY*.01,w.draw=1));
-dlbtn.onclick=_=>Object.assign(document.createElement('a'),{href:ctx.canvas.toDataURL(),download:new Date()}).click();
+dlbtn.onclick=_=>Object.assign(document.createElement('a'),{href:draw(ctxset(2048)).canvas.toDataURL(),download:`slime_${Math.floor(inpx.value)}_${Math.floor(inpz.value)}`}).click(ctxset(1024),w.draw=1);
 </script>
 </body>
 </html>
