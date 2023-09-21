@@ -14,167 +14,98 @@
 	<link rel="stylesheet" href="../../src/style.css">
 </head>
 <body>
-	<style>
-		pre{font-family:monospace;font-size:8px;text-align:center;display:inline-block;}
-		#c{display:block;width:min(100%,720px);margin:0 auto;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);cursor:grab;}#c:active{cursor:grabbing;}
-		label{white-space:nowrap;}
-	</style>
-	<h1>slime_chunk_be</h1>
-	<hr>
-	<label>x:<input type="number" id="inpx" value="0" class="zab"></label>
-	<label>z:<input type="number" id="inpz" value="0" class="zab"></label>
-	<label>size:<input type="range" id="inps" value="5" min="1" max="10" step="any"></label>
-	<button id="dlbtn" class="zab bgca">dl img</button>
+<style>canvas{display:block;width:min(100%,720px);margin:0 auto;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);cursor:grab;}canvas:active{cursor:grabbing;}label{white-space:nowrap;}</style>
+<h1>slime_chunk_be</h1>
+<hr>
+<label>x:<input type="number" id="inpx" value="0" class="zab"></label>
+<label>z:<input type="number" id="inpz" value="0" class="zab"></label>
+<label>size:<input type="range" id="inps" value="5" min="1" max="11" step="any"></label>
+<button id="dlbtn" class="zab bgca">dl img</button>
+<canvas></canvas>
 
-	<canvas id="c"></canvas>
-	<script>
-		'use strict';
-		let flag=false,cursor={},wcur=0,queue=[];
-		const mod=(x,y)=>(x%y+y)%y,cache={},
-			wurl=new Array(8).fill().map(()=>URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async()=>{}).constructor(m.data)();']))),
-			worker=wurl.map(x=>new Worker(x)),
-			slime=m=>{//der MersenneTwister
-				m=Math.imul(m[0],0x1f1f1f1f)^m[1];//seed
-				const f=(x,y)=>Math.imul(x^x>>>30,0x6c078965)+y,a=m&0x80000000|(m=f(m,1))&0x7fffffff;
-				for(let i=2;i<398;i++)m=f(m,i);
-				m^=a>>> 1 ^[0,0x9908b0df][a&1];
-				m^=m>>>11;
-				m^=m<<  7 &0x9d2c5680;
-				m^=m<< 15 &0xefc60000;
-				m^=m>>>18;
-				return!((m>>>0)%10);//slime
-			},
-			region=p=>{
-				if(p in cache)return cache[p];
-				if(!queue.includes(''+p)){queue.push(''+p);worker[wcur=(wcur+1)%worker.length].postMessage(p);}
-			},
-			ctx=c.getContext('2d'),
-			draw=(_ctx=ctx,pr=devicePixelRatio,size=Math.pow(2,inps.value),p=[+inpx.value,+inpz.value])=>{
-				const hs=[size*8,size*8*_ctx.canvas.height/_ctx.canvas.width],hw=_ctx.canvas.width/2,hh=_ctx.canvas.height/2,
-					range=[p.map((x,i)=>Math.floor((x-hs[i])/512)),p.map((x,i)=>Math.floor((x+hs[i])/512))],
-					rnum=[range[1][0]-range[0][0]+1,range[1][1]-range[0][1]+1],
-					rgrid=_ctx.canvas.width*32/size,bgrid=_ctx.canvas.width/16/size,
-					ofs=[range[0][0]-(p[0]-hs[0])/512,range[0][1]-(p[1]-hs[1])/512];
-				new Array(rnum[1]).fill().forEach((_,y)=>
-					new Array(rnum[0]).fill().forEach((_,x)=>{
-						_=region([range[0][0]+x,range[0][1]+y]);
-						if(_)_ctx.drawImage(_,rgrid*(x+ofs[0]),rgrid*(y+ofs[1]),rgrid,rgrid);
-					})
-				);
+<script>
+const
+ctx=document.querySelector('canvas').getContext('2d'),
+ctxset=(x,y=x,c=ctx)=>(c.canvas.width=x,c.canvas.height=y,c.imageSmoothingEnabled=false,c.textBaseline='middle',c.globalCompositeOperation='screen',c),
+w={region:{},draw:1,cur:[]},
+crct=[...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)),crc=(buf,crc=0)=>~buf.reduce((c,x)=>crct[(c^x)&0xff]^(c>>>8),~crc)// https://www.rfc-editor.org/rfc/rfc1952
+adler=data=>{let a=1,b=0,len=data.length,tlen,i=0;while(len>0){len-=(tlen=Math.min(1024,len));do{b+=(a+=data[i++]);}while(--tlen);a%=65521;b%=65521;}return(b<<16)|a;},// https://ja.wikipedia.org/wiki/Adler-32
+be4=x=>[x>>>24&255,x>>>16&255,x>>>8&255,x>>>0&255],
+fract=x=>(x%1+1)%1,
+// ui48=class{
+// 	constructor(x=0){if(x instanceof this.constructor)Object.assign(this,n);else{this.b=x&0xffffff;this.u=x/0x1000000&0xffffff;}}
+// 	norm(){if(0xffffff<this.b){this.u+=(Math.floor(this.b/0x1000000));this.b&=0xffffff;}this.u&=0xffffff;return this;}
+// 	xor(x){this.b^=x.b;this.u^=x.u;return this;}
+// 	add(x){this.b+=x.b;this.u+=x.u;return this.norm();}
+// 	mul(x){const t=new this.constructor(x);t.u*=this.b;t.b*=this.b;this.b=0;this.u*=n.u;this.b=0;return this.norm().add(t.norm());}
+// 	valueOf(){return this.u*0x1000000+this.b;}
+// },
+slime=m=>{// der MersenneTwister
+	m=Math.imul(m[0],0x1f1f1f1f)^m[1];// seed
+	const f=(x,y)=>Math.imul(x^x>>>30,0x6c078965)+y,a=m&0x80000000|(m=f(m,1))&0x7fffffff;
+	for(let i=2;i<398;i++)m=f(m,i);
+	m^=a>>> 1 ^[0,0x9908b0df][a&1];
+	m^=m>>>11;
+	m^=m<<  7 &0x9d2c5680;
+	m^=m<< 15 &0xefc60000;
+	m^=m>>>18;
+	return!((m>>>0)%10);// slime
+},
+main=p=>(_=>(
+	_=[...Array(256)].flatMap((_,i,{length:m})=>(_=[...Array(4)].reduce((a,_,j,{length:n})=>(
+		_={i:i*n+j,l:Math.sqrt(m*n)},_=[p[0]*_.l+_.i%_.l,p[1]*_.l+(_.i/_.l|0)],
+		(slime(_)<<1|(_[0]^_[1])&1)<<(8/n*(n-1-j))|a
+	),0),i%8?[_]:[0,_])),
+	_=[73,68,65,84, 8,29, 1, 32,1, 223,254, ..._,...be4(adler(_))],// IDAT zlib CMF:08 FLG:1d uncompressed final block length:256+32=288(little endian)
+	'data:image/png;base64,'+btoa(String.fromCharCode(// big endian
+		137,80,78,71,13,10,26,10,// header
+		0,0,0,13,73,72,68,82, 0,0,0,32,0,0,0,32, 2,3, 0,0,0, 14,20,146,103,// IHDR: 32*32 2bit indexed
+		0,0,0,12,80,76,84,69, 128,128,128, 128,128,128, 0,255,0, 0,255,0, 32,242,49,113,// PLTE
+		0,0,0,4,116,82,78,83, ...((p[0]^p[1])&1?[128,64,224,240, 205,147,92,145]:[32,64,224,192, 166,33,117,56]),// tRNS
+		0,0,1,43,..._,...be4(crc(_)),// IDAT
+		0,0,0,0,73,69,78,68,174,66,96,130// IEND
+	))
+))(),
+wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
+worker=[...Array(8)].reduce((a,x=new Worker(a.x))=>(
+	x.onmessage=m=>(m=m.data,w.region[m.key]&&Object.assign(new Image(),{onload(){w.region[m.key]&&(w.region[m.key].img=this,w.draw=1);},src:m.src})),
+	x.postMessage({crct,main:`self.crct=w.crct;${[crc,adler,be4,slime,main].map(x=>'self.'+x.name+'='+x+';').join('')}onmessage=m=>postMessage({key:m.data.join(),src:main(m.data)});`}),
+	a.a.push(x),a
+),{x:URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),a:[],_(){URL.revokeObjectURL(this.x);return this.a;}})._(),
+req=p=>w.region[p.join()]||(worker[Object.keys(w.region).length%worker.length].postMessage(p),w.region[p.join()]={p}),
 
-				_ctx.fillStyle='#f00c';
-				_ctx.fillRect(hw-1,0,2,_ctx.canvas.height);
-				_ctx.fillRect(0,hh-1,_ctx.canvas.width,2);
+draw=(c=ctx,p=[+inpx.value,+inpz.value],s=2**+inps.value)=>(
+	c.clearRect(0,0,c.canvas.width,c.canvas.height),
+	s/=32,s=[s,s/c.canvas.width*c.canvas.height],
+	[...Array(s.reduce((a,x)=>a*Math.ceil(x+1),1))].forEach((_,i)=>(
+		i=[i%Math.ceil(s[0]+1),i/Math.ceil(s[0]+1)|0],
+		(_=req(p.map((_,j)=>Math.floor(_/512-s[j]/2)+i[j]))).img&&c.drawImage(_.img,...p.map((_,j)=>(-fract(_/512-s[j]/2)+i[j])*c.canvas.width/s[0]),...[...Array(2)].fill(c.canvas.width/s[0]))
+	)),
+	((_,n=s.reduce((a,x)=>a*Math.ceil(x+1),2))=>n<_.length&&_.map(x=>(x[1]=x[1].p.reduce((a,x,i)=>Math.max(a,Math.abs((p[i]/512-x-.5)/s[i]*s[0])),0),x)).sort((a,b)=>a[1]-b[1]).slice(n+1).forEach(x=>delete w.region[x[0]]))(Object.entries(w.region)),
 
-				_ctx.fillStyle='#f008';
-				_ctx.fillRect(hw-bgrid*mod(p[0],1),hh-bgrid*mod(p[1],1),bgrid,bgrid);
+	c.strokeStyle='#f00',c.lineWidth=2,c.stroke(new Path2D(`M${c.canvas.width/2},0v${c.canvas.height}M0,${c.canvas.height/2}h${c.canvas.width}`)),
+	c.fillStyle='#c00',c.fillRect(...p.map((_,i)=>c.canvas[['width','height'][i]]/2-fract(_)*c.canvas.width/s[0]/512),...[...Array(2)].fill(c.canvas.width/s[0]/512)),
+	c.fillStyle='#f0f',c.font='bold 24px monospace',
+	`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}${(_=>_?'\nqueue: '+_:'')((Object.values(w.region).filter(x=>!x.img).length))}`.split('\n').forEach((x,i)=>c.fillText(x,c.canvas.width/2,c.canvas.height/2+24*(i+.5)*1.2)),
+	(n=>['width','height'].forEach((d,j)=>(
+		c.rotate((-1)**j*Math.PI/2),
+		[...Array((s[j]*256/n+1|0)*2)].forEach((_,i,{length:l})=>c.fillText((i+Math.floor(p[j]/n)-(s[j]*256/n|0))*n,0,(-1)**j*-(c.canvas[d]/s[j]/512*(i-l/2+1-fract(p[j]/n))*n+c.canvas[d]/2)))
+	)))(2**Math.floor(Math.log2(s[0])+9-3)),
+	c
+),
+loop=_=>(w.draw&&(draw(),w.draw=0),requestAnimationFrame(loop));
 
-				_ctx.fillStyle='#fffc';
-				_ctx.font=`${16*pr}px monospace`;
-				`x: ${p[0]}\nz: ${p[1]}\nslime: ${slime(p.map(x=>Math.floor(x/16)))}${queue.length?'\nqueue: '+queue.length:''}`.split('\n').forEach((x,i)=>_ctx.fillText(x,hw,hh+16*pr*(i+.5)*1.2));
-
-				_ctx.font=`${12*pr}px monospace`;
-				const txts=Math.pow(2,Math.floor(Math.sqrt(size)/4));
-				new Array(rnum[0]).fill().forEach((_,x)=>{
-					const arg=[(range[0][0]+x)*512,0,-rgrid*(x+ofs[0])];
-					for(let x_=0;x_<32;x_++){
-						if(x_%txts)continue;
-						_ctx.rotate(Math.PI/2);
-						_ctx.fillText(arg[0]+x_*16,arg[1],arg[2]-rgrid*(x_/32));
-						_ctx.rotate(-Math.PI/2);
-					}
-				});
-				new Array(rnum[1]).fill().forEach((_,y)=>{
-					const arg=[(range[0][1]+y)*512,0,rgrid*(y+ofs[1])];
-					for(let y_=0;y_<32;y_++){
-						if(y_%txts)continue;
-						_ctx.fillText(arg[0]+y_*16,arg[1],arg[2]+rgrid*(y_/32));
-					}
-				});
-
-				const cr=p.map(x=>x/512-.5),keysc=Object.keys(cache),delc=rnum[0]*rnum[1]*2,
-					dsort=x=>x.map(y=>[y,y.split(',').reduce((a,z,i)=>Math.abs(+z-cr[i])+a,0)]).sort((a,b)=>a[1]-b[1]);
-				if(keysc.length>delc)dsort(keysc).slice(delc).forEach(x=>delete cache[x[0]]);
-				if(queue.length>delc)queue=dsort(queue).slice(0,delc).map(x=>x[0]);
-			},
-			main=()=>{if(flag){ctx.clearRect(0,0,c.width,c.height);draw();flag=false;}requestAnimationFrame(main);};
-
-		worker.forEach(x=>{
-			x.postMessage(`const slime=${slime},
-				region_dat=p=>{
-						const rpos=[p[0]*32,p[1]*32],mesh=x=>(x[0]&1)^(x[1]&1);
-						return new Uint8ClampedArray(
-							new Array(32).fill().flatMap((_,y)=>new Array(32).fill().flatMap((_,x)=>{
-								const ch=[rpos[0]+x,rpos[1]+y];
-								return[
-									[128,128,128,32],[128,128,128,64],[0,255,0,224],[0,255,0,192],
-									[128,128,128,128],[128,128,128,64],[0,255,0,224],[0,255,0,240]
-								][mesh(ch)+(slime(ch)<<1)+(mesh(p)<<2)];
-							}))
-						);
-					};
-				onmessage=m=>postMessage({p:m.data,dat:region_dat(m.data)});
-			`);
-			x.onmessage=m=>{
-				m=m.data;
-				if(!queue.includes(''+m.p))return;
-				const _c=document.createElement('canvas'),_ctx=_c.getContext('2d');
-				_c.width=32;_c.height=32;
-				_ctx.putImageData(new ImageData(m.dat,32),0,0);
-				cache[m.p]=_c;
-				queue=queue.filter(x=>x!=m.p);
-				flag=true;
-				_c.toBlob(b=>{
-					const img=new Image();
-					img.src=URL.createObjectURL(b);
-					img.onload=()=>{
-						if(m.p in cache)cache[m.p]=img;
-						URL.revokeObjectURL(img.src);
-					};
-				});
-			};
-		});
-
-		addEventListener('DOMContentLoaded',onresize=()=>{
-			c.height=c.width=+getComputedStyle(c).width.slice(0,-2)*devicePixelRatio;
-			ctx.imageSmoothingEnabled=false;
-			ctx.textBaseline='middle';
-			flag=true;
-		},{once:true});
-		inpx.oninput=inpz.oninput=inps.oninput=()=>flag=true;
-		c.addEventListener('wheel',e=>{e.preventDefault();inps.value=+inps.value+e.deltaY*.01;flag=true;});
-		c.addEventListener('mousedown',e=>cursor={z:1});
-		addEventListener('mouseup',e=>cursor={});
-		addEventListener('mousemove',e=>{
-			if(!cursor.z)return;
-			const size=getComputedStyle(c).width.slice(0,-2);
-			e.preventDefault();
-			inpx.value=(+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=e.clientX/size))*Math.pow(2,inps.value)*16).toFixed(2);
-			inpz.value=(+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=e.clientY/size))*Math.pow(2,inps.value)*16).toFixed(2);
-			flag=true;
-		});
-		c.addEventListener('touchstart',e=>cursor={});
-		c.addEventListener('touchend',e=>cursor={});
-		c.addEventListener('touchmove',e=>{
-			if(e.targetTouches.length<2)return;
-			const size=getComputedStyle(c).width.slice(0,-2),
-				tt=[0,1].map(x=>e.targetTouches[x]);
-			e.preventDefault();
-			inpx.value=(+inpx.value-('x'in cursor||(cursor.x=0))*(-cursor.x+(cursor.x=(tt[0].clientX+tt[1].clientX)/size*.5))*Math.pow(2,inps.value)*16).toFixed(2);
-			inpz.value=(+inpz.value-('y'in cursor||(cursor.y=0))*(-cursor.y+(cursor.y=(tt[0].clientY+tt[1].clientY)/size*.5))*Math.pow(2,inps.value)*16).toFixed(2);
-			inps.value=+inps.value-('s'in cursor||(cursor.s=0))*(-cursor.s+(cursor.s=Math.hypot(tt[0].clientX-tt[1].clientX,tt[0].clientY-tt[1].clientY)/size/4))*16;
-			flag=true;
-		});
-		dlbtn.onclick=()=>{
-			const _c=document.createElement('canvas'),_ctx=_c.getContext('2d');
-			_ctx.fillRect(0,0,_c.width=2048,_c.height=2048);
-			_ctx.imageSmoothingEnabled=false;
-			_ctx.textBaseline='middle';
-			draw(_ctx,4);
-			Object.assign(document.createElement('a'),{href:_c.toDataURL(),download:new Date()}).click();
-		};
-		main();
-		onbeforeunload=()=>{wurl.map(URL.revokeObjectURL);};
+inpx.oninput=inpz.oninput=inps.oninput=_=>w.draw=1;ctxset(1024);loop();
+['mousedown','touchstart'].forEach(_=>ctx.canvas.addEventListener(_,e=>w.cur=[...(e.targetTouches||[e])]));
+['mouseup','touchend','touchcanceled'].forEach(_=>addEventListener(_,e=>w.cur=[...(e.targetTouches||[])]));
+['mousemove','touchmove'].forEach(_=>ctx.canvas.addEventListener(_,e=>(e.targetTouches?2<=e.targetTouches.length:w.cur.length)&&(
+	e.preventDefault(),e=[...(e.targetTouches||[e])],_=getComputedStyle(ctx.canvas),_=['width','height'].map(x=>+_[x].slice(0,-2)),
+	(([x,y])=>x.map((x,i,e)=>(e=window[['inpx','inpz'][i]],e.value=(+e.value-(x-y[i])/_[i]*2**(+inps.value+4)).toFixed(2))))([e,w.cur].map(_=>_.reduce((a,x)=>[a[0]+x.clientX,a[1]+x.clientY],[0,0]).map(x=>x/_.length))),
+	2<=e.length&&(([x,y])=>inps.value=+inps.value-(x-y)/_[0]*4)([e,w.cur].map(_=>Math.hypot(_[0].clientX-_[1].clientX,_[0].clientY-_[1].clientY))),
+	w.cur=e,w.draw=1
+)));
+ctx.canvas.addEventListener('wheel',e=>(e.preventDefault(),inps.value=+inps.value+e.deltaY*.01,w.draw=1));
+dlbtn.onclick=_=>Object.assign(document.createElement('a'),{href:draw(ctxset(2048)).canvas.toDataURL(),download:`slime_${Math.floor(inpx.value)}_${Math.floor(inpz.value)}`}).click(ctxset(1024),w.draw=1);
 </script>
 </body>
 </html>
