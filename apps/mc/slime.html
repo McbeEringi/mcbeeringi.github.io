@@ -28,7 +28,7 @@ const
 ctx=document.querySelector('canvas').getContext('2d'),
 ctxset=(x,y=x,c=ctx)=>(c.canvas.width=x,c.canvas.height=y,c.imageSmoothingEnabled=false,c.textBaseline='middle',c.globalCompositeOperation='screen',c),
 w={region:{},draw:1,cur:[]},
-crct=[...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)),crc=(buf,crc=0)=>~buf.reduce((c,x)=>crct[(c^x)&0xff]^(c>>>8),~crc)// https://www.rfc-editor.org/rfc/rfc1952
+crct=[...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)),crc=(buf,crc=0)=>~buf.reduce((c,x)=>crct[(c^x)&0xff]^(c>>>8),~crc),// https://www.rfc-editor.org/rfc/rfc1952
 adler=data=>{let a=1,b=0,len=data.length,tlen,i=0;while(len>0){len-=(tlen=Math.min(1024,len));do{b+=(a+=data[i++]);}while(--tlen);a%=65521;b%=65521;}return(b<<16)|a;},// https://ja.wikipedia.org/wiki/Adler-32
 be4=x=>[x>>>24&255,x>>>16&255,x>>>8&255,x>>>0&255],
 fract=x=>(x%1+1)%1,
@@ -66,7 +66,6 @@ main=p=>(_=>(
 		0,0,0,0,73,69,78,68,174,66,96,130// IEND
 	))
 ))(),
-wurl=URL.createObjectURL(new Blob(['onmessage=m=>Object.getPrototypeOf(async _=>_).constructor("w",m.data.main)(m.data);'])),
 worker=[...Array(8)].reduce((a,x=new Worker(a.x))=>(
 	x.onmessage=m=>(m=m.data,w.region[m.key]&&Object.assign(new Image(),{onload(){w.region[m.key]&&(w.region[m.key].img=this,w.draw=1);},src:m.src})),
 	x.postMessage({crct,main:`self.crct=w.crct;${[crc,adler,be4,slime,main].map(x=>'self.'+x.name+'='+x+';').join('')}onmessage=m=>postMessage({key:m.data.join(),src:main(m.data)});`}),
