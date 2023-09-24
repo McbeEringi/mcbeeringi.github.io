@@ -95,15 +95,15 @@ draw=(c=ctx,p=[+inpx.value,+inpz.value],s=2**+inps.value)=>(
 loop=_=>(w.draw&&(draw(),w.draw=0),requestAnimationFrame(loop));
 
 inpx.oninput=inpz.oninput=inps.oninput=_=>w.draw=1;ctxset(1024);loop();
-['mousedown','touchstart'].forEach(_=>ctx.canvas.addEventListener(_,e=>w.cur=[...(e.targetTouches||[e])]));
-['mouseup','touchend','touchcanceled'].forEach(_=>addEventListener(_,e=>w.cur=[...(e.targetTouches||[])]));
+['mousedown','touchstart'].forEach(_=>ctx.canvas.addEventListener(_,e=>w.cur=[...(e.targetTouches||[e])]),{passive:1});
+['mouseup','touchend','touchcanceled'].forEach(_=>addEventListener(_,e=>w.cur=[...(e.targetTouches||[])]),{passive:1});
 ['mousemove','touchmove'].forEach(_=>ctx.canvas.addEventListener(_,e=>(e.targetTouches?2<=e.targetTouches.length:w.cur.length)&&(
 	e.preventDefault(),e=[...(e.targetTouches||[e])],_=getComputedStyle(ctx.canvas),_=['width','height'].map(x=>+_[x].slice(0,-2)),
 	(([x,y])=>x.map((x,i,e)=>(e=window[['inpx','inpz'][i]],e.value=(+e.value-(x-y[i])/_[i]*2**(+inps.value+4)).toFixed(2))))([e,w.cur].map(_=>_.reduce((a,x)=>[a[0]+x.clientX,a[1]+x.clientY],[0,0]).map(x=>x/_.length))),
 	2<=e.length&&(([x,y])=>inps.value=+inps.value-(x-y)/_[0]*4)([e,w.cur].map(_=>Math.hypot(_[0].clientX-_[1].clientX,_[0].clientY-_[1].clientY))),
 	w.cur=e,w.draw=1
 )));
-ctx.canvas.addEventListener('wheel',e=>(e.preventDefault(),inps.value=+inps.value+e.deltaY*.01,w.draw=1));
+ctx.canvas.addEventListener('wheel',e=>(e.preventDefault(),inps.value=+inps.value+e.deltaY*.01,w.draw=1),{passive:1});
 dlbtn.onclick=_=>Object.assign(document.createElement('a'),{href:draw(ctxset(2048)).canvas.toDataURL(),download:`slime_${Math.floor(inpx.value)}_${Math.floor(inpz.value)}`}).click(ctxset(1024),w.draw=1);
 </script>
 </body>
