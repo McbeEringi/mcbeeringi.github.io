@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+	<filter id="blur"><feOffset dx="-5" dy="-5" result="d"/><feTurbulence baseFrequency=".5" result="n"/><feDisplacementMap in="d" in2="n" xChannelSelector="R" yChannelSelector="G" scale="10"/></filter>
+</svg>
