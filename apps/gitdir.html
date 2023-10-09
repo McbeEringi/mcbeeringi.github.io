@@ -25,7 +25,7 @@
 ex. Minecraft</pre><br>
 
 	<script type="module">
-		import{zip,dl,progress}from'https://mcbeeringi.github.io/petit/zip.mjs';
+		import{dl,progress}from'https://mcbeeringi.github.io/petit/zip.mjs';
 
 		btn.onclick=_=>(async()=>{
 			let
@@ -39,8 +39,8 @@ ex. Minecraft</pre><br>
 					w.q.length&&(
 						x=w.w[w.q.shift()],
 						d={a:w.w.reduce((a,y)=>a+y.size,0)},
-						(x.blob=await(progress(await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${dir}${x.path}`),y=>(x.loaded=y[0],
-							llog('step 2/3: downloading assets...\n',{api_ratelimit,step_progress:perc(w.w.reduce((a,y)=>a+(y.loaded||0),0)/d.a),current:w.w.reduce((a,y)=>(y.loaded!=null&&!y.blob&&a.push(y),a),[])})
+						(x.buffer=await(progress(await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${dir}${x.name}`),y=>(x.loaded=y[0],
+							llog('step 2/3: downloading assets...\n',{api_ratelimit,step_progress:perc(w.w.reduce((a,y)=>a+(y.loaded||0),0)/d.a),current:w.w.reduce((a,y)=>(y.loaded!=null&&!y.buffer&&a.push(y),a),[])})
 						))).blob()),
 						await core()
 					)
@@ -50,13 +50,13 @@ ex. Minecraft</pre><br>
 			dir=decodeURIComponent(dir.join('/'));
 			w=({r:w,w:(llog('step 1/3: requesting repo info to api.github.com...\n',{api_ratelimit}),await w.json())});
 			if(w.w.tree){
-				w=w.w.tree.reduce((a,x)=>(x.type=='blob'&&x.path.slice(0,dir.length)==dir&&(a.q.push(a.w.length),a.w.push({path:x.path.slice(dir.length),loaded:null,size:x.size,blob:null})),a),{...w,w:[],q:[]});console.log(w)
+				w=w.w.tree.reduce((a,x)=>(x.type=='blob'&&x.path.slice(0,dir.length)==dir&&(a.q.push(a.w.length),a.w.push({name:x.path.slice(dir.length),loaded:null,size:x.size,buffer:null})),a),{...w,w:[],q:[]});console.log(w)
 				if(w.w.length){
 					await Promise.all([...Array(8)].map(core));
 					console.log(w.w);
 					dl({
 						name:dir+(location.hash?location.hash.slice(1):'.zip'),
-						blob:await zip(w.w,{progress:x=>llog('step 3/3: gathering files...\n',{api_ratelimit,step_progress:perc((x.pre[0]/x.pre[1]+x.post[0]/x.post[1])/2),current:(w.w[x.post[0]]||{}).path,details:x})})
+						blob:await zip(w.w,x=>llog('step 3/3: gathering files...\n',{api_ratelimit,step_progress:perc(x)}))
 					});
 					llog(dir+' done!');
 				}else llog('No such file or directory.');

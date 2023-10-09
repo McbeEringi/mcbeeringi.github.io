@@ -80,13 +80,13 @@ main=async w=>(w=cfgget())&&(
 				x.postMessage({flist,cfg:w.cfg,main:`
 					self.d8=${JSON.stringify(d8)};self.draw=${draw};self.i2p=${i2p};self.fload=${fload};await Promise.all(w.flist.map(x=>fload(x,self)));
 					(${cfgset})(self.ctx=new OffscreenCanvas(1,1).getContext('2d'),w.cfg);
-					onmessage=async m=>postMessage(await Promise.all(m.data.map(async x=>(draw(ctx,x),x={path:i2p(x)},postMessage(x),x.blob=await ctx.canvas.convertToBlob(),x))));
+					onmessage=async m=>postMessage(await Promise.all(m.data.map(async x=>(draw(ctx,x),x={name:i2p(x)},postMessage(x),x.buffer=await ctx.canvas.convertToBlob(),x))));
 					postMessage(0);
 				`})
 			)),
 			w.prg.value=0,
 			await new Promise(f=>(
-				x.onmessage=m=>Array.isArray(m.data)?(f(m.data),x.terminate()):(w.prg.value=+w.prg.value+1,w.log.textContent=`${pcent(w.prg)}% ${m.data.path}`),
+				x.onmessage=m=>Array.isArray(m.data)?(f(m.data),x.terminate()):(w.prg.value=+w.prg.value+1,w.log.textContent=`${pcent(w.prg)}% ${m.data.name}`),
 				a=Math.ceil(w.cfg.list.length/a.length),x.postMessage(w.cfg.list.slice(a*i,a*(i+1)))
 			))
 		)))).flat(),
@@ -94,19 +94,20 @@ main=async w=>(w=cfgget())&&(
 	):(
 		cfgset(ctx,w.cfg),
 		w.files=await Promise.all(w.cfg.list.map((x,i)=>new Promise(f=>setTimeout(async _=>(
-			draw(ctx,x),x={path:i2p(x)},w.prg.value=i+1,w.log.textContent=`${pcent(w.prg)}% ${x.path}`,
-			x.blob=await new Promise(f=>ctx.canvas.toBlob(f)),f(x)
+			draw(ctx,x),x={name:i2p(x)},w.prg.value=i+1,w.log.textContent=`${pcent(w.prg)}% ${x.name}`,
+			x.buffer=await new Promise(f=>ctx.canvas.toBlob(f)),f(x)
 		)))))
 	),
 	w.prg.removeAttribute('value'),w.log.textContent='please wait...',
 	w.files.push(
-		{path:'manifest.json',blob:new Blob([mcmf({n:w.cfg.name,d:w.cfg.font})])},
-		{path:'pack_icon.png',blob:await new Promise((f,r,x)=>(
+		{name:'manifest.json',buffer:new Blob([mcmf({n:w.cfg.name,d:w.cfg.font})])},
+		{name:'pack_icon.png',buffer:await new Promise((f,r,x)=>(
 			cfgset(x=document.createElement('canvas').getContext('2d'),{...w.cfg,img:w.cfg.img/8}),
 			x.textBaseline='middle',x.textAlign='center',x.fillText('Aa',w.cfg.img,w.cfg.img),x.canvas.toBlob(f)
 		))}
 	),
-	dl(w.zip={name:w.cfg.name+'.mcpack',blob:await zip(w.files,w.log.textContent='packing...')}),
+	w.log.textContent='packing...',
+	dl(w.zip={name:w.cfg.name+'.mcpack',blob:await zip(w.files)}),
 	console.log(w),w.prg.remove(),w.log.remove()
 );
 
