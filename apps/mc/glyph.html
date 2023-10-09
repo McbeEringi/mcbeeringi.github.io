@@ -107,7 +107,7 @@ main=async w=>(w=cfgget())&&(
 		))}
 	),
 	w.log.textContent='packing...',
-	dl(w.zip={name:w.cfg.name+'.mcpack',blob:await zip(w.files)}),
+	dl(w.zip={name:w.cfg.name+'.mcpack',buffer:await zip(w.files)}),
 	console.log(w),w.prg.remove(),w.log.remove()
 );
 
