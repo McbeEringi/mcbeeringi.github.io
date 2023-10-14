@@ -1,0 +1,14 @@
+import{basicSetup}from'./cm/codemirror.js';
+import{EditorView,keymap,showPanel,highlightWhitespace}from'./cm/@codemirror-view.js';
+import{EditorState}from'./cm/@codemirror-state.js';
+import{indentUnit}from'./cm/@codemirror-language.js';
+import{indentWithTab}from'./cm/@codemirror-commands.js';
+import{oneDark}from'./cm/@codemirror-theme-one-dark.js';
+const
+setup=[
+	basicSetup,
+	highlightWhitespace(),
+	keymap.of([indentWithTab]),EditorState.tabSize.of(2),indentUnit.of('\t'),
+	oneDark
+];
+export{EditorView,keymap,showPanel,setup};

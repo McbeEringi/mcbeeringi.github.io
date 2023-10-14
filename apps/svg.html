@@ -26,19 +26,8 @@
 	<div id="cme"></div>
 
 	<script type="module">
-		import { EditorView, lineNumbers, highlightActiveLineGutter, drawSelection, dropCursor, rectangularSelection, highlightActiveLine, keymap, showPanel, highlightWhitespace } from "../src/cm/@codemirror-view.js";
-		import { EditorState } from "../src/cm/@codemirror-state.js";
-		import { indentUnit, foldGutter, indentOnInput, bracketMatching, foldKeymap, LRLanguage } from "../src/cm/@codemirror-language.js";
-		import { history, defaultKeymap, historyKeymap, indentWithTab } from "../src/cm/@codemirror-commands.js";
-		import { highlightSelectionMatches, searchKeymap } from "../src/cm/@codemirror-search.js";
-		import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "../src/cm/@codemirror-autocomplete.js";
-		import { lintKeymap } from "../src/cm/@codemirror-lint.js";
-		import { oneDark } from '../src/cm/@codemirror-theme-one-dark.js';
+		import { EditorView, keymap, showPanel, setup } from "../src/cm.js";
 		import { xml } from '../src/cm/@codemirror-lang-xml.js';
-		// import { parser as xmlParser } from '../src/cm/@lezer-xml.js';
-		// import { parser as cssParser } from '../src/cm/@lezer-css.js';
-		// import { parser as jsParser } from '../src/cm/@lezer-javascript.js';
-		// import { parseMixed } from '../src/cm/@lezer-common.js';
 		(async()=>{
 			const panel=document.createElement('div'),
 				oninput=cm=>img.src='data:image/svg+xml,'+encodeURIComponent(cm.state.doc.toString()),
@@ -46,54 +35,25 @@
 				expsvg=cm=>Object.assign(document.createElement('a'),{href:'data:image/svg+xml,'+encodeURIComponent(cm.state.doc.toString()),download:new Date().toLocaleString()+'.svg'}).click(),
 				exppng=cm=>{const c=Object.assign(document.createElement('canvas'),{width:img.naturalWidth,height:img.naturalHeight});c.getContext('2d').drawImage(img,0,0);Object.assign(document.createElement('a'),{href:c.toDataURL(),download:new Date().toLocaleString()+'.png'}).click();},
 				customKeymap=[
-					{
-						key:"Mod-s",preventDefault:true,
-						run(view){save(view);return true;}
-					},
-					{
-						key:"Mod-e",preventDefault:true,
-						run(view){expsvg(view);return true;},
-						shift(view){exppng(view);return true;}
-					}
+					
 				],
 				cm=new EditorView({
 					doc:decodeURIComponent(location.hash.slice(1))||await(await fetch('../img/icon.svg')).text(),
 					extensions:[
-						highlightWhitespace(),
-						lineNumbers(),
-						highlightActiveLineGutter(),
-						history(),
-						foldGutter(),
-						drawSelection(),
-						dropCursor(),
-						EditorState.allowMultipleSelections.of(true),
-						indentOnInput(),
-						bracketMatching(),
-						closeBrackets(),
-						autocompletion(),
-						rectangularSelection(),
-						highlightActiveLine(),
-						highlightSelectionMatches(),
+						setup,
 						keymap.of([
-								...closeBracketsKeymap,
-								...defaultKeymap,
-								...searchKeymap,
-								...historyKeymap,
-								...foldKeymap,
-								...completionKeymap,
-								...lintKeymap,
-								indentWithTab,
-								...customKeymap
+							{
+								key:"Mod-s",preventDefault:true,
+								run(view){save(view);return true;}
+							},
+							{
+								key:"Mod-e",preventDefault:true,
+								run(view){expsvg(view);return true;},
+								shift(view){exppng(view);return true;}
+							}
 						]),
 						xml(),
-						// LRLanguage.define({parser:xmlParser.configure({wrap:parseMixed((node,inp)=>(
-						// 	{style:{parser:cssParser},script:{parser:jsParser}}[node.name=='Text'&&(node=node.node.prevSibling)&&(node=node.getChild('TagName'))&&inp.read(node.from,node.to)]
-						// )||null)})}),
-						oneDark,
 						EditorView.updateListener.of(oninput),
-						//EditorView.lineWrapping,
-						EditorState.tabSize.of(2),
-						indentUnit.of('\t'),
 						showPanel.of((_=>({top:true,dom:panel})))
 					],
 					parent:cme
