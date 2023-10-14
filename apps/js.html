@@ -15,14 +15,7 @@
 </head>
 <body>
 	<script type="module">
-		import { EditorView, lineNumbers, highlightActiveLineGutter, drawSelection, dropCursor, rectangularSelection, highlightActiveLine, keymap, showPanel } from "../src/cm/@codemirror-view.js";
-		import { EditorState } from "../src/cm/@codemirror-state.js";
-		import { indentUnit, foldGutter, indentOnInput, bracketMatching, foldKeymap } from "../src/cm/@codemirror-language.js";
-		import { history, defaultKeymap, historyKeymap, indentWithTab } from "../src/cm/@codemirror-commands.js";
-		import { highlightSelectionMatches, searchKeymap } from "../src/cm/@codemirror-search.js";
-		import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "../src/cm/@codemirror-autocomplete.js";
-		import { lintKeymap } from "../src/cm/@codemirror-lint.js";
-		import { oneDark } from '../src/cm/@codemirror-theme-one-dark.js';
+		import { EditorView, keymap, showPanel, setup } from "../src/cm.js";
 		import { javascript } from '../src/cm/@codemirror-lang-javascript.js';
 
 		(async()=>{
@@ -43,38 +36,12 @@ console.log("World.");
 
 `,
 					extensions:[
-						lineNumbers(),
-						highlightActiveLineGutter(),
-						//highlightActiveLine(),//選択範囲消えるバグ
-						history(),
-						foldGutter(),
-						drawSelection(),
-						dropCursor(),
-						EditorState.allowMultipleSelections.of(true),
-						indentOnInput(),
-						bracketMatching(),
-						closeBrackets(),
-						autocompletion(),
-						rectangularSelection(),
-						highlightSelectionMatches(),
-						keymap.of([
-								...closeBracketsKeymap,
-								...defaultKeymap,
-								...searchKeymap,
-								...historyKeymap,
-								...foldKeymap,
-								...completionKeymap,
-								...lintKeymap,
-								indentWithTab,
-								{
-									key:"Mod-s",preventDefault:true,
-									run(){save();return true;}
-								}
-						]),
+						setup,
+						keymap.of([{
+							key:"Mod-s",preventDefault:true,
+							run(){save();return true;}
+						}]),
 						javascript(),
-						oneDark,
-						EditorState.tabSize.of(2),
-						indentUnit.of('\t'),
 						showPanel.of((_=>({dom:panel})))
 					],
 					parent:document.body

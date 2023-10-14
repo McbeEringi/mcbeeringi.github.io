@@ -19,13 +19,7 @@ Please wait...
 </pre>
 	<script>new PerformanceObserver(_=>document.querySelector('pre').textContent+=_.getEntries().map(_=>_.name+'\n').join('')).observe({entryTypes:['resource']});</script>
 	<script type="module">
-		import{basicSetup}from'https://mcbeeringi.github.io/src/cm/codemirror.js';
-		import{EditorView,keymap,showPanel,highlightWhitespace}from'https://mcbeeringi.github.io/src/cm/@codemirror-view.js';
-		import{EditorState}from'https://mcbeeringi.github.io/src/cm/@codemirror-state.js';
-		import{indentWithTab,selectAll}from'https://mcbeeringi.github.io/src/cm/@codemirror-commands.js';
-		import{indentUnit}from'https://mcbeeringi.github.io/src/cm/@codemirror-language.js';
-		import{openSearchPanel}from'https://mcbeeringi.github.io/src/cm/@codemirror-search.js';
-		import{oneDark}from'https://mcbeeringi.github.io/src/cm/@codemirror-theme-one-dark.js';
+		import{EditorView,keymap,showPanel,setup}from'https://mcbeeringi.github.io/src/cm.js';
 		import{cpp}from'https://mcbeeringi.github.io/src/cm/@codemirror-lang-cpp.js';
 
 		await(async _=>(
@@ -40,7 +34,7 @@ Please wait...
 		Object.assign(self,{
 			cm:new EditorView({
 				doc:'float scene(vec3 p){\n\treturn length(p)-.5;\n}',parent:document.body,
-				extensions:[highlightWhitespace(),EditorView.theme({'&':{backgroundColor:'#0000'},'.cm-panels':{zIndex:1}}),oneDark,cpp(),keymap.of([indentWithTab]),EditorState.tabSize.of(2),indentUnit.of('\t'),showPanel.of(_=>({top:1,dom:panel})),basicSetup]
+				extensions:[EditorView.theme({'&':{backgroundColor:'#0000'},'.cm-panels':{zIndex:1}}),cpp(),showPanel.of(_=>({top:1,dom:panel})),setup]
 			}),
 			ctx:c.getContext('webgl')
 		});
