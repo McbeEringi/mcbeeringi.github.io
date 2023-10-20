@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<!-- <script async src="https://mcbeeringi.github.io/src/gas.js"></script> -->
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi brainf</title>
+	<meta name="description" content="brainf*** encoder & interpreter">
+	<link rel="icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+</head>
+<body>
+<pre id="log"></pre>
+<script src="https://cdn.jsdelivr.net/gh/AssemblyScript/wabt.js/index.js"></script>
+<script>
+(async w=>(
+
+self.wabt=await WabtModule(),
+
+console.log(
+(`++++++++++++++[>+++++>+++++++>++>++++++<<<<-]>++.>+++.+++++++..+++.>++++.>+++.<<.+++.------.--------.>+.104`.match(/>+|<+|\++|\-+|\.+|[\,\[\]]/g)||[]).flatMap(x=>({
+	'>':l=>x,
+	'<':l=>x,
+	'+':l=>x,
+	'-':l=>x,
+	'.':_=>x,
+	',':_=>x,
+	'[':_=>x,
+	']':_=>x
+})[x[0]](x.length))
+),
+
+
+
+Object.assign(w=wabt.parseWat('a',`
+
+(module
+	(func (export "fn") (param i32 i32) (result i32)
+		local.get 0
+		local.get 1
+		i32.add
+	)
+)
+
+`).toBinary({log:1}),(await WebAssembly.instantiate(w.buffer)).instance.exports),
+
+log.textContent=w.fn(1,2)+'\n\n'+w.log
+
+
+))();
+</script>
+</body>
+</html>
