@@ -15,41 +15,48 @@
 </head>
 <body>
 <pre id="log"></pre>
-<script src="https://cdn.jsdelivr.net/gh/AssemblyScript/wabt.js/index.js"></script>
 <script>
-(async w=>(
+const
+m=new WebAssembly.Memory({initial:1,maximum:2,shared:1});
 
-self.wabt=await WabtModule(),
+(async()=>(
 
-console.log(
-(`++++++++++++++[>+++++>+++++++>++>++++++<<<<-]>++.>+++.+++++++..+++.>++++.>+++.<<.+++.------.--------.>+.104`.match(/>+|<+|\++|\-+|\.+|[\,\[\]]/g)||[]).flatMap(x=>({
-	'>':l=>x,
-	'<':l=>x,
-	'+':l=>x,
-	'-':l=>x,
+self.wa=(`++++++++++++++[>+++++>+++++++>++>++++++<<<<-]>++.>+++.+++++++..+++.>++++.>+++.<<.+++.------.--------.>+.104`.match(/[><]+|[\+\-]+|\.+|[\,\[\]]/g)||[]).flatMap(x=>({
+	'>':_=>(_=x.length-(x.match(/</g)||[]).length*2),
+	'<':_=>(_=x.length-(x.match(/</g)||[]).length*2),
+	'+':_=>(_=x.length-(x.match(/\-/g)||[]).length*2),
+	'-':_=>(_=x.length-(x.match(/\-/g)||[]).length*2),
 	'.':_=>x,
 	',':_=>x,
 	'[':_=>x,
 	']':_=>x
-})[x[0]](x.length))
-),
+})[x[0]]()),
 
+console.log(wa),
 
+wa=await WebAssembly.instantiate(new Uint8Array(`
+00 61 73 6d 01 00 00 00
+01 05 01 type
+	60 00 01 7f
+02 0b 01 import
+	03 65 6e 76  01 6d 02 03 01 02
+03 02 01 function
+	00
+07 05 01 export
+	01 61 00 00
+0a 09 01 code
+	07
+		00 41 00 28 02 00 0b
+`.match(/\b[\da-fA-F]{2}\b/g).map(x=>parseInt(x,16))).buffer,{
+	env:{m}
+}),
 
-Object.assign(w=wabt.parseWat('a',`
-
-(module
-	(func (export "fn") (param i32 i32) (result i32)
-		local.get 0
-		local.get 1
-		i32.add
-	)
+console.log(
+	wa.instance.exports.a,
+	wa.instance.exports.a(),
+	new Uint8Array(m.buffer)[0]=1,
+	wa.instance.exports.a()
 )
-
-`).toBinary({log:1}),(await WebAssembly.instantiate(w.buffer)).instance.exports),
-
-log.textContent=w.fn(1,2)+'\n\n'+w.log
-
 
 ))();
 </script>
