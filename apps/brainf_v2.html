@@ -16,37 +16,38 @@
 <body>
 <pre id="log"></pre>
 <script>
-const
-m=new WebAssembly.Memory({initial:1,maximum:2,shared:1});
-
-(async()=>(
-
-self.wa=(`++++++++++++++[>+++++>+++++++>++>++++++<<<<-]>++.>+++.+++++++..+++.>++++.>+++.<<.+++.------.--------.>+.104`.match(/[><]+|[\+\-]+|\.+|[\,\[\]]/g)||[]).flatMap(x=>({
-	'>':_=>(_=x.length-(x.match(/</g)||[]).length*2),
-	'<':_=>(_=x.length-(x.match(/</g)||[]).length*2),
+'use strict';
+Object.assign(self,{
+m:new WebAssembly.Memory({initial:1,maximum:16,shared:1}),
+wa:(`++++++++++++++[>+++++>+++++++>++>++++++<<<<-]>++.>+++.+++++++..+++.>++++.>+++.<<.+++.------.--------.>+.104`.match(/[><]+|[\+\-]+|\.+|[\,\[\]]/g)||[]).flatMap(x=>({
+	'>':_=>(_=x.length-(x.match(/</g)||[]).length*2,[0x41,0,0x28,2,0]),
+	'<'(){return this['>']();},
 	'+':_=>(_=x.length-(x.match(/\-/g)||[]).length*2),
-	'-':_=>(_=x.length-(x.match(/\-/g)||[]).length*2),
+	'-'(){return this['+']();},
 	'.':_=>x,
 	',':_=>x,
 	'[':_=>x,
 	']':_=>x
-})[x[0]]()),
+})[x[0]]())
+});
 
-console.log(wa),
+console.log(wa);
+
+(async()=>(
 
 wa=await WebAssembly.instantiate(new Uint8Array(`
 00 61 73 6d 01 00 00 00
-01 05 01 type
-	60 00 01 7f
+01 04 01 type
+	60 00 00
 02 0b 01 import
-	03 65 6e 76  01 6d 02 03 01 02
+	03 65 6e 76  01 6d 02 03 01 10
 03 02 01 function
 	00
 07 05 01 export
 	01 61 00 00
-0a 09 01 code
-	07
-		00 41 00 28 02 00 0b
+0a 04 01 code
+	02
+		00  0b
 `.match(/\b[\da-fA-F]{2}\b/g).map(x=>parseInt(x,16))).buffer,{
 	env:{m}
 }),
@@ -55,7 +56,8 @@ console.log(
 	wa.instance.exports.a,
 	wa.instance.exports.a(),
 	new Uint8Array(m.buffer)[0]=1,
-	wa.instance.exports.a()
+	wa.instance.exports.a(),
+	[...new Uint8Array(m.buffer)]
 )
 
 ))();
