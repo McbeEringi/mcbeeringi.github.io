@@ -19,7 +19,7 @@ Please wait...
 </pre>
 	<script>new PerformanceObserver(_=>document.querySelector('pre').textContent+=_.getEntries().map(_=>_.name+'\n').join('')).observe({entryTypes:['resource']});</script>
 	<script type="module">
-		import{EditorView,keymap,showPanel,setup}from'https://mcbeeringi.github.io/src/cm.js';
+		import{EditorView,keymap,showPanel,setup}from'https://mcbeeringi.github.io/src/cm.mjs';
 		import{cpp}from'https://mcbeeringi.github.io/src/cm/@codemirror-lang-cpp.js';
 
 		await(async _=>(
