@@ -66,6 +66,27 @@ const snippets = [
         type: "keyword"
     })
 ];
+/**
+A collection of snippet completions for TypeScript. Includes the
+JavaScript [snippets](https://codemirror.net/6/docs/ref/#lang-javascript.snippets).
+*/
+const typescriptSnippets = /*@__PURE__*/snippets.concat([
+    /*@__PURE__*/snippetCompletion("interface ${name} {\n\t${}\n}", {
+        label: "interface",
+        detail: "definition",
+        type: "keyword"
+    }),
+    /*@__PURE__*/snippetCompletion("type ${name} = ${type}", {
+        label: "type",
+        detail: "definition",
+        type: "keyword"
+    }),
+    /*@__PURE__*/snippetCompletion("enum ${name} {\n\t${}\n}", {
+        label: "enum",
+        detail: "definition",
+        type: "keyword"
+    })
+]);
 
 const cache = /*@__PURE__*/new NodeWeakMap();
 const ScopeNodes = /*@__PURE__*/new Set([
@@ -208,7 +229,7 @@ function enumeratePropertyCompletions(obj, top) {
     let options = [], seen = new Set;
     for (let depth = 0;; depth++) {
         for (let name of (Object.getOwnPropertyNames || Object.keys)(obj)) {
-            if (!/^[a-zA-Z_$][\w$]*$/.test(name) || seen.has(name))
+            if (!/^[a-zA-Z_$\xaa-\uffdc][\w$\xaa-\uffdc]*$/.test(name) || seen.has(name))
                 continue;
             seen.add(name);
             let value;
@@ -328,7 +349,9 @@ const tsxLanguage = /*@__PURE__*/javascriptLanguage.configure({
     dialect: "jsx ts",
     props: [/*@__PURE__*/sublanguageProp.add(n => n.isTop ? [jsxSublanguage] : undefined)]
 }, "typescript");
-const keywords = /*@__PURE__*/"break case const continue default delete export extends false finally in instanceof let new return static super switch this throw true typeof var yield".split(" ").map(kw => ({ label: kw, type: "keyword" }));
+let kwCompletion = (name) => ({ label: name, type: "keyword" });
+const keywords = /*@__PURE__*/"break case const continue default delete export extends false finally in instanceof let new return static super switch this throw true typeof var yield".split(" ").map(kwCompletion);
+const typescriptKeywords = /*@__PURE__*/keywords.concat(/*@__PURE__*/["declare", "implements", "private", "protected", "public"].map(kwCompletion));
 /**
 JavaScript support. Includes [snippet](https://codemirror.net/6/docs/ref/#lang-javascript.snippets)
 completion.
@@ -336,9 +359,10 @@ completion.
 function javascript(config = {}) {
     let lang = config.jsx ? (config.typescript ? tsxLanguage : jsxLanguage)
         : config.typescript ? typescriptLanguage : javascriptLanguage;
+    let completions = config.typescript ? typescriptSnippets.concat(typescriptKeywords) : snippets.concat(keywords);
     return new LanguageSupport(lang, [
         javascriptLanguage.data.of({
-            autocomplete: ifNotIn(dontComplete, completeFromList(snippets.concat(keywords)))
+            autocomplete: ifNotIn(dontComplete, completeFromList(completions))
         }),
         javascriptLanguage.data.of({
             autocomplete: localCompletionSource
@@ -363,49 +387,49 @@ function elementName(doc, tree, max = doc.length) {
     }
     return "";
 }
-function isEndTag(node) {
-    return node && (node.name == "JSXEndTag" || node.name == "JSXSelfCloseEndTag");
-}
 const android = typeof navigator == "object" && /*@__PURE__*//Android\b/.test(navigator.userAgent);
 /**
 Extension that will automatically insert JSX close tags when a `>` or
 `/` is typed.
 */
-const autoCloseTags = /*@__PURE__*/EditorView.inputHandler.of((view, from, to, text) => {
+const autoCloseTags = /*@__PURE__*/EditorView.inputHandler.of((view, from, to, text, defaultInsert) => {
     if ((android ? view.composing : view.compositionStarted) || view.state.readOnly ||
         from != to || (text != ">" && text != "/") ||
         !javascriptLanguage.isActiveAt(view.state, from, -1))
         return false;
-    let { state } = view;
-    let changes = state.changeByRange(range => {
+    let base = defaultInsert(), { state } = base;
+    let closeTags = state.changeByRange(range => {
         var _a;
-        let { head } = range, around = syntaxTree(state).resolveInner(head, -1), name;
+        let { head } = range, around = syntaxTree(state).resolveInner(head - 1, -1), name;
         if (around.name == "JSXStartTag")
             around = around.parent;
-        if (around.name == "JSXAttributeValue" && around.to > head) ;
+        if (state.doc.sliceString(head - 1, head) != text || around.name == "JSXAttributeValue" && around.to > head) ;
         else if (text == ">" && around.name == "JSXFragmentTag") {
-            return { range: EditorSelection.cursor(head + 1), changes: { from: head, insert: `></>` } };
+            return { range, changes: { from: head, insert: `</>` } };
         }
-        else if (text == "/" && around.name == "JSXFragmentTag") {
-            let empty = around.parent, base = empty === null || empty === void 0 ? void 0 : empty.parent;
-            if (empty.from == head - 1 && ((_a = base.lastChild) === null || _a === void 0 ? void 0 : _a.name) != "JSXEndTag" &&
-                (name = elementName(state.doc, base === null || base === void 0 ? void 0 : base.firstChild, head))) {
-                let insert = `/${name}>`;
-                return { range: EditorSelection.cursor(head + insert.length), changes: { from: head, insert } };
+        else if (text == "/" && around.name == "JSXStartCloseTag") {
+            let empty = around.parent, base = empty.parent;
+            if (base && empty.from == head - 2 &&
+                ((name = elementName(state.doc, base.firstChild, head)) || ((_a = base.firstChild) === null || _a === void 0 ? void 0 : _a.name) == "JSXFragmentTag")) {
+                let insert = `${name}>`;
+                return { range: EditorSelection.cursor(head + insert.length, -1), changes: { from: head, insert } };
             }
         }
         else if (text == ">") {
             let openTag = findOpenTag(around);
-            if (openTag && !isEndTag(openTag.lastChild) &&
-                state.sliceDoc(head, head + 2) != "</" &&
+            if (openTag &&
+                !/^\/?>|^<\//.test(state.doc.sliceString(head, head + 2)) &&
                 (name = elementName(state.doc, openTag, head)))
-                return { range: EditorSelection.cursor(head + 1), changes: { from: head, insert: `></${name}>` } };
+                return { range, changes: { from: head, insert: `</${name}>` } };
         }
         return { range };
     });
-    if (changes.changes.empty)
+    if (closeTags.changes.empty)
         return false;
-    view.dispatch(changes, { userEvent: "input.type", scrollIntoView: true });
+    view.dispatch([
+        base,
+        state.update(closeTags, { userEvent: "input.complete", scrollIntoView: true })
+    ]);
     return true;
 });
 
@@ -469,4 +493,4 @@ function translateDiagnostic(input, doc, offset) {
     return result;
 }
 
-export { autoCloseTags, completionPath, esLint, javascript, javascriptLanguage, jsxLanguage, localCompletionSource, scopeCompletionSource, snippets, tsxLanguage, typescriptLanguage };
+export { autoCloseTags, completionPath, esLint, javascript, javascriptLanguage, jsxLanguage, localCompletionSource, scopeCompletionSource, snippets, tsxLanguage, typescriptLanguage, typescriptSnippets };

@@ -21,7 +21,9 @@ class CollabState {
 }
 const collabConfig = /*@__PURE__*/Facet.define({
     combine(configs) {
-        let combined = combineConfig(configs, { startVersion: 0, clientID: null, sharedEffects: () => [] });
+        let combined = combineConfig(configs, { startVersion: 0, clientID: null, sharedEffects: () => [] }, {
+            generatedID: a => a
+        });
         if (combined.clientID == null)
             combined.clientID = (configs.length && configs[0].generatedID) || "";
         return combined;
@@ -58,34 +60,41 @@ function receiveUpdates(state, updates) {
     let { version, unconfirmed } = state.field(collabField);
     let { clientID } = state.facet(collabConfig);
     version += updates.length;
+    let effects = [], changes = null;
     let own = 0;
-    while (own < updates.length && updates[own].clientID == clientID)
-        own++;
-    if (own) {
+    for (let update of updates) {
+        let ours = own < unconfirmed.length ? unconfirmed[own] : null;
+        if (ours && ours.clientID == update.clientID) {
+            if (changes)
+                changes = changes.map(ours.changes, true);
+            effects = StateEffect.mapEffects(effects, update.changes);
+            own++;
+        }
+        else {
+            effects = StateEffect.mapEffects(effects, update.changes);
+            if (update.effects)
+                effects = effects.concat(update.effects);
+            changes = changes ? changes.compose(update.changes) : update.changes;
+        }
+    }
+    if (own)
         unconfirmed = unconfirmed.slice(own);
-        updates = updates.slice(own);
-    }
-    // If all updates originated with us, we're done.
-    if (!updates.length)
-        return state.update({ annotations: [collabReceive.of(new CollabState(version, unconfirmed))] });
-    let changes = updates[0].changes, effects = updates[0].effects || [];
-    for (let i = 1; i < updates.length; i++) {
-        let update = updates[i];
-        effects = StateEffect.mapEffects(effects, update.changes);
-        if (update.effects)
-            effects = effects.concat(update.effects);
-        changes = changes.compose(update.changes);
-    }
     if (unconfirmed.length) {
-        unconfirmed = unconfirmed.map(update => {
-            let updateChanges = update.changes.map(changes);
-            changes = changes.map(update.changes, true);
-            return new LocalUpdate(update.origin, updateChanges, StateEffect.mapEffects(update.effects, changes), clientID);
-        });
-        effects = StateEffect.mapEffects(effects, unconfirmed.reduce((ch, u) => ch.compose(u.changes), ChangeSet.empty(unconfirmed[0].changes.length)));
+        if (changes)
+            unconfirmed = unconfirmed.map(update => {
+                let updateChanges = update.changes.map(changes);
+                changes = changes.map(update.changes, true);
+                return new LocalUpdate(update.origin, updateChanges, StateEffect.mapEffects(update.effects, changes), clientID);
+            });
+        if (effects.length) {
+            let composed = unconfirmed.reduce((ch, u) => ch.compose(u.changes), ChangeSet.empty(unconfirmed[0].changes.length));
+            effects = StateEffect.mapEffects(effects, composed);
+        }
     }
+    if (!changes)
+        return state.update({ annotations: [collabReceive.of(new CollabState(version, unconfirmed))] });
     return state.update({
-        changes,
+        changes: changes,
         effects,
         annotations: [
             Transaction.addToHistory.of(false),
@@ -120,5 +129,41 @@ Get this editor's collaborative editing client ID.
 function getClientID(state) {
     return state.facet(collabConfig).clientID;
 }
+/**
+Rebase and deduplicate an array of client-submitted updates that
+came in with an out-of-date version number. `over` should hold the
+updates that were accepted since the given version (or at least
+their change descs and client IDs). Will return an array of
+updates that, firstly, has updates that were already accepted
+filtered out, and secondly, has been moved over the other changes
+so that they apply to the current document version.
+*/
+function rebaseUpdates(updates, over) {
+    if (!over.length || !updates.length)
+        return updates;
+    let changes = null, skip = 0;
+    for (let update of over) {
+        let other = skip < updates.length ? updates[skip] : null;
+        if (other && other.clientID == update.clientID) {
+            if (changes)
+                changes = changes.mapDesc(other.changes, true);
+            skip++;
+        }
+        else {
+            changes = changes ? changes.composeDesc(update.changes) : update.changes;
+        }
+    }
+    if (skip)
+        updates = updates.slice(skip);
+    return !changes ? updates : updates.map(update => {
+        let updateChanges = update.changes.map(changes);
+        changes = changes.mapDesc(update.changes, true);
+        return {
+            changes: updateChanges,
+            effects: update.effects && StateEffect.mapEffects(update.effects, changes),
+            clientID: update.clientID
+        };
+    });
+}
 
-export { collab, getClientID, getSyncedVersion, receiveUpdates, sendableUpdates };
+export { collab, getClientID, getSyncedVersion, rebaseUpdates, receiveUpdates, sendableUpdates };

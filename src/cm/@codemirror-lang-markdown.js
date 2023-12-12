@@ -1,6 +1,6 @@
-import { EditorSelection, Prec, EditorState } from "./@codemirror-state.js";
+import { EditorSelection, countColumn, Prec, EditorState } from "./@codemirror-state.js";
 import { keymap } from "./@codemirror-view.js";
-import { defineLanguageFacet, foldNodeProp, indentNodeProp, languageDataProp, foldService, syntaxTree, Language, LanguageDescription, ParseContext, LanguageSupport } from "./@codemirror-language.js";
+import { defineLanguageFacet, foldNodeProp, indentNodeProp, languageDataProp, foldService, syntaxTree, Language, LanguageDescription, ParseContext, indentUnit, LanguageSupport } from "./@codemirror-language.js";
 import { CompletionContext } from "./@codemirror-autocomplete.js";
 import { parser, GFM, Subscript, Superscript, Emoji, MarkdownParser, parseCode } from "./@lezer-markdown.js";
 import { html, htmlCompletionSource } from "./@codemirror-lang-html.js";
@@ -57,7 +57,13 @@ function mkLang(parser) {
 Language support for strict CommonMark.
 */
 const commonmarkLanguage = /*@__PURE__*/mkLang(commonmark);
-const extended = /*@__PURE__*/commonmark.configure([GFM, Subscript, Superscript, Emoji]);
+const extended = /*@__PURE__*/commonmark.configure([GFM, Subscript, Superscript, Emoji, {
+        props: [
+            /*@__PURE__*/foldNodeProp.add({
+                Table: (tree, state) => ({ from: state.doc.lineAt(tree.from).to, to: tree.to })
+            })
+        ]
+    }]);
 /**
 Language support for [GFM](https://github.github.com/gfm/) plus
 subscript, superscript, and emoji syntax.
@@ -123,11 +129,11 @@ function getContext(node, doc) {
         if (node.name == "FencedCode") {
             context.push(new Context(node, startPos, startPos, "", "", "", null));
         }
-        else if (node.name == "Blockquote" && (match = /^[ \t]*>( ?)/.exec(line.text.slice(startPos)))) {
+        else if (node.name == "Blockquote" && (match = /^ *>( ?)/.exec(line.text.slice(startPos)))) {
             context.push(new Context(node, startPos, startPos + match[0].length, "", match[1], ">", null));
         }
         else if (node.name == "ListItem" && node.parent.name == "OrderedList" &&
-            (match = /^([ \t]*)\d+([.)])([ \t]*)/.exec(line.text.slice(startPos)))) {
+            (match = /^( *)\d+([.)])( *)/.exec(line.text.slice(startPos)))) {
             let after = match[3], len = match[0].length;
             if (after.length >= 4) {
                 after = after.slice(0, after.length - 4);
@@ -136,7 +142,7 @@ function getContext(node, doc) {
             context.push(new Context(node.parent, startPos, startPos + len, match[1], after, match[2], node));
         }
         else if (node.name == "ListItem" && node.parent.name == "BulletList" &&
-            (match = /^([ \t]*)([-+*])([ \t]{1,4}\[[ xX]\])?([ \t]+)/.exec(line.text.slice(startPos)))) {
+            (match = /^( *)([-+*])( {1,4}\[[ xX]\])?( +)/.exec(line.text.slice(startPos)))) {
             let after = match[4], len = match[0].length;
             if (after.length > 4) {
                 after = after.slice(0, after.length - 4);
@@ -170,6 +176,24 @@ function renumberList(after, doc, changes, offset = 0) {
             break;
         node = next;
     }
+}
+function normalizeIndent(content, state) {
+    let blank = /^[ \t]*/.exec(content)[0].length;
+    if (!blank || state.facet(indentUnit) != "\t")
+        return content;
+    let col = countColumn(content, 4, blank);
+    let space = "";
+    for (let i = col; i > 0;) {
+        if (i >= 4) {
+            space += "\t";
+            i -= 4;
+        }
+        else {
+            space += " ";
+            i--;
+        }
+    }
+    return space + content.slice(blank);
 }
 /**
 This command, when invoked in Markdown context with cursor
@@ -221,10 +245,11 @@ const insertNewlineContinueMarkup = ({ state, dispatch }) => {
             else { // Move this line down
                 let insert = "";
                 for (let i = 0, e = context.length - 2; i <= e; i++) {
-                    insert += context[i].blank(i < e ? context[i + 1].from - insert.length : null, i < e);
+                    insert += context[i].blank(i < e ? countColumn(line.text, 4, context[i + 1].from) - insert.length : null, i < e);
                 }
-                insert += state.lineBreak;
-                return { range: EditorSelection.cursor(pos + insert.length), changes: { from: line.from, insert } };
+                insert = normalizeIndent(insert, state);
+                return { range: EditorSelection.cursor(pos + insert.length + 1),
+                    changes: { from: line.from, insert: insert + state.lineBreak } };
             }
         }
         if (inner.node.name == "Blockquote" && emptyLine && line.from) {
@@ -245,15 +270,15 @@ const insertNewlineContinueMarkup = ({ state, dispatch }) => {
         if (!continued || /^[\s\d.)\-+*>]*/.exec(line.text)[0].length >= inner.to) {
             for (let i = 0, e = context.length - 1; i <= e; i++) {
                 insert += i == e && !continued ? context[i].marker(doc, 1)
-                    : context[i].blank(i < e ? context[i + 1].from - insert.length : null);
+                    : context[i].blank(i < e ? countColumn(line.text, 4, context[i + 1].from) - insert.length : null);
             }
         }
         let from = pos;
         while (from > line.from && /\s/.test(line.text.charAt(from - line.from - 1)))
             from--;
-        insert = state.lineBreak + insert;
-        changes.push({ from, to: pos, insert });
-        return { range: EditorSelection.cursor(from + insert.length), changes };
+        insert = normalizeIndent(insert, state);
+        changes.push({ from, to: pos, insert: state.lineBreak + insert });
+        return { range: EditorSelection.cursor(from + insert.length + 1), changes };
     });
     if (dont)
         return false;
@@ -315,8 +340,13 @@ const deleteMarkupBackward = ({ state, dispatch }) => {
                     (!inner.item || line.from <= inner.item.from || !/\S/.test(line.text.slice(0, inner.to)))) {
                     let start = line.from + inner.from;
                     // Replace a list item marker with blank space
-                    if (inner.item && inner.node.from < inner.item.from && /\S/.test(line.text.slice(inner.from, inner.to)))
-                        return { range, changes: { from: start, to: line.from + inner.to, insert: inner.blank(inner.to - inner.from) } };
+                    if (inner.item && inner.node.from < inner.item.from && /\S/.test(line.text.slice(inner.from, inner.to))) {
+                        let insert = inner.blank(countColumn(line.text, 4, inner.to) - countColumn(line.text, 4, inner.from));
+                        if (start == line.from)
+                            insert = normalizeIndent(insert, state);
+                        return { range: EditorSelection.cursor(start + insert.length),
+                            changes: { from: start, to: line.from + inner.to, insert } };
+                    }
                     // Delete one level of indentation
                     if (start < pos)
                         return { range: EditorSelection.cursor(start), changes: { from: start, to: pos } };

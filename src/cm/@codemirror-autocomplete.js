@@ -171,7 +171,7 @@ function insertCompletionText(state, text, from, to) {
             changes: { from: range.from + fromOff, to: to == main.from ? range.to : range.from + toOff, insert: text },
             range: EditorSelection.cursor(range.from + fromOff + text.length)
         };
-    })), { userEvent: "input.complete" });
+    })), { scrollIntoView: true, userEvent: "input.complete" });
 }
 const SourceCache = /*@__PURE__*/new WeakMap();
 function asSource(source) {
@@ -339,7 +339,8 @@ const completionConfig = /*@__PURE__*/Facet.define({
             addToOptions: [],
             positionInfo: defaultPositionInfo,
             compareCompletions: (a, b) => a.label.localeCompare(b.label),
-            interactionDelay: 75
+            interactionDelay: 75,
+            updateSyncTime: 100
         }, {
             defaultKeymap: (a, b) => a && b,
             closeOnBlur: (a, b) => a && b,
@@ -353,7 +354,7 @@ const completionConfig = /*@__PURE__*/Facet.define({
 function joinClass(a, b) {
     return a ? b ? a + " " + b : a : b;
 }
-function defaultPositionInfo(view, list, option, info, space) {
+function defaultPositionInfo(view, list, option, info, space, tooltip) {
     let rtl = view.textDirection == Direction.RTL, left = rtl, narrow = false;
     let side = "top", offset, maxWidth;
     let spaceLeft = list.left - space.left, spaceRight = space.right - list.right;
@@ -378,8 +379,10 @@ function defaultPositionInfo(view, list, option, info, space) {
             offset = list.bottom - option.top;
         }
     }
+    let scaleY = (list.bottom - list.top) / tooltip.offsetHeight;
+    let scaleX = (list.right - list.left) / tooltip.offsetWidth;
     return {
-        style: `${side}: ${offset}px; max-width: ${maxWidth}px`,
+        style: `${side}: ${offset / scaleY}px; max-width: ${maxWidth / scaleX}px`,
         class: "cm-completionInfo-" + (narrow ? (rtl ? "left-narrow" : "right-narrow") : left ? "left" : "right")
     };
 }
@@ -399,7 +402,7 @@ function optionContent(config) {
             position: 20
         });
     content.push({
-        render(completion, _s, match) {
+        render(completion, _s, _v, match) {
             let labelElt = document.createElement("span");
             labelElt.className = "cm-completionLabel";
             let label = completion.displayLabel || completion.label, off = 0;
@@ -467,6 +470,7 @@ class CompletionTooltip {
         this.dom.className = "cm-tooltip-autocomplete";
         this.updateTooltipClass(view.state);
         this.dom.addEventListener("mousedown", (e) => {
+            let { options } = view.state.field(stateField).open;
             for (let dom = e.target, match; dom && dom != this.dom; dom = dom.parentNode) {
                 if (dom.nodeName == "LI" && (match = /-(\d+)$/.exec(dom.id)) && +match[1] < options.length) {
                     this.applyCompletion(view, options[+match[1]]);
@@ -481,22 +485,32 @@ class CompletionTooltip {
                 e.relatedTarget != view.contentDOM)
                 view.dispatch({ effects: closeCompletionEffect.of(null) });
         });
-        this.list = this.dom.appendChild(this.createListBox(options, cState.id, this.range));
+        this.showOptions(options, cState.id);
+    }
+    mount() { this.updateSel(); }
+    showOptions(options, id) {
+        if (this.list)
+            this.list.remove();
+        this.list = this.dom.appendChild(this.createListBox(options, id, this.range));
         this.list.addEventListener("scroll", () => {
             if (this.info)
                 this.view.requestMeasure(this.placeInfoReq);
         });
     }
-    mount() { this.updateSel(); }
     update(update) {
-        var _a, _b, _c;
+        var _a;
         let cState = update.state.field(this.stateField);
         let prevState = update.startState.field(this.stateField);
         this.updateTooltipClass(update.state);
         if (cState != prevState) {
+            let { options, selected, disabled } = cState.open;
+            if (!prevState.open || prevState.open.options != options) {
+                this.range = rangeAroundSelected(options.length, selected, update.state.facet(completionConfig).maxRenderedOptions);
+                this.showOptions(options, cState.id);
+            }
             this.updateSel();
-            if (((_a = cState.open) === null || _a === void 0 ? void 0 : _a.disabled) != ((_b = prevState.open) === null || _b === void 0 ? void 0 : _b.disabled))
-                this.dom.classList.toggle("cm-tooltip-autocomplete-disabled", !!((_c = cState.open) === null || _c === void 0 ? void 0 : _c.disabled));
+            if (disabled != ((_a = prevState.open) === null || _a === void 0 ? void 0 : _a.disabled))
+                this.dom.classList.toggle("cm-tooltip-autocomplete-disabled", !!disabled);
         }
     }
     updateTooltipClass(state) {
@@ -520,12 +534,7 @@ class CompletionTooltip {
         let cState = this.view.state.field(this.stateField), open = cState.open;
         if (open.selected > -1 && open.selected < this.range.from || open.selected >= this.range.to) {
             this.range = rangeAroundSelected(open.options.length, open.selected, this.view.state.facet(completionConfig).maxRenderedOptions);
-            this.list.remove();
-            this.list = this.dom.appendChild(this.createListBox(open.options, cState.id, this.range));
-            this.list.addEventListener("scroll", () => {
-                if (this.info)
-                    this.view.requestMeasure(this.placeInfoReq);
-            });
+            this.showOptions(open.options, cState.id);
         }
         if (this.updateSelectedOption(open.selected)) {
             this.destroyInfo();
@@ -599,7 +608,7 @@ class CompletionTooltip {
         if (selRect.top > Math.min(space.bottom, listRect.bottom) - 10 ||
             selRect.bottom < Math.max(space.top, listRect.top) + 10)
             return null;
-        return this.view.state.facet(completionConfig).positionInfo(this.view, listRect, selRect, infoRect, space);
+        return this.view.state.facet(completionConfig).positionInfo(this.view, listRect, selRect, infoRect, space, this.dom);
     }
     placeInfo(pos) {
         if (this.info) {
@@ -642,7 +651,7 @@ class CompletionTooltip {
             if (cls)
                 li.className = cls;
             for (let source of this.optionContent) {
-                let node = source(completion, this.view.state, match);
+                let node = source(completion, this.view.state, this.view, match);
                 if (node)
                     li.appendChild(node);
             }
@@ -665,18 +674,17 @@ class CompletionTooltip {
         this.destroyInfo();
     }
 }
-// We allocate a new function instance every time the completion
-// changes to force redrawing/repositioning of the tooltip
 function completionTooltip(stateField, applyCompletion) {
     return (view) => new CompletionTooltip(view, stateField, applyCompletion);
 }
 function scrollIntoView(container, element) {
     let parent = container.getBoundingClientRect();
     let self = element.getBoundingClientRect();
+    let scaleY = parent.height / container.offsetHeight;
     if (self.top < parent.top)
-        container.scrollTop -= parent.top - self.top;
+        container.scrollTop -= (parent.top - self.top) / scaleY;
     else if (self.bottom > parent.bottom)
-        container.scrollTop += self.bottom - parent.bottom;
+        container.scrollTop += (self.bottom - parent.bottom) / scaleY;
 }
 
 // Used to pick a preferred option when two options with the same
@@ -773,7 +781,7 @@ class CompletionDialog {
         }
         return new CompletionDialog(options, makeAttrs(id, selected), {
             pos: active.reduce((a, b) => b.hasResult() ? Math.min(a, b.from) : a, 1e8),
-            create: completionTooltip(completionState, applyCompletion),
+            create: createTooltip,
             above: conf.aboveCursor,
         }, prev ? prev.timestamp : Date.now(), selected, false);
     }
@@ -949,6 +957,7 @@ function applyCompletion(view, option) {
         apply(view, option.completion, result.from, result.to);
     return true;
 }
+const createTooltip = /*@__PURE__*/completionTooltip(completionState, applyCompletion);
 
 /**
 Returns a command that moves the completion selection forward or
@@ -1015,7 +1024,7 @@ class RunningQuery {
         this.done = undefined;
     }
 }
-const DebounceTime = 50, MaxUpdateCount = 50, MinAbortTime = 1000;
+const MaxUpdateCount = 50, MinAbortTime = 1000;
 const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
     constructor(view) {
         this.view = view;
@@ -1056,7 +1065,7 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
         if (this.debounceUpdate > -1)
             clearTimeout(this.debounceUpdate);
         this.debounceUpdate = cState.active.some(a => a.state == 1 /* State.Pending */ && !this.running.some(q => q.active.source == a.source))
-            ? setTimeout(() => this.startUpdate(), DebounceTime) : -1;
+            ? setTimeout(() => this.startUpdate(), 50) : -1;
         if (this.composing != 0 /* CompositionState.None */)
             for (let tr of update.transactions) {
                 if (getUserEvent(tr) == "input")
@@ -1092,7 +1101,7 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
         if (this.running.every(q => q.done !== undefined))
             this.accept();
         else if (this.debounceAccept < 0)
-            this.debounceAccept = setTimeout(() => this.accept(), DebounceTime);
+            this.debounceAccept = setTimeout(() => this.accept(), this.view.state.facet(completionConfig).updateSyncTime);
     }
     // For each finished query in this.running, try to create a result
     // or, if appropriate, restart the query.
@@ -1475,7 +1484,8 @@ function moveField(dir) {
         let next = active.active + dir, last = dir > 0 && !active.ranges.some(r => r.field == next + dir);
         dispatch(state.update({
             selection: fieldSelection(active.ranges, next),
-            effects: setActive.of(last ? null : new ActiveSnippet(active.ranges, next))
+            effects: setActive.of(last ? null : new ActiveSnippet(active.ranges, next)),
+            scrollIntoView: true
         }));
         return true;
     };
@@ -1547,14 +1557,16 @@ const snippetPointerHandler = /*@__PURE__*/EditorView.domEventHandlers({
             return false;
         view.dispatch({
             selection: fieldSelection(active.ranges, match.field),
-            effects: setActive.of(active.ranges.some(r => r.field > match.field) ? new ActiveSnippet(active.ranges, match.field) : null)
+            effects: setActive.of(active.ranges.some(r => r.field > match.field)
+                ? new ActiveSnippet(active.ranges, match.field) : null),
+            scrollIntoView: true
         });
         return true;
     }
 });
 
 function wordRE(wordChars) {
-    let escaped = wordChars.replace(/[\\[.+*?(){|^$]/g, "\\$&");
+    let escaped = wordChars.replace(/[\]\-\\]/g, "\\$&");
     try {
         return new RegExp(`[\\p{Alphabetic}\\p{Number}_${escaped}]+`, "ug");
     }
@@ -1648,13 +1660,11 @@ closedBracket.endSide = -1;
 const bracketState = /*@__PURE__*/StateField.define({
     create() { return RangeSet.empty; },
     update(value, tr) {
-        if (tr.selection) {
-            let lineStart = tr.state.doc.lineAt(tr.selection.main.head).from;
-            let prevLineStart = tr.startState.doc.lineAt(tr.startState.selection.main.head).from;
-            if (lineStart != tr.changes.mapPos(prevLineStart, -1))
-                value = RangeSet.empty;
-        }
         value = value.map(tr.changes);
+        if (tr.selection) {
+            let line = tr.state.doc.lineAt(tr.selection.main.head);
+            value = value.update({ filter: from => from >= line.from && from <= line.to });
+        }
         for (let effect of tr.effects)
             if (effect.is(closeBracketEffect))
                 value = value.update({ add: [closedBracket.range(effect.value, effect.value + 1)] });

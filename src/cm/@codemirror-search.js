@@ -118,7 +118,7 @@ class SearchCursor {
             else
                 this.matches.push(1, pos);
         }
-        if (match && this.test && !this.test(match.from, match.to, this.buffer, this.bufferPos))
+        if (match && this.test && !this.test(match.from, match.to, this.buffer, this.bufferStart))
             match = null;
         return match;
     }
@@ -306,7 +306,8 @@ function toCharEnd(text, pos) {
 }
 
 function createLineDialog(view) {
-    let input = elt("input", { class: "cm-textfield", name: "line" });
+    let line = String(view.state.doc.lineAt(view.state.selection.main.head).number);
+    let input = elt("input", { class: "cm-textfield", name: "line", value: line });
     let dom = elt("form", {
         class: "cm-gotoLine",
         onkeydown: (event) => {
@@ -382,7 +383,7 @@ const gotoLine = view => {
         panel = getPanel(view, createLineDialog);
     }
     if (panel)
-        panel.dom.querySelector("input").focus();
+        panel.dom.querySelector("input").select();
     return true;
 };
 const baseTheme$1 = /*@__PURE__*/EditorView.baseTheme({
@@ -729,10 +730,10 @@ class RegExpQuery extends QueryType {
             this.prevMatchInRange(state, curTo, state.doc.length);
     }
     getReplacement(result) {
-        return this.spec.unquote(this.spec.replace.replace(/\$([$&\d+])/g, (m, i) => i == "$" ? "$"
+        return this.spec.unquote(this.spec.replace).replace(/\$([$&\d+])/g, (m, i) => i == "$" ? "$"
             : i == "&" ? result.match[0]
                 : i != "0" && +i < result.match.length ? result.match[i]
-                    : m));
+                    : m);
     }
     matchAll(state, limit) {
         let cursor = regexpCursor(this.spec, state, 0, state.doc.length), ranges = [];
@@ -1025,7 +1026,7 @@ Default search-related key bindings.
  - Mod-f: [`openSearchPanel`](https://codemirror.net/6/docs/ref/#search.openSearchPanel)
  - F3, Mod-g: [`findNext`](https://codemirror.net/6/docs/ref/#search.findNext)
  - Shift-F3, Shift-Mod-g: [`findPrevious`](https://codemirror.net/6/docs/ref/#search.findPrevious)
- - Alt-g: [`gotoLine`](https://codemirror.net/6/docs/ref/#search.gotoLine)
+ - Mod-Alt-g: [`gotoLine`](https://codemirror.net/6/docs/ref/#search.gotoLine)
  - Mod-d: [`selectNextOccurrence`](https://codemirror.net/6/docs/ref/#search.selectNextOccurrence)
 */
 const searchKeymap = [
@@ -1034,7 +1035,7 @@ const searchKeymap = [
     { key: "Mod-g", run: findNext, shift: findPrevious, scope: "editor search-panel", preventDefault: true },
     { key: "Escape", run: closeSearchPanel, scope: "editor search-panel" },
     { key: "Mod-Shift-l", run: selectSelectionMatches },
-    { key: "Alt-g", run: gotoLine },
+    { key: "Mod-Alt-g", run: gotoLine },
     { key: "Mod-d", run: selectNextOccurrence, preventDefault: true },
 ];
 class SearchPanel {
@@ -1211,7 +1212,7 @@ const baseTheme = /*@__PURE__*/EditorView.baseTheme({
 });
 const searchExtensions = [
     searchState,
-    /*@__PURE__*/Prec.lowest(searchHighlighter),
+    /*@__PURE__*/Prec.low(searchHighlighter),
     baseTheme
 ];
 
