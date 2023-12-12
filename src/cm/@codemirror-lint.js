@@ -29,7 +29,7 @@ class LintState {
                     diagnostic: d
                 }).range(d.from)
                 : Decoration.mark({
-                    attributes: { class: "cm-lintRange cm-lintRange-" + d.severity },
+                    attributes: { class: "cm-lintRange cm-lintRange-" + d.severity + (d.markClass ? " " + d.markClass : "") },
                     diagnostic: d
                 }).range(d.from, d.to);
         }), true);
@@ -220,7 +220,7 @@ const lintPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
     run() {
         let now = Date.now();
         if (now < this.lintTime - 10) {
-            setTimeout(this.run, this.lintTime - now);
+            this.timeout = setTimeout(this.run, this.lintTime - now);
         }
         else {
             this.set = false;
@@ -465,10 +465,11 @@ class LintPanel {
                 key: this,
                 read: () => ({ sel: newSelectedItem.dom.getBoundingClientRect(), panel: this.list.getBoundingClientRect() }),
                 write: ({ sel, panel }) => {
+                    let scaleY = panel.height / this.list.offsetHeight;
                     if (sel.top < panel.top)
-                        this.list.scrollTop -= panel.top - sel.top;
+                        this.list.scrollTop -= (panel.top - sel.top) / scaleY;
                     else if (sel.bottom > panel.bottom)
-                        this.list.scrollTop += sel.bottom - panel.bottom;
+                        this.list.scrollTop += (sel.bottom - panel.bottom) / scaleY;
                 }
             });
         }
@@ -529,6 +530,7 @@ const baseTheme = /*@__PURE__*/EditorView.baseTheme({
     ".cm-diagnostic-error": { borderLeft: "5px solid #d11" },
     ".cm-diagnostic-warning": { borderLeft: "5px solid orange" },
     ".cm-diagnostic-info": { borderLeft: "5px solid #999" },
+    ".cm-diagnostic-hint": { borderLeft: "5px solid #66d" },
     ".cm-diagnosticAction": {
         font: "inherit",
         border: "none",
@@ -551,6 +553,7 @@ const baseTheme = /*@__PURE__*/EditorView.baseTheme({
     ".cm-lintRange-error": { backgroundImage: /*@__PURE__*/underline("#d11") },
     ".cm-lintRange-warning": { backgroundImage: /*@__PURE__*/underline("orange") },
     ".cm-lintRange-info": { backgroundImage: /*@__PURE__*/underline("#999") },
+    ".cm-lintRange-hint": { backgroundImage: /*@__PURE__*/underline("#66d") },
     ".cm-lintRange-active": { backgroundColor: "#ffdd9980" },
     ".cm-tooltip-lint": {
         padding: 0,
@@ -573,6 +576,9 @@ const baseTheme = /*@__PURE__*/EditorView.baseTheme({
     },
     ".cm-lintPoint-info": {
         "&:after": { borderBottomColor: "#999" }
+    },
+    ".cm-lintPoint-hint": {
+        "&:after": { borderBottomColor: "#66d" }
     },
     ".cm-panel.cm-panel-lint": {
         position: "relative",
@@ -605,14 +611,14 @@ const baseTheme = /*@__PURE__*/EditorView.baseTheme({
         }
     }
 });
+function severityWeight(sev) {
+    return sev == "error" ? 4 : sev == "warning" ? 3 : sev == "info" ? 2 : 1;
+}
 class LintGutterMarker extends GutterMarker {
     constructor(diagnostics) {
         super();
         this.diagnostics = diagnostics;
-        this.severity = diagnostics.reduce((max, d) => {
-            let s = d.severity;
-            return s == "error" || s == "warning" && max == "info" ? s : max;
-        }, "info");
+        this.severity = diagnostics.reduce((max, d) => severityWeight(max) < severityWeight(d.severity) ? d.severity : max, "hint");
     }
     toDOM(view) {
         let elt = document.createElement("div");

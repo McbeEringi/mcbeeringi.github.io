@@ -586,7 +586,7 @@ const parseWorker = /*@__PURE__*/ViewPlugin.fromClass(class ParseWorker {
         let cx = this.view.state.field(Language.state).context;
         if (cx.updateViewport(update.view.viewport) || this.view.viewport.to > cx.treeLen)
             this.scheduleWork();
-        if (update.docChanged) {
+        if (update.docChanged || update.selectionSet) {
             if (this.view.hasFocus)
                 this.chunkBudget += 50 /* Work.ChangeBonus */;
             this.scheduleWork();
@@ -992,7 +992,24 @@ indicates that no definitive indentation can be determined.
 const indentNodeProp = /*@__PURE__*/new NodeProp();
 // Compute the indentation for a given position from the syntax tree.
 function syntaxIndentation(cx, ast, pos) {
-    return indentFrom(ast.resolveInner(pos).enterUnfinishedNodesBefore(pos), pos, cx);
+    let stack = ast.resolveStack(pos);
+    let inner = stack.node.enterUnfinishedNodesBefore(pos);
+    if (inner != stack.node) {
+        let add = [];
+        for (let cur = inner; cur != stack.node; cur = cur.parent)
+            add.push(cur);
+        for (let i = add.length - 1; i >= 0; i--)
+            stack = { node: add[i], next: stack };
+    }
+    return indentFor(stack, cx, pos);
+}
+function indentFor(stack, cx, pos) {
+    for (let cur = stack; cur; cur = cur.next) {
+        let strategy = indentStrategy(cur.node);
+        if (strategy)
+            return strategy(TreeIndentContext.create(cx, pos, cur));
+    }
+    return 0;
 }
 function ignoreClosed(cx) {
     return cx.pos == cx.options.simulateBreak && cx.options.simulateDoubleBreak;
@@ -1008,14 +1025,6 @@ function indentStrategy(tree) {
     }
     return tree.parent == null ? topIndent : null;
 }
-function indentFrom(node, pos, base) {
-    for (; node; node = node.parent) {
-        let strategy = indentStrategy(node);
-        if (strategy)
-            return strategy(TreeIndentContext.create(base, pos, node));
-    }
-    return null;
-}
 function topIndent() { return 0; }
 /**
 Objects of this type provide context information and helper
@@ -1028,20 +1037,24 @@ class TreeIndentContext extends IndentContext {
     */
     pos, 
     /**
-    The syntax tree node to which the indentation strategy
-    applies.
+    @internal
     */
-    node) {
+    context) {
         super(base.state, base.options);
         this.base = base;
         this.pos = pos;
-        this.node = node;
+        this.context = context;
     }
+    /**
+    The syntax tree node to which the indentation strategy
+    applies.
+    */
+    get node() { return this.context.node; }
     /**
     @internal
     */
-    static create(base, pos, node) {
-        return new TreeIndentContext(base, pos, node);
+    static create(base, pos, context) {
+        return new TreeIndentContext(base, pos, context);
     }
     /**
     Get the text directly after `this.pos`, either the entire line
@@ -1082,8 +1095,7 @@ class TreeIndentContext extends IndentContext {
     and return the result of that.
     */
     continue() {
-        let parent = this.node.parent;
-        return parent ? indentFrom(parent, this.pos, this.base) : 0;
+        return indentFor(this.context.next, this.base, this.pos);
     }
 }
 function isParent(parent, of) {
@@ -1225,9 +1237,10 @@ function syntaxFolding(state, start, end) {
     let tree = syntaxTree(state);
     if (tree.length < end)
         return null;
-    let inner = tree.resolveInner(end, 1);
+    let stack = tree.resolveStack(end, 1);
     let found = null;
-    for (let cur = inner; cur; cur = cur.parent) {
+    for (let iter = stack; iter; iter = iter.next) {
+        let cur = iter.node;
         if (cur.to <= end || cur.from > end)
             continue;
         if (found && cur.from < start)
@@ -2437,6 +2450,8 @@ const noTokens = /*@__PURE__*/Object.create(null);
 const typeArray = [NodeType.none];
 const nodeSet = /*@__PURE__*/new NodeSet(typeArray);
 const warned = [];
+// Cache of node types by name and tags
+const byTag = /*@__PURE__*/Object.create(null);
 const defaultTable = /*@__PURE__*/Object.create(null);
 for (let [legacyName, name] of [
     ["variable", "variableName"],
@@ -2470,31 +2485,40 @@ function warnForPart(part, msg) {
     console.warn(msg);
 }
 function createTokenType(extra, tagStr) {
-    let tag = null;
-    for (let part of tagStr.split(".")) {
-        let value = (extra[part] || tags[part]);
-        if (!value) {
-            warnForPart(part, `Unknown highlighting tag ${part}`);
+    let tags$1 = [];
+    for (let name of tagStr.split(" ")) {
+        let found = [];
+        for (let part of name.split(".")) {
+            let value = (extra[part] || tags[part]);
+            if (!value) {
+                warnForPart(part, `Unknown highlighting tag ${part}`);
+            }
+            else if (typeof value == "function") {
+                if (!found.length)
+                    warnForPart(part, `Modifier ${part} used at start of tag`);
+                else
+                    found = found.map(value);
+            }
+            else {
+                if (found.length)
+                    warnForPart(part, `Tag ${part} used as modifier`);
+                else
+                    found = Array.isArray(value) ? value : [value];
+            }
         }
-        else if (typeof value == "function") {
-            if (!tag)
-                warnForPart(part, `Modifier ${part} used at start of tag`);
-            else
-                tag = value(tag);
-        }
-        else {
-            if (tag)
-                warnForPart(part, `Tag ${part} used as modifier`);
-            else
-                tag = value;
-        }
+        for (let tag of found)
+            tags$1.push(tag);
     }
-    if (!tag)
+    if (!tags$1.length)
         return 0;
-    let name = tagStr.replace(/ /g, "_"), type = NodeType.define({
+    let name = tagStr.replace(/ /g, "_"), key = name + " " + tags$1.map(t => t.id);
+    let known = byTag[key];
+    if (known)
+        return known.id;
+    let type = byTag[key] = NodeType.define({
         id: typeArray.length,
         name,
-        props: [styleTags({ [name]: tag })]
+        props: [styleTags({ [name]: tags$1 })]
     });
     typeArray.push(type);
     return type.id;

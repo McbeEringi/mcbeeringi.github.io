@@ -274,7 +274,9 @@ function highlightTags(highlighters, tags) {
 }
 /**
 Highlight the given [tree](#common.Tree) with the given
-[highlighter](#highlight.Highlighter).
+[highlighter](#highlight.Highlighter). Often, the higher-level
+[`highlightCode`](#highlight.highlightCode) function is easier to
+use.
 */
 function highlightTree(tree, highlighter, 
 /**
@@ -294,6 +296,35 @@ to = tree.length) {
     let builder = new HighlightBuilder(from, Array.isArray(highlighter) ? highlighter : [highlighter], putStyle);
     builder.highlightRange(tree.cursor(), from, to, "", builder.highlighters);
     builder.flush(to);
+}
+/**
+Highlight the given tree with the given highlighter, calling
+`putText` for every piece of text, either with a set of classes or
+with the empty string when unstyled, and `putBreak` for every line
+break.
+*/
+function highlightCode(code, tree, highlighter, putText, putBreak, from = 0, to = code.length) {
+    let pos = from;
+    function writeTo(p, classes) {
+        if (p <= pos)
+            return;
+        for (let text = code.slice(pos, p), i = 0;;) {
+            let nextBreak = text.indexOf("\n", i);
+            let upto = nextBreak < 0 ? text.length : nextBreak;
+            if (upto > i)
+                putText(text.slice(i, upto), classes);
+            if (nextBreak < 0)
+                break;
+            putBreak();
+            i = nextBreak + 1;
+        }
+        pos = p;
+    }
+    highlightTree(tree, highlighter, (from, to, classes) => {
+        writeTo(from, "");
+        writeTo(to, classes);
+    }, from, to);
+    writeTo(to, "");
 }
 class HighlightBuilder {
     constructor(at, highlighters, span) {
@@ -330,7 +361,7 @@ class HighlightBuilder {
             if (rule.mode == 1 /* Mode.Inherit */)
                 inheritedClass += (inheritedClass ? " " : "") + tagCls;
         }
-        this.startSpan(cursor.from, cls);
+        this.startSpan(Math.max(from, start), cls);
         if (rule.opaque)
             return;
         let mounted = cursor.tree && cursor.tree.prop(NodeProp.mounted);
@@ -354,14 +385,16 @@ class HighlightBuilder {
                     break;
                 pos = next.to + start;
                 if (pos > from) {
-                    this.highlightRange(inner.cursor(), Math.max(from, next.from + start), Math.min(to, pos), inheritedClass, innerHighlighters);
-                    this.startSpan(pos, cls);
+                    this.highlightRange(inner.cursor(), Math.max(from, next.from + start), Math.min(to, pos), "", innerHighlighters);
+                    this.startSpan(Math.min(to, pos), cls);
                 }
             }
             if (hasChild)
                 cursor.parent();
         }
         else if (cursor.firstChild()) {
+            if (mounted)
+                inheritedClass = "";
             do {
                 if (cursor.to <= from)
                     continue;
@@ -854,4 +887,4 @@ const classHighlighter = tagHighlighter([
     { tag: tags.punctuation, class: "tok-punctuation" }
 ]);
 
-export { Tag, classHighlighter, getStyleTags, highlightTree, styleTags, tagHighlighter, tags };
+export { Tag, classHighlighter, getStyleTags, highlightCode, highlightTree, styleTags, tagHighlighter, tags };

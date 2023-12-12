@@ -1,4 +1,4 @@
-//&cls&node --input-type=module %0&exit
+node --input-type=module<<JS
 import{writeFile as wf}from'fs/promises';
 const p='https://codemirror.net/try/mods/';
 (async _=>(
@@ -7,3 +7,4 @@ const p='https://codemirror.net/try/mods/';
 		wf(x=decodeURIComponent(x.slice(6,-1)),await(await fetch(p+x)).blob()).stream(),console.log(x)
 	)).length+' files found.')
 ))();
+JS

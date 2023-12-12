@@ -1,6 +1,6 @@
 import { parser, configureNesting } from "./@lezer-html.js";
 import { cssLanguage, css } from "./@codemirror-lang-css.js";
-import { typescriptLanguage, jsxLanguage, tsxLanguage, javascriptLanguage, javascript } from "./@codemirror-lang-javascript.js";
+import { javascriptLanguage, typescriptLanguage, jsxLanguage, tsxLanguage, javascript } from "./@codemirror-lang-javascript.js";
 import { EditorView } from "./@codemirror-view.js";
 import { EditorSelection } from "./@codemirror-state.js";
 import { syntaxTree, LRLanguage, indentNodeProp, foldNodeProp, bracketMatchingHandle, LanguageSupport } from "./@codemirror-language.js";
@@ -498,6 +498,7 @@ function htmlCompletionSourceWith(config) {
     return (context) => htmlCompletionFor(schema, context);
 }
 
+const jsonParser = /*@__PURE__*/javascriptLanguage.parser.configure({ top: "SingleExpression" });
 const defaultNesting = [
     { tag: "script",
         attrs: attrs => attrs.type == "text/typescript" || attrs.lang == "ts",
@@ -508,6 +509,11 @@ const defaultNesting = [
     { tag: "script",
         attrs: attrs => attrs.type == "text/typescript-jsx",
         parser: tsxLanguage.parser },
+    { tag: "script",
+        attrs(attrs) {
+            return /^(importmap|speculationrules|application\/(.+\+)?json)$/i.test(attrs.type);
+        },
+        parser: jsonParser },
     { tag: "script",
         attrs(attrs) {
             return !attrs.type || /^(?:text|application)\/(?:x-)?(?:java|ecma)script$|^module$|^$/i.test(attrs.type);
@@ -613,41 +619,49 @@ const selfClosers = /*@__PURE__*/new Set(/*@__PURE__*/"area base br col command 
 Extension that will automatically insert close tags when a `>` or
 `/` is typed.
 */
-const autoCloseTags = /*@__PURE__*/EditorView.inputHandler.of((view, from, to, text) => {
+const autoCloseTags = /*@__PURE__*/EditorView.inputHandler.of((view, from, to, text, insertTransaction) => {
     if (view.composing || view.state.readOnly || from != to || (text != ">" && text != "/") ||
         !htmlLanguage.isActiveAt(view.state, from, -1))
         return false;
-    let { state } = view;
-    let changes = state.changeByRange(range => {
+    let base = insertTransaction(), { state } = base;
+    let closeTags = state.changeByRange(range => {
         var _a, _b, _c;
-        let { head } = range, around = syntaxTree(state).resolveInner(head, -1), name;
+        let didType = state.doc.sliceString(range.from - 1, range.to) == text;
+        let { head } = range, around = syntaxTree(state).resolveInner(head - 1, -1), name;
         if (around.name == "TagName" || around.name == "StartTag")
             around = around.parent;
-        if (text == ">" && around.name == "OpenTag") {
+        if (didType && text == ">" && around.name == "OpenTag") {
             if (((_b = (_a = around.parent) === null || _a === void 0 ? void 0 : _a.lastChild) === null || _b === void 0 ? void 0 : _b.name) != "CloseTag" &&
                 (name = elementName(state.doc, around.parent, head)) &&
                 !selfClosers.has(name)) {
-                let hasRightBracket = view.state.doc.sliceString(head, head + 1) === ">";
-                let insert = `${hasRightBracket ? "" : ">"}</${name}>`;
-                return { range: EditorSelection.cursor(head + 1), changes: { from: head + (hasRightBracket ? 1 : 0), insert } };
+                let to = head + (state.doc.sliceString(head, head + 1) === ">" ? 1 : 0);
+                let insert = `</${name}>`;
+                return { range, changes: { from: head, to, insert } };
             }
         }
-        else if (text == "/" && around.name == "OpenTag") {
-            let empty = around.parent, base = empty === null || empty === void 0 ? void 0 : empty.parent;
-            if (empty.from == head - 1 && ((_c = base.lastChild) === null || _c === void 0 ? void 0 : _c.name) != "CloseTag" &&
-                (name = elementName(state.doc, base, head)) &&
-                !selfClosers.has(name)) {
-                let hasRightBracket = view.state.doc.sliceString(head, head + 1) === ">";
-                let insert = `/${name}${hasRightBracket ? "" : ">"}`;
-                let pos = head + insert.length + (hasRightBracket ? 1 : 0);
-                return { range: EditorSelection.cursor(pos), changes: { from: head, insert } };
+        else if (didType && text == "/" && around.name == "IncompleteCloseTag") {
+            let base = around.parent;
+            if (around.from == head - 2 && ((_c = base.lastChild) === null || _c === void 0 ? void 0 : _c.name) != "CloseTag" &&
+                (name = elementName(state.doc, base, head)) && !selfClosers.has(name)) {
+                let to = head + (state.doc.sliceString(head, head + 1) === ">" ? 1 : 0);
+                let insert = `${name}>`;
+                return {
+                    range: EditorSelection.cursor(head + insert.length, -1),
+                    changes: { from: head, to, insert }
+                };
             }
         }
         return { range };
     });
-    if (changes.changes.empty)
+    if (closeTags.changes.empty)
         return false;
-    view.dispatch(changes, { userEvent: "input.type", scrollIntoView: true });
+    view.dispatch([
+        base,
+        state.update(closeTags, {
+            userEvent: "input.complete",
+            scrollIntoView: true
+        })
+    ]);
     return true;
 });
 
