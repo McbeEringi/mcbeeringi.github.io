@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 64 64">
 	<style>
-		.f,.s{stroke-dasharray:100%;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;animation:anm 2s;}
+		.f,.s{stroke-dasharray:49;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;animation:anm 1s;}
 		.f{stroke-width:0;opacity:.5;}
-		@keyframes anm{0%{stroke-dashoffset:-100%;}0%,80%{fill:#0000;stroke-width:inherit;}80%{stroke-dashoffset:0;}}
+		@keyframes anm{0%{stroke-dashoffset:-49;}0%,80%{fill:#0000;stroke-width:inherit;}80%{stroke-dashoffset:0;}}
 	</style>
 	<path fill="#6ca" class="f" d="M47,48c-1-1,2-2,3-1c5,5-17,11-9,7c6-3,7-5,6-6z"/>
 	<path fill="#888" class="f" d="M52,28c2,2,4,7,2,8m-5-13c1,2-4,2-5,2m-29,1c0-2,4-7,6-5m25,1c2,2-6,3-9,2"/>
