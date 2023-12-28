@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 64 64">
 	<style>
-		.f,.s{stroke-dasharray:49;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;animation:anm 1s;}
+		.f,.s{stroke-dasharray:49 49;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;animation:anm 1s;}
 		.f{stroke-width:0;opacity:.5;}
 		@keyframes anm{0%{stroke-dashoffset:-49;}0%,80%{fill:#0000;stroke-width:inherit;}80%{stroke-dashoffset:0;}}
 	</style>
