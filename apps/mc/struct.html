@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<!-- <script async src="https://mcbeeringi.github.io/src/gas.js"></script> -->
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi img2mcstruct</title>
+	<meta name="description" content="image to mcstructure">
+	<link rel="icon" type="image/svg+xml" href="../../img/icon.svg">
+	<link rel="apple-touch-icon" href="../../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../../src/style.css">
+</head>
+<body>
+	<h1>img2mcstruct</h1>
+	<div id="cmw"></div>
+	<div id="panel">
+		<input type="file" class="zab" id="inp"><br>
+		<button class="zab bgca" id="dbtn">Download</button>
+		<button class="zab bgca" id="sbtn">Search</button>
+	</div>
+
+
+	<script type="module">
+		import { EditorView, keymap, showPanel, setup, openSearchPanel} from "../../src/cm.mjs";
+		import { javascript } from '../../src/cm/@codemirror-lang-javascript.js';
+		import { dl } from 'https://mcbeeringi.github.io/petit/zip.mjs';
+		import { nbt_write } from 'https://mcbeeringi.github.io/petit/nbt.mjs';
+
+		self.cm=new EditorView({
+			doc:decodeURIComponent(location.hash.slice(1))||``,
+			extensions:[
+				setup,
+				javascript(),
+				showPanel.of(_=>({dom:panel})),
+				EditorView.updateListener.of(e=>e.docChanged&&save())
+			],
+			parent:cmw
+		});
+		self.save=_=>location.hash=encodeURIComponent(cm.state.doc).replace(/[\(\)\']/g,x=>'%'+x.codePointAt().toString(16).padStart(2,0));
+		self.t=(t,...x)=>Object.assign(x.pop(),{type:t},x.length&&{children_type:x.pop()});
+		
+
+		sbtn.onclick=_=>openSearchPanel(cm);
+		setInterval(save,20000);
+
+		// https://gist.github.com/tryashtar/87ad9654305e5df686acab05cc4b6205
+		dbtn.onclick=_=>dl({buffer:nbt_write({'':{
+			format_version:t('i32',1),
+			size:t('li','i32',[
+				t('i32',2),
+				t('i32',2),
+				t('i32',2)
+			]),
+			structure:{
+				block_indices:t('li','li',[
+					t('li','i32',[
+						t('i32',0),
+						t('i32',0),
+						t('i32',0),
+						t('i32',0),
+						t('i32',0),
+						t('i32',0),
+						t('i32',0),
+						t('i32',0)
+					]),
+					t('li','i32',[
+						t('i32',-1),
+						t('i32',-1),
+						t('i32',-1),
+						t('i32',-1),
+						t('i32',-1),
+						t('i32',-1),
+						t('i32',-1),
+						t('i32',-1)
+					])
+				]),
+				entities:t('li','null',[]),
+				palette:{default:{
+					block_palette:t('li','obj',[
+						{name:'minecraft:stone',states:{},version:t('i32',18100737)}
+					]),
+					block_position_data:{}
+				}}
+			}
+		}})});
+
+	</script>
+</body>
+</html>
