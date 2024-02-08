@@ -3,6 +3,7 @@ import{EditorView,keymap,showPanel,highlightWhitespace}from'./cm/@codemirror-vie
 import{EditorState}from'./cm/@codemirror-state.js';
 import{indentUnit}from'./cm/@codemirror-language.js';
 import{indentWithTab}from'./cm/@codemirror-commands.js';
+import{openSearchPanel}from'./cm/@codemirror-search.js';
 import{oneDark}from'./cm/@codemirror-theme-one-dark.js';
 const
 setup=[
@@ -11,4 +12,4 @@ setup=[
 	keymap.of([indentWithTab]),EditorState.tabSize.of(2),indentUnit.of('\t'),
 	oneDark
 ];
-export{EditorView,keymap,showPanel,setup};
+export{EditorView,keymap,showPanel,setup,openSearchPanel};

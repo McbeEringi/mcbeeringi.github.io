@@ -15,7 +15,7 @@
 </head>
 <body>
 	<script type="module">
-		import { EditorView, keymap, showPanel, setup } from "../src/cm.mjs";
+		import { EditorView, keymap, showPanel, setup, openSearchPanel } from "../src/cm.mjs";
 		import { javascript } from '../src/cm/@codemirror-lang-javascript.js';
 
 		(async()=>{
@@ -50,10 +50,11 @@ console.log("World.");
 
 			console.clear=_=>pre.textContent='';
 			['warn','info','error','log'].forEach(x=>console[x]=(...y)=>(ntv[x](...y),llog(y)));
-			panel.insertAdjacentHTML('beforeend','Run,Save,Copy URL,Copy Runner'.split(',').map(x=>`<button class="zab bgca">${x}</button>`).join(' '));
+			panel.insertAdjacentHTML('beforeend','Run,Save,Search,Copy URL,Copy Runner'.split(',').map(x=>`<button class="zab bgca">${x}</button>`).join(' '));
 			[...panel.children].forEach((x,i)=>x.onclick=[
 				_=>Object.getPrototypeOf(async()=>{}).constructor(cm.state.doc)(),
 				save,
+				_=>openSearchPanel(cm),
 				_=>navigator.clipboard.writeText('https://mcbeeringi.github.io/apps/js.html'+location.hash).then(()=>console.log('URL Copied!')),
 				_=>navigator.clipboard.writeText('https://mcbeeringi.github.io/apps/jsrun.html'+location.hash).then(()=>console.log('Runner Copied!'))
 			][i]);
