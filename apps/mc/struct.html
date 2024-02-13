@@ -63,8 +63,8 @@
 				size:t('li','i32',[t('i32',c.width),t('i32',1),t('i32',c.height)]),
 				structure:{
 					block_indices:t('li','li',[
-						t('li','i8',_.i.map(x=>t('i8',x))),
-						t('li','i8',Array(_.i.length).fill(t('i8',-1)))
+						t('li','i32',_.i.map(x=>t('i32',x))),
+						t('li','i32',Array(_.i.length).fill(t('i32',-1)))
 					]),
 					entities:t('li','null',[]),
 					palette:{default:{
@@ -187,7 +187,7 @@
 			"yellow_stained_glass":"#e5e533",
 			"yellow_terracotta":"#ba8524"
 		}).map(([i,x])=>(x=x.match(/[\da-f]{2}/ig).map(x=>parseInt(x,16)),[i,x]));
-		self.c2b=w=>mapcol.reduce((a,x,i)=>(i=w.reduce((b,y,j)=>b+Math.abs(y-x[1][j]),0),i<a.x&&(a.a=x[0]),a),{x:1/0,a:'air'}).a
+		self.c2b=w=>mapcol.reduce((a,x,i)=>(i=w.reduce((b,y,j)=>b+Math.abs(y-x[1][j]),0),i<a.x&&(a.x=i,a.a=x[0]),a),{x:1/0,a:'air'}).a
 
 	</script>
 </body>
