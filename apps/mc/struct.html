@@ -27,7 +27,7 @@
 		import { EditorView, keymap, showPanel, setup, openSearchPanel} from "../../src/cm.mjs";
 		import { javascript } from '../../src/cm/@codemirror-lang-javascript.js';
 		import { dl } from 'https://mcbeeringi.github.io/petit/zip.mjs';
-		import { nbt_write } from 'https://mcbeeringi.github.io/petit/nbt.mjs';
+		import { nbt_write } from 'https://mcbeeringi.github.io/petit/nbt.mjs';// https://gist.github.com/tryashtar/87ad9654305e5df686acab05cc4b6205
 
 		c.height=c.width=128;
 
@@ -44,7 +44,71 @@
 		});
 		self.save=_=>location.hash=encodeURIComponent(cm.state.doc).replace(/[\(\)\']/g,x=>'%'+x.codePointAt().toString(16).padStart(2,0));
 		self.t=(t,...x)=>Object.assign(x.pop(),{type:t},x.length&&{children_type:x.pop()});
-		
+
+		self.mapcol=Object.entries({
+			black_stained_glass:'#191919',
+			black_terracotta:'#251610',
+			blue_stained_glass:'#334cb2',
+			blue_terracotta:'#4c3e5c',
+			brown_stained_glass:'#664c33',
+			brown_terracotta:'#4c3223',
+			clay:'#a4a8b8',
+			crimson_hyphae:'#5c191d',
+			crimson_planks:'#943f61',
+			cyan_stained_glass:'#4c7f99',
+			cyan_terracotta:'#575c5c',
+			deepslate:'#646464',
+			diamond_block:'#5cdbd5',
+			dirt:'#976d4d',
+			emerald_block:'#00d93a',
+			gold_block:'#faee4d',
+			gray_stained_glass:'#4c4c4c',
+			gray_terracotta:'#392923',
+			green_stained_glass:'#667f33',
+			green_terracotta:'#4c522a',
+			iron_block:'#a7a7a7',
+			lapis_block:'#4a80ff',
+			leaves:'#007c00',
+			light_blue_stained_glass:'#6699d8',
+			light_blue_terracotta:'#706c8a',
+			light_gray_stained_glass:'#999999',
+			light_gray_terracotta:'#876b62',
+			lime_stained_glass:'#7fcc19',
+			lime_terracotta:'#677535',
+			magenta_stained_glass:'#b24cd8',
+			magenta_terracotta:'#95576c',
+			netherrack:'#700200',
+			oak_planks:'#8f7748',
+			orange_stained_glass:'#d87f33',
+			orange_terracotta:'#9f5224',
+			packed_ice:'#a0a0ff',
+			pink_stained_glass:'#f27fa5',
+			pink_terracotta:'#a04d4e',
+			purple_stained_glass:'#7f3fb2',
+			purple_terracotta:'#7a4958',
+			quartz_block:'#fffcf5',
+			raw_iron_block:'#d8af93',
+			red_stained_glass:'#993333',
+			red_terracotta:'#8e3c2e',
+			redstone_block:'#ff0000',
+			sandstone:'#f7e9a3',
+			slime:'#7fb238',
+			spruce_planks:'#815631',
+			stone:'#707070',
+			verdant_froglight:'#7fa796',
+			warped_hyphae:'#562c3e',
+			warped_nylium:'#167e86',
+			warped_planks:'#3a8e8c',
+			warped_wart_block:'#14b485',
+			water:'#4040ff',
+			web:'#c7c7c7',
+			white_stained_glass:'#ffffff',
+			white_terracotta:'#d1b1a1',
+			yellow_stained_glass:'#e5e533',
+			yellow_terracotta:'#ba8524'
+		}).map(([i,x])=>(x=x.match(/[\da-f]{2}/ig).map(x=>parseInt(x,16)),[i,x]));
+		self.c2b=w=>mapcol.reduce((a,x,i)=>(i=w.reduce((b,y,j)=>b+Math.abs(y-x[1][j]),0),i<a.x&&(a.x=i,a.a=x[0]),a),{x:1/0,a:'air'}).a
+
 
 		sbtn.onclick=_=>openSearchPanel(cm);
 		setInterval(save,20000);
@@ -74,73 +138,6 @@
 				structure_world_origin:t('li','i32',[t('i32',0),t('i32',0),t('i32',0)])
 			}})})
 		);
-
-		// https://gist.github.com/tryashtar/87ad9654305e5df686acab05cc4b6205
-
-		self.mapcol=Object.entries({
-			"black_stained_glass":"#191919",
-			"black_terracotta":"#251610",
-			"blue_stained_glass":"#334cb2",
-			"blue_terracotta":"#4c3e5c",
-			"brown_stained_glass":"#664c33",
-			"brown_terracotta":"#4c3223",
-			"clay":"#a4a8b8",
-			"crimson_hyphae":"#5c191d",
-			"crimson_planks":"#943f61",
-			"cyan_stained_glass":"#4c7f99",
-			"cyan_terracotta":"#575c5c",
-			"deepslate":"#646464",
-			"diamond_block":"#5cdbd5",
-			"dirt":"#976d4d",
-			"emerald_block":"#00d93a",
-			"gold_block":"#faee4d",
-			"gray_stained_glass":"#4c4c4c",
-			"gray_terracotta":"#392923",
-			"green_stained_glass":"#667f33",
-			"green_terracotta":"#4c522a",
-			"iron_block":"#a7a7a7",
-			"lapis_block":"#4a80ff",
-			"leaves":"#007c00",
-			"light_blue_stained_glass":"#6699d8",
-			"light_blue_terracotta":"#706c8a",
-			"light_gray_stained_glass":"#999999",
-			"light_gray_terracotta":"#876b62",
-			"lime_stained_glass":"#7fcc19",
-			"lime_terracotta":"#677535",
-			"magenta_stained_glass":"#b24cd8",
-			"magenta_terracotta":"#95576c",
-			"netherrack":"#700200",
-			"oak_planks":"#8f7748",
-			"orange_stained_glass":"#d87f33",
-			"orange_terracotta":"#9f5224",
-			"packed_ice":"#a0a0ff",
-			"pink_stained_glass":"#f27fa5",
-			"pink_terracotta":"#a04d4e",
-			"purple_stained_glass":"#7f3fb2",
-			"purple_terracotta":"#7a4958",
-			"quartz_block":"#fffcf5",
-			"raw_iron_block":"#d8af93",
-			"red_stained_glass":"#993333",
-			"red_terracotta":"#8e3c2e",
-			"redstone_block":"#ff0000",
-			"sandstone":"#f7e9a3",
-			"slime":"#7fb238",
-			"spruce_planks":"#815631",
-			"stone":"#707070",
-			"verdant_froglight":"#7fa796",
-			"warped_hyphae":"#562c3e",
-			"warped_nylium":"#167e86",
-			"warped_planks":"#3a8e8c",
-			"warped_wart_block":"#14b485",
-			"water":"#4040ff",
-			"web":"#c7c7c7",
-			"white_stained_glass":"#ffffff",
-			"white_terracotta":"#d1b1a1",
-			"yellow_stained_glass":"#e5e533",
-			"yellow_terracotta":"#ba8524"
-		}).map(([i,x])=>(x=x.match(/[\da-f]{2}/ig).map(x=>parseInt(x,16)),[i,x]));
-		self.c2b=w=>mapcol.reduce((a,x,i)=>(i=w.reduce((b,y,j)=>b+Math.abs(y-x[1][j]),0),i<a.x&&(a.x=i,a.a=x[0]),a),{x:1/0,a:'air'}).a
-
 	</script>
 </body>
 </html>
