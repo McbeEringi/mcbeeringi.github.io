@@ -18,7 +18,6 @@
 	<div id="cmw"></div>
 	<div id="panel">
 		<input type="file" class="zab" id="inp"><br>
-		<button class="zab bgca" id="dbtn">Download</button>
 		<button class="zab bgca" id="sbtn">Search</button>
 	</div>
 	<canvas id="c"></canvas>
@@ -77,53 +76,6 @@
 		);
 
 		// https://gist.github.com/tryashtar/87ad9654305e5df686acab05cc4b6205
-		dbtn.onclick=_=>dl({buffer:nbt_write({'':{
-			format_version:t('i32',1),
-			size:t('li','i32',[
-				t('i32',2),
-				t('i32',2),
-				t('i32',2)
-			]),
-			structure:{
-				block_indices:t('li','li',[
-					t('li','i32',[
-						t('i32',0),
-						t('i32',0),
-						t('i32',0),
-						t('i32',0),
-						t('i32',0),
-						t('i32',0),
-						t('i32',0),
-						t('i32',0)
-					]),
-					t('li','i32',[
-						t('i32',-1),
-						t('i32',-1),
-						t('i32',-1),
-						t('i32',-1),
-						t('i32',-1),
-						t('i32',-1),
-						t('i32',-1),
-						t('i32',-1)
-					])
-				]),
-				entities:t('li','null',[]),
-				palette:{default:{
-					block_palette:t('li','obj',[
-						{name:'minecraft:stone',states:{},version:t('i32',18100737)}
-					]),
-					block_position_data:{}
-				}}
-			},
-			structure_world_origin:t('li','i32',[
-				t('i32',0),
-				t('i32',100),
-				t('i32',0)
-			])
-		}})});
-
-
-
 
 		self.mapcol=Object.entries({
 			"black_stained_glass":"#191919",
