@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<script async src="https://mcbeeringi.github.io/src/gas.js"></script>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>McbeEringi GHDD</title>
+	<meta name="description" content="GitHub directory downloader">
+	<link rel="icon" type="image/svg+xml" href="../img/icon.svg">
+	<link rel="apple-touch-icon" href="../img/icon.png">
+	<meta name="theme-color" content="#214"/>
+
+	<link rel="stylesheet" href="../src/style.css">
+</head>
+<body>
+	<style>pre{display:inline-block;vertical-align:top;}</style>
+	<h1>GitHub Directory Downloader</h1>
+	<hr>
+	<button id="pastebtn" class="zab bgca">DL from Clipboard URL</button>
+	<hr>
+	<input class="zab" id="inp" placeholder="GitHub URL...">
+	<button id="runbtn" class="zab bgca">Download</button>
+	<button id="copybtn" class="zab bgca">Copy Downloader URL</button><br>
+	<pre id="err"></pre><br>
+
+	<script type="module">
+		import{zip,dl}from'https://mcbeeringi.github.io/petit/zip.mjs';
+
+		pastebtn.onclick=async _=>runbtn.onclick(inp.value=await navigator.clipboard.readText());
+		copybtn.onclick=_=>navigator.clipboard.writeText(Object.assign(new URL(location),{search:inp.value}));
+
+		runbtn.onclick=_=>(async(
+			w,api_ratelimit,
+			log=document.createElement('pre'),llog=x=>log.textContent=JSON.stringify(x,0,'\t'),
+			[,owner,repo,,ref='HEAD',...dir]=new URL(inp.value).pathname.split('/'),
+			bar=(x=0,l=20)=>(x*100).toFixed(1).padStart(5,' ')+'% '+'#'.repeat(Math.round(x*l)).padEnd(l,'-')
+		)=>(
+			llog({status:'1/3 Getting repo info...'}),document.body.append(log),
+			w=await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`),
+			api_ratelimit={
+				limit:w.headers.get('x-ratelimit-limit'),remaining:w.headers.get('x-ratelimit-remaining'),
+				reset:Math.ceil((w.headers.get('x-ratelimit-reset')-Date.now()/1000)/60)+' min'
+			},
+			w=await w.json(),
+			w.tree?(
+				dir[dir.length-1]&&dir.push(''),dir=decodeURIComponent(dir.join('/')),
+				w=w.tree.reduce((a,x)=>(
+					x.type=='blob'&&x.path.slice(0,dir.length)==dir&&a.push({name:x.path.slice(dir.length),size:x.size}),a
+				),[]).sort((a,b)=>b.size-a.size),
+				w.length?(
+					w=(await Promise.all([...Array(16)].reduce((a,x,i)=>(a.p.push((async q=>{while(a.i.length<w.length){
+						x=w[i=a.i.length];a.i.push(`${bar()} ${x.size} ${x.name}`);
+						q.push({
+							name:x.name,
+							buffer:new Blob(await(async w=>{while(w.x=(await w.r.read()).value){
+								w.l+=w.x.byteLength;a.a[0]+=w.x.byteLength;a.i[i]=`${bar(w.l/x.size)} ${x.size} ${x.name}`;w.a.push(w.x);
+								llog({status:'2/3 Downloading...',progress:bar(a.a[0]/a.a[1]),details:a.i.slice(0).reverse(),api_ratelimit});
+							}return w.a;})({
+								r:(await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${dir}${x.name}`)).body.getReader(),
+								l:0,a:[]
+							}))
+						});
+					}return q;})([])),a),{i:[],a:[0,w.reduce((a,x)=>a+x.size,0)],p:[]}).p)).flat(),
+					dl({
+						name:(dir||repo)+(location.hash?location.hash.slice(1):'.zip'),
+						buffer:await zip(w,x=>llog({status:'3/3 Gathering files...',progress:x.toFixed(3)}))
+					}),
+					llog({status:'Done',api_ratelimit})
+				):llog({error:'No such file or directory.',api_ratelimit})
+			):llog({error:w.message,api_ratelimit}),
+			await new Promise(f=>setTimeout(_=>f(log.remove()),3000))
+		))().catch(e=>(err.textContent=e,console.log(e)));
+
+		location.search&&(inp.value=location.search.slice(1),btn.onclick());
+	</script>
+</body>
+</html>
