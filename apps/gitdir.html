@@ -26,7 +26,8 @@
 	<script type="module">
 		import{zip,dl,progress}from'https://mcbeeringi.github.io/petit/zip.mjs';
 
-		btn.onclick=_=>(async(
+		btn.onclick=_=>(async()=>{
+			let
 			perc=x=>(x*100).toFixed(2)+' %',
 			log=document.createElement('pre'),
 			llog=(x,y)=>log.textContent=y?x+JSON.stringify(y,null,'	'):x,
@@ -42,8 +43,7 @@
 					))).blob()),
 					await core()
 				)
-			)
-		)=>(
+			);
 			document.body.append(log),
 			dir[dir.length-1]&&dir.push(''),dir=decodeURIComponent(dir.join('/')),
 			w=({r:w,w:(llog('step 1/3: requesting repo info to api.github.com...\n',{api_ratelimit}),await w.json())}),
@@ -61,7 +61,7 @@
 				 ):llog('No such file or directory.')
 			 ):llog(`${w.w.message} (${w.r.status} ${w.r.statusText})`),
 			setTimeout(_=>log.remove(),3000)
-		))().catch(e=>(err.textContent=e,console.log(e)));
+		})().catch(e=>(err.textContent=e,console.log(e)));
 
 		location.search&&(inp.value=location.search.slice(1),btn.onclick());
 	</script>
