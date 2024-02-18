@@ -64,7 +64,7 @@
 					}return q;})([])),a),{i:[],a:[0,w.reduce((a,x)=>a+x.size,0)],p:[]}).p)).flat(),
 					dl({
 						name:(dir||repo)+(location.hash?location.hash.slice(1):'.zip'),
-						buffer:await zip(w,x=>llog({status:'3/3 Gathering files...',progress:x.toFixed(3)}))
+						buffer:await zip(w,x=>llog({status:'3/3 Gathering files...',progress:bar(x),api_ratelimit}))
 					}),
 					llog({status:'Done',api_ratelimit})
 				):llog({error:'No such file or directory.',api_ratelimit})
@@ -72,7 +72,7 @@
 			await new Promise(f=>setTimeout(_=>f(log.remove()),3000))
 		))().catch(e=>(err.textContent=e,console.log(e)));
 
-		location.search&&(inp.value=location.search.slice(1),btn.onclick());
+		location.search&&(inp.value=location.search.slice(1),runbtn.onclick());
 	</script>
 </body>
 </html>
