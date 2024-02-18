@@ -223,8 +223,9 @@ const insertNewlineContinueMarkup = ({ state, dispatch }) => {
         let emptyLine = pos >= (inner.to - inner.spaceAfter.length) && !/\S/.test(line.text.slice(inner.to));
         // Empty line in list
         if (inner.item && emptyLine) {
-            // First list item or blank line before: delete a level of markup
-            if (inner.node.firstChild.to >= pos ||
+            let first = inner.node.firstChild, second = inner.node.getChild("ListItem", "ListItem");
+            // Not second item or blank line before: delete a level of markup
+            if (first.to >= pos || second && second.to < pos ||
                 line.from > 0 && !/[^\s>]/.test(doc.lineAt(line.from - 1).text)) {
                 let next = context.length > 1 ? context[context.length - 2] : null;
                 let delTo, insert = "";
@@ -242,12 +243,8 @@ const insertNewlineContinueMarkup = ({ state, dispatch }) => {
                     renumberList(next.item, doc, changes);
                 return { range: EditorSelection.cursor(delTo + insert.length), changes };
             }
-            else { // Move this line down
-                let insert = "";
-                for (let i = 0, e = context.length - 2; i <= e; i++) {
-                    insert += context[i].blank(i < e ? countColumn(line.text, 4, context[i + 1].from) - insert.length : null, i < e);
-                }
-                insert = normalizeIndent(insert, state);
+            else { // Move second item down, making tight two-item list non-tight
+                let insert = blankLine(context, state, line);
                 return { range: EditorSelection.cursor(pos + insert.length + 1),
                     changes: { from: line.from, insert: insert + state.lineBreak } };
             }
@@ -277,6 +274,8 @@ const insertNewlineContinueMarkup = ({ state, dispatch }) => {
         while (from > line.from && /\s/.test(line.text.charAt(from - line.from - 1)))
             from--;
         insert = normalizeIndent(insert, state);
+        if (nonTightList(inner.node, state.doc))
+            insert = blankLine(context, state, line) + state.lineBreak + insert;
         changes.push({ from, to: pos, insert: state.lineBreak + insert });
         return { range: EditorSelection.cursor(from + insert.length + 1), changes };
     });
@@ -287,6 +286,23 @@ const insertNewlineContinueMarkup = ({ state, dispatch }) => {
 };
 function isMark(node) {
     return node.name == "QuoteMark" || node.name == "ListMark";
+}
+function nonTightList(node, doc) {
+    if (node.name != "OrderedList" && node.name != "BulletList")
+        return false;
+    let first = node.firstChild, second = node.getChild("ListItem", "ListItem");
+    if (!second)
+        return false;
+    let line1 = doc.lineAt(first.to), line2 = doc.lineAt(second.from);
+    let empty = /^[\s>]*$/.test(line1.text);
+    return line1.number + (empty ? 0 : 1) < line2.number;
+}
+function blankLine(context, state, line) {
+    let insert = "";
+    for (let i = 0, e = context.length - 2; i <= e; i++) {
+        insert += context[i].blank(i < e ? countColumn(line.text, 4, context[i + 1].from) - insert.length : null, i < e);
+    }
+    return normalizeIndent(insert, state);
 }
 function contextNodeForDelete(tree, pos) {
     let node = tree.resolveInner(pos, -1), scan = pos;

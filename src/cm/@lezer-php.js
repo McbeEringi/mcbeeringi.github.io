@@ -338,6 +338,7 @@ const parser = LRParser.deserialize({
   maxTerm: 304,
   nodeProps: [
     ["group", -36,2,8,49,81,83,85,88,93,94,102,106,107,110,111,114,118,123,126,130,132,133,147,148,149,150,153,154,164,165,179,181,182,183,184,185,191,"Expression",-28,74,78,80,82,192,194,199,201,202,205,208,209,210,211,212,214,215,216,217,218,219,220,221,222,225,226,230,231,"Statement",-3,119,121,122,"Type"],
+    ["isolate", -4,66,67,70,191,""],
     ["openedBy", 69,"phpOpen",76,"{",86,"(",101,"#["],
     ["closedBy", 71,"phpClose",77,"}",87,")",158,"]"]
   ],
@@ -348,7 +349,7 @@ const parser = LRParser.deserialize({
   tokenizers: [expression, interpolated, semicolon, 0, 1, 2, 3, eofToken],
   topRules: {"Template":[0,72],"Program":[1,232]},
   dynamicPrecedences: {"284":1},
-  specialized: [{term: 81, get: (value, stack) => (keywords(value) << 1), external: keywords},{term: 81, get: value => spec_Name[value] || -1}],
+  specialized: [{term: 81, get: (value, stack) => (keywords(value) << 1), external: keywords},{term: 81, get: (value) => spec_Name[value] || -1}],
   tokenPrec: 29354
 });
 

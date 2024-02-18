@@ -1,6 +1,6 @@
 import { NodeProp, IterMode, Tree, TreeFragment, Parser, NodeType, NodeSet } from "./@lezer-common.js";
 import { StateEffect, StateField, Facet, EditorState, countColumn, combineConfig, RangeSet, RangeSetBuilder, Prec } from "./@codemirror-state.js";
-import { ViewPlugin, logException, EditorView, Decoration, WidgetType, gutter, GutterMarker } from "./@codemirror-view.js";
+import { ViewPlugin, logException, EditorView, Decoration, WidgetType, gutter, GutterMarker, Direction } from "./@codemirror-view.js";
 import { tags, tagHighlighter, highlightTree, styleTags } from "./@lezer-highlight.js";
 import { StyleModule } from "./style-mod.js";
 
@@ -1749,16 +1749,20 @@ class TreeHighlighter {
         this.markCache = Object.create(null);
         this.tree = syntaxTree(view.state);
         this.decorations = this.buildDeco(view, getHighlighters(view.state));
+        this.decoratedTo = view.viewport.to;
     }
     update(update) {
         let tree = syntaxTree(update.state), highlighters = getHighlighters(update.state);
         let styleChange = highlighters != getHighlighters(update.startState);
-        if (tree.length < update.view.viewport.to && !styleChange && tree.type == this.tree.type) {
+        let { viewport } = update.view, decoratedToMapped = update.changes.mapPos(this.decoratedTo, 1);
+        if (tree.length < viewport.to && !styleChange && tree.type == this.tree.type && decoratedToMapped >= viewport.to) {
             this.decorations = this.decorations.map(update.changes);
+            this.decoratedTo = decoratedToMapped;
         }
         else if (tree != this.tree || update.viewportChanged || styleChange) {
             this.tree = tree;
             this.decorations = this.buildDeco(update.view, highlighters);
+            this.decoratedTo = viewport.to;
         }
     }
     buildDeco(view, highlighters) {
@@ -2529,4 +2533,115 @@ function docID(data) {
     return type;
 }
 
-export { DocInput, HighlightStyle, IndentContext, LRLanguage, Language, LanguageDescription, LanguageSupport, ParseContext, StreamLanguage, StringStream, TreeIndentContext, bracketMatching, bracketMatchingHandle, codeFolding, continuedIndent, defaultHighlightStyle, defineLanguageFacet, delimitedIndent, ensureSyntaxTree, flatIndent, foldAll, foldCode, foldEffect, foldGutter, foldInside, foldKeymap, foldNodeProp, foldService, foldState, foldable, foldedRanges, forceParsing, getIndentUnit, getIndentation, highlightingFor, indentNodeProp, indentOnInput, indentRange, indentService, indentString, indentUnit, language, languageDataProp, matchBrackets, sublanguageProp, syntaxHighlighting, syntaxParserRunning, syntaxTree, syntaxTreeAvailable, toggleFold, unfoldAll, unfoldCode, unfoldEffect };
+function buildForLine(line) {
+    return line.length <= 4096 && /[\u0590-\u05f4\u0600-\u06ff\u0700-\u08ac\ufb50-\ufdff]/.test(line);
+}
+function textHasRTL(text) {
+    for (let i = text.iter(); !i.next().done;)
+        if (buildForLine(i.value))
+            return true;
+    return false;
+}
+function changeAddsRTL(change) {
+    let added = false;
+    change.iterChanges((fA, tA, fB, tB, ins) => {
+        if (!added && textHasRTL(ins))
+            added = true;
+    });
+    return added;
+}
+const alwaysIsolate = /*@__PURE__*/Facet.define({ combine: values => values.some(x => x) });
+/**
+Make sure nodes
+[marked](https://lezer.codemirror.net/docs/ref/#common.NodeProp^isolate)
+as isolating for bidirectional text are rendered in a way that
+isolates them from the surrounding text.
+*/
+function bidiIsolates(options = {}) {
+    let extensions = [isolateMarks];
+    if (options.alwaysIsolate)
+        extensions.push(alwaysIsolate.of(true));
+    return extensions;
+}
+const isolateMarks = /*@__PURE__*/ViewPlugin.fromClass(class {
+    constructor(view) {
+        this.always = view.state.facet(alwaysIsolate) ||
+            view.textDirection != Direction.LTR ||
+            view.state.facet(EditorView.perLineTextDirection);
+        this.hasRTL = !this.always && textHasRTL(view.state.doc);
+        this.tree = syntaxTree(view.state);
+        this.decorations = this.always || this.hasRTL ? buildDeco(view, this.tree, this.always) : Decoration.none;
+    }
+    update(update) {
+        let always = update.state.facet(alwaysIsolate) ||
+            update.view.textDirection != Direction.LTR ||
+            update.state.facet(EditorView.perLineTextDirection);
+        if (!always && !this.hasRTL && changeAddsRTL(update.changes))
+            this.hasRTL = true;
+        if (!always && !this.hasRTL)
+            return;
+        let tree = syntaxTree(update.state);
+        if (always != this.always || tree != this.tree || update.docChanged || update.viewportChanged) {
+            this.tree = tree;
+            this.always = always;
+            this.decorations = buildDeco(update.view, tree, always);
+        }
+    }
+}, {
+    provide: plugin => {
+        function access(view) {
+            var _a, _b;
+            return (_b = (_a = view.plugin(plugin)) === null || _a === void 0 ? void 0 : _a.decorations) !== null && _b !== void 0 ? _b : Decoration.none;
+        }
+        return [EditorView.outerDecorations.of(access),
+            Prec.lowest(EditorView.bidiIsolatedRanges.of(access))];
+    }
+});
+function buildDeco(view, tree, always) {
+    let deco = new RangeSetBuilder();
+    let ranges = view.visibleRanges;
+    if (!always)
+        ranges = clipRTLLines(ranges, view.state.doc);
+    for (let { from, to } of ranges) {
+        tree.iterate({
+            enter: node => {
+                let iso = node.type.prop(NodeProp.isolate);
+                if (iso)
+                    deco.add(node.from, node.to, marks[iso]);
+            },
+            from, to
+        });
+    }
+    return deco.finish();
+}
+function clipRTLLines(ranges, doc) {
+    let cur = doc.iter(), pos = 0, result = [], last = null;
+    for (let { from, to } of ranges) {
+        if (from != pos) {
+            if (pos < from)
+                cur.next(from - pos);
+            pos = from;
+        }
+        for (;;) {
+            let start = pos, end = pos + cur.value.length;
+            if (!cur.lineBreak && buildForLine(cur.value)) {
+                if (last && last.to > start - 10)
+                    last.to = Math.min(to, end);
+                else
+                    result.push(last = { from: start, to: Math.min(to, end) });
+            }
+            if (pos >= to)
+                break;
+            pos = end;
+            cur.next();
+        }
+    }
+    return result;
+}
+const marks = {
+    rtl: /*@__PURE__*/Decoration.mark({ class: "cm-iso", inclusive: true, attributes: { dir: "rtl" }, bidiIsolate: Direction.RTL }),
+    ltr: /*@__PURE__*/Decoration.mark({ class: "cm-iso", inclusive: true, attributes: { dir: "ltr" }, bidiIsolate: Direction.LTR }),
+    auto: /*@__PURE__*/Decoration.mark({ class: "cm-iso", inclusive: true, attributes: { dir: "auto" }, bidiIsolate: null })
+};
+
+export { DocInput, HighlightStyle, IndentContext, LRLanguage, Language, LanguageDescription, LanguageSupport, ParseContext, StreamLanguage, StringStream, TreeIndentContext, bidiIsolates, bracketMatching, bracketMatchingHandle, codeFolding, continuedIndent, defaultHighlightStyle, defineLanguageFacet, delimitedIndent, ensureSyntaxTree, flatIndent, foldAll, foldCode, foldEffect, foldGutter, foldInside, foldKeymap, foldNodeProp, foldService, foldState, foldable, foldedRanges, forceParsing, getIndentUnit, getIndentation, highlightingFor, indentNodeProp, indentOnInput, indentRange, indentService, indentString, indentUnit, language, languageDataProp, matchBrackets, sublanguageProp, syntaxHighlighting, syntaxParserRunning, syntaxTree, syntaxTreeAvailable, toggleFold, unfoldAll, unfoldCode, unfoldEffect };

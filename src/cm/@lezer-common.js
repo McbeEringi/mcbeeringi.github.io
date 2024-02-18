@@ -65,6 +65,22 @@ types that represent an expression could be tagged with an
 */
 NodeProp.group = new NodeProp({ deserialize: str => str.split(" ") });
 /**
+Attached to nodes to indicate these should be
+[displayed](https://codemirror.net/docs/ref/#language.syntaxTree)
+in a bidirectional text isolate, so that direction-neutral
+characters on their sides don't incorrectly get associated with
+surrounding text. You'll generally want to set this for nodes
+that contain arbitrary text, like strings and comments, and for
+nodes that appear _inside_ arbitrary text, like HTML tags. When
+not given a value, in a grammar declaration, defaults to
+`"auto"`.
+*/
+NodeProp.isolate = new NodeProp({ deserialize: value => {
+        if (value && value != "rtl" && value != "ltr" && value != "auto")
+            throw new RangeError("Invalid value for isolate: " + value);
+        return value || "auto";
+    } });
+/**
 The hash of the [context](#lr.ContextTracker.constructor)
 that the node was parsed in, if any. Used to limit reuse of
 contextual nodes.
@@ -784,9 +800,11 @@ function getChildren(node, type, before, after) {
     if (!cur.firstChild())
         return result;
     if (before != null)
-        while (!cur.type.is(before))
+        for (let found = false; !found;) {
+            found = cur.type.is(before);
             if (!cur.nextSibling())
                 return result;
+        }
     for (;;) {
         if (after != null && cur.type.is(after))
             return result;

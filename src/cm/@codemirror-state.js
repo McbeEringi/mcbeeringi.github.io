@@ -1388,8 +1388,9 @@ class SelectionRange {
     /**
     Compare this range to another range.
     */
-    eq(other) {
-        return this.anchor == other.anchor && this.head == other.head;
+    eq(other, includeAssoc = false) {
+        return this.anchor == other.anchor && this.head == other.head &&
+            (!includeAssoc || !this.empty || this.assoc == other.assoc);
     }
     /**
     Return a JSON-serializable object representing the range.
@@ -1439,14 +1440,17 @@ class EditorSelection {
         return EditorSelection.create(this.ranges.map(r => r.map(change, assoc)), this.mainIndex);
     }
     /**
-    Compare this selection to another selection.
+    Compare this selection to another selection. By default, ranges
+    are compared only by position. When `includeAssoc` is true,
+    cursor ranges must also have the same
+    [`assoc`](https://codemirror.net/6/docs/ref/#state.SelectionRange.assoc) value.
     */
-    eq(other) {
+    eq(other, includeAssoc = false) {
         if (this.ranges.length != other.ranges.length ||
             this.mainIndex != other.mainIndex)
             return false;
         for (let i = 0; i < this.ranges.length; i++)
-            if (!this.ranges[i].eq(other.ranges[i]))
+            if (!this.ranges[i].eq(other.ranges[i], includeAssoc))
                 return false;
         return true;
     }
@@ -3415,6 +3419,19 @@ class RangeSet {
             build.add(range.from, range.to, range.value);
         return build.finish();
     }
+    /**
+    Join an array of range sets into a single set.
+    */
+    static join(sets) {
+        if (!sets.length)
+            return RangeSet.empty;
+        let result = sets[sets.length - 1];
+        for (let i = sets.length - 2; i >= 0; i--) {
+            for (let layer = sets[i]; layer != RangeSet.empty; layer = layer.nextLayer)
+                result = new RangeSet(layer.chunkPos, layer.chunk, result, Math.max(layer.maxPoint, result.maxPoint));
+        }
+        return result;
+    }
 }
 /**
 The empty set of ranges.
@@ -3732,7 +3749,8 @@ class SpanCursor {
     }
     addActive(trackOpen) {
         let i = 0, { value, to, rank } = this.cursor;
-        while (i < this.activeRank.length && this.activeRank[i] <= rank)
+        // Organize active marks by rank first, then by size
+        while (i < this.activeRank.length && (rank - this.activeRank[i] || to - this.activeTo[i]) > 0)
             i++;
         insert(this.active, i, value);
         insert(this.activeTo, i, to);

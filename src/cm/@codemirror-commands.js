@@ -560,7 +560,7 @@ function setSel(state, selection) {
 }
 function moveSel({ state, dispatch }, how) {
     let selection = updateSel(state.selection, how);
-    if (selection.eq(state.selection))
+    if (selection.eq(state.selection, true))
         return false;
     dispatch(setSel(state, selection));
     return true;

@@ -1,4 +1,4 @@
-import { Text, RangeSet, MapMode, RangeValue, Facet, StateEffect, ChangeSet, EditorSelection, findClusterBreak, findColumn, CharCategory, Annotation, EditorState, Transaction, Prec, codePointAt, codePointSize, combineConfig, StateField, RangeSetBuilder, countColumn } from "./@codemirror-state.js";
+import { Text, RangeSet, MapMode, RangeValue, findClusterBreak, EditorSelection, Facet, StateEffect, ChangeSet, findColumn, CharCategory, Annotation, EditorState, Transaction, Prec, codePointAt, codePointSize, combineConfig, StateField, RangeSetBuilder, countColumn } from "./@codemirror-state.js";
 import { StyleModule } from "./style-mod.js";
 import { keyName, base, shift } from "./w3c-keyname.js";
 
@@ -869,7 +869,8 @@ class WidgetView extends ContentView {
                 this.prevWidget.destroy(this.dom);
             this.prevWidget = null;
             this.setDOM(this.widget.toDOM(view));
-            this.dom.contentEditable = "false";
+            if (!this.widget.editable)
+                this.dom.contentEditable = "false";
         }
     }
     getSide() { return this.side; }
@@ -1292,7 +1293,8 @@ class BlockWidgetView extends ContentView {
                 this.prevWidget.destroy(this.dom);
             this.prevWidget = null;
             this.setDOM(this.widget.toDOM(view));
-            this.dom.contentEditable = "false";
+            if (!this.widget.editable)
+                this.dom.contentEditable = "false";
         }
     }
     get overrideDOMText() {
@@ -1396,6 +1398,10 @@ class WidgetType {
     @internal
     */
     get isHidden() { return false; }
+    /**
+    @internal
+    */
+    get editable() { return false; }
     /**
     This is called when the an instance of the widget is removed
     from the editor view.
@@ -1782,373 +1788,6 @@ class NullWidget extends WidgetType {
     get isHidden() { return true; }
 }
 
-const clickAddsSelectionRange = /*@__PURE__*/Facet.define();
-const dragMovesSelection$1 = /*@__PURE__*/Facet.define();
-const mouseSelectionStyle = /*@__PURE__*/Facet.define();
-const exceptionSink = /*@__PURE__*/Facet.define();
-const updateListener = /*@__PURE__*/Facet.define();
-const inputHandler = /*@__PURE__*/Facet.define();
-const focusChangeEffect = /*@__PURE__*/Facet.define();
-const perLineTextDirection = /*@__PURE__*/Facet.define({
-    combine: values => values.some(x => x)
-});
-const nativeSelectionHidden = /*@__PURE__*/Facet.define({
-    combine: values => values.some(x => x)
-});
-class ScrollTarget {
-    constructor(range, y = "nearest", x = "nearest", yMargin = 5, xMargin = 5, 
-    // This data structure is abused to also store precise scroll
-    // snapshots, instead of a `scrollIntoView` request. When this
-    // flag is `true`, `range` points at a position in the reference
-    // line, `yMargin` holds the difference between the top of that
-    // line and the top of the editor, and `xMargin` holds the
-    // editor's `scrollLeft`.
-    isSnapshot = false) {
-        this.range = range;
-        this.y = y;
-        this.x = x;
-        this.yMargin = yMargin;
-        this.xMargin = xMargin;
-        this.isSnapshot = isSnapshot;
-    }
-    map(changes) {
-        return changes.empty ? this :
-            new ScrollTarget(this.range.map(changes), this.y, this.x, this.yMargin, this.xMargin, this.isSnapshot);
-    }
-    clip(state) {
-        return this.range.to <= state.doc.length ? this :
-            new ScrollTarget(EditorSelection.cursor(state.doc.length), this.y, this.x, this.yMargin, this.xMargin, this.isSnapshot);
-    }
-}
-const scrollIntoView = /*@__PURE__*/StateEffect.define({ map: (t, ch) => t.map(ch) });
-/**
-Log or report an unhandled exception in client code. Should
-probably only be used by extension code that allows client code to
-provide functions, and calls those functions in a context where an
-exception can't be propagated to calling code in a reasonable way
-(for example when in an event handler).
-
-Either calls a handler registered with
-[`EditorView.exceptionSink`](https://codemirror.net/6/docs/ref/#view.EditorView^exceptionSink),
-`window.onerror`, if defined, or `console.error` (in which case
-it'll pass `context`, when given, as first argument).
-*/
-function logException(state, exception, context) {
-    let handler = state.facet(exceptionSink);
-    if (handler.length)
-        handler[0](exception);
-    else if (window.onerror)
-        window.onerror(String(exception), context, undefined, undefined, exception);
-    else if (context)
-        console.error(context + ":", exception);
-    else
-        console.error(exception);
-}
-const editable = /*@__PURE__*/Facet.define({ combine: values => values.length ? values[0] : true });
-let nextPluginID = 0;
-const viewPlugin = /*@__PURE__*/Facet.define();
-/**
-View plugins associate stateful values with a view. They can
-influence the way the content is drawn, and are notified of things
-that happen in the view.
-*/
-class ViewPlugin {
-    constructor(
-    /**
-    @internal
-    */
-    id, 
-    /**
-    @internal
-    */
-    create, 
-    /**
-    @internal
-    */
-    domEventHandlers, 
-    /**
-    @internal
-    */
-    domEventObservers, buildExtensions) {
-        this.id = id;
-        this.create = create;
-        this.domEventHandlers = domEventHandlers;
-        this.domEventObservers = domEventObservers;
-        this.extension = buildExtensions(this);
-    }
-    /**
-    Define a plugin from a constructor function that creates the
-    plugin's value, given an editor view.
-    */
-    static define(create, spec) {
-        const { eventHandlers, eventObservers, provide, decorations: deco } = spec || {};
-        return new ViewPlugin(nextPluginID++, create, eventHandlers, eventObservers, plugin => {
-            let ext = [viewPlugin.of(plugin)];
-            if (deco)
-                ext.push(decorations.of(view => {
-                    let pluginInst = view.plugin(plugin);
-                    return pluginInst ? deco(pluginInst) : Decoration.none;
-                }));
-            if (provide)
-                ext.push(provide(plugin));
-            return ext;
-        });
-    }
-    /**
-    Create a plugin for a class whose constructor takes a single
-    editor view as argument.
-    */
-    static fromClass(cls, spec) {
-        return ViewPlugin.define(view => new cls(view), spec);
-    }
-}
-class PluginInstance {
-    constructor(spec) {
-        this.spec = spec;
-        // When starting an update, all plugins have this field set to the
-        // update object, indicating they need to be updated. When finished
-        // updating, it is set to `false`. Retrieving a plugin that needs to
-        // be updated with `view.plugin` forces an eager update.
-        this.mustUpdate = null;
-        // This is null when the plugin is initially created, but
-        // initialized on the first update.
-        this.value = null;
-    }
-    update(view) {
-        if (!this.value) {
-            if (this.spec) {
-                try {
-                    this.value = this.spec.create(view);
-                }
-                catch (e) {
-                    logException(view.state, e, "CodeMirror plugin crashed");
-                    this.deactivate();
-                }
-            }
-        }
-        else if (this.mustUpdate) {
-            let update = this.mustUpdate;
-            this.mustUpdate = null;
-            if (this.value.update) {
-                try {
-                    this.value.update(update);
-                }
-                catch (e) {
-                    logException(update.state, e, "CodeMirror plugin crashed");
-                    if (this.value.destroy)
-                        try {
-                            this.value.destroy();
-                        }
-                        catch (_) { }
-                    this.deactivate();
-                }
-            }
-        }
-        return this;
-    }
-    destroy(view) {
-        var _a;
-        if ((_a = this.value) === null || _a === void 0 ? void 0 : _a.destroy) {
-            try {
-                this.value.destroy();
-            }
-            catch (e) {
-                logException(view.state, e, "CodeMirror plugin crashed");
-            }
-        }
-    }
-    deactivate() {
-        this.spec = this.value = null;
-    }
-}
-const editorAttributes = /*@__PURE__*/Facet.define();
-const contentAttributes = /*@__PURE__*/Facet.define();
-// Provide decorations
-const decorations = /*@__PURE__*/Facet.define();
-const atomicRanges = /*@__PURE__*/Facet.define();
-const bidiIsolatedRanges = /*@__PURE__*/Facet.define();
-function getIsolatedRanges(view, from, to) {
-    let isolates = view.state.facet(bidiIsolatedRanges);
-    if (!isolates.length)
-        return isolates;
-    let sets = isolates.map(i => i instanceof Function ? i(view) : i);
-    let result = [];
-    RangeSet.spans(sets, from, to, {
-        point() { },
-        span(from, to, active, open) {
-            let level = result;
-            for (let i = active.length - 1; i >= 0; i--, open--) {
-                let iso = active[i].spec.bidiIsolate, update;
-                if (iso == null)
-                    continue;
-                if (open > 0 && level.length &&
-                    (update = level[level.length - 1]).to == from && update.direction == iso) {
-                    update.to = to;
-                    level = update.inner;
-                }
-                else {
-                    let add = { from, to, direction: iso, inner: [] };
-                    level.push(add);
-                    level = add.inner;
-                }
-            }
-        }
-    });
-    return result;
-}
-const scrollMargins = /*@__PURE__*/Facet.define();
-function getScrollMargins(view) {
-    let left = 0, right = 0, top = 0, bottom = 0;
-    for (let source of view.state.facet(scrollMargins)) {
-        let m = source(view);
-        if (m) {
-            if (m.left != null)
-                left = Math.max(left, m.left);
-            if (m.right != null)
-                right = Math.max(right, m.right);
-            if (m.top != null)
-                top = Math.max(top, m.top);
-            if (m.bottom != null)
-                bottom = Math.max(bottom, m.bottom);
-        }
-    }
-    return { left, right, top, bottom };
-}
-const styleModule = /*@__PURE__*/Facet.define();
-class ChangedRange {
-    constructor(fromA, toA, fromB, toB) {
-        this.fromA = fromA;
-        this.toA = toA;
-        this.fromB = fromB;
-        this.toB = toB;
-    }
-    join(other) {
-        return new ChangedRange(Math.min(this.fromA, other.fromA), Math.max(this.toA, other.toA), Math.min(this.fromB, other.fromB), Math.max(this.toB, other.toB));
-    }
-    addToSet(set) {
-        let i = set.length, me = this;
-        for (; i > 0; i--) {
-            let range = set[i - 1];
-            if (range.fromA > me.toA)
-                continue;
-            if (range.toA < me.fromA)
-                break;
-            me = me.join(range);
-            set.splice(i - 1, 1);
-        }
-        set.splice(i, 0, me);
-        return set;
-    }
-    static extendWithRanges(diff, ranges) {
-        if (ranges.length == 0)
-            return diff;
-        let result = [];
-        for (let dI = 0, rI = 0, posA = 0, posB = 0;; dI++) {
-            let next = dI == diff.length ? null : diff[dI], off = posA - posB;
-            let end = next ? next.fromB : 1e9;
-            while (rI < ranges.length && ranges[rI] < end) {
-                let from = ranges[rI], to = ranges[rI + 1];
-                let fromB = Math.max(posB, from), toB = Math.min(end, to);
-                if (fromB <= toB)
-                    new ChangedRange(fromB + off, toB + off, fromB, toB).addToSet(result);
-                if (to > end)
-                    break;
-                else
-                    rI += 2;
-            }
-            if (!next)
-                return result;
-            new ChangedRange(next.fromA, next.toA, next.fromB, next.toB).addToSet(result);
-            posA = next.toA;
-            posB = next.toB;
-        }
-    }
-}
-/**
-View [plugins](https://codemirror.net/6/docs/ref/#view.ViewPlugin) are given instances of this
-class, which describe what happened, whenever the view is updated.
-*/
-class ViewUpdate {
-    constructor(
-    /**
-    The editor view that the update is associated with.
-    */
-    view, 
-    /**
-    The new editor state.
-    */
-    state, 
-    /**
-    The transactions involved in the update. May be empty.
-    */
-    transactions) {
-        this.view = view;
-        this.state = state;
-        this.transactions = transactions;
-        /**
-        @internal
-        */
-        this.flags = 0;
-        this.startState = view.state;
-        this.changes = ChangeSet.empty(this.startState.doc.length);
-        for (let tr of transactions)
-            this.changes = this.changes.compose(tr.changes);
-        let changedRanges = [];
-        this.changes.iterChangedRanges((fromA, toA, fromB, toB) => changedRanges.push(new ChangedRange(fromA, toA, fromB, toB)));
-        this.changedRanges = changedRanges;
-    }
-    /**
-    @internal
-    */
-    static create(view, state, transactions) {
-        return new ViewUpdate(view, state, transactions);
-    }
-    /**
-    Tells you whether the [viewport](https://codemirror.net/6/docs/ref/#view.EditorView.viewport) or
-    [visible ranges](https://codemirror.net/6/docs/ref/#view.EditorView.visibleRanges) changed in this
-    update.
-    */
-    get viewportChanged() {
-        return (this.flags & 4 /* UpdateFlag.Viewport */) > 0;
-    }
-    /**
-    Indicates whether the height of a block element in the editor
-    changed in this update.
-    */
-    get heightChanged() {
-        return (this.flags & 2 /* UpdateFlag.Height */) > 0;
-    }
-    /**
-    Returns true when the document was modified or the size of the
-    editor, or elements within the editor, changed.
-    */
-    get geometryChanged() {
-        return this.docChanged || (this.flags & (8 /* UpdateFlag.Geometry */ | 2 /* UpdateFlag.Height */)) > 0;
-    }
-    /**
-    True when this update indicates a focus change.
-    */
-    get focusChanged() {
-        return (this.flags & 1 /* UpdateFlag.Focus */) > 0;
-    }
-    /**
-    Whether the document changed in this update.
-    */
-    get docChanged() {
-        return !this.changes.empty;
-    }
-    /**
-    Whether the selection was explicitly set in this update.
-    */
-    get selectionSet() {
-        return this.transactions.some(tr => tr.selection);
-    }
-    /**
-    @internal
-    */
-    get empty() { return this.flags == 0 && this.transactions.length == 0; }
-}
-
 /**
 Used to indicate [text direction](https://codemirror.net/6/docs/ref/#view.EditorView.textDirection).
 */
@@ -2231,6 +1870,10 @@ class BidiSpan {
     @internal
     */
     side(end, dir) { return (this.dir == dir) == end ? this.to : this.from; }
+    /**
+    @internal
+    */
+    forward(forward, dir) { return forward == (this.dir == dir); }
     /**
     @internal
     */
@@ -2581,45 +2224,420 @@ function trivialOrder(length) {
     return [new BidiSpan(0, length, 0)];
 }
 let movedOver = "";
+// This implementation moves strictly visually, without concern for a
+// traversal visiting every logical position in the string. It will
+// still do so for simple input, but situations like multiple isolates
+// with the same level next to each other, or text going against the
+// main dir at the end of the line, will make some positions
+// unreachable with this motion. Each visible cursor position will
+// correspond to the lower-level bidi span that touches it.
+//
+// The alternative would be to solve an order globally for a given
+// line, making sure that it includes every position, but that would
+// require associating non-canonical (higher bidi span level)
+// positions with a given visual position, which is likely to confuse
+// people. (And would generally be a lot more complicated.)
 function moveVisually(line, order, dir, start, forward) {
     var _a;
-    let startIndex = start.head - line.from, spanI = -1;
-    if (startIndex == 0) {
-        if (!forward || !line.length)
+    let startIndex = start.head - line.from;
+    let spanI = BidiSpan.find(order, startIndex, (_a = start.bidiLevel) !== null && _a !== void 0 ? _a : -1, start.assoc);
+    let span = order[spanI], spanEnd = span.side(forward, dir);
+    // End of span
+    if (startIndex == spanEnd) {
+        let nextI = spanI += forward ? 1 : -1;
+        if (nextI < 0 || nextI >= order.length)
             return null;
-        if (order[0].level != dir) {
-            startIndex = order[0].side(false, dir);
-            spanI = 0;
-        }
-    }
-    else if (startIndex == line.length) {
-        if (forward)
-            return null;
-        let last = order[order.length - 1];
-        if (last.level != dir) {
-            startIndex = last.side(true, dir);
-            spanI = order.length - 1;
-        }
-    }
-    if (spanI < 0)
-        spanI = BidiSpan.find(order, startIndex, (_a = start.bidiLevel) !== null && _a !== void 0 ? _a : -1, start.assoc);
-    let span = order[spanI];
-    // End of span. (But not end of line--that was checked for above.)
-    if (startIndex == span.side(forward, dir)) {
-        span = order[spanI += forward ? 1 : -1];
+        span = order[spanI = nextI];
         startIndex = span.side(!forward, dir);
+        spanEnd = span.side(forward, dir);
     }
-    let indexForward = forward == (span.dir == dir);
-    let nextIndex = findClusterBreak(line.text, startIndex, indexForward);
+    let nextIndex = findClusterBreak(line.text, startIndex, span.forward(forward, dir));
+    if (nextIndex < span.from || nextIndex > span.to)
+        nextIndex = spanEnd;
     movedOver = line.text.slice(Math.min(startIndex, nextIndex), Math.max(startIndex, nextIndex));
-    if (nextIndex > span.from && nextIndex < span.to)
-        return EditorSelection.cursor(nextIndex + line.from, indexForward ? -1 : 1, span.level);
     let nextSpan = spanI == (forward ? order.length - 1 : 0) ? null : order[spanI + (forward ? 1 : -1)];
-    if (!nextSpan && span.level != dir)
-        return EditorSelection.cursor(forward ? line.to : line.from, forward ? -1 : 1, dir);
-    if (nextSpan && nextSpan.level < span.level)
-        return EditorSelection.cursor(nextSpan.side(!forward, dir) + line.from, forward ? 1 : -1, nextSpan.level);
-    return EditorSelection.cursor(nextIndex + line.from, forward ? -1 : 1, span.level);
+    if (nextSpan && nextIndex == spanEnd && nextSpan.level + (forward ? 0 : 1) < span.level)
+        return EditorSelection.cursor(nextSpan.side(!forward, dir) + line.from, nextSpan.forward(forward, dir) ? 1 : -1, nextSpan.level);
+    return EditorSelection.cursor(nextIndex + line.from, span.forward(forward, dir) ? -1 : 1, span.level);
+}
+function autoDirection(text, from, to) {
+    for (let i = from; i < to; i++) {
+        let type = charType(text.charCodeAt(i));
+        if (type == 1 /* T.L */)
+            return LTR;
+        if (type == 2 /* T.R */ || type == 4 /* T.AL */)
+            return RTL;
+    }
+    return LTR;
+}
+
+const clickAddsSelectionRange = /*@__PURE__*/Facet.define();
+const dragMovesSelection$1 = /*@__PURE__*/Facet.define();
+const mouseSelectionStyle = /*@__PURE__*/Facet.define();
+const exceptionSink = /*@__PURE__*/Facet.define();
+const updateListener = /*@__PURE__*/Facet.define();
+const inputHandler = /*@__PURE__*/Facet.define();
+const focusChangeEffect = /*@__PURE__*/Facet.define();
+const perLineTextDirection = /*@__PURE__*/Facet.define({
+    combine: values => values.some(x => x)
+});
+const nativeSelectionHidden = /*@__PURE__*/Facet.define({
+    combine: values => values.some(x => x)
+});
+class ScrollTarget {
+    constructor(range, y = "nearest", x = "nearest", yMargin = 5, xMargin = 5, 
+    // This data structure is abused to also store precise scroll
+    // snapshots, instead of a `scrollIntoView` request. When this
+    // flag is `true`, `range` points at a position in the reference
+    // line, `yMargin` holds the difference between the top of that
+    // line and the top of the editor, and `xMargin` holds the
+    // editor's `scrollLeft`.
+    isSnapshot = false) {
+        this.range = range;
+        this.y = y;
+        this.x = x;
+        this.yMargin = yMargin;
+        this.xMargin = xMargin;
+        this.isSnapshot = isSnapshot;
+    }
+    map(changes) {
+        return changes.empty ? this :
+            new ScrollTarget(this.range.map(changes), this.y, this.x, this.yMargin, this.xMargin, this.isSnapshot);
+    }
+    clip(state) {
+        return this.range.to <= state.doc.length ? this :
+            new ScrollTarget(EditorSelection.cursor(state.doc.length), this.y, this.x, this.yMargin, this.xMargin, this.isSnapshot);
+    }
+}
+const scrollIntoView = /*@__PURE__*/StateEffect.define({ map: (t, ch) => t.map(ch) });
+/**
+Log or report an unhandled exception in client code. Should
+probably only be used by extension code that allows client code to
+provide functions, and calls those functions in a context where an
+exception can't be propagated to calling code in a reasonable way
+(for example when in an event handler).
+
+Either calls a handler registered with
+[`EditorView.exceptionSink`](https://codemirror.net/6/docs/ref/#view.EditorView^exceptionSink),
+`window.onerror`, if defined, or `console.error` (in which case
+it'll pass `context`, when given, as first argument).
+*/
+function logException(state, exception, context) {
+    let handler = state.facet(exceptionSink);
+    if (handler.length)
+        handler[0](exception);
+    else if (window.onerror)
+        window.onerror(String(exception), context, undefined, undefined, exception);
+    else if (context)
+        console.error(context + ":", exception);
+    else
+        console.error(exception);
+}
+const editable = /*@__PURE__*/Facet.define({ combine: values => values.length ? values[0] : true });
+let nextPluginID = 0;
+const viewPlugin = /*@__PURE__*/Facet.define();
+/**
+View plugins associate stateful values with a view. They can
+influence the way the content is drawn, and are notified of things
+that happen in the view.
+*/
+class ViewPlugin {
+    constructor(
+    /**
+    @internal
+    */
+    id, 
+    /**
+    @internal
+    */
+    create, 
+    /**
+    @internal
+    */
+    domEventHandlers, 
+    /**
+    @internal
+    */
+    domEventObservers, buildExtensions) {
+        this.id = id;
+        this.create = create;
+        this.domEventHandlers = domEventHandlers;
+        this.domEventObservers = domEventObservers;
+        this.extension = buildExtensions(this);
+    }
+    /**
+    Define a plugin from a constructor function that creates the
+    plugin's value, given an editor view.
+    */
+    static define(create, spec) {
+        const { eventHandlers, eventObservers, provide, decorations: deco } = spec || {};
+        return new ViewPlugin(nextPluginID++, create, eventHandlers, eventObservers, plugin => {
+            let ext = [viewPlugin.of(plugin)];
+            if (deco)
+                ext.push(decorations.of(view => {
+                    let pluginInst = view.plugin(plugin);
+                    return pluginInst ? deco(pluginInst) : Decoration.none;
+                }));
+            if (provide)
+                ext.push(provide(plugin));
+            return ext;
+        });
+    }
+    /**
+    Create a plugin for a class whose constructor takes a single
+    editor view as argument.
+    */
+    static fromClass(cls, spec) {
+        return ViewPlugin.define(view => new cls(view), spec);
+    }
+}
+class PluginInstance {
+    constructor(spec) {
+        this.spec = spec;
+        // When starting an update, all plugins have this field set to the
+        // update object, indicating they need to be updated. When finished
+        // updating, it is set to `false`. Retrieving a plugin that needs to
+        // be updated with `view.plugin` forces an eager update.
+        this.mustUpdate = null;
+        // This is null when the plugin is initially created, but
+        // initialized on the first update.
+        this.value = null;
+    }
+    update(view) {
+        if (!this.value) {
+            if (this.spec) {
+                try {
+                    this.value = this.spec.create(view);
+                }
+                catch (e) {
+                    logException(view.state, e, "CodeMirror plugin crashed");
+                    this.deactivate();
+                }
+            }
+        }
+        else if (this.mustUpdate) {
+            let update = this.mustUpdate;
+            this.mustUpdate = null;
+            if (this.value.update) {
+                try {
+                    this.value.update(update);
+                }
+                catch (e) {
+                    logException(update.state, e, "CodeMirror plugin crashed");
+                    if (this.value.destroy)
+                        try {
+                            this.value.destroy();
+                        }
+                        catch (_) { }
+                    this.deactivate();
+                }
+            }
+        }
+        return this;
+    }
+    destroy(view) {
+        var _a;
+        if ((_a = this.value) === null || _a === void 0 ? void 0 : _a.destroy) {
+            try {
+                this.value.destroy();
+            }
+            catch (e) {
+                logException(view.state, e, "CodeMirror plugin crashed");
+            }
+        }
+    }
+    deactivate() {
+        this.spec = this.value = null;
+    }
+}
+const editorAttributes = /*@__PURE__*/Facet.define();
+const contentAttributes = /*@__PURE__*/Facet.define();
+// Provide decorations
+const decorations = /*@__PURE__*/Facet.define();
+const outerDecorations = /*@__PURE__*/Facet.define();
+const atomicRanges = /*@__PURE__*/Facet.define();
+const bidiIsolatedRanges = /*@__PURE__*/Facet.define();
+function getIsolatedRanges(view, line) {
+    let isolates = view.state.facet(bidiIsolatedRanges);
+    if (!isolates.length)
+        return isolates;
+    let sets = isolates.map(i => i instanceof Function ? i(view) : i);
+    let result = [];
+    RangeSet.spans(sets, line.from, line.to, {
+        point() { },
+        span(fromDoc, toDoc, active, open) {
+            let from = fromDoc - line.from, to = toDoc - line.from;
+            let level = result;
+            for (let i = active.length - 1; i >= 0; i--, open--) {
+                let direction = active[i].spec.bidiIsolate, update;
+                if (direction == null)
+                    direction = autoDirection(line.text, from, to);
+                if (open > 0 && level.length &&
+                    (update = level[level.length - 1]).to == from && update.direction == direction) {
+                    update.to = to;
+                    level = update.inner;
+                }
+                else {
+                    let add = { from, to, direction, inner: [] };
+                    level.push(add);
+                    level = add.inner;
+                }
+            }
+        }
+    });
+    return result;
+}
+const scrollMargins = /*@__PURE__*/Facet.define();
+function getScrollMargins(view) {
+    let left = 0, right = 0, top = 0, bottom = 0;
+    for (let source of view.state.facet(scrollMargins)) {
+        let m = source(view);
+        if (m) {
+            if (m.left != null)
+                left = Math.max(left, m.left);
+            if (m.right != null)
+                right = Math.max(right, m.right);
+            if (m.top != null)
+                top = Math.max(top, m.top);
+            if (m.bottom != null)
+                bottom = Math.max(bottom, m.bottom);
+        }
+    }
+    return { left, right, top, bottom };
+}
+const styleModule = /*@__PURE__*/Facet.define();
+class ChangedRange {
+    constructor(fromA, toA, fromB, toB) {
+        this.fromA = fromA;
+        this.toA = toA;
+        this.fromB = fromB;
+        this.toB = toB;
+    }
+    join(other) {
+        return new ChangedRange(Math.min(this.fromA, other.fromA), Math.max(this.toA, other.toA), Math.min(this.fromB, other.fromB), Math.max(this.toB, other.toB));
+    }
+    addToSet(set) {
+        let i = set.length, me = this;
+        for (; i > 0; i--) {
+            let range = set[i - 1];
+            if (range.fromA > me.toA)
+                continue;
+            if (range.toA < me.fromA)
+                break;
+            me = me.join(range);
+            set.splice(i - 1, 1);
+        }
+        set.splice(i, 0, me);
+        return set;
+    }
+    static extendWithRanges(diff, ranges) {
+        if (ranges.length == 0)
+            return diff;
+        let result = [];
+        for (let dI = 0, rI = 0, posA = 0, posB = 0;; dI++) {
+            let next = dI == diff.length ? null : diff[dI], off = posA - posB;
+            let end = next ? next.fromB : 1e9;
+            while (rI < ranges.length && ranges[rI] < end) {
+                let from = ranges[rI], to = ranges[rI + 1];
+                let fromB = Math.max(posB, from), toB = Math.min(end, to);
+                if (fromB <= toB)
+                    new ChangedRange(fromB + off, toB + off, fromB, toB).addToSet(result);
+                if (to > end)
+                    break;
+                else
+                    rI += 2;
+            }
+            if (!next)
+                return result;
+            new ChangedRange(next.fromA, next.toA, next.fromB, next.toB).addToSet(result);
+            posA = next.toA;
+            posB = next.toB;
+        }
+    }
+}
+/**
+View [plugins](https://codemirror.net/6/docs/ref/#view.ViewPlugin) are given instances of this
+class, which describe what happened, whenever the view is updated.
+*/
+class ViewUpdate {
+    constructor(
+    /**
+    The editor view that the update is associated with.
+    */
+    view, 
+    /**
+    The new editor state.
+    */
+    state, 
+    /**
+    The transactions involved in the update. May be empty.
+    */
+    transactions) {
+        this.view = view;
+        this.state = state;
+        this.transactions = transactions;
+        /**
+        @internal
+        */
+        this.flags = 0;
+        this.startState = view.state;
+        this.changes = ChangeSet.empty(this.startState.doc.length);
+        for (let tr of transactions)
+            this.changes = this.changes.compose(tr.changes);
+        let changedRanges = [];
+        this.changes.iterChangedRanges((fromA, toA, fromB, toB) => changedRanges.push(new ChangedRange(fromA, toA, fromB, toB)));
+        this.changedRanges = changedRanges;
+    }
+    /**
+    @internal
+    */
+    static create(view, state, transactions) {
+        return new ViewUpdate(view, state, transactions);
+    }
+    /**
+    Tells you whether the [viewport](https://codemirror.net/6/docs/ref/#view.EditorView.viewport) or
+    [visible ranges](https://codemirror.net/6/docs/ref/#view.EditorView.visibleRanges) changed in this
+    update.
+    */
+    get viewportChanged() {
+        return (this.flags & 4 /* UpdateFlag.Viewport */) > 0;
+    }
+    /**
+    Indicates whether the height of a block element in the editor
+    changed in this update.
+    */
+    get heightChanged() {
+        return (this.flags & 2 /* UpdateFlag.Height */) > 0;
+    }
+    /**
+    Returns true when the document was modified or the size of the
+    editor, or elements within the editor, changed.
+    */
+    get geometryChanged() {
+        return this.docChanged || (this.flags & (8 /* UpdateFlag.Geometry */ | 2 /* UpdateFlag.Height */)) > 0;
+    }
+    /**
+    True when this update indicates a focus change.
+    */
+    get focusChanged() {
+        return (this.flags & 1 /* UpdateFlag.Focus */) > 0;
+    }
+    /**
+    Whether the document changed in this update.
+    */
+    get docChanged() {
+        return !this.changes.empty;
+    }
+    /**
+    Whether the selection was explicitly set in this update.
+    */
+    get selectionSet() {
+        return this.transactions.some(tr => tr.selection);
+    }
+    /**
+    @internal
+    */
+    get empty() { return this.flags == 0 && this.transactions.length == 0; }
 }
 
 class DocView extends ContentView {
@@ -2829,9 +2847,8 @@ class DocView extends ContentView {
         }
         let domSel = this.view.observer.selectionRange;
         // If the selection is already here, or in an equivalent position, don't touch it
-        if (force || !domSel.focusNode ||
-            !isEquivalentPosition(anchor.node, anchor.offset, domSel.anchorNode, domSel.anchorOffset) ||
-            !isEquivalentPosition(head.node, head.offset, domSel.focusNode, domSel.focusOffset)) {
+        if (force || !domSel.focusNode || (!isEquivalentPosition(anchor.node, anchor.offset, domSel.anchorNode, domSel.anchorOffset) ||
+            !isEquivalentPosition(head.node, head.offset, domSel.focusNode, domSel.focusOffset)) && !this.suppressWidgetCursorChange(domSel, main)) {
             this.view.observer.ignore(() => {
                 // Chrome Android will hide the virtual keyboard when tapping
                 // inside an uneditable node, and not bring it back when we
@@ -2891,6 +2908,14 @@ class DocView extends ContentView {
         }
         this.impreciseAnchor = anchor.precise ? null : new DOMPos(domSel.anchorNode, domSel.anchorOffset);
         this.impreciseHead = head.precise ? null : new DOMPos(domSel.focusNode, domSel.focusOffset);
+    }
+    // If a zero-length widget is inserted next to the cursor during
+    // composition, avoid moving it across it and disrupting the
+    // composition.
+    suppressWidgetCursorChange(sel, cursor) {
+        return this.hasComposition && cursor.empty &&
+            isEquivalentPosition(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset) &&
+            this.posFromDOM(sel.focusNode, sel.focusOffset) == cursor.head;
     }
     enforceCursorAssoc() {
         if (this.hasComposition)
@@ -3100,6 +3125,16 @@ class DocView extends ContentView {
             let dynamic = this.dynamicDecorationMap[i] = typeof d == "function";
             return dynamic ? d(this.view) : d;
         });
+        let dynamicOuter = false, outerDeco = this.view.state.facet(outerDecorations).map((d, i) => {
+            let dynamic = typeof d == "function";
+            if (dynamic)
+                dynamicOuter = true;
+            return dynamic ? d(this.view) : d;
+        });
+        if (outerDeco.length) {
+            this.dynamicDecorationMap[allDeco.length] = dynamicOuter;
+            allDeco.push(RangeSet.join(outerDeco));
+        }
         for (let i = allDeco.length; i < allDeco.length + 3; i++)
             this.dynamicDecorationMap[i] = false;
         return this.decorations = [
@@ -3143,6 +3178,7 @@ class BlockGapWidget extends WidgetType {
     }
     toDOM() {
         let elt = document.createElement("div");
+        elt.className = "cm-gap";
         this.updateDOM(elt);
         return elt;
     }
@@ -3151,7 +3187,9 @@ class BlockGapWidget extends WidgetType {
         elt.style.height = this.height + "px";
         return true;
     }
+    get editable() { return true; }
     get estimatedHeight() { return this.height; }
+    ignoreEvent() { return false; }
 }
 function findCompositionNode(view, headPos) {
     let sel = view.observer.selectionRange;
@@ -3547,7 +3585,7 @@ function moveByChar(view, start, forward, by) {
             char = "\n";
             line = view.state.doc.line(line.number + (forward ? 1 : -1));
             spans = view.bidiSpans(line);
-            next = EditorSelection.cursor(forward ? line.from : line.to);
+            next = view.visualLineSide(line, !forward);
         }
         if (!check) {
             if (!by)
@@ -3952,8 +3990,7 @@ class MouseSelection {
     }
     select(event) {
         let { view } = this, selection = this.skipAtoms(this.style.get(event, this.extend, this.multiple));
-        if (this.mustSelect || !selection.eq(view.state.selection) ||
-            selection.main.assoc != view.state.selection.main.assoc && this.dragging === false)
+        if (this.mustSelect || !selection.eq(view.state.selection, this.dragging === false))
             this.view.dispatch({
                 selection,
                 userEvent: "select.pointer"
@@ -5881,6 +5918,9 @@ const baseTheme$1 = /*@__PURE__*/buildTheme("." + baseThemeID, {
     "&.cm-focused > .cm-scroller > .cm-cursorLayer .cm-cursor": {
         display: "block"
     },
+    ".cm-iso": {
+        unicodeBidi: "isolate"
+    },
     ".cm-announced": {
         position: "fixed",
         top: "-10000px"
@@ -6164,6 +6204,20 @@ class DOMChange {
                 !contains(view.contentDOM, domSel.anchorNode)
                 ? view.state.selection.main.anchor
                 : view.docView.posFromDOM(domSel.anchorNode, domSel.anchorOffset);
+            // iOS will refuse to select the block gaps when doing
+            // select-all.
+            // Chrome will put the selection *inside* them, confusing
+            // posFromDOM
+            let vp = view.viewport;
+            if ((browser.ios || browser.chrome) && view.state.selection.main.empty && head != anchor &&
+                (vp.from > 0 || vp.to < view.state.doc.length)) {
+                let from = Math.min(head, anchor), to = Math.max(head, anchor);
+                let offFrom = vp.from - from, offTo = vp.to - to;
+                if ((offFrom == 0 || offFrom == 1 || from == 0) && (offTo == 0 || offTo == -1 || to == view.state.doc.length)) {
+                    head = 0;
+                    anchor = view.state.doc.length;
+                }
+            }
             this.newSel = EditorSelection.single(anchor, head);
         }
     }
@@ -6941,6 +6995,8 @@ class EditorView {
         this.dom = document.createElement("div");
         this.dom.appendChild(this.announceDOM);
         this.dom.appendChild(this.scrollDOM);
+        if (config.parent)
+            config.parent.appendChild(this.dom);
         let { dispatch } = config;
         this.dispatchTransactions = config.dispatchTransactions ||
             (dispatch && ((trs) => trs.forEach(tr => dispatch(tr, this)))) ||
@@ -6961,8 +7017,6 @@ class EditorView {
         this.updateAttrs();
         this.updateState = 0 /* UpdateState.Idle */;
         this.requestMeasure();
-        if (config.parent)
-            config.parent.appendChild(this.dom);
     }
     dispatch(...input) {
         let trs = input.length == 1 && input[0] instanceof Transaction ? input
@@ -7453,6 +7507,17 @@ class EditorView {
         return skipAtoms(this, start, moveByChar(this, start, forward, initial => byGroup(this, start.head, initial)));
     }
     /**
+    Get the cursor position visually at the start or end of a line.
+    Note that this may differ from the _logical_ position at its
+    start or end (which is simply at `line.from`/`line.to`) if text
+    at the start or end goes against the line's base text direction.
+    */
+    visualLineSide(line, end) {
+        let order = this.bidiSpans(line), dir = this.textDirectionAt(line.from);
+        let span = order[end ? order.length - 1 : 0];
+        return EditorSelection.cursor(span.side(end, dir) + line.from, span.forward(!end, dir) ? 1 : -1);
+    }
+    /**
     Move to the next line boundary in the given direction. If
     `includeWrap` is true, line wrapping is on, and there is a
     further wrap point on the current line, the wrap point will be
@@ -7584,11 +7649,11 @@ class EditorView {
         let dir = this.textDirectionAt(line.from), isolates;
         for (let entry of this.bidiCache) {
             if (entry.from == line.from && entry.dir == dir &&
-                (entry.fresh || isolatesEq(entry.isolates, isolates = getIsolatedRanges(this, line.from, line.to))))
+                (entry.fresh || isolatesEq(entry.isolates, isolates = getIsolatedRanges(this, line))))
                 return entry.order;
         }
         if (!isolates)
-            isolates = getIsolatedRanges(this, line.from, line.to);
+            isolates = getIsolatedRanges(this, line);
         let order = computeOrder(line.text, dir, isolates);
         this.bidiCache.push(new CachedOrder(line.from, line.to, dir, isolates, true, order));
         return order;
@@ -7832,6 +7897,16 @@ containing the decorations to
 [`EditorView.atomicRanges`](https://codemirror.net/6/docs/ref/#view.EditorView^atomicRanges).
 */
 EditorView.decorations = decorations;
+/**
+Facet that works much like
+[`decorations`](https://codemirror.net/6/docs/ref/#view.EditorView^decorations), but puts its
+inputs at the very bottom of the precedence stack, meaning mark
+decorations provided here will only be split by other, partially
+overlapping \`outerDecorations\` ranges, and wrap around all
+regular decorations. Use this for mark elements that should, as
+much as possible, remain in one piece.
+*/
+EditorView.outerDecorations = outerDecorations;
 /**
 Used to provide ranges that should be treated as atoms as far as
 cursor motion is concerned. This causes methods like
@@ -9104,12 +9179,14 @@ function crosshairCursor(options = {}) {
 
 const Outside = "-10000px";
 class TooltipViewManager {
-    constructor(view, facet, createTooltipView) {
+    constructor(view, facet, createTooltipView, removeTooltipView) {
         this.facet = facet;
         this.createTooltipView = createTooltipView;
+        this.removeTooltipView = removeTooltipView;
         this.input = view.state.facet(facet);
         this.tooltips = this.input.filter(t => t);
-        this.tooltipViews = this.tooltips.map(createTooltipView);
+        let prev = null;
+        this.tooltipViews = this.tooltips.map(t => prev = createTooltipView(t, prev));
     }
     update(update, above) {
         var _a;
@@ -9132,7 +9209,7 @@ class TooltipViewManager {
                     known = i;
             }
             if (known < 0) {
-                tooltipViews[i] = this.createTooltipView(tip);
+                tooltipViews[i] = this.createTooltipView(tip, i ? tooltipViews[i - 1] : null);
                 if (newAbove)
                     newAbove[i] = !!tip.above;
             }
@@ -9146,7 +9223,7 @@ class TooltipViewManager {
         }
         for (let t of this.tooltipViews)
             if (tooltipViews.indexOf(t) < 0) {
-                t.dom.remove();
+                this.removeTooltipView(t);
                 (_a = t.destroy) === null || _a === void 0 ? void 0 : _a.call(t);
             }
         if (above) {
@@ -9194,7 +9271,13 @@ const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
         this.classes = view.themeClasses;
         this.createContainer();
         this.measureReq = { read: this.readMeasure.bind(this), write: this.writeMeasure.bind(this), key: this };
-        this.manager = new TooltipViewManager(view, showTooltip, t => this.createTooltip(t));
+        this.resizeObserver = typeof ResizeObserver == "function" ? new ResizeObserver(() => this.measureSoon()) : null;
+        this.manager = new TooltipViewManager(view, showTooltip, (t, p) => this.createTooltip(t, p), t => {
+            if (this.resizeObserver)
+                this.resizeObserver.unobserve(t.dom);
+            t.dom.remove();
+        });
+        this.above = this.manager.tooltips.map(t => !!t.above);
         this.intersectionObserver = typeof IntersectionObserver == "function" ? new IntersectionObserver(entries => {
             if (Date.now() > this.lastTransaction - 50 &&
                 entries.length > 0 && entries[entries.length - 1].intersectionRatio < 1)
@@ -9258,24 +9341,27 @@ const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
         if (shouldMeasure)
             this.maybeMeasure();
     }
-    createTooltip(tooltip) {
+    createTooltip(tooltip, prev) {
         let tooltipView = tooltip.create(this.view);
+        let before = prev ? prev.dom : null;
         tooltipView.dom.classList.add("cm-tooltip");
         if (tooltip.arrow && !tooltipView.dom.querySelector(".cm-tooltip > .cm-tooltip-arrow")) {
             let arrow = document.createElement("div");
             arrow.className = "cm-tooltip-arrow";
-            tooltipView.dom.appendChild(arrow);
+            tooltipView.dom.insertBefore(arrow, before);
         }
         tooltipView.dom.style.position = this.position;
         tooltipView.dom.style.top = Outside;
         tooltipView.dom.style.left = "0px";
-        this.container.appendChild(tooltipView.dom);
+        this.container.insertBefore(tooltipView.dom, before);
         if (tooltipView.mount)
             tooltipView.mount(this.view);
+        if (this.resizeObserver)
+            this.resizeObserver.observe(tooltipView.dom);
         return tooltipView;
     }
     destroy() {
-        var _a, _b;
+        var _a, _b, _c;
         this.view.win.removeEventListener("resize", this.measureSoon);
         for (let tooltipView of this.manager.tooltipViews) {
             tooltipView.dom.remove();
@@ -9283,7 +9369,8 @@ const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
         }
         if (this.parent)
             this.container.remove();
-        (_b = this.intersectionObserver) === null || _b === void 0 ? void 0 : _b.disconnect();
+        (_b = this.resizeObserver) === null || _b === void 0 ? void 0 : _b.disconnect();
+        (_c = this.intersectionObserver) === null || _c === void 0 ? void 0 : _c.disconnect();
         clearTimeout(this.measureTimeout);
     }
     readMeasure() {
@@ -9297,16 +9384,11 @@ const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
                 // positioning.
                 makeAbsolute = dom.offsetParent != this.container.ownerDocument.body;
             }
-            else {
+            else if (dom.style.top == Outside && dom.style.left == "0px") {
                 // On other browsers, we have to awkwardly try and use other
                 // information to detect a transform.
-                if (this.view.scaleX != 1 || this.view.scaleY != 1) {
-                    makeAbsolute = true;
-                }
-                else if (dom.style.top == Outside && dom.style.left == "0px") {
-                    let rect = dom.getBoundingClientRect();
-                    makeAbsolute = Math.abs(rect.top + 10000) > 1 || Math.abs(rect.left) > 1;
-                }
+                let rect = dom.getBoundingClientRect();
+                makeAbsolute = Math.abs(rect.top + 10000) > 1 || Math.abs(rect.left) > 1;
             }
         }
         if (makeAbsolute || this.position == "absolute") {
@@ -9491,7 +9573,9 @@ Facet to which an extension can add a value to show a tooltip.
 const showTooltip = /*@__PURE__*/Facet.define({
     enables: [tooltipPlugin, baseTheme]
 });
-const showHoverTooltip = /*@__PURE__*/Facet.define();
+const showHoverTooltip = /*@__PURE__*/Facet.define({
+    combine: inputs => inputs.reduce((a, i) => a.concat(i), [])
+});
 class HoverTooltipHost {
     // Needs to be static so that host tooltip instances always match
     static create(view) {
@@ -9502,12 +9586,12 @@ class HoverTooltipHost {
         this.mounted = false;
         this.dom = document.createElement("div");
         this.dom.classList.add("cm-tooltip-hover");
-        this.manager = new TooltipViewManager(view, showHoverTooltip, t => this.createHostedView(t));
+        this.manager = new TooltipViewManager(view, showHoverTooltip, (t, p) => this.createHostedView(t, p), t => t.dom.remove());
     }
-    createHostedView(tooltip) {
+    createHostedView(tooltip, prev) {
         let hostedView = tooltip.create(this.view);
         hostedView.dom.classList.add("cm-tooltip-section");
-        this.dom.appendChild(hostedView.dom);
+        this.dom.insertBefore(hostedView.dom, prev ? prev.dom.nextSibling : this.dom.firstChild);
         if (this.mounted && hostedView.mount)
             hostedView.mount(this.view);
         return hostedView;
@@ -9552,7 +9636,7 @@ class HoverTooltipHost {
     get resize() { return this.passProp("resize"); }
 }
 const showHoverTooltipHost = /*@__PURE__*/showTooltip.compute([showHoverTooltip], state => {
-    let tooltips = state.facet(showHoverTooltip).filter(t => t);
+    let tooltips = state.facet(showHoverTooltip);
     if (tooltips.length === 0)
         return null;
     return {
@@ -9590,7 +9674,7 @@ class HoverPlugin {
     }
     checkHover() {
         this.hoverTimeout = -1;
-        if (this.active)
+        if (this.active.length)
             return;
         let hovered = Date.now() - this.lastMove.time;
         if (hovered < this.hoverTime)
@@ -9628,13 +9712,13 @@ class HoverPlugin {
             open.then(result => {
                 if (this.pending == pending) {
                     this.pending = null;
-                    if (result)
-                        view.dispatch({ effects: this.setHover.of(result) });
+                    if (result && !(Array.isArray(result) && !result.length))
+                        view.dispatch({ effects: this.setHover.of(Array.isArray(result) ? result : [result]) });
                 }
             }, e => logException(view.state, e, "hover tooltip"));
         }
-        else if (open) {
-            view.dispatch({ effects: this.setHover.of(open) });
+        else if (open && !(Array.isArray(open) && !open.length)) {
+            view.dispatch({ effects: this.setHover.of(Array.isArray(open) ? open : [open]) });
         }
     }
     get tooltip() {
@@ -9643,16 +9727,16 @@ class HoverPlugin {
         return index > -1 ? plugin.manager.tooltipViews[index] : null;
     }
     mousemove(event) {
-        var _a;
+        var _a, _b;
         this.lastMove = { x: event.clientX, y: event.clientY, target: event.target, time: Date.now() };
         if (this.hoverTimeout < 0)
             this.hoverTimeout = setTimeout(this.checkHover, this.hoverTime);
         let { active, tooltip } = this;
-        if (active && tooltip && !isInTooltip(tooltip.dom, event) || this.pending) {
-            let { pos } = active || this.pending, end = (_a = active === null || active === void 0 ? void 0 : active.end) !== null && _a !== void 0 ? _a : pos;
+        if (active.length && tooltip && !isInTooltip(tooltip.dom, event) || this.pending) {
+            let { pos } = active[0] || this.pending, end = (_b = (_a = active[0]) === null || _a === void 0 ? void 0 : _a.end) !== null && _b !== void 0 ? _b : pos;
             if ((pos == end ? this.view.posAtCoords(this.lastMove) != pos
                 : !isOverRange(this.view, pos, end, event.clientX, event.clientY))) {
-                this.view.dispatch({ effects: this.setHover.of(null) });
+                this.view.dispatch({ effects: this.setHover.of([]) });
                 this.pending = null;
             }
         }
@@ -9661,11 +9745,11 @@ class HoverPlugin {
         clearTimeout(this.hoverTimeout);
         this.hoverTimeout = -1;
         let { active } = this;
-        if (active) {
+        if (active.length) {
             let { tooltip } = this;
             let inTooltip = tooltip && tooltip.dom.contains(event.relatedTarget);
             if (!inTooltip)
-                this.view.dispatch({ effects: this.setHover.of(null) });
+                this.view.dispatch({ effects: this.setHover.of([]) });
             else
                 this.watchTooltipLeave(tooltip.dom);
         }
@@ -9673,8 +9757,8 @@ class HoverPlugin {
     watchTooltipLeave(tooltip) {
         let watch = (event) => {
             tooltip.removeEventListener("mouseleave", watch);
-            if (this.active && !this.view.dom.contains(event.relatedTarget))
-                this.view.dispatch({ effects: this.setHover.of(null) });
+            if (this.active.length && !this.view.dom.contains(event.relatedTarget))
+                this.view.dispatch({ effects: this.setHover.of([]) });
         };
         tooltip.addEventListener("mouseleave", watch);
     }
@@ -9714,26 +9798,30 @@ range to be "merged" together without overlapping.
 function hoverTooltip(source, options = {}) {
     let setHover = StateEffect.define();
     let hoverState = StateField.define({
-        create() { return null; },
+        create() { return []; },
         update(value, tr) {
-            if (value && (options.hideOnChange && (tr.docChanged || tr.selection) ||
-                options.hideOn && options.hideOn(tr, value)))
-                return null;
-            if (value && tr.docChanged) {
-                let newPos = tr.changes.mapPos(value.pos, -1, MapMode.TrackDel);
-                if (newPos == null)
-                    return null;
-                let copy = Object.assign(Object.create(null), value);
-                copy.pos = newPos;
-                if (value.end != null)
-                    copy.end = tr.changes.mapPos(value.end);
-                value = copy;
+            if (value.length) {
+                if (options.hideOnChange && (tr.docChanged || tr.selection))
+                    value = [];
+                else if (options.hideOn)
+                    value = value.filter(v => !options.hideOn(tr, v));
+                if (tr.docChanged) {
+                    for (let tooltip of value) {
+                        let newPos = tr.changes.mapPos(tooltip.pos, -1, MapMode.TrackDel);
+                        if (newPos != null) {
+                            let copy = Object.assign(Object.create(null), tooltip);
+                            copy.pos = newPos;
+                            if (copy.end != null)
+                                copy.end = tr.changes.mapPos(copy.end);
+                        }
+                    }
+                }
             }
             for (let effect of tr.effects) {
                 if (effect.is(setHover))
                     value = effect.value;
                 if (effect.is(closeHoverTooltipEffect))
-                    value = null;
+                    value = [];
             }
             return value;
         },

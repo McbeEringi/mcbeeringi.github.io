@@ -719,6 +719,12 @@ function updateChunks(ranges, chunks, a, b, conf) {
             result.push(chunk);
         offA += range.diffA;
         offB += range.diffB;
+        while (chunkI < chunks.length) {
+            let next = chunks[chunkI];
+            if (next.fromA > toA + offA && next.fromB > toB + offB)
+                break;
+            chunkI++;
+        }
     }
     while (chunkI < chunks.length)
         result.push(chunks[chunkI++].offset(offA, offB));
@@ -1396,7 +1402,18 @@ function unifiedMergeView(config) {
         ChunkField.init(state => Chunk.build(orig, state.doc, diffConf))
     ];
 }
+/**
+The state effect used to signal changes in the original doc in a
+unified merge view.
+*/
 const updateOriginalDoc = /*@__PURE__*/StateEffect.define();
+/**
+Create an effect that, when added to a transaction on a unified
+merge view, will update the original document that's being compared against.
+*/
+function originalDocChangeEffect(state, changes) {
+    return updateOriginalDoc.of({ doc: changes.apply(state.doc), changes });
+}
 const originalDoc = /*@__PURE__*/StateField.define({
     create: () => Text.empty,
     update(doc, tr) {
@@ -1406,6 +1423,12 @@ const originalDoc = /*@__PURE__*/StateField.define({
         return doc;
     }
 });
+/**
+Get the original document from a unified merge editor's state.
+*/
+function getOriginalDoc(state) {
+    return state.field(originalDoc);
+}
 const DeletionWidgets = /*@__PURE__*/new WeakMap;
 class DeletionWidget extends WidgetType {
     constructor(buildDOM) {
@@ -1544,4 +1567,4 @@ const deletedChunks = /*@__PURE__*/StateField.define({
     provide: f => EditorView.decorations.from(f)
 });
 
-export { Change, Chunk, MergeView, acceptChunk, diff, getChunks, goToNextChunk, goToPreviousChunk, presentableDiff, rejectChunk, unifiedMergeView };
+export { Change, Chunk, MergeView, acceptChunk, diff, getChunks, getOriginalDoc, goToNextChunk, goToPreviousChunk, originalDocChangeEffect, presentableDiff, rejectChunk, unifiedMergeView, updateOriginalDoc };
