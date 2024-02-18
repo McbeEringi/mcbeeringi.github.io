@@ -1,4 +1,4 @@
-import { Annotation, StateEffect, EditorSelection, codePointAt, codePointSize, fromCodePoint, Facet, combineConfig, StateField, Prec, Text, MapMode, RangeValue, RangeSet, CharCategory } from "./@codemirror-state.js";
+import { Annotation, StateEffect, EditorSelection, codePointAt, codePointSize, fromCodePoint, Facet, combineConfig, StateField, Prec, Text, Transaction, MapMode, RangeValue, RangeSet, CharCategory } from "./@codemirror-state.js";
 import { Direction, logException, showTooltip, EditorView, ViewPlugin, getTooltip, Decoration, WidgetType, keymap } from "./@codemirror-view.js";
 import { syntaxTree, indentUnit } from "./@codemirror-language.js";
 
@@ -327,6 +327,7 @@ const completionConfig = /*@__PURE__*/Facet.define({
     combine(configs) {
         return combineConfig(configs, {
             activateOnTyping: true,
+            activateOnTypingDelay: 100,
             selectOnOpen: true,
             override: null,
             closeOnBlur: true,
@@ -1031,6 +1032,7 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
         this.debounceUpdate = -1;
         this.running = [];
         this.debounceAccept = -1;
+        this.pendingStart = false;
         this.composing = 0 /* CompositionState.None */;
         for (let active of view.state.field(completionState).active)
             if (active.state == 1 /* State.Pending */)
@@ -1064,8 +1066,11 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
         }
         if (this.debounceUpdate > -1)
             clearTimeout(this.debounceUpdate);
+        if (update.transactions.some(tr => tr.effects.some(e => e.is(startCompletionEffect))))
+            this.pendingStart = true;
+        let delay = this.pendingStart ? 50 : update.state.facet(completionConfig).activateOnTypingDelay;
         this.debounceUpdate = cState.active.some(a => a.state == 1 /* State.Pending */ && !this.running.some(q => q.active.source == a.source))
-            ? setTimeout(() => this.startUpdate(), 50) : -1;
+            ? setTimeout(() => this.startUpdate(), delay) : -1;
         if (this.composing != 0 /* CompositionState.None */)
             for (let tr of update.transactions) {
                 if (getUserEvent(tr) == "input")
@@ -1076,6 +1081,7 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
     }
     startUpdate() {
         this.debounceUpdate = -1;
+        this.pendingStart = false;
         let { state } = this.view, cState = state.field(completionState);
         for (let active of cState.active) {
             if (active.state == 1 /* State.Pending */ && !this.running.some(r => r.active.source == active.source))
@@ -1155,7 +1161,7 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
             if (state && state.tooltip && this.view.state.facet(completionConfig).closeOnBlur) {
                 let dialog = state.open && getTooltip(this.view, state.open.tooltip);
                 if (!dialog || !dialog.dom.contains(event.relatedTarget))
-                    this.view.dispatch({ effects: closeCompletionEffect.of(null) });
+                    setTimeout(() => this.view.dispatch({ effects: closeCompletionEffect.of(null) }), 10);
             }
         },
         compositionstart() {
@@ -1463,11 +1469,11 @@ function snippet(template) {
         let spec = {
             changes: { from, to, insert: Text.of(text) },
             scrollIntoView: true,
-            annotations: completion ? pickedCompletion.of(completion) : undefined
+            annotations: completion ? [pickedCompletion.of(completion), Transaction.userEvent.of("input.complete")] : undefined
         };
         if (ranges.length)
             spec.selection = fieldSelection(ranges, 0);
-        if (ranges.length > 1) {
+        if (ranges.some(r => r.field > 0)) {
             let active = new ActiveSnippet(ranges, 0);
             let effects = spec.effects = [setActive.of(active)];
             if (editor.state.field(snippetState, false) === undefined)

@@ -28,10 +28,9 @@ class CompositeBlock {
         let last = this.children.length - 1;
         if (last >= 0)
             end = Math.max(end, this.positions[last] + this.children[last].length + this.from);
-        let tree = new Tree(nodeSet.types[this.type], this.children, this.positions, end - this.from).balance({
+        return new Tree(nodeSet.types[this.type], this.children, this.positions, end - this.from).balance({
             makeTree: (children, positions, length) => new Tree(NodeType.none, children, positions, length, this.hashProp)
         });
-        return tree;
     }
 }
 var Type;
@@ -69,7 +68,7 @@ var Type;
     Type[Type["HTMLTag"] = 30] = "HTMLTag";
     Type[Type["Comment"] = 31] = "Comment";
     Type[Type["ProcessingInstruction"] = 32] = "ProcessingInstruction";
-    Type[Type["URL"] = 33] = "URL";
+    Type[Type["Autolink"] = 33] = "Autolink";
     // Smaller tokens
     Type[Type["HeaderMark"] = 34] = "HeaderMark";
     Type[Type["QuoteMark"] = 35] = "QuoteMark";
@@ -81,6 +80,7 @@ var Type;
     Type[Type["CodeInfo"] = 41] = "CodeInfo";
     Type[Type["LinkTitle"] = 42] = "LinkTitle";
     Type[Type["LinkLabel"] = 43] = "LinkLabel";
+    Type[Type["URL"] = 44] = "URL";
 })(Type || (Type = {}));
 /// Data structure used to accumulate a block's content during [leaf
 /// block parsing](#BlockParser.leaf).
@@ -653,8 +653,11 @@ class BlockContext {
         this.ranges = ranges;
         this.line = new Line();
         this.atEnd = false;
-        /// @internal
-        this.dontInject = new Set;
+        /// For reused nodes on gaps, we can't directly put the original
+        /// node into the tree, since that may be bitter than its parent.
+        /// When this happens, we create a dummy tree that is replaced by
+        /// the proper node in `injectGaps` @internal
+        this.reusePlaceholders = new Map;
         this.stoppedAt = null;
         /// The range index that absoluteLineStart points into @internal
         this.rangeI = 0;
@@ -673,10 +676,16 @@ class BlockContext {
             return this.finish();
         let { line } = this;
         for (;;) {
-            while (line.depth < this.stack.length)
+            for (let markI = 0;;) {
+                let next = line.depth < this.stack.length ? this.stack[this.stack.length - 1] : null;
+                while (markI < line.markers.length && (!next || line.markers[markI].from < next.end)) {
+                    let mark = line.markers[markI++];
+                    this.addNode(mark.type, mark.from, mark.to);
+                }
+                if (!next)
+                    break;
                 this.finishContext();
-            for (let mark of line.markers)
-                this.addNode(mark.type, mark.from, mark.to);
+            }
             if (line.pos < line.text.length)
                 break;
             // Empty line
@@ -735,14 +744,8 @@ class BlockContext {
         let taken = this.fragments.takeNodes(this);
         if (!taken)
             return false;
-        let withoutGaps = taken, end = this.absoluteLineStart + taken;
-        for (let i = 1; i < this.ranges.length; i++) {
-            let gapFrom = this.ranges[i - 1].to, gapTo = this.ranges[i].from;
-            if (gapFrom >= this.lineStart && gapTo < end)
-                withoutGaps -= gapTo - gapFrom;
-        }
-        this.lineStart += withoutGaps;
         this.absoluteLineStart += taken;
+        this.lineStart = toRelative(this.absoluteLineStart, this.ranges);
         this.moveRangeI();
         if (this.absoluteLineStart < this.to) {
             this.lineStart++;
@@ -884,7 +887,8 @@ class BlockContext {
         return this.addGaps(this.block.toTree(this.parser.nodeSet, this.lineStart));
     }
     addGaps(tree) {
-        return this.ranges.length > 1 ? injectGaps(this.ranges, 0, tree.topNode, this.ranges[0].from, this.dontInject) : tree;
+        return this.ranges.length > 1 ?
+            injectGaps(this.ranges, 0, tree.topNode, this.ranges[0].from, this.reusePlaceholders) : tree;
     }
     /// @internal
     finishLeaf(leaf) {
@@ -904,9 +908,7 @@ class BlockContext {
     /// @internal
     get buffer() { return new Buffer(this.parser.nodeSet); }
 }
-function injectGaps(ranges, rangeI, tree, offset, dont) {
-    if (dont.has(tree.tree))
-        return tree.tree;
+function injectGaps(ranges, rangeI, tree, offset, dummies) {
     let rangeEnd = ranges[rangeI].to;
     let children = [], positions = [], start = tree.from + offset;
     function movePastNext(upto, inclusive) {
@@ -920,9 +922,12 @@ function injectGaps(ranges, rangeI, tree, offset, dont) {
     }
     for (let ch = tree.firstChild; ch; ch = ch.nextSibling) {
         movePastNext(ch.from + offset, true);
-        let from = ch.from + offset, node;
-        if (ch.to + offset > rangeEnd) {
-            node = injectGaps(ranges, rangeI, ch, offset, dont);
+        let from = ch.from + offset, node, reuse = dummies.get(ch.tree);
+        if (reuse) {
+            node = reuse;
+        }
+        else if (ch.to + offset > rangeEnd) {
+            node = injectGaps(ranges, rangeI, ch, offset, dummies);
             movePastNext(ch.to + offset, false);
         }
         else {
@@ -1127,7 +1132,8 @@ for (let i = 1, name; name = Type[i]; i++) {
     nodeTypes[i] = NodeType.define({
         id: i,
         name,
-        props: i >= Type.Escape ? [] : [[NodeProp.group, i in DefaultSkipMarkup ? ["Block", "BlockContext"] : ["Block", "LeafBlock"]]]
+        props: i >= Type.Escape ? [] : [[NodeProp.group, i in DefaultSkipMarkup ? ["Block", "BlockContext"] : ["Block", "LeafBlock"]]],
+        top: name == "Document"
     });
 }
 const none = [];
@@ -1262,8 +1268,14 @@ const DefaultInline = {
             return -1;
         let after = cx.slice(start + 1, cx.end);
         let url = /^(?:[a-z][-\w+.]+:[^\s>]+|[a-z\d.!#$%&'*+/=?^_`{|}~-]+@[a-z\d](?:[a-z\d-]{0,61}[a-z\d])?(?:\.[a-z\d](?:[a-z\d-]{0,61}[a-z\d])?)*)>/i.exec(after);
-        if (url)
-            return cx.append(elt(Type.URL, start, start + 1 + url[0].length));
+        if (url) {
+            return cx.append(elt(Type.Autolink, start, start + 1 + url[0].length, [
+                elt(Type.LinkMark, start, start + 1),
+                // url[0] includes the closing bracket, so exclude it from this slice
+                elt(Type.URL, start + 1, start + url[0].length),
+                elt(Type.LinkMark, start + url[0].length, start + 1 + url[0].length)
+            ]));
+        }
         let comment = /^!--[^>](?:-[^-]|[^-])*?-->/i.exec(after);
         if (comment)
             return cx.append(elt(Type.Comment, start, start + 1 + comment[0].length));
@@ -1288,7 +1300,7 @@ const DefaultInline = {
         let rightFlanking = !sBefore && (!pBefore || sAfter || pAfter);
         let canOpen = leftFlanking && (next == 42 || !rightFlanking || pBefore);
         let canClose = rightFlanking && (next == 42 || !leftFlanking || pAfter);
-        return cx.append(new InlineDelimiter(next == 95 ? EmphasisUnderscore : EmphasisAsterisk, start, pos, (canOpen ? 1 /* Mark.Open */ : 0) | (canClose ? 2 /* Mark.Close */ : 0)));
+        return cx.append(new InlineDelimiter(next == 95 ? EmphasisUnderscore : EmphasisAsterisk, start, pos, (canOpen ? 1 /* Mark.Open */ : 0 /* Mark.None */) | (canClose ? 2 /* Mark.Close */ : 0 /* Mark.None */)));
     },
     HardBreak(cx, next, start) {
         if (next == 92 /* '\\' */ && cx.char(start + 1) == 10 /* '\n' */)
@@ -1331,7 +1343,7 @@ const DefaultInline = {
                     for (let j = 0; j < i; j++) {
                         let p = cx.parts[j];
                         if (p instanceof InlineDelimiter && p.type == LinkStart)
-                            p.side = 0;
+                            p.side = 0 /* Mark.None */;
                     }
                 return link.to;
             }
@@ -1348,9 +1360,12 @@ function finishLink(cx, content, type, start, startPos) {
         let dest = parseURL(text, pos - cx.offset, cx.offset), title;
         if (dest) {
             pos = cx.skipSpace(dest.to);
-            title = parseLinkTitle(text, pos - cx.offset, cx.offset);
-            if (title)
-                pos = cx.skipSpace(title.to);
+            // The destination and title must be separated by whitespace
+            if (pos != dest.to) {
+                title = parseLinkTitle(text, pos - cx.offset, cx.offset);
+                if (title)
+                    pos = cx.skipSpace(title.to);
+            }
         }
         if (cx.char(pos) == 41 /* ')' */) {
             content.push(elt(Type.LinkMark, startPos, startPos + 1));
@@ -1480,7 +1495,7 @@ class InlineContext {
     /// or both. Returns the end of the delimiter, for convenient
     /// returning from [parse functions](#InlineParser.parse).
     addDelimiter(type, from, to, open, close) {
-        return this.append(new InlineDelimiter(type, from, to, (open ? 1 /* Mark.Open */ : 0) | (close ? 2 /* Mark.Close */ : 0)));
+        return this.append(new InlineDelimiter(type, from, to, (open ? 1 /* Mark.Open */ : 0 /* Mark.None */) | (close ? 2 /* Mark.Close */ : 0 /* Mark.None */)));
     }
     /// Add an inline element. Returns the end of the element.
     addElement(elt) {
@@ -1664,8 +1679,15 @@ class FragmentCursor {
                     continue;
                 break;
             }
-            cx.dontInject.add(cur.tree);
-            cx.addNode(cur.tree, cur.from - off);
+            let pos = toRelative(cur.from - off, cx.ranges);
+            if (cur.to - off <= cx.ranges[cx.rangeI].to) { // Fits in current range
+                cx.addNode(cur.tree, pos);
+            }
+            else {
+                let dummy = new Tree(cx.parser.nodeSet.types[Type.Paragraph], [], [], 0, cx.block.hashProp);
+                cx.reusePlaceholders.set(dummy, cur.tree);
+                cx.addNode(dummy, pos);
+            }
             // Taken content must always end in a block, because incremental
             // parsing happens on block boundaries. Never stop directly
             // after an indented code block, since those can continue after
@@ -1692,6 +1714,18 @@ class FragmentCursor {
         return end - start;
     }
 }
+// Convert an input-stream-relative position to a
+// Markdown-doc-relative position by subtracting the size of all input
+// gaps before `abs`.
+function toRelative(abs, ranges) {
+    let pos = abs;
+    for (let i = 1; i < ranges.length; i++) {
+        let gapFrom = ranges[i - 1].to, gapTo = ranges[i].from;
+        if (gapFrom < abs)
+            pos -= gapTo - gapFrom;
+    }
+    return pos;
+}
 const markdownHighlighting = styleTags({
     "Blockquote/...": tags.quote,
     HorizontalRule: tags.contentSeparator,
@@ -1710,7 +1744,7 @@ const markdownHighlighting = styleTags({
     "OrderedList/... BulletList/...": tags.list,
     "BlockQuote/...": tags.quote,
     "InlineCode CodeText": tags.monospace,
-    URL: tags.url,
+    "URL Autolink": tags.url,
     "HeaderMark HardBreak QuoteMark ListMark LinkMark EmphasisMark CodeMark": tags.processingInstruction,
     "CodeInfo LinkLabel": tags.labelName,
     LinkTitle: tags.string,
@@ -1913,9 +1947,82 @@ const TaskList = {
             after: "SetextHeading"
         }]
 };
+const autolinkRE = /(www\.)|(https?:\/\/)|([\w.+-]+@)|(mailto:|xmpp:)/gy;
+const urlRE = /[\w-]+(\.[\w-]+)+(\/[^\s<]*)?/gy;
+const lastTwoDomainWords = /[\w-]+\.[\w-]+($|\/)/;
+const emailRE = /[\w.+-]+@[\w-]+(\.[\w.-]+)+/gy;
+const xmppResourceRE = /\/[a-zA-Z\d@.]+/gy;
+function count(str, from, to, ch) {
+    let result = 0;
+    for (let i = from; i < to; i++)
+        if (str[i] == ch)
+            result++;
+    return result;
+}
+function autolinkURLEnd(text, from) {
+    urlRE.lastIndex = from;
+    let m = urlRE.exec(text);
+    if (!m || lastTwoDomainWords.exec(m[0])[0].indexOf("_") > -1)
+        return -1;
+    let end = from + m[0].length;
+    for (;;) {
+        let last = text[end - 1], m;
+        if (/[?!.,:*_~]/.test(last) ||
+            last == ")" && count(text, from, end, ")") > count(text, from, end, "("))
+            end--;
+        else if (last == ";" && (m = /&(?:#\d+|#x[a-f\d]+|\w+);$/.exec(text.slice(from, end))))
+            end = from + m.index;
+        else
+            break;
+    }
+    return end;
+}
+function autolinkEmailEnd(text, from) {
+    emailRE.lastIndex = from;
+    let m = emailRE.exec(text);
+    if (!m)
+        return -1;
+    let last = m[0][m[0].length - 1];
+    return last == "_" || last == "-" ? -1 : from + m[0].length - (last == "." ? 1 : 0);
+}
+/// Extension that implements autolinking for
+/// `www.`/`http://`/`https://`/`mailto:`/`xmpp:` URLs and email
+/// addresses.
+const Autolink = {
+    parseInline: [{
+            name: "Autolink",
+            parse(cx, next, absPos) {
+                let pos = absPos - cx.offset;
+                autolinkRE.lastIndex = pos;
+                let m = autolinkRE.exec(cx.text), end = -1;
+                if (!m)
+                    return -1;
+                if (m[1] || m[2]) { // www., http://
+                    end = autolinkURLEnd(cx.text, pos + m[0].length);
+                }
+                else if (m[3]) { // email address
+                    end = autolinkEmailEnd(cx.text, pos);
+                }
+                else { // mailto:/xmpp:
+                    end = autolinkEmailEnd(cx.text, pos + m[0].length);
+                    if (end > -1 && m[0] == "xmpp:") {
+                        xmppResourceRE.lastIndex = end;
+                        m = xmppResourceRE.exec(cx.text);
+                        if (m)
+                            end = m.index + m[0].length;
+                    }
+                }
+                if (end < 0)
+                    return -1;
+                cx.addElement(cx.elt("URL", absPos, end + cx.offset));
+                return end + cx.offset;
+            }
+        }]
+};
 /// Extension bundle containing [`Table`](#Table),
-/// [`TaskList`](#TaskList) and [`Strikethrough`](#Strikethrough).
-const GFM = [Table, TaskList, Strikethrough];
+/// [`TaskList`](#TaskList), [`Strikethrough`](#Strikethrough), and
+/// [`Autolink`](#Autolink).
+const GFM = [Table, TaskList, Strikethrough, Autolink];
 function parseSubSuper(ch, node, mark) {
     return (cx, next, pos) => {
         if (next != ch || cx.char(pos + 1) == ch)
@@ -1974,4 +2081,4 @@ const Emoji = {
         }]
 };
 
-export { BlockContext, Element, Emoji, GFM, InlineContext, LeafBlock, Line, MarkdownParser, Strikethrough, Subscript, Superscript, Table, TaskList, parseCode, parser };
+export { Autolink, BlockContext, Element, Emoji, GFM, InlineContext, LeafBlock, Line, MarkdownParser, Strikethrough, Subscript, Superscript, Table, TaskList, parseCode, parser };

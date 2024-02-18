@@ -342,6 +342,9 @@ const parser$1 = /*@__PURE__*/LRParser.deserialize({
   goto: "#hwPPPPPPPPPPPPPPPPPPPPPPPPPPx||||!Y!^!d!xPPP#[TYOZeUORSTWZbdfqT[OZQZORiZSWOZQbRQdSQfTZgWbdfqQ^PWk^lmrQl_Qm`RrseVORSTWZbdfq",
   nodeNames: "⚠ LineComment BlockComment String Number Bool Null ( ) { } [ ] ; . Operator Punctuation SpecialVar Identifier QuotedIdentifier Keyword Type Bits Bytes Builtin Script Statement CompositeIdentifier Parens Braces Brackets Statement",
   maxTerm: 38,
+  nodeProps: [
+    ["isolate", -4,1,2,3,19,""]
+  ],
   skippedNodes: [0,1,2],
   repeatNodeCount: 3,
   tokenData: "RORO",
@@ -438,7 +441,7 @@ function getAliases(doc, at) {
 function maybeQuoteCompletions(quote, completions) {
     if (!quote)
         return completions;
-    return completions.map(c => (Object.assign(Object.assign({}, c), { label: quote + c.label + quote, apply: undefined })));
+    return completions.map(c => (Object.assign(Object.assign({}, c), { label: c.label[0] == quote ? c.label : quote + c.label + quote, apply: undefined })));
 }
 const Span = /^\w*$/, QuotedSpan = /^[`'"]?\w*[`'"]?$/;
 class CompletionLevel {
@@ -466,7 +469,7 @@ class CompletionLevel {
     }
 }
 function nameCompletion(label, type, idQuote) {
-    if (!/[^\w\xb5-\uffff]/.test(label))
+    if (/^[a-z_][a-z_\d]*$/.test(label))
         return { label, type };
     return { label, type, apply: idQuote + label + idQuote };
 }

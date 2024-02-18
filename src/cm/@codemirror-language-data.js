@@ -85,6 +85,13 @@ const languages = [
         }
     }),
     /*@__PURE__*/LanguageDescription.of({
+        name: "Liquid",
+        extensions: ["liquid"],
+        load() {
+            return import("./@codemirror-lang-liquid.js").then(m => m.liquid());
+        }
+    }),
+    /*@__PURE__*/LanguageDescription.of({
         name: "MariaDB SQL",
         load() { return sql("MariaSQL"); }
     }),
@@ -167,7 +174,7 @@ const languages = [
     /*@__PURE__*/LanguageDescription.of({
         name: "TypeScript",
         alias: ["ts"],
-        extensions: ["ts"],
+        extensions: ["ts", "mts", "cts"],
         load() {
             return import("./@codemirror-lang-javascript.js").then(m => m.javascript({ typescript: true }));
         }
@@ -185,6 +192,14 @@ const languages = [
         extensions: ["xml", "xsl", "xsd", "svg"],
         load() {
             return import("./@codemirror-lang-xml.js").then(m => m.xml());
+        }
+    }),
+    /*@__PURE__*/LanguageDescription.of({
+        name: "YAML",
+        alias: ["yml"],
+        extensions: ["yaml", "yml"],
+        load() {
+            return import("./@codemirror-lang-yaml.js").then(m => m.yaml());
         }
     }),
     // Legacy modes ported from CodeMirror 5
@@ -516,7 +531,7 @@ const languages = [
     }),
     /*@__PURE__*/LanguageDescription.of({
         name: "Kotlin",
-        extensions: ["kt"],
+        extensions: ["kt", "kts"],
         load() {
             return import('@codemirror/legacy-modes/mode/clike').then(m => legacy(m.kotlin));
         }
@@ -945,14 +960,6 @@ const languages = [
         extensions: ["ys"],
         load() {
             return import('@codemirror/legacy-modes/mode/yacas').then(m => legacy(m.yacas));
-        }
-    }),
-    /*@__PURE__*/LanguageDescription.of({
-        name: "YAML",
-        alias: ["yml"],
-        extensions: ["yaml", "yml"],
-        load() {
-            return import('@codemirror/legacy-modes/mode/yaml').then(m => legacy(m.yaml));
         }
     }),
     /*@__PURE__*/LanguageDescription.of({
