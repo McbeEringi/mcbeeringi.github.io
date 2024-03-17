@@ -6,5 +6,5 @@
 	header>nav>*.zab{text-align:center;margin:0;}
 	header>button:hover+*,header>button:focus+*,nav:hover,nav:focus-within{transform:none;filter:none;visibility:visible;pointer-events:auto;}
 </style><header><button class="zab" title="Menu"></button><nav>`+`
-,Top;sky/,Sky Stuff;apps/,Apps;ta/,TA.js;petit/,PetitJS;mc/,Minecraft;twitter.com/mcbeeringi,Twitter;github.com/mcbeeringi,GitHub;qiita.com/mcbeeringi,Qiita;translate.google.com/translate?sl=ja&tl=en&u=${location},Translate;
+,Top;sky/,Sky Stuff;apps/,Apps;petit/,PetitJS;mc/,Minecraft;twitter.com/mcbeeringi,Twitter;github.com/mcbeeringi,GitHub;qiita.com/mcbeeringi,Qiita;translate.google.com/translate?sl=ja&tl=en&u=${location},Translate;
 </nav></header>`.replace(/(.*?),(.*?);/g,(_,x,y,p)=>`<a class="zab" href="${p<60?root:'https://'}${x}">${y}</a>`)],['beforeend',`<hr><footer>2018~ @McbeEringi .｡:+*<br>MIT License</footer>`]].map(x=>d.body.insertAdjacentHTML(...x))))))(document);
