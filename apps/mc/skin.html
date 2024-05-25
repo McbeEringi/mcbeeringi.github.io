@@ -54,7 +54,7 @@
 				];}
 			}))._(),
 			console.log(await Promise.all(e.map(async x=>[x.name,await new Response(x).text()]))),
-			dl({name:'skin_pack.mcpack',buffer:await zip(e)})
+			dl({name:`skin_pack_${Math.random().toString(36).slice(2)}.mcpack`,buffer:await zip(e)})
 		);
 	</script>
 </body>
