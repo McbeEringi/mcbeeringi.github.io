@@ -32,10 +32,10 @@
 			const panel=document.createElement('div'),
 				oninput=cm=>img.src='data:image/svg+xml,'+encodeURIComponent(cm.state.doc.toString()),
 				save=cm=>location.hash=encodeURIComponent(cm.state.doc.toString()),
-				dl=x=>(x.download=new Date().toLocaleString()+x.download,Object.assign(document.createElement('a'),x).click()),
-				expsvg=x=>dl({href:x,download:'.svg'}),
+				dl=x=>(x.download=new Date().toLocaleString()+x.download,console.log(x),Object.assign(document.createElement('a'),x).click()),
+				expsvg=(x=img.src)=>dl({href:x,download:'.svg'}),
 				//exppng=cm=>{const c=Object.assign(document.createElement('canvas'),{width:img.naturalWidth,height:img.naturalHeight});c.getContext('2d').drawImage(img,0,0);Object.assign(document.createElement('a'),{href:c.toDataURL(),download:new Date().toLocaleString()+'.png'}).click();},
-				exppng=((ctx,_img)=>async x=>(_img.src=x,await _img.decode(),Object.assign(ctx.canvas,{width:_img.naturalWidth,height:_img.naturalHeight}),ctx.drawImage(_img,0,0),dl({href:ctx.canvas.toDataURL(),download:'.png'})))(document.createElement('canvas').getContext('2d'),new Image()),
+				exppng=((ctx,_img)=>async(x=img.src)=>(_img.src=x,await _img.decode(),Object.assign(ctx.canvas,{width:_img.naturalWidth,height:_img.naturalHeight}),ctx.drawImage(_img,0,0),dl({href:ctx.canvas.toDataURL(),download:'.png'})))(document.createElement('canvas').getContext('2d'),new Image()),
 				customKeymap=[
 					
 				],
@@ -50,8 +50,8 @@
 							},
 							{
 								key:"Mod-e",preventDefault:true,
-								run(view){expsvg(img.src);return true;},
-								shift(view){exppng(img.src);return true;}
+								run(view){expsvg();return true;},
+								shift(view){exppng();return true;}
 							}
 						]),
 						xml(),
@@ -64,8 +64,8 @@
 			panel.insertAdjacentHTML('beforeend','Save,DL SVG,DL PNG,Copy URL,Hide,Help'.split(',').map(x=>`<button class="zab bgca">${x}</button>`).join(' '));
 			[...panel.children].forEach((x,i)=>x.onclick=[
 				_=>save(cm),
-				_=>expsvg(cm),
-				_=>exppng(cm),
+				_=>expsvg(),
+				_=>exppng(),
 				_=>navigator.clipboard.writeText(location),
 				_=>cme.classList.add('hide'),
 				_=>alert(`Save: Mod-s\nDL SVG: Mod-e\nDL PNG: Mod-Shift-e\n\n
