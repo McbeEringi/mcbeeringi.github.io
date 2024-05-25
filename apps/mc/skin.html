@@ -21,11 +21,41 @@
 	</label>
 	<script type="module">
 		import{zip,dl}from'https://mcbeeringi.github.io/petit/zip.mjs';
+		import{uuidgen}from'./mcmf.mjs';
 
-		inp.oninput=_=>(
-			1
+		inp.oninput=async e=>(
+			e=(await[...e.target.files].reduce(async(a,x,i)=>(
+				new Uint8Array(await new Response(x).arrayBuffer(),0,8)+''=='137,80,78,71,13,10,26,10'&&(
+					i=x.name.replace(/\./g,'_'),
+					a=await a,
+					a.skins.push({localization_name:i,texture:x.name,geometry:'geometry.humanoid.customSlim',type:'free'}),
+					a.lang[i]=i
+				),
+				a
+			),{
+				date:(t=>[t.getFullYear(),(t.getMonth()+1)*100+t.getDate(),t.getHours()*100+t.getMinutes()])(new Date()),
+				uuid:uuidgen(),skins:[],lang:{},
+				_(){return[
+					...e.target.files,
+					new File([JSON.stringify({localization_name:this.uuid,skins:this.skins})],'skins.json'),
+					new File([Object.entries(this.lang).reduce(
+						(a,x)=>(a+=`skin.${this.uuid}.${x[0]}=${x[1]}\t#\n`,a),
+						`skinpack.${this.uuid}=skin pack\t#\n`
+					)],'texts/en_US.lang'),
+					new File([JSON.stringify({
+						format_version:1,
+						header:{
+							name:'skin_pack',
+							description:Object.values(this.lang).join(),
+							uuid:this.uuid,version:this.date
+						},
+						modules:[{type:'skin_pack',uuid:this.uuid,version:this.date}]
+					})],'manifest.json')
+				];}
+			}))._(),
+			console.log(await Promise.all(e.map(async x=>[x.name,await new Response(x).text()]))),
+			dl({name:'skin_pack.mcpack',buffer:await zip(e)})
 		);
-
 	</script>
 </body>
 </html>
