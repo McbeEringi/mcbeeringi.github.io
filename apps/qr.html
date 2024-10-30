@@ -37,8 +37,10 @@ WIFI:S:[SSID];T:[WEP|WPA|無記入];P:[パスワード];H:[true|false|無記入]
 	<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
 	<script src="https://mcbeeringi.github.io/ta/ta.js"></script>
-	<script>
+	<script type="module">
+		import{QR}from'https://mcbeeringi.dev/petit/qr.mjs';
 		'use strict';
+		const qr=new QR();
 		(async()=>{
 			inp.value=`return[
 
@@ -54,7 +56,13 @@ WIFI:S:[SSID];T:[WEP|WPA|無記入];P:[パスワード];H:[true|false|無記入]
 	}
 	*/
 ];`;
-			(inp.oninput=()=>(async x=>(x=Function(inp.value)(),location.hash=encodeURIComponent(x[0]),qra.href=qri.src=await QRCode.toDataURL(...x),qra.download=x[0]+'.png',log.textContent=''))().catch(e=>log.textContent=e))();
+			(inp.oninput=()=>(async x=>(x=Function(inp.value)(),location.hash=encodeURIComponent(x[0]),
+			self.t0=performance.now(),
+			qr.gen([x[0]]).toPNG().toDataURL(),
+			console.log('PetitQR',-self.t0+(self.t0=performance.now())),
+			qra.href=qri.src=await QRCode.toDataURL(...x),
+			console.log('node-qrcode',-self.t0+(self.t0=performance.now())),
+			qra.download=x[0]+'.png',log.textContent=''))().catch(e=>log.textContent=e))();
 			TA.editor(inp);
 
 			const c=document.createElement('canvas'),ctx=c.getContext('2d');let cam=!0
