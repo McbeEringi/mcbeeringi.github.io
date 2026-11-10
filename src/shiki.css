@@ -1,0 +1,12 @@
+.shiki{position:relative;}
+.shiki::before{
+	content:"";display:block;
+	position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1;
+	background-color:var(--shiki-light-bg);opacity:.8;border-radius:1ex;
+}
+.shiki code{display:block;overflow:auto;padding:1ex;}
+.shiki,.shiki span{color:var(--shiki-light);}
+@media(prefers-color-scheme:dark){
+	.shiki::before{background-color:var(--shiki-dark-bg);}
+	.shiki,.shiki span{color:var(--shiki-dark);}
+}

@@ -26,8 +26,8 @@
 	<div id="cme"></div>
 
 	<script type="module">
-		import { EditorView, keymap, showPanel, setup } from "../src/cm.mjs";
-		import { xml } from '../src/cm/@codemirror-lang-xml.js';
+		import { EditorView, keymap, showPanel, setup } from "https://mcbeeringi.github.io/cm/index.mjs";
+		import { xml } from 'https://mcbeeringi.github.io/cm/xml.mjs';
 		(async()=>{
 			const panel=document.createElement('div'),
 				oninput=cm=>img.src='data:image/svg+xml,'+encodeURIComponent(cm.state.doc.toString()),
