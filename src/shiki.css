@@ -10,3 +10,6 @@
 	.shiki::before{background-color:var(--shiki-dark-bg);}
 	.shiki,.shiki span{color:var(--shiki-dark);}
 }
+
+.fence{position:relative;}
+.fence>button{position:absolute;top:1ex;right:1ex;opacity:.7;}
